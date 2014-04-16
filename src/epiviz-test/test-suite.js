@@ -373,23 +373,7 @@ epiviztest.TestSuite.prototype.addChartWithCache = function(resultContainer, fin
     ++run;
     if (run >= self._nRunsPerTestCase) {
       if (finishCallback) {
-        var firstIndex = Math.floor(self._nRunsPerTestCase * 0.5);
-        var secondIndex = Math.floor((self._nRunsPerTestCase - 1) * 0.5);
-        /*totalTimes.sort();
-        getDataTimes.sort();
-        processingTimes.sort();
-        drawTimes.sort();
-        drawnObjectsArr.sort();
-        dataObjectsArr.sort();
-        rangeWidths.sort();*/
         finishCallback({
-          /*avgTotalTime: avgTotalTime,
-          avgGetDataTime: avgGetDataTime,
-          avgProcessingTime: avgProcessingTime,
-          avgDrawTime: avgDrawTime,
-          avgDrawnObjects: avgDrawnObjects,
-          avgDataObjects: avgDataObjects,
-          avgRangeWidth: avgRangeWidth,*/
           totalTimes: totalTimes,
           getDataTimes: getDataTimes,
           processingTimes: processingTimes,
@@ -467,23 +451,7 @@ epiviztest.TestSuite.prototype.addChartNoCache = function(resultContainer, finis
     ++run;
     if (run >= self._nRunsPerTestCase) {
       if (finishCallback) {
-        var firstIndex = Math.floor(self._nRunsPerTestCase * 0.5);
-        var secondIndex = Math.floor((self._nRunsPerTestCase - 1) * 0.5);
-        /*totalTimes.sort();
-        getDataTimes.sort();
-        processingTimes.sort();
-        drawTimes.sort();
-        drawnObjectsArr.sort();
-        dataObjectsArr.sort();
-        rangeWidths.sort();*/
         finishCallback({
-          /*avgTotalTime: avgTotalTime,
-          avgGetDataTime: avgGetDataTime,
-          avgProcessingTime: avgProcessingTime,
-          avgDrawTime: avgDrawTime,
-          avgDrawnObjects: avgDrawnObjects,
-          avgDataObjects: avgDataObjects,
-          avgRangeWidth: avgRangeWidth,*/
           totalTimes: totalTimes,
           getDataTimes: getDataTimes,
           processingTimes: processingTimes,
@@ -562,23 +530,7 @@ epiviztest.TestSuite.prototype.navigateWithCache = function(resultContainer, fin
     ++run;
     if (run >= self._nRunsPerTestCase) {
       if (finishCallback) {
-        var firstIndex = Math.floor(self._nRunsPerTestCase * 0.5);
-        var secondIndex = Math.floor((self._nRunsPerTestCase - 1) * 0.5);
-        /*totalTimes.sort();
-        getDataTimes.sort();
-        processingTimes.sort();
-        drawTimes.sort();
-        drawnObjectsArr.sort();
-        dataObjectsArr.sort();
-        rangeWidths.sort();*/
         finishCallback({
-          /*avgTotalTime: avgTotalTime,
-          avgGetDataTime: avgGetDataTime,
-          avgProcessingTime: avgProcessingTime,
-          avgDrawTime: avgDrawTime,
-          avgDrawnObjects: avgDrawnObjects,
-          avgDataObjects: avgDataObjects,
-          avgRangeWidth: avgRangeWidth,*/
           totalTimes: totalTimes,
           getDataTimes: getDataTimes,
           processingTimes: processingTimes,
@@ -657,23 +609,7 @@ epiviztest.TestSuite.prototype.navigateNoCache = function(resultContainer, finis
     ++run;
     if (run >= self._nRunsPerTestCase) {
       if (finishCallback) {
-        var firstIndex = Math.floor(self._nRunsPerTestCase * 0.5);
-        var secondIndex = Math.floor((self._nRunsPerTestCase - 1) * 0.5);
-        /*totalTimes.sort();
-        getDataTimes.sort();
-        processingTimes.sort();
-        drawTimes.sort();
-        drawnObjectsArr.sort();
-        dataObjectsArr.sort();
-        rangeWidths.sort();*/
         finishCallback({
-          /*avgTotalTime: avgTotalTime,
-          avgGetDataTime: avgGetDataTime,
-          avgProcessingTime: avgProcessingTime,
-          avgDrawTime: avgDrawTime,
-          avgDrawnObjects: avgDrawnObjects,
-          avgDataObjects: avgDataObjects,
-          avgRangeWidth: avgRangeWidth,*/
           totalTimes: totalTimes,
           getDataTimes: getDataTimes,
           processingTimes: processingTimes,
