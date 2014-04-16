@@ -190,7 +190,7 @@ input.file
   z-index: 1;
 }
 
-#left-accordion .ui-accordion-content {
+#top-accordion .ui-accordion-content {
   overflow: hidden;
 }
 
@@ -222,6 +222,17 @@ input.file
 }
 
 /* Classes for charts */
+
+.plot-container {
+  position: relative;
+  display: inline-block;
+  margin: 2px;
+}
+
+.track-container {
+  position: relative;
+  margin: 2px;
+}
 
 .genome-track {
 }
@@ -255,4 +266,57 @@ body .colorwell-selected {
 .ui-menu button .ui-icon {
   top: 50%;
   left: 50%;
+}
+
+/* Data Tables */
+
+.epiviz-data-table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: moz-none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/*
+ * Override styles needed due to the mix of three different CSS sources
+ */
+.dataTables_info { padding-top: 0; }
+.dataTables_paginate { padding-top: 0; }
+.css_right { float: right; }
+tfoot th input { width: 80% }
+#example_wrapper .fg-toolbar { font-size: 0.8em }
+#theme_links span { float: left; padding: 2px 10px; }
+
+/* Tooltips */
+
+.ui-tooltip {
+    max-width: none;
+}
+
+.tooltip-table {
+  border-collapse: collapse;
+}
+
+.tooltip-table th, .tooltip-table td {
+  border: 1px solid #dddddd;
+  border-spacing: 0;
+  max-width: 100px;
+  padding: 2px;
+}
+
+/* Test css */
+
+#test-results-table {
+  border-collapse: collapse;
+}
+
+#test-results-table th, #test-results-table td {
+    border: 1px solid #dddddd;
+    border-spacing: 0;
+    max-width: 100px;
+    padding: 2px;
 }
