@@ -18,7 +18,8 @@ epiviz.plugins.charts.ScatterPlot = function(id, container, properties) {
   epiviz.ui.charts.Plot.call(this, id, container, properties);
 
   /**
-   * @type {*} D3 chart container
+   * D3 chart container
+   * @type {*}
    * @private
    */
   this._chartContent = null;
@@ -30,7 +31,8 @@ epiviz.plugins.charts.ScatterPlot = function(id, container, properties) {
   this._jChartContent = null;
 
   /**
-   * @type {*} D3 legend container
+   * D3 legend container
+   * @type {*}
    * @private
    */
   this._legend = null;

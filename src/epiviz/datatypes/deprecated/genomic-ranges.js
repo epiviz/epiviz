@@ -416,7 +416,8 @@ epiviz.datatypes.GenomicRanges.Subset = function(parent, indices) {
   this._innerGenomicRanges = parent;
 
   /**
-   * @type {Object.<number, number>} a mapping between the original indices and their corresponding indices in the subset
+   * A mapping between the original indices and their corresponding indices in the subset
+   * @type {Object.<number, number>}
    * @private
    */
   this._indicesMap = {};

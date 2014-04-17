@@ -216,6 +216,7 @@ epiviz.ui.ControlManager.prototype.onSearch = function() { return this._search; 
 
 /**
  * @param {Array.<epiviz.datatypes.SeqInfo>} seqInfos
+ * @private
  */
 epiviz.ui.ControlManager.prototype._updateSeqNames = function(seqInfos) {
   var chromosomeSelector = $('#chromosome-selector');

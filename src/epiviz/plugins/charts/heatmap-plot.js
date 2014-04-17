@@ -18,7 +18,8 @@ epiviz.plugins.charts.HeatmapPlot = function(id, container, properties) {
   epiviz.ui.charts.Plot.call(this, id, container, properties);
 
   /**
-   * @type {*} D3 chart container
+   * D3 chart container
+   * @type {*}
    * @private
    */
   this._chartContent = null;

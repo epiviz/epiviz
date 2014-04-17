@@ -69,7 +69,7 @@ epiviz.Config = function(settingsMap) {
 
   /**
    * An array of strings in the following format:
-   *   <typename>,<arguments>, where typename is the name of a type that
+   *   [typename],[arguments], where typename is the name of a type that
    *   extends DataProvider, and arguments is a list of arguments used for
    *   constructing the data provider, separated by comma.
    *

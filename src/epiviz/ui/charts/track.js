@@ -18,13 +18,15 @@ epiviz.ui.charts.Track = function(id, container, properties) {
   epiviz.ui.charts.Chart.call(this, id, container, properties);
 
   /**
-   * @type {*} D3 rectangle in the SVG
+   * D3 rectangle in the SVG
+   * @type {*}
    * @protected
    */
   this._background = null;
 
   /**
-   * @type {*} D3 group in the SVG used for adding hover/selection elements
+   * D3 group in the SVG used for adding hover/selection elements
+   * @type {*}
    * @protected
    */
   this._highlightGroup = null;

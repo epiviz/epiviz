@@ -305,11 +305,6 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
     measurements.add(epiviz.measurements.Measurement.fromRawObject(rawMeasurements[i]));
   }
 
-  /**
-   * @type {string} The complete class name of the chart to be added (for example epiviz.plugins.charts.BlocksTrack)
-   */
-  var chartType = request.get('type');
-
   this._fireEvent(this.onRequestAddChart(), {
     type: 'epiviz.plugins.charts.BlocksTrack',
     measurements: measurements,
