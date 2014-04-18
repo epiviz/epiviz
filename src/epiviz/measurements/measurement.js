@@ -367,6 +367,10 @@ epiviz.measurements.Measurement.fromRawObject = function(o, measurements) {
 
     var vars = expr.variables();
     for (var i = 0; i < vars.length; ++i) {
+      if (!epiviz.utils.stringStartsWith(vars[i], '{') || !epiviz.utils.stringEndsWith(vars[i], '}')) {
+        // This means that the variable is something else than a measurement
+        continue;
+      }
       var formulaIndex = parseInt(vars[i].substring(1, vars[i].length - 1));
       var index = o.formula.referredMeasurements[formulaIndex];
       refMs[formulaIndex] = measurements[index];

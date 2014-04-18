@@ -273,7 +273,13 @@ epiviz.ui.controls.ComputedMeasurementsDialog.prototype._addDialogContents = fun
 
         for (var i = 0; i < variables.length; ++i) {
           var variable = variables[i];
+
+          if (!epiviz.utils.stringStartsWith(variable, '{') || !epiviz.utils.stringEndsWith(variable, '}')) {
+            // This means that the variable is something else than a measurement
+            continue;
+          }
           var index = parseInt(variable.substring(1, variable.length - 1));
+
           var m = self._datasourceGroupMeasurements[index];
           referredMeasurements[index] = m;
 
