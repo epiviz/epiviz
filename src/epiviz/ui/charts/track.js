@@ -75,6 +75,7 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
+ * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
  */
 epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
   var result = epiviz.ui.charts.Chart.prototype.draw.call(this, range, data);

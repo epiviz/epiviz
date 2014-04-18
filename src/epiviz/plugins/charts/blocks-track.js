@@ -66,10 +66,6 @@ epiviz.plugins.charts.BlocksTrack.prototype.draw = function(range, data, slide, 
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  this._svg
-    .attr('width', this.width())
-    .attr('height', this.height());
-
   return this._drawBlocks(range, data, slide || 0, zoom || 1);
 };
 
@@ -238,14 +234,6 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
     .remove();
 
   return blocks;
-};
-
-/**
- * @returns {*} D3 selection of the blocks in the chart
- * @private
- */
-epiviz.plugins.charts.BlocksTrack.prototype._findItems = function() {
-  return this._container.find('> svg > .items');
 };
 
 /**

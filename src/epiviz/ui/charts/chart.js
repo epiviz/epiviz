@@ -692,6 +692,10 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     this._lastRange = range;
   }
 
+  this._svg
+    .attr('width', this.width())
+    .attr('height', this.height());
+
   return [];
 };
 

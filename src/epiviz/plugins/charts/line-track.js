@@ -59,10 +59,6 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  this._svg
-    .attr('width', this.width())
-    .attr('height', this.height());
-
   var CustomSetting = epiviz.ui.charts.CustomSetting;
   var minY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MIN];
   var maxY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MAX];

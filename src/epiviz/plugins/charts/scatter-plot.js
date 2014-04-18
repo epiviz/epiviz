@@ -132,10 +132,6 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  this._svg
-    .attr('width', this._properties.width)
-    .attr('height', this._properties.height);
-
   return this._drawCircles(range, data);
 };
 

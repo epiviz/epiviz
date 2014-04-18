@@ -83,10 +83,6 @@ epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, z
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  this._svg
-    .attr('width', this._properties.width)
-    .attr('height', this._properties.height);
-
   return this._drawGenes(range, data, slide || 0, zoom || 1);
 };
 
@@ -308,14 +304,6 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGene = function(elem, d, xScale)
     .attr('y', (self.height() - self.margins().sumAxis(Axis.Y)) * 0.5 + offset - or * (geneHeight + 2))
     .style('dominant-baseline', 'central')
     .text(d.id); //Gene
-};
-
-/**
- * @returns {*} D3 selection of the genes in the chart
- * @private
- */
-epiviz.plugins.charts.GenesTrack.prototype._findItems = function() {
-  return this._container.find('> svg > .items');
 };
 
 /**
