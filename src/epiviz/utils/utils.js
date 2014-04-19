@@ -267,19 +267,24 @@ epiviz.utils.mapKeyIntersection = function(m1, m2) {
  * @template T
  */
 epiviz.utils.evaluateFullyQualifiedTypeName = function(typeName) {
-  var namespaces = typeName.split('.');
-  var func = namespaces.pop();
-  var context = window;
-  for (var i = 0; i < namespaces.length; ++i) {
-    context = context[namespaces[i]];
-  }
+  try {
+    var namespaces = typeName.split('.');
+    var func = namespaces.pop();
+    var context = window;
+    for (var i = 0; i < namespaces.length; ++i) {
+      context = context[namespaces[i]];
+    }
 
-  var result = context[func];
-  if (typeof(result) !== 'function') {
+    var result = context[func];
+    if (typeof(result) !== 'function') {
+      return null;
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Unknown type name: ' + typeName);
     return null;
   }
-
-  return result;
 };
 
 /**
