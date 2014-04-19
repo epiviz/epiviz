@@ -450,6 +450,9 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
         chartMs.add(ms[chartInfo.properties.measurements[j]]);
       }
       var chartType = chartFactory.get(chartInfo.type);
+
+      if (!chartType) { continue; }
+
       charts[t].push({
         id: chartInfo.id,
         type: chartType,

@@ -50,12 +50,6 @@ epiviz.data.DataProviderFactory = function(config) {
     /** @type {epiviz.data.DataProvider} */
     var dataProvider = epiviz.utils.applyConstructor(dataProviderConstructor, tokens.slice(1));
 
-    // Apply a format adapter to the data provider, until we transition to new format on the back-end side
-    //var dataProviderWrapper = new epiviz.data.FormatAdapterDataProvider(dataProvider, dataProvider.id());
-
-    // this._providers.push(dataProvider);
-    //this._providers.push(dataProviderWrapper);
-    //this._providers[dataProviderWrapper.id()] = dataProviderWrapper;
     this._providers[dataProvider.id()] = dataProvider;
 
     ++this._size;
