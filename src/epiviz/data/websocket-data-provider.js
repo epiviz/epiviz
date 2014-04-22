@@ -224,8 +224,7 @@ epiviz.data.WebsocketDataProvider.prototype._addMeasurements = function (request
    *   type: string,
    *   datasourceId: string,
    *   datasourceGroup: string,
-   *   dataprovider: string,
-   *   formula: ?{expression: string, referredMeasurements: Object.<number, number>},
+   *   formula: null,
    *   defaultChartType: ?string,
    *   annotation: ?Object.<string, string>,
    *   minValue: ?number,
@@ -234,7 +233,20 @@ epiviz.data.WebsocketDataProvider.prototype._addMeasurements = function (request
    */
   var rawMeasurements = JSON.parse(request.get('measurements'));
   for (var i = 0; i < rawMeasurements.length; ++i) {
-    measurements.add(epiviz.measurements.Measurement.fromRawObject(rawMeasurements[i]));
+    measurements.add(new epiviz.measurements.Measurement(
+      rawMeasurements[i]['id'],
+      rawMeasurements[i]['name'],
+      rawMeasurements[i]['type'],
+      rawMeasurements[i]['datasourceId'],
+      rawMeasurements[i]['datasourceGroup'],
+      this.id(),
+      null,
+      rawMeasurements[i]['defaultChartType'],
+      rawMeasurements[i]['annotation'],
+      rawMeasurements[i]['minValue'],
+      rawMeasurements[i]['maxValue'],
+      rawMeasurements[i]['metadata']
+    ));
   }
 
   this._fireEvent(this.onRequestAddMeasurements(), {measurements: measurements, result: result});
@@ -258,8 +270,7 @@ epiviz.data.WebsocketDataProvider.prototype._removeMeasurements = function (requ
    *   type: string,
    *   datasourceId: string,
    *   datasourceGroup: string,
-   *   dataprovider: string,
-   *   formula: ?{expression: string, referredMeasurements: Object.<number, number>},
+   *   formula: null,
    *   defaultChartType: ?string,
    *   annotation: ?Object.<string, string>,
    *   minValue: ?number,
@@ -268,7 +279,20 @@ epiviz.data.WebsocketDataProvider.prototype._removeMeasurements = function (requ
    */
   var rawMeasurements = JSON.parse(request.get('measurements'));
   for (var i = 0; i < rawMeasurements.length; ++i) {
-    measurements.add(epiviz.measurements.Measurement.fromRawObject(rawMeasurements[i]));
+    measurements.add(new epiviz.measurements.Measurement(
+      rawMeasurements[i]['id'],
+      rawMeasurements[i]['name'],
+      rawMeasurements[i]['type'],
+      rawMeasurements[i]['datasourceId'],
+      rawMeasurements[i]['datasourceGroup'],
+      this.id(),
+      null,
+      rawMeasurements[i]['defaultChartType'],
+      rawMeasurements[i]['annotation'],
+      rawMeasurements[i]['minValue'],
+      rawMeasurements[i]['maxValue'],
+      rawMeasurements[i]['metadata']
+    ));
   }
   this._fireEvent(this.onRequestRemoveMeasurements(), {measurements: measurements, result: result});
 
@@ -292,8 +316,7 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
    *   type: string,
    *   datasourceId: string,
    *   datasourceGroup: string,
-   *   dataprovider: string,
-   *   formula: ?{expression: string, referredMeasurements: Object.<number, number>},
+   *   formula: null,
    *   defaultChartType: ?string,
    *   annotation: ?Object.<string, string>,
    *   minValue: ?number,
@@ -302,7 +325,20 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
    */
   var rawMeasurements = JSON.parse(request.get('measurements'));
   for (var i = 0; i < rawMeasurements.length; ++i) {
-    measurements.add(epiviz.measurements.Measurement.fromRawObject(rawMeasurements[i]));
+    measurements.add(new epiviz.measurements.Measurement(
+      rawMeasurements[i]['id'],
+      rawMeasurements[i]['name'],
+      rawMeasurements[i]['type'],
+      rawMeasurements[i]['datasourceId'],
+      rawMeasurements[i]['datasourceGroup'],
+      this.id(),
+      null,
+      rawMeasurements[i]['defaultChartType'],
+      rawMeasurements[i]['annotation'],
+      rawMeasurements[i]['minValue'],
+      rawMeasurements[i]['maxValue'],
+      rawMeasurements[i]['metadata']
+    ));
   }
 
   this._fireEvent(this.onRequestAddChart(), {
