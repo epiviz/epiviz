@@ -105,5 +105,43 @@ epiviz.EpiViz.SETTINGS = {
       label: 'probe',
       maxColumns: 40
     }
+  },
+
+  defaultWorkspaceSettings: {
+    name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
+    content: {
+      range: epiviz.datatypes.GenomicRange.fromStartEnd('chr11', 99800000, 103383180),
+      measurements: [
+        {
+          id: 'genes',
+          name: 'Genes',
+          type: 'range',
+          datasourceId: 'genes',
+          datasourceGroup: 'genes',
+          dataprovider: epiviz.data.WebServerDataProvider.DEFAULT_ID,
+          formula: null,
+          defaultChartType: 'Genes Track',
+          annotation: null,
+          minValue: null,
+          maxValue: null,
+          metadata: ['gene', 'entrez', 'exon_starts', 'exon_ends']
+        }
+      ],
+      charts: {
+        track: [
+          {
+            id: 'track-genes-initial',
+            type: 'epiviz.plugins.charts.GenesTrack',
+            properties: { width: 837, height: 120,
+              margins: { top: 25, left: 20, bottom: 23, right: 10 },
+              measurements: [0],
+              colors: [epiviz.Config.COLORS_MEDIUM[4], epiviz.Config.COLORS_MEDIUM[0], epiviz.Config.COLORS_MEDIUM[2], epiviz.Config.COLORS_MEDIUM[1]],
+              customSettings: {}
+            }
+          }
+        ],
+        plot: []
+      }
+    }
   }
 };
