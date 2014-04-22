@@ -54,6 +54,8 @@ epiviz.data.DataProviderFactory = function(config) {
 
     ++this._size;
   }
+  var emptyProvider = new epiviz.data.EmptyResponseDataProvider();
+  this._providers[emptyProvider.id()] = emptyProvider;
 };
 
 /**

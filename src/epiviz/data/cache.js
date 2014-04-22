@@ -134,7 +134,8 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
       }
       pendingRequests[request.id()] = ranges[i];
 
-      self._dataProviderFactory.get(m.dataprovider()).getData(request, function(response) {
+      var dataProvider = self._dataProviderFactory.get(m.dataprovider()) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+      dataProvider.getData(request, function(response) {
         requestStack.serveData(response);
       });
     }

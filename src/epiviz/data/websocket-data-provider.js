@@ -224,7 +224,6 @@ epiviz.data.WebsocketDataProvider.prototype._addMeasurements = function (request
    *   type: string,
    *   datasourceId: string,
    *   datasourceGroup: string,
-   *   formula: null,
    *   defaultChartType: ?string,
    *   annotation: ?Object.<string, string>,
    *   minValue: ?number,
@@ -270,7 +269,6 @@ epiviz.data.WebsocketDataProvider.prototype._removeMeasurements = function (requ
    *   type: string,
    *   datasourceId: string,
    *   datasourceGroup: string,
-   *   formula: null,
    *   defaultChartType: ?string,
    *   annotation: ?Object.<string, string>,
    *   minValue: ?number,
@@ -316,7 +314,6 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
    *   type: string,
    *   datasourceId: string,
    *   datasourceGroup: string,
-   *   formula: null,
    *   defaultChartType: ?string,
    *   annotation: ?Object.<string, string>,
    *   minValue: ?number,
@@ -342,7 +339,7 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
   }
 
   this._fireEvent(this.onRequestAddChart(), {
-    type: 'epiviz.plugins.charts.BlocksTrack',
+    type: request.get('type'),
     measurements: measurements,
     result: result
   });

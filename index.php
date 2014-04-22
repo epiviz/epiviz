@@ -160,6 +160,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/data/cache.js"></script>
     <script src="src/epiviz/data/data-manager.js"></script>
 
+    <script src="src/epiviz/data/empty-response-data-provider.js"></script>
     <script src="src/epiviz/data/websocket-data-provider.js"></script>
     <script src="src/epiviz/data/webserver-data-provider.js"></script>
     <script src="src/epiviz/data/mock-data-provider.js"></script>
