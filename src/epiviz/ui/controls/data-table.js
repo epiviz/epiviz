@@ -250,7 +250,7 @@ epiviz.ui.controls.DataTable.prototype._preRowSelect = function(tableTools, e, n
       this._selectList = this._getRangeOfRows(this._lastSelection, nodes[0]);
     } else {
       this._lastSelection = nodes[0];
-      if (!e.ctrlKey) {
+      if (!e.ctrlKey && !e.metaKey) {
         this._deselectList = tableTools.fnGetSelected();
         if (!isSelect) {
           this._selectList = nodes;
