@@ -48,12 +48,21 @@ epiviz.Config = function(settingsMap) {
    * @type {{
    *    name: string,
    *    content: {
-   *      range: epiviz.datatypes.GenomicRange,
-   *      measurements: Array.<epiviz.measurements.Measurement>,
+   *      range: {seqName: string, start: number, width: number},
+   *      measurements: Array.<{
+            id: string, name: string, type: string, datasourceId: string,
+            datasourceGroup: string, dataprovider: string, formula: null,
+            defaultChartType: string, annotation: ?Object.<string, string>,
+            minValue: ?number, maxValue: ?number,
+            metadata: ?Array.<string>
+          }>,
    *      charts: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{
    *        id: string,
-   *        type: epiviz.ui.charts.ChartType,
-   *        properties: epiviz.ui.charts.ChartProperties
+   *        type: string,
+   *        properties: {
+   *          width: number, height: number, margins: { top: number, left: number, bottom: number, right: number },
+   *          measurements: Array.<number>, colors: Array.<string>, customSettings: Object.<string, string>
+   *        }
    *      }>>
    *    }
    * }}
@@ -61,36 +70,14 @@ epiviz.Config = function(settingsMap) {
   this.defaultWorkspaceSettings = {
     name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
     content: {
-      range: epiviz.datatypes.GenomicRange.fromStartEnd('chr11', 99800000, 103383180),
-      measurements: [
-        {
-          id: 'genes',
-          name: 'Genes',
-          type: 'range',
-          datasourceId: 'genes',
-          datasourceGroup: 'genes',
-          dataprovider: epiviz.data.WebServerDataProvider.DEFAULT_ID,
-          formula: null,
-          defaultChartType: 'Genes Track',
-          annotation: null,
-          minValue: null,
-          maxValue: null,
-          metadata: ['gene', 'entrez', 'exon_starts', 'exon_ends']
-        }
-      ],
+      range: {
+        seqName: 'chr11',
+        start: 99800000,
+        width: 3583180
+      },
+      measurements: [],
       charts: {
-        track: [
-          {
-            id: 'track-genes-initial',
-            type: 'epiviz.plugins.charts.GenesTrack',
-            properties: { width: 837, height: 120,
-              margins: { top: 25, left: 20, bottom: 23, right: 10 },
-              measurements: [0],
-              colors: [epiviz.Config.COLORS_MEDIUM[4], epiviz.Config.COLORS_MEDIUM[0], epiviz.Config.COLORS_MEDIUM[2], epiviz.Config.COLORS_MEDIUM[1], epiviz.Config.COLORS_MEDIUM[3], epiviz.Config.COLORS_MEDIUM[6], epiviz.Config.COLORS_MEDIUM[7]],
-              customSettings: {}
-            }
-          }
-        ],
+        track: [],
         plot: []
       }
     }

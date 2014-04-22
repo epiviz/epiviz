@@ -110,7 +110,11 @@ epiviz.EpiViz.SETTINGS = {
   defaultWorkspaceSettings: {
     name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
     content: {
-      range: epiviz.datatypes.GenomicRange.fromStartEnd('chr11', 99800000, 103383180),
+      range: {
+        seqName: 'chr11',
+        start: 99800000,
+        width: 3583180
+      },
       measurements: [
         {
           id: 'genes',
