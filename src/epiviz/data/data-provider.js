@@ -71,6 +71,12 @@ epiviz.data.DataProvider = function(id) {
    * @private
    */
   this._requestNavigate = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestRedraw = new epiviz.events.Event();
 };
 
 /**
@@ -138,3 +144,8 @@ epiviz.data.DataProvider.prototype.onRequestClearDatasourceGroupCache = function
  * @returns {epiviz.events.Event.<{range: epiviz.datatypes.GenomicRange, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataProvider.prototype.onRequestNavigate = function() { return this._requestNavigate; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataProvider.prototype.onRequestRedraw = function() { return this._requestRedraw; };

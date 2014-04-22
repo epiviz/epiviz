@@ -108,6 +108,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerDataAddSeqInfos();
   this._registerDataRemoveSeqNames();
   this._registerDataNavigate();
+  this._registerDataRedraw();
 
   // Register for Workspace events
 
@@ -535,6 +536,27 @@ epiviz.EpiViz.prototype._registerDataNavigate = function() {
     function(e) {
       try {
         self._locationManager.changeCurrentLocation(e.range);
+        e.result.success = true;
+      } catch (error) {
+        e.result.success = false;
+        e.errorMessage = error.toString();
+      }
+    }));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataRedraw = function() {
+  var self = this;
+  this._dataManager.onRequestRedraw().addListener(new epiviz.events.EventListener(
+    /**
+     * @param {{result: epiviz.events.EventResult}} e
+     */
+    function(e) {
+      try {
+        var currentLocation = self._locationManager.currentLocation();
+        self._locationManager.changeCurrentLocation(currentLocation);
         e.result.success = true;
       } catch (error) {
         e.result.success = false;

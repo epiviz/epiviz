@@ -162,6 +162,9 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.NAVIGATE:
         this._navigate(request);
         break;
+      case Action.REDRAW:
+        this._redraw(request);
+        break;
     }
   }
 };
@@ -408,6 +411,20 @@ epiviz.data.WebsocketDataProvider.prototype._navigate = function (request) {
 
   this._fireEvent(this.onRequestNavigate(), {
     range: epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName, range.start, range.end),
+    result: result
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._redraw = function (request) {
+  var result = new epiviz.events.EventResult();
+  this._fireEvent(this.onRequestRedraw(), {
     result: result
   });
 

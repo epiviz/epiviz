@@ -85,6 +85,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._requestNavigate = new epiviz.events.Event();
 
   /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestRedraw = new epiviz.events.Event();
+
+  /**
    * @type {epiviz.events.Event}
    * @private
    */
@@ -103,6 +109,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderAddSeqInfos();
   this._registerProviderRemoveSeqNames();
   this._registerProviderNavigate();
+  this._registerProviderRedraw();
   this._registerProviderFlushCache();
   this._registerProviderClearDatasourceGroupCache();
 };
@@ -141,6 +148,11 @@ epiviz.data.DataManager.prototype.onRequestRemoveSeqNames = function() { return 
  * @returns {epiviz.events.Event.<{range: epiviz.datatypes.GenomicRange, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataManager.prototype.onRequestNavigate = function() { return this._requestNavigate; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestRedraw = function() { return this._requestRedraw; };
 
 /**
  * @returns {epiviz.events.Event.<{datasourceGroup: string}>}
@@ -463,6 +475,19 @@ epiviz.data.DataManager.prototype._registerProviderNavigate = function() {
     provider.onRequestNavigate().addListener(new epiviz.events.EventListener(
       function(e) {
         self._requestNavigate.notify(e);
+      }));
+  });
+};
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderRedraw = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestRedraw().addListener(new epiviz.events.EventListener(
+      function(e) {
+        self._requestRedraw.notify(e);
       }));
   });
 };

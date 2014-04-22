@@ -63,7 +63,8 @@ epiviz.data.Request.Action = {
   REMOVE_CHART: 'removeChart',
   CLEAR_DATASOURCE_GROUP_CACHE: 'clearDatasourceGroupCache',
   FLUSH_CACHE: 'flushCache',
-  NAVIGATE: 'navigate'
+  NAVIGATE: 'navigate',
+  REDRAW: 'redraw'
 };
 
 /**
