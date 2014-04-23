@@ -221,7 +221,6 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
       lines.enter()
         .append('path')
         .attr('d', line)
-        .style('stroke', colors.get(i))
         .style('shape-rendering', 'auto')
         .style('stroke-opacity', '0.7')
         .on('mouseover', function() { self._captureMouseHover(); })
@@ -230,6 +229,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
       lines
         .attr('d', line)
+        .style('stroke', colors.get(i))
         .style('stroke-width', lineThickness)
         .attr('transform', 'translate(' + (+delta) + ')')
         .transition()
