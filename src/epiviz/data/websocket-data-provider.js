@@ -165,6 +165,9 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.REDRAW:
         this._redraw(request);
         break;
+      case Action.GET_CURRENT_LOCATION:
+        this._getCurrentLocation(request);
+        break;
     }
   }
 };
@@ -425,6 +428,20 @@ epiviz.data.WebsocketDataProvider.prototype._navigate = function (request) {
 epiviz.data.WebsocketDataProvider.prototype._redraw = function (request) {
   var result = new epiviz.events.EventResult();
   this._fireEvent(this.onRequestRedraw(), {
+    result: result
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._getCurrentLocation = function(request) {
+  var result = new epiviz.events.EventResult();
+  this._fireEvent(this.onRequestCurrentLocation(), {
     result: result
   });
 

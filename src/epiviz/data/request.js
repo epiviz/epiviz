@@ -64,7 +64,8 @@ epiviz.data.Request.Action = {
   CLEAR_DATASOURCE_GROUP_CACHE: 'clearDatasourceGroupCache',
   FLUSH_CACHE: 'flushCache',
   NAVIGATE: 'navigate',
-  REDRAW: 'redraw'
+  REDRAW: 'redraw',
+  GET_CURRENT_LOCATION: 'getCurrentLocation'
 };
 
 /**

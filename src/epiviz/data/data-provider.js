@@ -77,6 +77,12 @@ epiviz.data.DataProvider = function(id) {
    * @private
    */
   this._requestRedraw = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestCurrentLocation = new epiviz.events.Event();
 };
 
 /**
@@ -149,3 +155,8 @@ epiviz.data.DataProvider.prototype.onRequestNavigate = function() { return this.
  * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataProvider.prototype.onRequestRedraw = function() { return this._requestRedraw; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataProvider.prototype.onRequestCurrentLocation = function() { return this._requestCurrentLocation; };

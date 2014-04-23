@@ -102,6 +102,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._clearDatasourceGroupCache = new epiviz.events.Event();
 
+  /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestCurrentLocation = new epiviz.events.Event();
+
   this._registerProviderAddMeasurements();
   this._registerProviderRemoveMeasurements();
   this._registerProviderAddChart();
@@ -112,6 +118,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderRedraw();
   this._registerProviderFlushCache();
   this._registerProviderClearDatasourceGroupCache();
+  this._registerProviderGetCurrentLocation();
 };
 
 /**
@@ -163,6 +170,12 @@ epiviz.data.DataManager.prototype.onClearDatasourceGroupCache = function() { ret
  * @returns {epiviz.events.Event}
  */
 epiviz.data.DataManager.prototype.onFlushCache = function() { return this._flushCache; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestCurrentLocation = function() { return this._requestCurrentLocation; };
+
 
 /**
  * @param {function(Array.<epiviz.datatypes.SeqInfo>)} callback
@@ -516,6 +529,19 @@ epiviz.data.DataManager.prototype._registerProviderFlushCache = function() {
       function(e) {
         self.flushCache();
         e.result.success = true;
+      }));
+  });
+};
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderGetCurrentLocation = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestCurrentLocation().addListener(new epiviz.events.EventListener(
+      function(e) {
+        self._requestCurrentLocation.notify(e);
       }));
   });
 };
