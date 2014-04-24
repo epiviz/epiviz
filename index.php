@@ -6,7 +6,6 @@ const SETTINGS_EXPIRATION_TIME = 2592000; // One month in seconds
 const DEFAULT_SETTINGS_ARG = 'default';
 const DEFAULT_SETTINGS_FILE = 'src/epiviz/default-settings.js';
 $settings_file = (array_key_exists('settings', $_COOKIE)) ? $_COOKIE['settings'] : DEFAULT_SETTINGS_FILE;
-//$settings_file = DEFAULT_SETTINGS_FILE;
 if (array_key_exists('settings', $_REQUEST)) {
   $settings_file = $_REQUEST['settings'];
   if ($settings_file == DEFAULT_SETTINGS_ARG) {
@@ -15,12 +14,8 @@ if (array_key_exists('settings', $_REQUEST)) {
   setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
 }
 
-$scripts = (array_key_exists('script', $_COOKIE)) ? $_COOKIE['script'] : array();
+$scripts = array();
 if (array_key_exists('script', $_REQUEST)) {
-  // Clear the previous cookies
-  foreach ($scripts as $i => $script) {
-    setcookie('script[' . $i . ']', NULL, -1);
-  }
   $scripts = $_REQUEST['script'];
 }
 
@@ -62,13 +57,6 @@ if (array_key_exists('gist', $_REQUEST)) {
 
   // Close request to clear up some resources
   curl_close($curl);
-}
-
-if ($scripts != DEFAULT_SETTINGS_ARG) {
-  foreach ($scripts as $i => $script) {
-    // Otherwise, store the script locations into the cookie
-    setcookie('script[' . $i . ']', $script);
-  }
 }
 
 // Insert here settings based on $_REQUEST.
@@ -320,11 +308,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 <?php
 
     if (is_array($scripts) && count($scripts) == 0) { $scripts = DEFAULT_SETTINGS_ARG; }
-    if ($scripts == DEFAULT_SETTINGS_ARG) {
-?>
-      epiviz.ui.WebArgsManager.WEB_ARGS['script'] = '<?php echo $scripts; ?>';
-<?php
-    } else {
+    if ($scripts != DEFAULT_SETTINGS_ARG) {
 ?>
       items = [];
 <?php
