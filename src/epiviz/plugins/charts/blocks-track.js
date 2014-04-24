@@ -137,7 +137,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
         var lastEnd = xScale(lastBlock.end);
 
         if (start - lastEnd < minBlockDistance) {
-          lastBlock.end = cell.rowItem.end();
+          lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
           lastBlock.valueItems[0].push(cell);
           lastBlock.id = sprintf('b-%s-%s-%s', i, lastBlock.start, lastBlock.end);
           continue;
