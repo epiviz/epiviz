@@ -193,7 +193,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     }
 
     for (var k = 0; k < indices.length; ++k) {
-      var cell = series.get(k);
+      var cell = series.get(indices[k]);
       items.push(new epiviz.ui.charts.UiObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i)));
     }
 

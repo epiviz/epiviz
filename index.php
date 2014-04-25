@@ -14,6 +14,44 @@ if (array_key_exists('settings', $_REQUEST)) {
   setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
 }
 
+$settings_gist = null;
+if (array_key_exists('settingsGist', $_REQUEST)) {
+  $settings_gist = $_REQUEST['settingsGist'];
+  // Get cURL resource
+  $curl = curl_init();
+
+  // Set some options - we are passing in a useragent too here
+  curl_setopt_array($curl, array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_SSL_VERIFYPEER => false,
+      CURLOPT_SSL_VERIFYHOST => false,
+      CURLOPT_USERAGENT => 'epiviz',
+      CURLOPT_URL => 'https://api.github.com/gists/' . $settings_gist
+  ));
+
+    // Send the request & save response to $resp
+  $resp = curl_exec($curl);
+  if ($resp) {
+    $json = json_decode($resp, true);
+    if (array_key_exists('files', $json)) {
+      foreach ($json['files'] as $filename => $details) {
+        if (!array_key_exists('type', $details) ||
+            stripos($details['type'], 'javascript') === FALSE ||
+            !array_key_exists('raw_url', $details)) { continue; }
+
+        $settings_file = 'raw.php?url=' . urlencode($details['raw_url']);
+        break;
+      }
+    }
+    setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+  } else {
+    $settings_gist = null;
+  }
+
+  // Close request to clear up some resources
+  curl_close($curl);
+}
+
 $scripts = array();
 if (array_key_exists('script', $_REQUEST)) {
   $scripts = $_REQUEST['script'];
@@ -303,10 +341,16 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     }
 
     $settings_arg =  ($settings_file == DEFAULT_SETTINGS_FILE) ? DEFAULT_SETTINGS_ARG : $settings_file;
+
+    if ($settings_gist != null) {
+?>
+      epiviz.ui.WebArgsManager.WEB_ARGS['settingsGist'] = '<?php echo $settings_gist; ?>';
+<?php
+    } else {
 ?>
       epiviz.ui.WebArgsManager.WEB_ARGS['settings'] = '<?php echo $settings_arg; ?>';
 <?php
-
+    }
     if (is_array($scripts) && count($scripts) == 0) { $scripts = DEFAULT_SETTINGS_ARG; }
     if ($scripts != DEFAULT_SETTINGS_ARG) {
 ?>
