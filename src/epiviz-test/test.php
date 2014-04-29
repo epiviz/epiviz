@@ -19,20 +19,91 @@ if (array_key_exists('settings', $_REQUEST)) {
   setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
 }
 
-$scripts = (array_key_exists('script', $_COOKIE)) ? $_COOKIE['script'] : array();
-if (array_key_exists('script', $_REQUEST)) {
-  $scripts = $_REQUEST['script'];
-  if ($scripts == DEFAULT_SETTINGS_ARG) {
-    // If user types script=default then remove the cookie corresponding to that script
-    setcookie('script', NULL, -1);
-  } else {
-    foreach ($scripts as $i => $script) {
-      // Otherwise, store the script locations into the cookie
-      setcookie('script[' . $i . ']', $script);
+$settings_gist = null;
+if (array_key_exists('settingsGist', $_REQUEST)) {
+  $settings_gist = $_REQUEST['settingsGist'];
+  // Get cURL resource
+  $curl = curl_init();
+
+  // Set some options - we are passing in a useragent too here
+  curl_setopt_array($curl, array(
+      CURLOPT_RETURNTRANSFER => 1,
+      CURLOPT_SSL_VERIFYPEER => false,
+      CURLOPT_SSL_VERIFYHOST => false,
+      CURLOPT_USERAGENT => 'epiviz',
+      CURLOPT_URL => 'https://api.github.com/gists/' . $settings_gist
+  ));
+
+    // Send the request & save response to $resp
+  $resp = curl_exec($curl);
+  if ($resp) {
+    $json = json_decode($resp, true);
+    if (array_key_exists('files', $json)) {
+      foreach ($json['files'] as $filename => $details) {
+        if (!array_key_exists('type', $details) ||
+            stripos($details['type'], 'javascript') === FALSE ||
+            !array_key_exists('raw_url', $details)) { continue; }
+
+        $settings_file = 'raw.php?url=' . urlencode($details['raw_url']);
+        break;
+      }
     }
+    setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+  } else {
+    $settings_gist = null;
   }
+
+  // Close request to clear up some resources
+  curl_close($curl);
 }
 
+$scripts = array();
+if (array_key_exists('script', $_REQUEST)) {
+  $scripts = $_REQUEST['script'];
+}
+$gists_map = array();
+if (array_key_exists('gist', $_REQUEST)) {
+  $gists = $_REQUEST['gist'];
+
+  // Get cURL resource
+  $curl = curl_init();
+
+  if (!is_array($scripts)) { $scripts = array(); }
+  foreach ($gists as $i => $gist) {
+    // Set some options - we are passing in a useragent too here
+    curl_setopt_array($curl, array(
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_USERAGENT => 'epiviz',
+        CURLOPT_URL => 'https://api.github.com/gists/' . $gist
+    ));
+
+    // Send the request & save response to $resp
+    $resp = curl_exec($curl);
+    if (!$resp) { continue; }
+
+    $json = json_decode($resp, true);
+    if (!array_key_exists('files', $json)) { continue; }
+
+    foreach ($json['files'] as $filename => $details) {
+      if (!array_key_exists('type', $details) ||
+          stripos($details['type'], 'javascript') === FALSE ||
+          !array_key_exists('raw_url', $details)) { continue; }
+
+      $script = 'raw.php?url=' . urlencode($details['raw_url']);
+      $scripts[] = $script;
+      $gists_map[$script] = $gist;
+    }
+  }
+
+  // Close request to clear up some resources
+  curl_close($curl);
+}
+
+// Insert here settings based on $_REQUEST.
+// All those settings are saved/retrieved as cookies
+// TODO: Later on, in javascript, modify cookie when location or workspace are modified
 $setting_names = array('ws', 'workspace', 'seqName', 'start', 'end');
 $settings = array(); // Used for determining configuration of EpiViz
 

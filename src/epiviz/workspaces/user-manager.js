@@ -23,7 +23,7 @@ epiviz.workspaces.UserManager = function(config) {
  */
 epiviz.workspaces.UserManager.USER_STATUS = epiviz.workspaces.UserManager.USER_STATUS || {
   loggedIn: false,
-  name: null,
+  userData: null,
   oauthProvider: null
 };
 

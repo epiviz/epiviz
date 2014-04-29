@@ -116,23 +116,21 @@ foreach ($setting_names as $setting) {
   }
 }
 
+$user = array_key_exists('user', $_SESSION) ? $_SESSION['user'] : null;
 $debug = false;
 if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
   $debug = true;
-  $_SESSION['id'] = 0;
-  $_SESSION['oauth_id'] = 0;
-  $_SESSION['full_name'] = 'Debugger';
-  $_SESSION['email'] = null;
-  $_SESSION['oauth_provider'] = 'debug';
-  $_SESSION['oauth_username'] = 'debugger';
+  $user = array(
+      'email' => null, 'oauth_uid' => 0, 'oauth_provider' => 'debug', 'full_name' => 'Debugger', 'oauth_username' => null,
+      'website_url' => null, 'profile_url' => null, 'photo_url' => null, 'display_name' => 'Debugger', 'description' => null,
+      'first_name' => null, 'last_name' => null, 'gender' => null, 'language' => null, 'age' => null, 'birth_day' => null,
+      'birth_month' => null, 'birth_year' => null, 'email_verified' => null, 'phone' => null, 'address' => null,
+      'country' => null, 'region' => null, 'city' => null, 'zip' => null);
+  $_SESSION['user'] = $user;
 } else if (isset($_SESSION['oauth_provider']) && $_SESSION['oauth_provider'] == 'debug') {
   $debug = false;
-  unset($_SESSION['id']);
-  unset($_SESSION['oauth_id']);
-  unset($_SESSION['full_name']);
-  unset($_SESSION['email']);
-  unset($_SESSION['oauth_provider']);
-  unset($_SESSION['oauth_username']);
+  $user = null;
+  unset($_SESSION['user']);
 }
 
 ?>-->
@@ -298,20 +296,20 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 ?>
 
 <?php
-    if (!isset($_SESSION['id'])) {
+    if ($user === null) {
 ?>
       epiviz.workspaces.UserManager.USER_STATUS = {
         loggedIn: false,
-        name: null,
-        oauthProvider: null
+        oauthProvider: null,
+        userData: null
       };
 <?php
     } else {
 ?>
       epiviz.workspaces.UserManager.USER_STATUS = {
         loggedIn: true,
-        name: '<?php echo $_SESSION['full_name']; ?>',
-        oauthProvider: '<?php echo $_SESSION['oauth_provider']; ?>'
+        oauthProvider: '<?php echo $user['oauth_provider']; ?>',
+        userData: <?php echo json_encode($user) . "\n"; ?>
       };
 <?php
     }
@@ -413,10 +411,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         </div>
         <div style="float: right; font-size: small; margin-top: 7px; margin-left: 7px; margin-right: 7px">
           <?php
-          if (!isset($_SESSION['id'])) {
+          if ($user === null) {
             echo "<a id=\"login-link\" href=\"javascript:void(0)\">Login</a>";
           } else {
-            echo "Welcome, <b>".$_SESSION['full_name']."&nbsp;(@".$_SESSION['oauth_provider'].")</b>!&nbsp;";
+            echo "Welcome, <b>".$user['display_name']."&nbsp;(@".$user['oauth_provider'].")</b>!&nbsp;";
             echo "<a id=\"login-link\" href=\"javascript:void(0)\">logout</a>";
           }
           ?>
@@ -472,29 +470,11 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
           <h3><a href="#"><b><span style="color: #025167">Views by Location</span></b></a></h3>
           <div id="track-container"></div>
       </div>
-
-      <!-- TODO: Remove -->
-      <div id="mock">
-        <!--<label>Mock:</label><br/>
-        <button id="button-mock-add-seqnames">Add new seqnames</button><br/>
-        <button id="button-mock-remove-seqnames">Remove seqnames</button><br/>
-        <button id="button-mock-add-measurements">Add Measurements</button><br/>
-        <button id="button-mock-remove-measurements">Remove Measurements</button><br/>
-        <button id="button-mock-add-chart">Add chart</button><br/>
-        <button id="button-mock-remove-chart">Remove chart</button><br/>
-        <button id="button-mock-clear-cache">Clear cache</button><br/>
-        <button id="button-mock-navigate">Navigate</button><br/>
-        <button id="button-wizard">Wizard</button>-->
-      </div>
-
     </div>
 
-    <div class="ui-layout-east"></div>
     <div id="pagefooter" class="ui-layout-south"></div>
 
-
     <div id="dialogs">
-
       <div id="location-settings-dialog" title="Location Settings">
         <table>
           <tr>
