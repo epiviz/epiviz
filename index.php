@@ -26,7 +26,8 @@ if (array_key_exists('settingsGist', $_REQUEST)) {
       CURLOPT_SSL_VERIFYPEER => false,
       CURLOPT_SSL_VERIFYHOST => false,
       CURLOPT_USERAGENT => 'epiviz',
-      CURLOPT_URL => 'https://api.github.com/gists/' . $settings_gist
+      CURLOPT_URL => 'https://api.github.com/gists/' . $settings_gist,
+      CURLOPT_USERPWD => '<token>:x-oauth-basic' // TODO: Change <token> to your personal access token
   ));
 
     // Send the request & save response to $resp
