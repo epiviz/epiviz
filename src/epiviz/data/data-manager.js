@@ -282,7 +282,7 @@ epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap
  * @param {string} [requestWorkspaceId]
  */
 epiviz.data.DataManager.prototype.getWorkspaces = function(callback, filter, requestWorkspaceId) {
-  var workspaceProvider = this._dataProviderFactory.get(this._config.workspacesDataProvider);
+  var workspaceProvider = this._dataProviderFactory.workspacesDataProvider();
 
   if (!workspaceProvider) { throw Error('Invalid data provider for workspaces (see Config.workspaceDataProvider)'); }
 
@@ -317,7 +317,7 @@ epiviz.data.DataManager.prototype.getWorkspaces = function(callback, filter, req
  * @param {function(string)} callback
  */
 epiviz.data.DataManager.prototype.saveWorkspace = function(workspace, callback) {
-  var workspaceProvider = this._dataProviderFactory.get(this._config.workspacesDataProvider);
+  var workspaceProvider = this._dataProviderFactory.workspacesDataProvider();
 
   if (!workspaceProvider) { throw Error('Invalid data provider for workspaces (see Config.workspaceDataProvider)'); }
 
@@ -336,7 +336,7 @@ epiviz.data.DataManager.prototype.saveWorkspace = function(workspace, callback) 
  * @param {epiviz.workspaces.Workspace} workspace
  */
 epiviz.data.DataManager.prototype.deleteWorkspace = function(workspace) {
-  var workspaceProvider = this._dataProviderFactory.get(this._config.workspacesDataProvider);
+  var workspaceProvider = this._dataProviderFactory.workspacesDataProvider();
 
   if (!workspaceProvider) { throw Error('Invalid data provider for workspaces (see Config.workspaceDataProvider)'); }
 

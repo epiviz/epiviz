@@ -37,7 +37,9 @@ epiviz.EpiViz.SETTINGS = {
       '') // TODO: Fill in
   ],
 
-  workspacesDataProvider: epiviz.data.WebServerDataProvider.DEFAULT_ID,
+  workspacesDataProvider: sprintf('epiviz.data.WebServerDataProvider,%s,%s',
+    'workspaces_provider',
+    ''), // TODO: Fill in
 
   cacheUpdateIntervalMilliseconds: 30000,
 

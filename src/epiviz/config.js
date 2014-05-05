@@ -100,7 +100,9 @@ epiviz.Config = function(settingsMap) {
   /**
    * @type {string}
    */
-  this.workspacesDataProvider = epiviz.data.WebServerDataProvider.DEFAULT_ID;
+  this.workspacesDataProvider = sprintf('epiviz.data.WebServerDataProvider,%s,%s',
+    'workspaces_provider',
+    epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT);
 
   /**
    * The time interval used by the cache to clear away unneeded loaded data

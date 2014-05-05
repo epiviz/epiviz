@@ -38,8 +38,9 @@ epiviz.data.DataProviderFactory = function(config) {
    */
   this._size = 0;
 
+  var tokens;
   for (var i = 0; i < this._config.dataProviders.length; ++i) {
-    var tokens = this._config.dataProviders[i].split(',');
+    tokens = this._config.dataProviders[i].split(',');
     /**
      * @type {?function(new:epiviz.data.DataProvider)}
      */
@@ -57,6 +58,16 @@ epiviz.data.DataProviderFactory = function(config) {
   var emptyProvider = new epiviz.data.EmptyResponseDataProvider();
   this._providers[emptyProvider.id()] = emptyProvider;
   ++this._size;
+
+  tokens = this._config.workspacesDataProvider.split(',');
+  /**
+   * @type {?function(new:epiviz.data.DataProvider)}
+   */
+  var wsDataProviderConstructor = epiviz.utils.evaluateFullyQualifiedTypeName(tokens[0]);
+
+  /** @type {epiviz.data.DataProvider} */
+  this._workspacesDataProvider = epiviz.utils.applyConstructor(wsDataProviderConstructor, tokens.slice(1));
+
 };
 
 /**
@@ -97,4 +108,11 @@ epiviz.data.DataProviderFactory.prototype.get = function(id) {
   }
 
   return null;
+};
+
+/**
+ * @returns {epiviz.data.DataProvider}
+ */
+epiviz.data.DataProviderFactory.prototype.workspacesDataProvider = function() {
+  return this._workspacesDataProvider;
 };
