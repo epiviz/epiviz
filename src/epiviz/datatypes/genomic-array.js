@@ -120,12 +120,12 @@ epiviz.datatypes.GenomicArray.prototype.merge = function(arr) {
   }
 
   // Compute the index of the first element in the second array that isn't in the first as well;
-  var secondIndex = (first.globalStartIndex() && second.globalStartIndex()) ?
+  var secondIndex = (first.globalStartIndex() != undefined && second.globalStartIndex() != undefined) ?
     first.globalStartIndex() + first.size() - second.globalStartIndex() : 0;
 
   var
     measurement = first.measurement(),
-    globalStartIndex = first.globalStartIndex() || second.globalStartIndex(),
+    globalStartIndex = (first.globalStartIndex() != undefined) ? first.globalStartIndex() : second.globalStartIndex(),
     boundaries = epiviz.datatypes.GenomicRange.fromStartEnd(
       first.boundaries().seqName(),
       first.boundaries().start(),

@@ -56,7 +56,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
     return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(globalIndex, item, value);
   }
 
-  if (firstGlobalIndex) {
+  if (firstGlobalIndex != undefined) {
     if (this._measurement.type() == epiviz.measurements.Measurement.Type.FEATURE) {
       values = this._container.values(this._measurement);
       var valueIndex = firstGlobalIndex - values.globalStartIndex() + index;
@@ -111,7 +111,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.size = function() {
   if (this._size !== null) { return this._size; }
 
   var firstGlobalIndex = this.globalStartIndex();
-  if (!firstGlobalIndex) { return 0; }
+  if (firstGlobalIndex == undefined) { return 0; }
 
   var rows = this._container.rowData();
   var values = this._container.values(this._measurement);

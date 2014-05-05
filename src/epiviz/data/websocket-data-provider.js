@@ -147,6 +147,12 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.REMOVE_MEASUREMENTS:
         this._removeMeasurements(request);
         break;
+      case Action.ADD_SEQINFOS:
+        this._addSeqInfos(request);
+        break;
+      case Action.REMOVE_SEQNAMES:
+        this._removeSeqNames(request);
+        break;
       case Action.ADD_CHART:
         this._addChart(request);
         break;
@@ -299,6 +305,42 @@ epiviz.data.WebsocketDataProvider.prototype._removeMeasurements = function (requ
     ));
   }
   this._fireEvent(this.onRequestRemoveMeasurements(), {measurements: measurements, result: result});
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._addSeqInfos = function (request) {
+  var result = new epiviz.events.EventResult();
+
+  /**
+   * @type {Array.<Array>}
+   */
+  var seqInfos = JSON.parse(request.get('seqInfos'));
+
+  this._fireEvent(this.onRequestAddSeqInfos(), {seqInfos: seqInfos, result: result});
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._removeSeqNames = function (request) {
+  var result = new epiviz.events.EventResult();
+
+  /**
+   * @type {Array.<string>}
+   */
+  var seqNames = JSON.parse(request.get('seqNames'));
+
+  this._fireEvent(this.onRequestRemoveSeqNames(), {seqNames: seqNames, result: result});
 
   var response = new epiviz.data.Response(request.id(), result);
   this._sendMessage(JSON.stringify(response.raw()));

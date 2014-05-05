@@ -155,7 +155,7 @@ epiviz.datatypes.PartialSummarizedExperiment.prototype.toString = function() {
     chr = this._rowData.boundaries().seqName();
     start = this._rowData.boundaries().start();
     end = this._rowData.boundaries().end();
-    rowGlobalIndex = this._rowData.globalStartIndex() || '*';
+    rowGlobalIndex = this._rowData.globalStartIndex() != undefined ? this._rowData.globalStartIndex() : '*';
     rowSize = this._rowData.size();
   } else {
     chr = start = end = rowGlobalIndex = '*';
@@ -174,7 +174,7 @@ epiviz.datatypes.PartialSummarizedExperiment.prototype.toString = function() {
       } else {
         chr = start = end = '*';
       }
-      result += sprintf(' [%6s%10s%10s] [globalStartIndex: %10s] [size: %7s]\n', chr, start, end, valuesArray.globalStartIndex() || '*', valuesArray.size());
+      result += sprintf(' [%6s%10s%10s] [globalStartIndex: %10s] [size: %7s]\n', chr, start, end, valuesArray.globalStartIndex() != undefined ? valuesArray.globalStartIndex() : '*', valuesArray.size());
       header += sprintf('%25s', m.name().substr(0, 22));
     });
   }
