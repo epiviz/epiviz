@@ -44,7 +44,7 @@ epiviz.utils.stringStartsWith = function(str, prefix) {
  * @returns {boolean}
  */
 epiviz.utils.stringEndsWith = function(str, suffix) {
-  return str.indexOf(suffix) == str.length - suffix.length;
+  return str.lastIndexOf(suffix) == str.length - suffix.length;
 };
 
 // Array
