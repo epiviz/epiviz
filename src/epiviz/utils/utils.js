@@ -150,6 +150,19 @@ epiviz.utils.arrayAppend = function(self, arr) {
   self.push.apply(self, arr);
 };
 
+/**
+ * @param {Array.<string|number>} arr
+ * @returns {Object.<string|number, number>}
+ */
+epiviz.utils.arrayFlip = function(arr) {
+  var result = {};
+  for (var i = 0; i < arr.length; ++i) {
+    result[arr[i]] = i;
+  }
+
+  return result;
+};
+
 // Object (Hashtable)
 
 /**
