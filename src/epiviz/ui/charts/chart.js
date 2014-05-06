@@ -263,8 +263,8 @@ epiviz.ui.charts.Chart.prototype._addTooltip = function() {
         row += sprintf('<td>%s</td><td>%s</td>', Globalize.format(rowItem.start(), 'n0'), Globalize.format(rowItem.end(), 'n0'));
         var rowMetadata = rowItem.rowMetadata();
         if (rowMetadata) {
-          for (var metadataCol in rowMetadata) {
-            if (!rowMetadata.hasOwnProperty(metadataCol)) { continue; }
+          for (var k = 0; k < metadataCols.length; ++k) {
+            var metadataCol = metadataCols[k];
             var metadataValue = rowMetadata[metadataCol] || '';
             row += sprintf('<td>%s</td>', metadataValue.length <= maxMetadataValueLength ? metadataValue : metadataValue.substr(0, maxMetadataValueLength) + '...');
           }
