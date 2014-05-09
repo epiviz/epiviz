@@ -262,7 +262,7 @@ epiviz.ui.charts.Chart.prototype._addTooltip = function() {
         var rowItem = uiObj.valueItems[0][j].rowItem;
         row += sprintf('<td>%s</td><td>%s</td>', Globalize.format(rowItem.start(), 'n0'), Globalize.format(rowItem.end(), 'n0'));
         var rowMetadata = rowItem.rowMetadata();
-        if (rowMetadata) {
+        if (metadataCols && rowMetadata) {
           for (var k = 0; k < metadataCols.length; ++k) {
             var metadataCol = metadataCols[k];
             var metadataValue = rowMetadata[metadataCol] || '';
