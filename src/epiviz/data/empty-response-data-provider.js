@@ -71,6 +71,27 @@ epiviz.data.EmptyResponseDataProvider.prototype.getData = function (request, cal
       }));
       return;
 
+    case epiviz.data.Request.Action.SAVE_WORKSPACE:
+      callback(epiviz.data.Response.fromRawObject({
+	  requestId: request.id(),
+	  data: []
+    }));
+    return;  
+
+    case epiviz.data.Request.Action.DELETE_WORKSPACE:
+      callback(epiviz.data.Response.fromRawObject({
+	  requestId: request.id(),
+	  data: []
+    }));
+    return;
+  
+    case epiviz.data.Request.Action.GET_WORKSPACES:
+      callback(epiviz.data.Response.fromRawObject({
+	  requestId: request.id(),
+	  data: []
+    }));
+    return;
+
     default:
       epiviz.data.DataProvider.prototype.getData.call(this, request, callback);
       break;
