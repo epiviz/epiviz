@@ -32,10 +32,10 @@ epiviz.EpiViz.SETTINGS = {
   // Plug-ins
 
   dataProviders: [
-      sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', '')
-//    sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-//      epiviz.data.WebServerDataProvider.DEFAULT_ID,
-//      '') // TODO: Fill in
+      sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
+      sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
+	      epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
+	      sprintf("ws://%s", window.location.host))
   ],
 
 workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
