@@ -1,0 +1,29 @@
+This package is provided to you under the terms of the Artistic License version 2.0:
+http://opensource.org/licenses/Artistic-2.0.
+
+Included below is license and copyright information for any externally
+maintained libraries used by Epiviz. All other code is Copyright (c) 2012-2014,
+Hector Corrada Bravo <hcorrada@gmail.com> and Florin Chelaru <florin.chelaru@gmail.com>. 
+All rights reserved.
+
+http://epiviz.cbcb.umd.edu
+http://epiviz.github.io
+http://github.com/epiviz
+
+====
+
+closure: Copyright, Google, Inc. Apache License 2.0, https://github.com/google/closure-library
+d3.js: Copyright, Michael Bostock, https://github.com/mbostock/d3
+expression-parser: Copyright, Matthew Crumley, https://github.com/silentmatt/js-expression-eval/
+file-saver: Copyright, Eli Gray,  http://eligrey.com
+jquery: Copyright, jQuery Foundation, MIT License, http://jquery.com
+DataTables: Copyright, Allan Jardine 
+dropdown-check-list: Copyright, Adrian Tosca, MIT or GPL-2 License, 
+dynatree: Copyright, Martin Wendt, MIT or GPL License, http://wwWendt.de
+farbtastic-color-picker: Copyright, Steven Wittens, GPL-2 License, 
+globalize: Copyright, Software Freedom Conservancy, Inc., MIT or GPL-2 License,  http://github.com/jquery/globalize
+parallel: Copyright, Adam Savitzky, 
+sprintf: Copyright,  Alexandru Marasteanu, 
+
+
+
