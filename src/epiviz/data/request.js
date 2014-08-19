@@ -65,7 +65,8 @@ epiviz.data.Request.Action = {
   FLUSH_CACHE: 'flushCache',
   NAVIGATE: 'navigate',
   REDRAW: 'redraw',
-  GET_CURRENT_LOCATION: 'getCurrentLocation'
+  GET_CURRENT_LOCATION: 'getCurrentLocation',
+  WRITE_DEBUG_MSG: 'writeMsg'  
 };
 
 /**

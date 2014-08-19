@@ -174,6 +174,9 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.GET_CURRENT_LOCATION:
         this._getCurrentLocation(request);
         break;
+      case Action.WRITE_DEBUG_MSG: 
+	this._writeDebugMsg(request);
+	break;
     }
   }
 };
@@ -490,3 +493,16 @@ epiviz.data.WebsocketDataProvider.prototype._getCurrentLocation = function(reque
   var response = new epiviz.data.Response(request.id(), result);
   this._sendMessage(JSON.stringify(response.raw()));
 };
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._writeDebugMsg = function(request) {
+    var msg = request.get('msg');
+    var msgDiv = document.createElement("pre");
+    msgDiv.innerHTML = msg.replace(/&/g, "&amp;").replace(/\\</g,"&lt;");
+    var response = new epiviz.data.Response(request.id(), {msg: "that msg"});
+    document.getElementById("chart-container").appendChild(msgDiv);
+    this._sendMessage(JSON.stringify(response.raw()));
+}
