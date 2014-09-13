@@ -194,8 +194,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- Expression evaluation -->
     <script src="src/lib/expression-parser/parser.js"></script>
 
-    <!-- File upload -->
-    <!-- <script src="src/file-upload/webtoolkit.aim.js"></script> -->
+    <!-- File upload: src/file-upload/webtoolkit.aim.js -->
 
     <!-- Google Closure -->
     <script src="src/lib/closure/goog/base.js"></script>
