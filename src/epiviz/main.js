@@ -57,6 +57,3 @@ epiviz.main = function() {
 };
 
 goog.exportSymbol('epiviz.main', epiviz.main);
-
-// Run main once the page has loaded
-$(epiviz.main);

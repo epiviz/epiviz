@@ -269,6 +269,30 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/epiviz.js"></script>
 
+    <script src="src/epiviz/ui/controls/measurements-dialog-data.js"></script>
+    <script src="src/epiviz/ui/controls/data-table.js"></script>
+    <script src="src/epiviz/ui/controls/wizard.js"></script>
+    <script src="src/epiviz/ui/controls/datasource-group-wizard-step.js"></script>
+    <script src="src/epiviz/ui/controls/measurements-wizard-step.js"></script>
+    <script src="src/epiviz/ui/controls/message-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/color-picker-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/computed-measurements-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
+
+    <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
+    <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/line-track.js"></script>
+    <script src="src/epiviz/plugins/charts/line-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/scatter-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/genes-track.js"></script>
+    <script src="src/epiviz/plugins/charts/genes-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
+
+    <script src="src/epiviz/main.js"></script>
+    
     <!-- Dynamic initializations -->
     <script src="<?php echo $settings_file; ?>"></script>
 
@@ -369,29 +393,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
 ?>
     </script>
-
-    <script src="src/epiviz/ui/controls/measurements-dialog-data.js"></script>
-    <script src="src/epiviz/ui/controls/data-table.js"></script>
-    <script src="src/epiviz/ui/controls/wizard.js"></script>
-    <script src="src/epiviz/ui/controls/datasource-group-wizard-step.js"></script>
-    <script src="src/epiviz/ui/controls/measurements-wizard-step.js"></script>
-    <script src="src/epiviz/ui/controls/message-dialog.js"></script>
-    <script src="src/epiviz/ui/controls/color-picker-dialog.js"></script>
-    <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
-    <script src="src/epiviz/ui/controls/computed-measurements-dialog.js"></script>
-    <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
-
-    <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
-    <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
-    <script src="src/epiviz/plugins/charts/line-track.js"></script>
-    <script src="src/epiviz/plugins/charts/line-track-type.js"></script>
-    <script src="src/epiviz/plugins/charts/scatter-plot.js"></script>
-    <script src="src/epiviz/plugins/charts/scatter-plot-type.js"></script>
-    <script src="src/epiviz/plugins/charts/genes-track.js"></script>
-    <script src="src/epiviz/plugins/charts/genes-track-type.js"></script>
-    <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
-    <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
-
+    
 <?php
     if (is_array($scripts)) {
       foreach ($scripts as $script) {
@@ -402,7 +404,11 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     }
 ?>
 
-    <script src="src/epiviz/main.js"></script>
+    <script>
+      // Run main once the page has loaded
+      $(epiviz.main);
+    </script>
+    
   </head>
   <body>
     <div class="ui-layout-north">
