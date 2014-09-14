@@ -29,7 +29,17 @@
 
     <!-- Dynamic initializations -->
     <script src="src/epiviz/standalone-settings.js"></script>
-    
+
+    <! -- Check if requesting websocket -->
+    <script>
+        var re = new RegExp("websocket=true")
+        if (re.test(location.search)) {
+             epiviz.EpiViz.SETTINGS.dataProviders.push(
+                sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
+                   epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
+                   sprintf("ws://%s", window.location.host)))
+        }
+    </script>
     <script>
         epiviz.workspaces.UserManager.USER_STATUS = { loggedIn: false };
     </script>
