@@ -128,23 +128,6 @@
 
     <script src="src/epiviz/epiviz.js"></script>
 
-    <!-- Dynamic initializations -->
-    <script src="src/epiviz/standalone-settings.js"></script>
-
-    <! -- Check if requesting websocket -->
-    <script>
-        var re = new RegExp("websocket=true")
-        if (re.test(location.search)) {
-             epiviz.EpiViz.SETTINGS.dataProviders.push(
-                sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
-                   epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
-                   sprintf("ws://%s", window.location.host)))
-        }
-    </script>
-    <script>
-        epiviz.workspaces.UserManager.USER_STATUS = { loggedIn: false };
-    </script>
-
     <script src="src/epiviz/ui/controls/measurements-dialog-data.js"></script>
     <script src="src/epiviz/ui/controls/data-table.js"></script>
     <script src="src/epiviz/ui/controls/wizard.js"></script>
@@ -168,6 +151,29 @@
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
 
     <script src="src/epiviz/main.js"></script>
+
+    <!-- Dynamic initializations -->
+    <script src="src/epiviz/standalone-settings.js"></script>
+
+    <! -- Check if requesting websocket -->
+    <script>
+        var re = new RegExp("websocket=true")
+        if (re.test(location.search)) {
+             epiviz.EpiViz.SETTINGS.dataProviders.push(
+                sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
+                   epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
+                   sprintf("ws://%s", window.location.host)))
+        }
+    </script>
+    <script>
+        epiviz.workspaces.UserManager.USER_STATUS = { loggedIn: false };
+    </script>
+
+  <script>
+  // Run main once the page has loaded
+  $(epiviz.main);
+  </script>
+
   </head>
   <body>
     <div class="ui-layout-north">
