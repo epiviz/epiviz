@@ -242,6 +242,19 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/controls/control.js"></script>
     <script src="src/epiviz/ui/controls/dialog.js"></script>
 
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-node.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-subtree.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-leaf.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-tree.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/clustering-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/clustering-linkage.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/hierarchical-clustering-algorithm.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/euclidean-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/complete-linkage.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/clustering-algorithm-factory.js"></script>
+
     <script src="src/epiviz/ui/charts/margins.js"></script>
     <script src="src/epiviz/ui/charts/color-palette.js"></script>
     <script src="src/epiviz/ui/charts/axis.js"></script>

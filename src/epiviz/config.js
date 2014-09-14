@@ -164,6 +164,15 @@ epiviz.Config = function(settingsMap) {
    */
   this.chartCustomSettings = {};
 
+  this.clustering = {
+    algorithms: [
+      'epiviz.ui.charts.transform.clustering.NoneClustering',
+      'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
+    ],
+    metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
+    linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
+  };
+
   // Override settings included in the given object
   if (settingsMap) {
     for (var setting in settingsMap) {

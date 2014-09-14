@@ -53,6 +53,8 @@ epiviz.main = function() {
   /** @type {epiviz.EpiViz} */
   var epivizHandler = new epiviz.EpiViz(config, locationManager, measurementsManager, controlManager, dataManager, chartFactory, chartManager, workspaceManager, userManager, webArgsManager);
 
+  epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.initialize(config);
+
   epivizHandler.start();
 };
 
