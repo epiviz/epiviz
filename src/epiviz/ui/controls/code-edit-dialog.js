@@ -18,11 +18,13 @@ epiviz.ui.controls.CodeEditDialog = function(title, handlers) {
   /** @type {CodeMirror} */
   this._editor = null;
   this._dialog = $('#' + this._id);
+  this._dialog.css('overflow', 'hidden');
 
   /** @type {string} */
   this._text = '// TODO: Your code here\n' +
     '// Use the variable "self" to refer the current chart\n' +
-    'var initialChartDraw = self.draw;\n\n' +
+    'if (initialChartDraw) { self.draw = initialChartDraw; }\n' +
+    'else { var initialChartDraw = self.draw; }\n\n' +
     '/**\n' +
     ' * @param {epiviz.datatypes.GenomicRange} [range]\n' +
     ' * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]\n' +
@@ -33,15 +35,15 @@ epiviz.ui.controls.CodeEditDialog = function(title, handlers) {
     '  // self._svg.selectAll(".my-circle").remove();\n' +
     '  // self._svg.append("circle").attr("class", "my-circle").attr("cx", 200).attr("cy", 30).attr("r", 10).attr("fill", "#feac07");\n' +
     '  var ret = initialChartDraw.call(self, range, data);\n' +
-    '  self.draw = initialChartDraw;\n' +
     '  return ret;\n' +
-    '}\n';
+    '}\n' +
+    'self.draw();\n';
 
   var self = this;
   this._dialog.append(sprintf(
-    '<div><textarea autofocus="autofocus" class="code-edit">' +
+    '<textarea autofocus="autofocus" class="code-edit">' +
       self._text +
-      '</textarea></div>'
+      '</textarea>'
   ));
 
   this._dialog.dialog({
