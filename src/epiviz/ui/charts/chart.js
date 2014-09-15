@@ -412,12 +412,34 @@ epiviz.ui.charts.Chart.prototype._addChartButtons = function() {
     self._showTooltip = tooltipButton.is(':checked');
   });
 
+  // Edit code button
+  var editCodeButtonId = sprintf('%s-edit-code', this._id);
+  this._container.append(sprintf(
+    '<button id="%s" style="position: absolute; top: 5px; right: 155px">Edit code</button>',
+    editCodeButtonId));
+  var editCodeButton = $('#' + editCodeButtonId);
+
+  var editCodeDialog = new epiviz.ui.controls.CodeEditDialog(
+    'Edit Chart Code', {
+      save: function(codeText) {
+        eval(codeText);
+      }, cancel: function() {}});
+  editCodeButton.button({
+    icons:{
+      primary:'ui-icon ui-icon-pencil'
+    },
+    text:false
+  }).click(function(){
+    editCodeDialog.show();
+  });
+
   this._container
     .mousemove(function () {
       saveButton.show();
       removeButton.show();
       colorsButton.show();
       customSettingsButton.show();
+      editCodeButton.show();
       tooltipButtonContainer.show();
     })
     .mouseleave(function () {
@@ -425,6 +447,7 @@ epiviz.ui.charts.Chart.prototype._addChartButtons = function() {
       removeButton.hide();
       colorsButton.hide();
       customSettingsButton.hide();
+      editCodeButton.hide();
       tooltipButtonContainer.hide();
     });
 };
