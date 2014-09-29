@@ -23,22 +23,13 @@ epiviz.EpiViz.SETTINGS = {
 
   navigationDelay: 100,
 
-  // Initial genome location
-
-//  seqName: 'chr11',
-//  startLocation: 99800000,
-//  endLocation: 103383180,
-
   // Plug-ins
 
   dataProviders: [
       sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', '')
   ],
 
-workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
-//  workspacesDataProvider: sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-//    'workspaces_provider',
-//    ''), // TODO: Fill in
+  workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
 
   cacheUpdateIntervalMilliseconds: 30000,
 
@@ -108,45 +99,12 @@ workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty'
     }
   },
 
-//  defaultWorkspaceSettings: {
-//    name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
-//    content: {
-//      range: {
-//        seqName: 'chr11',
-//        start: 99800000,
-//        width: 3583180
-//      },
-//      measurements: [
-//        {
-//          id: 'genes',
-//          name: 'Genes',
-//          type: 'range',
-//          datasourceId: 'genes',
-//          datasourceGroup: 'genes',
-//          dataprovider: epiviz.data.WebServerDataProvider.DEFAULT_ID,
-//          formula: null,
-//          defaultChartType: 'Genes Track',
-//          annotation: null,
-//          minValue: null,
-//          maxValue: null,
-//          metadata: ['gene', 'entrez', 'exon_starts', 'exon_ends']
-//        }
-//      ],
-//      charts: {
-//        track: [
-//          {
-//            id: 'track-genes-initial',
-//            type: 'epiviz.plugins.charts.GenesTrack',
-//            properties: { width: 837, height: 120,
-//              margins: { top: 25, left: 20, bottom: 23, right: 10 },
-//              measurements: [0],
-//              colors: [epiviz.Config.COLORS_MEDIUM[4], epiviz.Config.COLORS_MEDIUM[0], epiviz.Config.COLORS_MEDIUM[2], epiviz.Config.COLORS_MEDIUM[1]],
-//              customSettings: {}
-//            }
-//          }
-//        ],
-//        plot: []
-//      }
-//    }
-//  }
+  clustering: {
+    algorithms: [
+      'epiviz.ui.charts.transform.clustering.NoneClustering',
+      'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
+    ],
+      metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
+      linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
+  }
 };

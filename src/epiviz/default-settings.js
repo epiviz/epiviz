@@ -149,5 +149,14 @@ epiviz.EpiViz.SETTINGS = {
         plot: []
       }
     }
+  },
+
+  clustering: {
+    algorithms: [
+      'epiviz.ui.charts.transform.clustering.NoneClustering',
+      'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
+    ],
+    metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
+    linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
   }
 };

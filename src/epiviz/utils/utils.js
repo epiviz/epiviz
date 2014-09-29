@@ -163,6 +163,27 @@ epiviz.utils.arrayFlip = function(arr) {
   return result;
 };
 
+/**
+ * Gets the minimum value in the matrix, along with the i, j indices where this value is located
+ * @param {Array.<Array.<number>>} matrix
+ * @param {boolean} [isSymmetrical]
+ * @returns {{min: number, index: Array}}
+ */
+epiviz.utils.indexOfMin = function(matrix, isSymmetrical) {
+  var ret = null;
+  var min = null;
+  for (var i = 0; i < matrix.length; ++i) {
+    for (var j = isSymmetrical ? (i + 1) : 0; j < matrix[i].length; ++j) {
+      if (min == null || matrix[i][j] < min) {
+        min = matrix[i][j];
+        ret = [i, j];
+      }
+    }
+  }
+
+  return {min: min, index: ret};
+};
+
 // Object (Hashtable)
 
 /**

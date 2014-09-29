@@ -160,14 +160,14 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
  * @private
  */
 epiviz.ui.charts.Track.prototype._drawTitle = function() {
-  var textLength = 0;
   var title = '';
-
   var measurements = this.measurements().toArray();
+  var msMap = epiviz.utils.arrayFlip(measurements);
 
   var self = this;
   this._svg.selectAll('.chart-title').remove();
-  this._svg
+
+  var titleEntries = this._svg
     .selectAll('.chart-title')
     .data(measurements)
     .enter()
@@ -175,11 +175,19 @@ epiviz.ui.charts.Track.prototype._drawTitle = function() {
     .attr('class', 'chart-title')
     .attr('font-weight', 'bold')
     .attr('fill', function(m, i) { return self.colors().get(i); })
-    .attr('x', function(m, i) {
-      var result = self.margins().left() + textLength;
-      textLength += m.name().length * 6 + 7;
-      return result;
-    })
     .attr('y', self.margins().top() - 5)
     .text(function(m, i) { return m.name(); });
+
+  var textLength = 0;
+  var titleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .chart-title')
+    .each(function(i) {
+      titleEntriesStartPosition.push(textLength);
+      textLength += this.getBBox().width + 3;
+    });
+
+  titleEntries.attr('x', function(column, i) {
+    return self.margins().left() + 3 + titleEntriesStartPosition[i];
+  });
 };
