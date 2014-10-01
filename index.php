@@ -143,7 +143,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
     <title>EpiViz 2</title>
 
-    <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
+    <link rel="shortcut icon" href="img/epiviz_2_icon.png"/>
 
     <!-- CSS -->
 
@@ -174,7 +174,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/jquery.watermark.min.js"></script>
     <script src="src/lib/jquery/jquery.layout-latest.js"></script>
     <script src="src/lib/jquery/jquery.activity-indicator-1.0.0.min.js"></script>
-    <script src="src/lib/jquery/farbtastic-color-picker/farbtastic.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/TableTools.js"></script>
@@ -203,6 +202,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- EpiViz framework -->
     <script src="src/epiviz/utils/utils.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
+    <script src="src/epiviz/utils/farbtastic.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
     <script src="src/epiviz/utils/iterable-array.js"></script>
     <script src="src/epiviz/config.js"></script>

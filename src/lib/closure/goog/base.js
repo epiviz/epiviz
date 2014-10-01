@@ -416,8 +416,9 @@ goog.global.CLOSURE_BASE_PATH;
 /**
  * Whether to write out Closure's deps file. By default, the deps are written.
  * @type {boolean|undefined}
+ * Epiviz: set from undefined to true!
  */
-goog.global.CLOSURE_NO_DEPS;
+goog.global.CLOSURE_NO_DEPS = true;
 
 
 /**

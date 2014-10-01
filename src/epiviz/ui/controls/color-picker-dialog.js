@@ -47,7 +47,7 @@ epiviz.ui.controls.ColorPickerDialog = function(handlers, colors) {
   }
   colorPickerForm.append(sprintf('<table class="color-picker-table">%s</table>', tableContent));
 
-  var f = $.farbtastic(sprintf('#%s .chart-picker', this._id));
+  var f = epiviz.utils.farbtastic(sprintf('#%s .chart-picker', this._id));
   var p = $(sprintf('#%s .chart-picker', this._id)).css('opacity', 0.25);
   var selected;
   $(sprintf('#%s .colorwell', this._id))
