@@ -102,11 +102,7 @@ workspacesDataProvider: 'epiviz.data.EmptyResponseDataProvider',
   defaultWorkspaceSettings: {
     name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
     content: {
-      range: {
-        seqName: 'chr11',
-        start: 99800000,
-        width: 3583180
-      },
+      range: {},
       measurements: [],
       charts: {
         track: [],
