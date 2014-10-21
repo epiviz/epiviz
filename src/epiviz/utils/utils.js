@@ -60,7 +60,7 @@ epiviz.utils.fillArray = function(n, value) {
   n = n || 0;
   var result = new Array(n);
   for (var i = 0; i < n; ++i) {
-    result.push(value);
+    result[i] = value;
   }
   return result;
 };
