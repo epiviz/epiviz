@@ -397,7 +397,7 @@ epiviz.ui.charts.Chart.prototype._addChartButtons = function() {
   // Toggle tooltip button
   var tooltipButtonId = sprintf('%s-tooltip-button', this._id);
   this._container.append(sprintf(
-    '<div id="%1$s-container" style="position: absolute; top: 7px; right: 125px">' +
+    '<div id="%1$s-container" style="position: absolute; top: 5px; right: 125px">' +
       '<input type="checkbox" id="%1$s" checked="checked" />' +
       '<label for="%1$s" >Toggle Tooltip</label>' +
     '</div>', tooltipButtonId));
