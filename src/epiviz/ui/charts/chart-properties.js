@@ -12,36 +12,42 @@ goog.provide('epiviz.ui.charts.ChartProperties');
  * @param {epiviz.ui.charts.Margins} [margins]
  * @param {epiviz.measurements.MeasurementSet} [measurements]
  * @param {epiviz.ui.charts.ColorPalette} [colors]
+ * @param {Object.<string, string>} [modifiedMethods]
  * @param {Object<string, *>} [customSettingsValues]
  * @param {Array.<epiviz.ui.charts.CustomSetting>} [customSettingsDefs]
  * @constructor
  * @struct
  */
-epiviz.ui.charts.ChartProperties = function(width, height, margins, measurements, colors, customSettingsValues, customSettingsDefs) {
+epiviz.ui.charts.ChartProperties = function(width, height, margins, measurements, colors, modifiedMethods, customSettingsValues, customSettingsDefs) {
   /**
-   * @type {number|string=}
+   * @type {number|string}
    */
   this.width = width;
 
   /**
-   * @type {number|string=}
+   * @type {number|string}
    */
   this.height = height;
 
   /**
-   * @type {epiviz.ui.charts.Margins=}
+   * @type {epiviz.ui.charts.Margins}
    */
   this.margins = margins;
 
   /**
-   * @type {epiviz.measurements.MeasurementSet=}
+   * @type {epiviz.measurements.MeasurementSet}
    */
   this.measurements = measurements;
 
   /**
-   * @type {epiviz.ui.charts.ColorPalette=}
+   * @type {epiviz.ui.charts.ColorPalette}
    */
   this.colors = colors;
+
+  /**
+   * @type {Object.<string, string>}
+   */
+  this.modifiedMethods = modifiedMethods;
 
   /**
    * @type {Object.<string, *>}
@@ -63,6 +69,7 @@ epiviz.ui.charts.ChartProperties.prototype.copy = function() {
     this.margins ? this.margins.copy() : this.margins,
     this.measurements ? new epiviz.measurements.MeasurementSet(this.measurements) : this.measurements,
     this.colors ? this.colors.copy() : this.colors,
+    this.modifiedMethods ? epiviz.utils.mapCopy(this.modifiedMethods) : this.modifiedMethods,
     this.customSettingsValues ? epiviz.utils.mapCopy(this.customSettingsValues) : this.customSettingsValues,
     this.customSettingsDefs ? this.customSettingsDefs.slice(0) : this.customSettingsDefs);
 };

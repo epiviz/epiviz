@@ -120,7 +120,7 @@ epiviztest.TestSuite.prototype.addChart = function(chartTypeName, range, measure
   this.epivizFramework.locationManager.changeCurrentLocation(range);
 
   var t = this.epivizFramework.chartFactory.get(chartTypeName);
-  var chartProperties = new epiviz.ui.charts.ChartProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), measurements, t.defaultColors(), customSettings, t.customSettingsDefs());
+  var chartProperties = new epiviz.ui.charts.ChartProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), measurements, t.defaultColors(), null, customSettings, t.customSettingsDefs());
   var measurementIds = {};
   measurements.foreach(function(m) { measurementIds[m.id()] = true; });
 
@@ -231,7 +231,7 @@ epiviztest.TestSuite.prototype.navigate = function(chartTypeName, initialRange, 
   this.epivizFramework.locationManager.changeCurrentLocation(initialRange);
 
   var t = this.epivizFramework.chartFactory.get(chartTypeName);
-  var chartProperties = new epiviz.ui.charts.ChartProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), measurements, t.defaultColors(), customSettings, t.customSettingsDefs());
+  var chartProperties = new epiviz.ui.charts.ChartProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), measurements, t.defaultColors(), null, customSettings, t.customSettingsDefs());
   var measurementIds = {};
   measurements.foreach(function(m) { measurementIds[m.id()] = true; });
 

@@ -199,6 +199,20 @@ epiviz.workspaces.Workspace.prototype.chartColorsChanged = function(chartId, col
 
 /**
  * @param {string} chartId
+ * @param {Object.<string, string>} modifiedMethods
+ */
+epiviz.workspaces.Workspace.prototype.chartMethodsModified = function(chartId, modifiedMethods) {
+  if (epiviz.utils.mapEquals(
+      this._chartsById[chartId].properties.modifiedMethods,
+      modifiedMethods)) { return; }
+
+  this._chartsById[chartId].properties.modifiedMethods = epiviz.utils.mapCopy(modifiedMethods);
+
+  this._setChanged();
+};
+
+/**
+ * @param {string} chartId
  * @param {Object<string, *>} customSettingsValues
  */
 epiviz.workspaces.Workspace.prototype.chartCustomSettingsChanged = function(chartId, customSettingsValues) {
@@ -295,7 +309,7 @@ epiviz.workspaces.Workspace.prototype.copy = function(name, id) {
  *     }>,
  *     charts: Object.<string, Array.<{
  *       type: string,
- *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>}
+ *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>, modifiedMethods: Object.<string, string>}
  *     }>>}}}
  */
 epiviz.workspaces.Workspace.prototype.raw = function() {
@@ -365,6 +379,7 @@ epiviz.workspaces.Workspace.prototype.raw = function() {
           margins: props.margins.raw(),
           measurements: ms,
           colors: props.colors.raw(),
+          modifiedMethods: epiviz.utils.mapCopy(props.modifiedMethods),
           customSettings: props.customSettingsValues || null
         }
       });
@@ -403,6 +418,7 @@ epiviz.workspaces.Workspace.prototype.raw = function() {
  *        margins: {top: number, left: number, bottom: number, right: number},
  *        measurements: Array.<number>,
  *        colors: Array.<string>,
+ *        modifiedMethods: ?Object<string, string>,
  *        customSettings: Object.<string, *>
  *      }
  *     }>>}}} o
@@ -441,6 +457,7 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
        *        margins: {top: number, left: number, bottom: number, right: number},
        *        measurements: Array.<number>,
        *        colors: Array.<string>,
+       *        modifiedMethods: ?Object.<string, string>,
        *        customSettings: Object.<string, *>
        *      }}}
        */
@@ -462,6 +479,7 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
           epiviz.ui.charts.Margins.fromRawObject(chartInfo.properties.margins),
           chartMs,
           epiviz.ui.charts.ColorPalette.fromRawObject(chartInfo.properties.colors),
+          chartInfo.properties.modifiedMethods,
           chartInfo.properties.customSettings,
           chartType.customSettingsDefs())
       });
