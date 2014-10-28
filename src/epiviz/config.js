@@ -68,7 +68,7 @@ epiviz.Config = function(settingsMap) {
    * }}
    */
   this.defaultWorkspaceSettings = {
-    name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
+    name: 'Default Workspace',//epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
     content: {
       range: {
         seqName: 'chr11',
@@ -93,8 +93,8 @@ epiviz.Config = function(settingsMap) {
    */
   this.dataProviders = [
     sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-      epiviz.data.WebServerDataProvider.DEFAULT_ID,
-      epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT)
+      'dp1',//epiviz.data.WebServerDataProvider.DEFAULT_ID,
+      'de1')//epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT)
   ];
 
   /**
@@ -102,7 +102,7 @@ epiviz.Config = function(settingsMap) {
    */
   this.workspacesDataProvider = sprintf('epiviz.data.WebServerDataProvider,%s,%s',
     'workspaces_provider',
-    epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT);
+    'de1');//epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT);
 
   /**
    * The time interval used by the cache to clear away unneeded loaded data

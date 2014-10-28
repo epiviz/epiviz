@@ -133,7 +133,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.size = function() {
  */
 epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getByGlobalIndex = function(globalIndex) {
   var firstGlobalIndex = this.globalStartIndex();
-  if (!firstGlobalIndex) { return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(null, null, null); }
+  if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(null, null, null); }
 
   return this.get(globalIndex - firstGlobalIndex);
 };

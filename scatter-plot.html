@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" type="text/css" href="css/svg.css"/>
+
+    <script src="src/lib/jquery/jquery-1.8.2.js"></script>
+    <script src="src/lib/d3/d3.v3.min.js"></script>
+    <script src="src/lib/closure/goog/base.js"></script>
+    <script src="src/lib/sprintf-0.6.js"></script>
+    <script src="src/epiviz/utils/utils.js"></script>
+
+    <script src="src/epiviz/config.js"></script>
+    <script src="src/epiviz/measurements/measurement.js"></script>
+    <script src="src/epiviz/measurements/measurement-set.js"></script>
+    <script src="src/epiviz/measurements/measurement-hashtable.js"></script>
+
+    <script src="src/epiviz/events/event-listener.js"></script>
+    <script src="src/epiviz/events/event.js"></script>
+    <script src="src/epiviz/events/event-result.js"></script>
+
+    <script src="src/epiviz/datatypes/seq-info.js"></script>
+    <script src="src/epiviz/datatypes/genomic-array.js"></script>
+    <script src="src/epiviz/datatypes/genomic-range-array.js"></script>
+    <script src="src/epiviz/datatypes/feature-value-array.js"></script>
+    <script src="src/epiviz/datatypes/partial-summarized-experiment.js"></script>
+    <script src="src/epiviz/datatypes/genomic-data-measurement-wrapper.js"></script>
+    <script src="src/epiviz/datatypes/genomic-range.js"></script>
+
+    <script src="src/epiviz/ui/charts/margins.js"></script>
+    <script src="src/epiviz/ui/charts/color-palette.js"></script>
+    <script src="src/epiviz/ui/charts/axis.js"></script>
+    <script src="src/epiviz/ui/charts/chart-properties.js"></script>
+    <script src="src/epiviz/ui/charts/ui-object.js"></script>
+    <script src="src/epiviz/ui/charts/custom-setting.js"></script>
+    <script src="src/epiviz/ui/charts/chart.js"></script>
+    <script src="src/epiviz/ui/charts/plot.js"></script>
+    <script src="src/epiviz/ui/charts/chart-type.js"></script>
+    <script src="src/epiviz/ui/charts/plot-type.js"></script>
+
+    <script src="src/epiviz/plugins/charts/scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/scatter-plot-type.js"></script>
+</head>
+<body>
+    <div id="scatter-plot"></div>
+
+    <script>
+        $(function() {
+            epiviz.plugins.charts.ScatterPlot.prototype._addTooltip = function() {};
+            epiviz.plugins.charts.ScatterPlot.prototype._addChartButtons = function() {};
+            epiviz.plugins.charts.ScatterPlot.prototype._addResizable = function() {};
+
+            var config = new epiviz.Config();
+            var m1 = new epiviz.measurements.Measurement(
+                    'm1', 'm1', epiviz.measurements.Measurement.Type.FEATURE,
+                    'ds1', 'ds1', 'dp1', undefined, undefined, undefined, -10, 10, undefined);
+            var m2 = new epiviz.measurements.Measurement(
+                    'm2', 'm2', epiviz.measurements.Measurement.Type.FEATURE,
+                    'ds1', 'ds1', 'dp1', undefined, undefined, undefined, -10, 10, undefined);
+
+            var ms = new epiviz.measurements.MeasurementSet();
+            ms.add(m1);
+            ms.add(m2);
+
+            var t = new epiviz.plugins.charts.ScatterPlotType(config);
+            var chartProperties = new epiviz.ui.charts.ChartProperties(
+                    600, 600, new epiviz.ui.charts.Margins(30, 60, 60, 30), ms, t.defaultColors(),
+                    null, null, t.customSettingsDefs());
+
+            var range = new epiviz.datatypes.GenomicRange(undefined, -1, 2);
+
+            var container = new epiviz.datatypes.PartialSummarizedExperiment();
+            var wrapperM1 = new epiviz.datatypes.GenomicDataMeasurementWrapper(m1, container);
+            var wrapperM2 = new epiviz.datatypes.GenomicDataMeasurementWrapper(m2, container);
+
+            var data = new epiviz.measurements.MeasurementHashtable();
+            data.put(m1, wrapperM1);
+            data.put(m2, wrapperM2);
+
+            var rows = new epiviz.datatypes.GenomicRangeArray(m1.datasource(), range, 0,
+                    {
+                        start: [0,0,0,0,0]
+                    });
+            var m1Vals = new epiviz.datatypes.FeatureValueArray(m1, range, 0, [-6.8, -6.6, 3, 7]);
+            var m2Vals = new epiviz.datatypes.FeatureValueArray(m2, range, 0, [-6.8, -6.6, 3, 7]);
+
+            container.addRowData(rows);
+            container.addValues(m1Vals);
+            container.addValues(m2Vals);
+
+            var plot = t.createNew('my-scatter-plot', $('#scatter-plot'), chartProperties);
+            plot.draw(range, data);
+        });
+    </script>
+</body>
+</html>
