@@ -20,6 +20,9 @@
     <link href="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" rel="stylesheet" />
     <link href="css/dropdown-check-list-1.4/css/ui.dropdownchecklist.standalone.css" rel="stylesheet" />
 
+    <!-- Code editor -->
+    <link rel="stylesheet" href="css/codemirror-4.5/lib/codemirror.css">
+
     <!-- EpiViz CSS -->
     <link rel="stylesheet" type="text/css" href="css/main.css"/>
     <link rel="stylesheet" type="text/css" href="css/svg.css"/>
@@ -52,7 +55,14 @@
 
     <!-- Expression evaluation -->
     <script src="src/lib/expression-parser/parser.js"></script>
-
+    
+    <!-- Code editor -->
+    <script src="src/lib/codemirror-4.5/lib/codemirror.js"></script>
+    <script src="src/lib/codemirror-4.5/addon/edit/matchbrackets.js"></script>
+    <script src="src/lib/codemirror-4.5/addon/comment/continuecomment.js"></script>
+    <script src="src/lib/codemirror-4.5/addon/comment/comment.js"></script>
+    <script src="src/lib/codemirror-4.5/mode/javascript/javascript.js"></script>
+    
     <!-- File upload -->
     <!-- <script src="src/file-upload/webtoolkit.aim.js"></script> -->
 
@@ -102,6 +112,19 @@
     <script src="src/epiviz/ui/controls/control.js"></script>
     <script src="src/epiviz/ui/controls/dialog.js"></script>
 
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-node.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-subtree.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-leaf.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/cluster-tree.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/clustering-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/clustering-linkage.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/hierarchical-clustering-algorithm.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/euclidean-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/complete-linkage.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/clustering-algorithm-factory.js"></script>
+
     <script src="src/epiviz/ui/charts/margins.js"></script>
     <script src="src/epiviz/ui/charts/color-palette.js"></script>
     <script src="src/epiviz/ui/charts/axis.js"></script>
@@ -138,6 +161,7 @@
     <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
     <script src="src/epiviz/ui/controls/computed-measurements-dialog.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/code-edit-dialog.js"></script>
 
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
