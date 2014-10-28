@@ -31,6 +31,20 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
    */
   this._properties = properties;
 
+  if (properties.modifiedMethods) {
+    var modifiedMethods = properties.modifiedMethods;
+    for (var m in modifiedMethods) {
+      if (!modifiedMethods.hasOwnProperty(m)) { continue; }
+      if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
+
+      try {
+        this[m] = eval('(' + modifiedMethods[m] + ')');
+      } catch (e) {
+        // Ignore bad modified methods
+      }
+    }
+  }
+
   /**
    * @type {Object.<string, *>}
    * @protected
@@ -152,6 +166,12 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
    * @private
    */
   this._colorsChanged = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<{id: string, modifiedMethods: Object.<string, string>}>}
+   * @private
+   */
+  this._methodsModified = new epiviz.events.Event();
 
   /**
    * @type {epiviz.events.Event.<{id: string, customSettingsValues: Object.<string, *>}>}
@@ -397,7 +417,7 @@ epiviz.ui.charts.Chart.prototype._addChartButtons = function() {
   // Toggle tooltip button
   var tooltipButtonId = sprintf('%s-tooltip-button', this._id);
   this._container.append(sprintf(
-    '<div id="%1$s-container" style="position: absolute; top: 7px; right: 125px">' +
+    '<div id="%1$s-container" style="position: absolute; top: 5px; right: 125px">' +
       '<input type="checkbox" id="%1$s" checked="checked" />' +
       '<label for="%1$s" >Toggle Tooltip</label>' +
     '</div>', tooltipButtonId));
@@ -412,12 +432,35 @@ epiviz.ui.charts.Chart.prototype._addChartButtons = function() {
     self._showTooltip = tooltipButton.is(':checked');
   });
 
+  // Edit code button
+  var editCodeButtonId = sprintf('%s-edit-code', this._id);
+  this._container.append(sprintf(
+    '<button id="%s" style="position: absolute; top: 5px; right: 155px">Edit code</button>',
+    editCodeButtonId));
+  var editCodeButton = $('#' + editCodeButtonId);
+
+  var editCodeDialog = new epiviz.ui.controls.CodeEditDialog(
+    'Edit Chart Code', {
+      save: function(modifiedMethods) {
+        self._setModifiedMethods(modifiedMethods);
+      }, cancel: function() {}},
+    self, 'draw');
+  editCodeButton.button({
+    icons:{
+      primary:'ui-icon ui-icon-pencil'
+    },
+    text:false
+  }).click(function(){
+    editCodeDialog.show();
+  });
+
   this._container
     .mousemove(function () {
       saveButton.show();
       removeButton.show();
       colorsButton.show();
       customSettingsButton.show();
+      editCodeButton.show();
       tooltipButtonContainer.show();
     })
     .mouseleave(function () {
@@ -425,6 +468,7 @@ epiviz.ui.charts.Chart.prototype._addChartButtons = function() {
       removeButton.hide();
       colorsButton.hide();
       customSettingsButton.hide();
+      editCodeButton.hide();
       tooltipButtonContainer.hide();
     });
 };
@@ -892,6 +936,34 @@ epiviz.ui.charts.Chart.prototype.setColorMap = function(colorMap) {
 };
 
 /**
+ * @param {Object.<string, string>} modifiedMethods
+ * @private
+ */
+epiviz.ui.charts.Chart.prototype._setModifiedMethods = function(modifiedMethods) {
+  if (!modifiedMethods) { return; }
+  for (var m in modifiedMethods) {
+    if (!modifiedMethods.hasOwnProperty(m)) { continue; }
+    if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
+
+    try {
+      this[m] = eval('(' + modifiedMethods[m] + ')');
+    } catch (e) {
+      var dialog = new epiviz.ui.controls.MessageDialog(
+        'Error evaluating code',
+        {
+          Ok: function() {}
+        },
+        'Could not evaluate the code for method ' + m + '. Error details:<br/>' + e.message,
+        epiviz.ui.controls.MessageDialog.Icon.ERROR);
+      dialog.show();
+    }
+  }
+  this.draw();
+
+  this._methodsModified.notify({id: this._id, modifiedMethods: modifiedMethods});
+};
+
+/**
  * @returns {epiviz.events.Event.<string>}
  */
 epiviz.ui.charts.Chart.prototype.onSave = function() { return this._save; };
@@ -905,6 +977,11 @@ epiviz.ui.charts.Chart.prototype.onRemove = function() { return this._remove; };
  * @returns {epiviz.events.Event.<{id: string, colors: epiviz.ui.charts.ColorPalette}>}
  */
 epiviz.ui.charts.Chart.prototype.onColorsChanged = function() { return this._colorsChanged; };
+
+/**
+ * @returns {epiviz.events.Event.<{id: string, modifiedMethods: Object.<string, string>}>}
+ */
+epiviz.ui.charts.Chart.prototype.onMethodsModified = function() { return this._methodsModified; };
 
 /**
  * @returns {epiviz.events.Event.<{id: string, customSettingsValues: Object.<string, *>}>}

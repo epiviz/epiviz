@@ -158,6 +158,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <link href="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" rel="stylesheet" />
     <link href="css/dropdown-check-list-1.4/css/ui.dropdownchecklist.standalone.css" rel="stylesheet" />
 
+    <!-- Code editor -->
+    <link rel="stylesheet" href="css/codemirror-4.5/lib/codemirror.css">
+
     <!-- EpiViz CSS -->
     <link rel="stylesheet" type="text/css" href="css/main.css"/>
     <link rel="stylesheet" type="text/css" href="css/svg.css"/>
@@ -192,6 +195,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <!-- Expression evaluation -->
     <script src="src/lib/expression-parser/parser.js"></script>
+
+    <!-- Code editor -->
+    <script src="src/lib/codemirror-4.5/lib/codemirror.js"></script>
+    <script src="src/lib/codemirror-4.5/addon/edit/matchbrackets.js"></script>
+    <script src="src/lib/codemirror-4.5/addon/comment/continuecomment.js"></script>
+    <script src="src/lib/codemirror-4.5/addon/comment/comment.js"></script>
+    <script src="src/lib/codemirror-4.5/mode/javascript/javascript.js"></script>
 
     <!-- File upload: src/file-upload/webtoolkit.aim.js -->
 
@@ -291,6 +301,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
     <script src="src/epiviz/ui/controls/computed-measurements-dialog.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/code-edit-dialog.js"></script>
 
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
