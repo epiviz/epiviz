@@ -30,8 +30,8 @@ epiviz.ui.charts.ChartType = function(config) {
    * @protected
    */
   this._defaultSettings = epiviz.utils.mapCombine(
-    epiviz.utils.mapCombine(config.chartSettings[this.typeName()], config.chartSettings[this.chartDisplayType()]),
-    config.chartSettings['default']);
+    epiviz.utils.mapCombine(config.chartSettings[this.typeName()], config.chartSettings[this.chartDisplayType()], true),
+    config.chartSettings['default'], true);
 
   /**
    * @type {string|number}

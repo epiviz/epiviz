@@ -232,9 +232,10 @@ epiviz.utils.mapEquals = function(m1, m2) {
  * If one key is in both maps, then the value from m1 will be used.
  * @param {Object<*,*>} m1
  * @param {Object<*,*>} m2
+ * @param {boolean} [combineArrayVals] specifies that array values should also be combined
  * @returns {Object<*,*>}
  */
-epiviz.utils.mapCombine = function(m1, m2) {
+epiviz.utils.mapCombine = function(m1, m2, combineArrayVals) {
   var result = {};
 
   var key;
@@ -249,7 +250,13 @@ epiviz.utils.mapCombine = function(m1, m2) {
   if (m1) {
     for (key in m1) {
       if (!m1.hasOwnProperty(key)) { continue; }
-      result[key] = m1[key];
+      if (combineArrayVals &&
+        result[key] && $.isArray(result[key]) &&
+        m1[key] && $.isArray(m1[key])) {
+        result[key] = result[key].concat(m1[key]);
+      } else {
+        result[key] = m1[key];
+      }
     }
   }
 
