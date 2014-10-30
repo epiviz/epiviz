@@ -82,12 +82,6 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
   this._svg = null;
 
   /**
-   * @type {number}
-   * @private
-   */
-  this._loaderTimeout = 0;
-
-  /**
    * @type {?epiviz.datatypes.GenomicRange}
    * @protected
    */
@@ -112,12 +106,6 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
    * @protected
    */
   this._binSize = null;
-
-  /**
-   * @type {boolean}
-   * @private
-   */
-  this._showTooltip = true;
 
   // Events
 
@@ -190,6 +178,18 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
    * @private
    */
   this._marginsChanged = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event}
+   * @private
+   */
+  this._dataWaitStart = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event}
+   * @private
+   */
+  this._dataWaitEnd = new epiviz.events.Event();
 };
 
 /**
@@ -209,16 +209,11 @@ epiviz.ui.charts.Chart.prototype._initialize = function() {
   var width = this.width();
   var height = this.height();
 
-  this._addChartButtons();
-
   this._container.append(sprintf('<svg id="%s" class="base-chart" width="%s" height="%s"></svg>', this._svgId, width, height));
   this._svg = d3.select('#' + this._svgId);
 
   this._addStyles();
   this._addFilters();
-
-  this._addResizable();
-  this._addTooltip();
 
 
   var jSvg = $('#' + this._svgId);
@@ -242,235 +237,6 @@ epiviz.ui.charts.Chart.prototype._initialize = function() {
 
   var self = this;
   this._container.click(function() { self._deselect.notify(); });
-};
-
-/**
- * @private
- */
-epiviz.ui.charts.Chart.prototype._addResizable = function() {
-  var self = this;
-  var resizeHandler = function(event, ui) { self.containerResize(); };
-  this._container.resizable({
-    //resize: resizeHandler,
-    stop: resizeHandler
-  });
-};
-
-/**
- * @private
- */
-epiviz.ui.charts.Chart.prototype._addTooltip = function() {
-  var self = this;
-  this._container.tooltip({
-    items: '.item',
-    content:function () {
-      if (!self._showTooltip) { return false; }
-
-      /** @type {epiviz.ui.charts.UiObject} */
-      var uiObj = d3.select(this).data()[0];
-
-      var maxMetadataValueLength = 15;
-
-      var metadataCols = uiObj.measurements[0].metadata();
-      var colsHeader = sprintf('<th><b>Start</b></th><th><b>End</b></th>%s%s',
-        metadataCols ? '<th><b>' + metadataCols.join('</b></th><th><b>') + '</b></th>' : '',
-        uiObj.values ? '<th><b>' + uiObj.measurements.join('</b></th><th><b>') + '</b></th>': '');
-
-      var rows = '';
-      for (var j = 0; j < uiObj.valueItems[0].length && j < 10; ++j) {
-        var row = '';
-        var rowItem = uiObj.valueItems[0][j].rowItem;
-        row += sprintf('<td>%s</td><td>%s</td>', Globalize.format(rowItem.start(), 'n0'), Globalize.format(rowItem.end(), 'n0'));
-        var rowMetadata = rowItem.rowMetadata();
-        if (metadataCols && rowMetadata) {
-          for (var k = 0; k < metadataCols.length; ++k) {
-            var metadataCol = metadataCols[k];
-            var metadataValue = rowMetadata[metadataCol] || '';
-            row += sprintf('<td>%s</td>', metadataValue.length <= maxMetadataValueLength ? metadataValue : metadataValue.substr(0, maxMetadataValueLength) + '...');
-          }
-        }
-
-        if (uiObj.values) {
-          for (var i = 0; i < uiObj.measurements.length; ++i) {
-            row += sprintf('<td>%s</td>', Globalize.format(uiObj.valueItems[i][j].value, 'n3'));
-          }
-        }
-
-        rows += sprintf('<tr>%s</tr>', row);
-      }
-      if (j < uiObj.valueItems[0].length) {
-        var colspan = 2 + (metadataCols ? metadataCols.length : 0) + (uiObj.values ? uiObj.measurements.length : 0);
-        rows += sprintf('<tr><td colspan="%s" style="text-align: center;">...</td></tr>', colspan)
-      }
-
-      return sprintf('<table class="tooltip-table"><thead><tr>%s</tr></thead><tbody>%s</tbody></table>', colsHeader, rows);
-    },
-    track: true,
-    show: false
-  });
-};
-
-/**
- * @protected
- */
-epiviz.ui.charts.Chart.prototype._addChartButtons = function() {
-  var self = this;
-
-  // Save button
-  var saveButtonId = sprintf('%s-save', this._id);
-  this._container.append(sprintf(
-    '<button id="%s" style="position: absolute; top: 5px; right: 35px">Save</button>',
-    saveButtonId));
-  var saveButton = $('#' + saveButtonId);
-
-  saveButton.button({
-    icons:{
-      primary:'ui-icon ui-icon-disk'
-    },
-    text:false
-  }).click(function(){
-    self._save.notify(self._id);
-    return false;
-  });
-
-  // Remove button
-  var removeButtonId = sprintf('%s-remove', this._id);
-  this._container.append(sprintf(
-    '<button id="%s" style="position: absolute; top: 5px; right: 5px">Remove</button>',
-    removeButtonId));
-  var removeButton = $('#' + removeButtonId);
-
-  removeButton.button({
-    icons:{
-      primary:'ui-icon ui-icon-cancel'
-    },
-    text:false
-  }).click(function(){
-    self._remove.notify(self._id);
-    return false;
-  });
-
-  // Color Picker button
-  var colorsButtonId = sprintf('%s-color-picker', this._id);
-  this._container.append(sprintf(
-    '<button id="%s" style="position: absolute; top: 5px; right: 65px">Colors</button>',
-    colorsButtonId));
-  var colorsButton = $('#' + colorsButtonId);
-
-  colorsButton.button({
-    icons:{
-      primary:'ui-icon ui-icon-colorpicker'
-    },
-    text:false
-  }).click(function(){
-    var colors = self.colorMap();
-    var colorPickerDialog = new epiviz.ui.controls.ColorPickerDialog(
-      {
-        ok: function(colors) {
-          self.setColorMap(colors);
-        },
-        cancel: function() {},
-        reset: function() {}
-      },
-      colors);
-    colorPickerDialog.show();
-
-    return false;
-  });
-
-  // Custom settings button
-  var customSettingsButtonId = sprintf('%s-custom-settings', this._id);
-  this._container.append(sprintf(
-    '<button id="%s" style="position: absolute; top: 5px; right: 95px">Custom settings</button>',
-    customSettingsButtonId));
-  var customSettingsButton = $('#' + customSettingsButtonId);
-
-  customSettingsButton.button({
-    icons:{
-      primary:'ui-icon ui-icon-gear'
-    },
-    text:false
-  }).click(function(){
-    var CustomSettings = epiviz.ui.charts.ChartType.CustomSettings;
-    var customSettingsDialog = new epiviz.ui.controls.CustomSettingsDialog(
-      'Edit custom settings', {
-        ok: function(settingsValues) {
-          self._customSettingsValues = settingsValues;
-
-          if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
-            self._properties.margins = new epiviz.ui.charts.Margins(settingsValues[CustomSettings.MARGIN_TOP], settingsValues[CustomSettings.MARGIN_LEFT], settingsValues[CustomSettings.MARGIN_BOTTOM], settingsValues[CustomSettings.MARGIN_RIGHT]);
-            self._marginsChanged.notify({id: self._id, margins: self._properties.margins});
-          }
-
-          self.draw();
-          self._customSettingsChanged.notify({id: self._id, customSettingsValues: settingsValues});
-        },
-        cancel: function() {}
-      },
-      self.properties().customSettingsDefs,
-      self._customSettingsValues);
-    customSettingsDialog.show();
-
-    return false;
-  });
-
-  // Toggle tooltip button
-  var tooltipButtonId = sprintf('%s-tooltip-button', this._id);
-  this._container.append(sprintf(
-    '<div id="%1$s-container" style="position: absolute; top: 5px; right: 125px">' +
-      '<input type="checkbox" id="%1$s" checked="checked" />' +
-      '<label for="%1$s" >Toggle Tooltip</label>' +
-    '</div>', tooltipButtonId));
-  var tooltipButton = $('#' + tooltipButtonId);
-  var tooltipButtonContainer = $('#' + tooltipButtonId + '-container');
-  tooltipButton.button({
-    text: false,
-    icons: {
-      primary: 'ui-icon-comment'
-    }
-  }).click(function() {
-    self._showTooltip = tooltipButton.is(':checked');
-  });
-
-  // Edit code button
-  var editCodeButtonId = sprintf('%s-edit-code', this._id);
-  this._container.append(sprintf(
-    '<button id="%s" style="position: absolute; top: 5px; right: 155px">Edit code</button>',
-    editCodeButtonId));
-  var editCodeButton = $('#' + editCodeButtonId);
-
-  var editCodeDialog = new epiviz.ui.controls.CodeEditDialog(
-    'Edit Chart Code', {
-      save: function(modifiedMethods) {
-        self._setModifiedMethods(modifiedMethods);
-      }, cancel: function() {}},
-    self, 'draw');
-  editCodeButton.button({
-    icons:{
-      primary:'ui-icon ui-icon-pencil'
-    },
-    text:false
-  }).click(function(){
-    editCodeDialog.show();
-  });
-
-  this._container
-    .mousemove(function () {
-      saveButton.show();
-      removeButton.show();
-      colorsButton.show();
-      customSettingsButton.show();
-      editCodeButton.show();
-      tooltipButtonContainer.show();
-    })
-    .mouseleave(function () {
-      saveButton.hide();
-      removeButton.hide();
-      colorsButton.hide();
-      customSettingsButton.hide();
-      editCodeButton.hide();
-      tooltipButtonContainer.hide();
-    });
 };
 
 /**
@@ -546,57 +312,6 @@ epiviz.ui.charts.Chart.prototype._addFilters = function() {
     .attr('in', 'SourceGraphic')
     .attr('in2', 'shadow')
     .attr('operator', 'over');
-};
-
-/**
- */
-epiviz.ui.charts.Chart.prototype.addLoaderAnimation = function() {
-  if (this._loaderTimeout) { clearTimeout(this._loaderTimeout); }
-
-  var self = this;
-  this._loaderTimeout = setTimeout(function(){
-    var loaderCls = 'chart-loader';
-    var loaderBgCls = 'chart-loader-background';
-
-    self._container.find('.' + loaderCls).remove();
-    self._container.find('.' + loaderBgCls).remove();
-
-    self._container.append(sprintf(
-      '<div class="loader-icon %s" style="top: %spx; left: %spx;"></div>',
-      loaderCls,
-      Math.floor(self.height() * 0.5),
-      Math.floor(self.width() * 0.5)));
-    self._container.find('.' + loaderCls).activity({
-      segments: 8,
-      steps: 5,
-      opacity: 0.3,
-      width: 4,
-      space: 0,
-      length: 10,
-      color: '#0b0b0b',
-      speed: 1.0
-    });
-
-    self._svg
-      .append('rect')
-      .attr('class', loaderBgCls)
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', '100%')
-      .attr('height', '100%')
-      .attr('fill', '#ffffff')
-      .attr('opacity', 0.7);
-  }, 500);
-};
-
-/**
- */
-epiviz.ui.charts.Chart.prototype.removeLoaderAnimation = function() {
-  if (this._loaderTimeout) { clearTimeout(this._loaderTimeout); }
-  var loaderCls = 'chart-loader';
-  var loaderBgCls = 'chart-loader-background';
-  this._container.find('.' + loaderCls).remove();
-  this._container.find('.' + loaderBgCls).remove();
 };
 
 /**
@@ -725,8 +440,6 @@ epiviz.ui.charts.Chart.prototype.containerResize = function() {
  * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
  */
 epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
-  this.removeLoaderAnimation();
-
   if (range) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
   }
@@ -734,6 +447,7 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
   if (data && range) {
     this._lastData = data;
     this._lastRange = range;
+    this._dataWaitEnd.notify();
   }
 
   this._svg
@@ -742,6 +456,11 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
 
   return [];
 };
+
+/**
+ * @returns {jQuery}
+ */
+epiviz.ui.charts.Chart.prototype.container = function() { return this._container; };
 
 /**
  * @returns {string}
@@ -819,24 +538,6 @@ epiviz.ui.charts.Chart.prototype.onSelect = function() { return this._select; };
  * @returns {epiviz.events.Event}
  */
 epiviz.ui.charts.Chart.prototype.onDeselect = function() { return this._deselect; };
-
-epiviz.ui.charts.Chart.prototype._changeObjectSelection = function(selectionData, sourceGroup, targetGroup) {
-  var selectClasses = this._filterClassSelection(selectionData);
-  if (selectClasses == null) {
-    selectClasses = '';
-    var s = Math.floor(selectionData.start / this._binSize);
-    var e = Math.floor(selectionData.end / this._binSize);
-    for (var j = s; j <= e; ++j) {
-      selectClasses += sprintf('> .bin-%s,', j);
-    }
-  }
-
-  var objects = sourceGroup.find(selectClasses);
-
-  targetGroup.append(objects);
-
-  return objects;
-};
 
 /**
  * @param {epiviz.ui.charts.UiObject} selectedObject
@@ -936,10 +637,29 @@ epiviz.ui.charts.Chart.prototype.setColorMap = function(colorMap) {
 };
 
 /**
- * @param {Object.<string, string>} modifiedMethods
- * @private
+ * @returns {Object.<string, *>}
  */
-epiviz.ui.charts.Chart.prototype._setModifiedMethods = function(modifiedMethods) {
+epiviz.ui.charts.Chart.prototype.customSettingsValues = function() { return this._customSettingsValues; };
+
+/**
+ * @param {Object.<string, *>} settingsValues
+ */
+epiviz.ui.charts.Chart.prototype.setCustomSettingsValues = function(settingsValues) {
+  var CustomSettings = epiviz.ui.charts.ChartType.CustomSettings;
+  this._customSettingsValues = settingsValues;
+
+  if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
+    this._properties.margins = new epiviz.ui.charts.Margins(settingsValues[CustomSettings.MARGIN_TOP], settingsValues[CustomSettings.MARGIN_LEFT], settingsValues[CustomSettings.MARGIN_BOTTOM], settingsValues[CustomSettings.MARGIN_RIGHT]);
+    this._marginsChanged.notify({id: this._id, margins: this._properties.margins});
+  }
+
+  this._customSettingsChanged.notify({id: this._id, customSettingsValues: settingsValues});
+};
+
+/**
+ * @param {Object.<string, string>} modifiedMethods
+ */
+epiviz.ui.charts.Chart.prototype.setModifiedMethods = function(modifiedMethods) {
   if (!modifiedMethods) { return; }
   for (var m in modifiedMethods) {
     if (!modifiedMethods.hasOwnProperty(m)) { continue; }
@@ -997,3 +717,13 @@ epiviz.ui.charts.Chart.prototype.onSizeChanged = function() { return this._sizeC
  * @returns {epiviz.events.Event.<{id: string, margins: epiviz.ui.charts.Margins}>}
  */
 epiviz.ui.charts.Chart.prototype.onMarginsChanged = function() { return this._marginsChanged; };
+
+/**
+ * @returns {epiviz.events.Event}
+ */
+epiviz.ui.charts.Chart.prototype.onDataWaitStart = function() { return this._dataWaitStart; };
+
+/**
+ * @returns {epiviz.events.Event}
+ */
+epiviz.ui.charts.Chart.prototype.onDataWaitEnd = function() { return this._dataWaitEnd; };

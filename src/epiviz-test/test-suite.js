@@ -194,7 +194,7 @@ epiviztest.TestSuite.prototype.addChart = function(chartTypeName, range, measure
       return uiObjects;
     };
 
-    self.epivizFramework.chartManager.addChartsLoaderAnimation(chartId);
+    self.epivizFramework.chartManager.dataWaitStart(chartId);
 
     self.epivizFramework.dataManager.getData(range, chartMeasurementsMap,
       function(chartId, data) {
@@ -315,7 +315,7 @@ epiviztest.TestSuite.prototype.navigate = function(chartTypeName, initialRange, 
 
     startTime = new Date().getTime();
 
-    self.epivizFramework.chartManager.addChartsLoaderAnimation();
+    self.epivizFramework.chartManager.dataWaitStart();
     var chartMeasurementsMap = self.epivizFramework.chartManager.chartsMeasurements();
 
     self.epivizFramework.dataManager.getData(newRange, chartMeasurementsMap,
@@ -324,7 +324,7 @@ epiviztest.TestSuite.prototype.navigate = function(chartTypeName, initialRange, 
       });
   };
 
-  self.epivizFramework.chartManager.addChartsLoaderAnimation(chartId);
+  self.epivizFramework.chartManager.dataWaitStart(chartId);
   self.epivizFramework.dataManager.getData(initialRange, chartMeasurementsMap,
     function(chartId, data) {
 

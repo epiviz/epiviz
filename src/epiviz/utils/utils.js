@@ -296,6 +296,7 @@ epiviz.utils.mapKeyIntersection = function(m1, m2) {
 // Reflection
 
 /**
+ * Evaluates the given string into a constructor for a type
  * @param {string} typeName
  * @returns {?function(new: T)}
  * @template T
@@ -311,6 +312,7 @@ epiviz.utils.evaluateFullyQualifiedTypeName = function(typeName) {
 
     var result = context[func];
     if (typeof(result) !== 'function') {
+      console.error('Unknown type name: ' + typeName);
       return null;
     }
 
@@ -322,6 +324,8 @@ epiviz.utils.evaluateFullyQualifiedTypeName = function(typeName) {
 };
 
 /**
+ * Applies the given constructor to the given parameters and creates
+ * a new instance of the class it defines
  * @param {function(new: T)} ctor
  * @param {Array} params
  * @returns {T}

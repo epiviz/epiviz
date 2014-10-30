@@ -136,6 +136,24 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measureme
   this._registerChartRemove(chart);
   this._registerChartSave(chart);
 
+  if (chartType.decorations()) {
+    /** @type {epiviz.ui.charts.decoration.ChartDecoration} */
+    var topDecoration = undefined;
+    for (var i = 0; i < chartType.decorations().length; ++i) {
+      /** @type {?(function(new:epiviz.ui.charts.decoration.ChartDecoration))} */
+      var decorationCtor = epiviz.utils.evaluateFullyQualifiedTypeName(chartType.decorations()[i]);
+
+      if (!decorationCtor) { continue; }
+
+      /** @type {epiviz.ui.charts.decoration.ChartDecoration} */
+      topDecoration  = epiviz.utils.applyConstructor(decorationCtor, [chart, topDecoration]);
+    }
+
+    if (topDecoration) {
+      topDecoration.decorate();
+    }
+  }
+
   if (!(chartType.chartDisplayType() in this._chartsOrder)) { this._chartsOrder[chartType.chartDisplayType()] = []; }
   this._chartsOrder[chartType.chartDisplayType()].push(id);
 
@@ -155,7 +173,6 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measureme
 epiviz.ui.charts.ChartManager.prototype.removeChart = function(id) {
   $('#' + id).remove();
 
-  var DisplayType = epiviz.ui.charts.ChartType.DisplayType;
   var chart = this._charts[id];
   delete this._charts[id];
   this._chartsOrder[chart.displayType()].splice(this._chartsOrder[chart.displayType()].indexOf(id), 1);
@@ -212,17 +229,18 @@ epiviz.ui.charts.ChartManager.prototype.clear = function() {
 };
 
 /**
- * Tells all charts to display loading animation until new data is loaded
+ * Tells all charts that new data has been requested.
+ * Used, for example, by ChartLoaderAnimation decoration.
  * @param {string} [chartId]
  */
-epiviz.ui.charts.ChartManager.prototype.addChartsLoaderAnimation = function(chartId) {
+epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId) {
   if (chartId && this._charts[chartId]) {
-    this._charts[chartId].addLoaderAnimation();
+    this._charts[chartId].onDataWaitStart().notify();
     return;
   }
   for (var id in this._charts) {
-    if (!this._charts.hasOwnProperty(chartId)) { continue; }
-    this._charts[chartId].addLoaderAnimation();
+    if (!this._charts.hasOwnProperty(id)) { continue; }
+    this._charts[id].onDataWaitStart().notify();
   }
 };
 
@@ -275,7 +293,7 @@ epiviz.ui.charts.ChartManager.prototype.onChartMarginsChanged = function() { ret
  */
 epiviz.ui.charts.ChartManager.prototype._registerWindowResize = function() {
   var self = this;
-  $(window).resize(function(e) {
+  $(window).resize(function() {
     if (self._resizeInterval !== null) { window.clearTimeout(self._resizeInterval); }
     self._resizeInterval = window.setTimeout(function() {
       for (var chartId in self._charts) {
