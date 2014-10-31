@@ -278,6 +278,20 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
+
+    <script src="src/epiviz/ui/charts/decoration/chart-decoration.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/remove-chart-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/save-chart-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
+
+    <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-loader-animation.js"></script>
+
     <script src="src/epiviz/ui/charts/chart-manager.js"></script>
 
     <script src="src/epiviz/workspaces/user-manager.js"></script>

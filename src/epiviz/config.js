@@ -137,18 +137,20 @@ epiviz.Config = function(settingsMap) {
    * @type {Object.<epiviz.ui.charts.ChartType.DisplayType|string, Object.<epiviz.Config.ChartPropertySettings, *>>}
    */
   this.chartSettings = {
+    default: {
+      margins: new epiviz.ui.charts.Margins(10, 5, 5, 5),
+      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT),
+      decorations: []
+    },
+
     plot: {
       width: 600,
-      height: 400,
-      margins: new epiviz.ui.charts.Margins(10, 5, 5, 5),
-      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT)
+      height: 400
     },
 
     track: {
       width: '100%',
-      height: 120,
-      margins: new epiviz.ui.charts.Margins(10, 5, 5, 5),
-      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT)
+      height: 120
     }
   };
 
@@ -192,25 +194,25 @@ epiviz.Config = function(settingsMap) {
 };
 
 /**
- * @type {epiviz.ui.charts.ColorPalette}
+ * @type {Array.<string>}
  * @const
  */
 epiviz.Config.EPIVIZ_V1_COLORS = ['#025167', '#e7003e', '#ffcd00', '#057d9f', '#970026', '#ffe373', '#ff8100'];
 
 /**
- * @type {epiviz.ui.charts.ColorPalette}
+ * @type {Array.<string>}
  * @const
  */
 epiviz.Config.COLORS_BRIGHT = ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'];
 
 /**
- * @type {epiviz.ui.charts.ColorPalette}
+ * @type {Array.<string>}
  * @const
  */
 epiviz.Config.COLORS_LIGHT = ['#b8d2eb', '#f2aeac', '#d8e4aa', '#cccccc', '#f2d1b0', '#d4b2d3', '#ddb8a9', '#ebbfd9'];
 
 /**
- * @type {epiviz.ui.charts.ColorPalette}
+ * @type {Array.<string>}
  * @const
  */
 epiviz.Config.COLORS_MEDIUM = ['#599ad3', '#f1595f', '#79c36a', '#727272', '#f9a65a', '#9e66ab', '#cd7058', '#d77fb3'];
@@ -222,5 +224,6 @@ epiviz.Config.ChartPropertySettings = {
   WIDTH: 'width',
   HEIGHT: 'height',
   MARGINS: 'margins',
-  COLORS: 'colors'
+  COLORS: 'colors',
+  DECORATIONS: 'decorations'
 };
