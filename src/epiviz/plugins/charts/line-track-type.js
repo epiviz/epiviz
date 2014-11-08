@@ -58,9 +58,14 @@ epiviz.plugins.charts.LineTrackType.prototype.chartHtmlAttributeName = function(
 /**
  * @returns {epiviz.measurements.Measurement.Type}
  */
-epiviz.plugins.charts.LineTrackType.prototype.chartContentType = function() {
+/*epiviz.plugins.charts.LineTrackType.prototype.chartContentType = function() {
   return epiviz.measurements.Measurement.Type.FEATURE;
-};
+};*/
+
+/**
+ * @returns {function(epiviz.measurements.Measurement): boolean}
+ */
+epiviz.plugins.charts.LineTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.FEATURE; }; };
 
 /**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}

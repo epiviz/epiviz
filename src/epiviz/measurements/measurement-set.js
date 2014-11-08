@@ -197,6 +197,18 @@ epiviz.measurements.MeasurementSet.prototype.subset = function(predicate) {
 };
 
 /**
+ * @param {function(epiviz.measurements.Measurement): epiviz.measurements.Measurement} transformer
+ * @returns {epiviz.measurements.MeasurementSet}
+ */
+epiviz.measurements.MeasurementSet.prototype.map = function(transformer) {
+  var ret = new epiviz.measurements.MeasurementSet();
+  this.foreach(function(m) {
+    ret.add(transformer(m));
+  });
+  return ret;
+};
+
+/**
  * @returns {number}
  */
 epiviz.measurements.MeasurementSet.prototype.size = function() { return this._size; };

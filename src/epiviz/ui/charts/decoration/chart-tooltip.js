@@ -57,7 +57,11 @@ epiviz.ui.charts.decoration.ChartTooltip.prototype.decorate = function() {
       for (var j = 0; j < uiObj.valueItems[0].length && j < 10; ++j) {
         var row = '';
         var rowItem = uiObj.valueItems[0][j].rowItem;
-        row += sprintf('<td>%s</td><td>%s</td>', Globalize.format(rowItem.start(), 'n0'), Globalize.format(rowItem.end(), 'n0'));
+        var start = Globalize.format(rowItem.start(), 'n0');
+        if (start == undefined) { start = ''; }
+        var end = Globalize.format(rowItem.end(), 'n0');
+        if (end == undefined) { end = ''; }
+        row += sprintf('<td>%s</td><td>%s</td>', start, end);
         var rowMetadata = rowItem.rowMetadata();
         if (metadataCols && rowMetadata) {
           for (var k = 0; k < metadataCols.length; ++k) {

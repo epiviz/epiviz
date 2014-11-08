@@ -361,6 +361,18 @@ epiviz.utils.applyConstructor = function(ctor, params) {
 // Misc
 
 /**
+ * @const
+ * @type {number}
+ */
+epiviz.utils.RAD_TO_DEG = 180 / Math.PI;
+
+/**
+ * @const
+ * @type {number}
+ */
+epiviz.utils.DEG_TO_RAD = Math.PI / 180;
+
+/**
  * @returns {number} The version of Internet Explorer or -1 (indicating the use of another browser).
  */
 epiviz.utils.getInternetExplorerVersion = function() {

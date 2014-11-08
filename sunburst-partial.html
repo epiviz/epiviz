@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    path {
+        stroke: #fff;
+        fill-rule: evenodd;
+    }
+
+    .unselectable {
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+
+        /*
+          Introduced in IE 10.
+          See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+        */
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+</style>
+<body>
+<!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
+<script src="src/lib/d3/d3.v3.js"></script>
+<script>
+
+    function traverseTree(node, callback) {
+        callback(node);
+        node.children.forEach(function(child) {
+            traverseTree(child, callback);
+        });
+    }
+
+    function filterTree(node, filter) {
+        if (!filter(node)) { return null; }
+        var copy = {};
+        for (var key in node) {
+            if (!node.hasOwnProperty(key) || key == 'children') { continue; }
+            copy[key] = node[key];
+        }
+        copy.children = [];
+        node.children.forEach(function(child) {
+            var childCopy = filterTree(child, filter);
+            if (childCopy !== null) {
+                copy.children.push(childCopy);
+            }
+        });
+        return copy;
+    }
+
+    function computeTextRotation(d) {
+        var angle = x(d.x + d.dx / 2) - Math.PI / 2;
+        return angle / Math.PI * 180;
+    }
+
+    var width = 960,
+            height = 800,
+            radius = Math.min(width, height) / 2.5;
+
+    var x = d3.scale.linear()
+            .range([0, 2 * Math.PI]);
+
+    var y = d3.scale.pow().exponent(1.2)
+            .range([0, radius]);
+    /*var y = d3.scale.linear()
+            .range([0, radius]);*/
+
+    var offsetDepth = 0;
+
+    var color = d3.scale.category20c();
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ") rotate(180)");
+
+    var partition = d3.layout.partition()
+            //.value(function(d) { return d.size; });
+            .value(function(d) { return d.nleaves; });
+
+    var arc = d3.svg.arc()
+            .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+            .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+            .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+            .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+    var radToDeg = 180 / Math.PI;
+
+    var myArc = function(d) {
+        //return arc(d);
+        //if (d.depth - offsetDepth >= 4) { return ''; }
+        return arc(d);
+    };
+
+    var nodeMap = {};
+    var tree = null;
+
+    d3.json("tree.json", function(error, root) {
+        tree = root;
+        traverseTree(root, function(node) {
+            nodeMap[node.id] = node;
+        });
+
+        var maxDepth = 5;
+        var delay = 500;
+        var rootCopy = filterTree(root, function(node) { return node.depth < maxDepth; });
+        var selectedNode;
+
+        var data = partition.nodes(rootCopy);
+        var dataMap = {}, oldDataMap;
+        var rootDepth = 0, oldRootDepth;
+        var subtreeDepth = 0, oldSubtreeDepth;
+        data.forEach(function(node) {
+            dataMap[node.id] = node;
+            if (subtreeDepth < node.depth + 1) {
+                subtreeDepth = node.depth + 1;
+            }
+        });
+
+        function arcMap(d) {
+            return arc(dataMap[d.id]);
+        }
+
+        var g = svg.selectAll("g")
+                .data(data, function(d) { return d.id; })
+                .enter().append("g")
+                .on("click", click);
+
+        var path = g.append("path")
+                .attr("d", arcMap)
+                .attr('id', function(d) { return d.id; })
+                .style("fill", function(d) { return color((d.children ? d : d.parent).id); });
+
+
+        /*var text = g.append("text")
+                .attr("x", function(d) { return y(d.y); })
+                .attr("dx", "6") // margin
+                .attr("dy", ".35em") // vertical-align
+                .text(function(d) { return d.name; })
+                .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; });*/
+
+        var text = g.append("text")
+                .attr('class', 'unselectable')
+                .attr('font-family', 'Verdana')
+                .attr('font-size', 11)
+                .attr('font-weight', 'strong')
+                /*.attr('transform', function(d) {
+                    var dx = d.dx == 1 ? 0 : d.dx;
+                    var phi = x(d.x + dx / 2);
+                    var z = (y(d.y + d.dy) - y(d.y)) / 2;
+                    var ty = Math.cos(phi) * z;
+                    var tx = Math.sin(phi) * z;
+                    return 'translate(' + -tx + ',' + ty + ')';
+                })*/
+                .attr('transform', function(d) {
+                    var dx = d.dx == 1 ? 0 : d.dx;
+                    var y0 = y(d.y);
+                    var y1 = y(d.y + d.dy);
+                    var phi = x(d.x + dx / 2);
+                    var z = (y1 - y0) / 2;
+                    var ty = Math.cos(phi) * z;
+                    var tx = Math.sin(phi) * z;
+                    //return 'translate(' + -tx + ',' + ty + ') rotate(' + x(dx / 2) * radToDeg + ')';
+                    return 'rotate(' + (d.dx == 1 ? 180 : 0) + ') translate(' + -tx + ',' + ty + ')';
+                })
+                .append('textPath')
+                .attr('text-anchor', 'middle')
+                //.attr('textLength', 100)
+                .attr('xlink:href', function(d) { return '#' + d.id; })
+                .attr('startOffset', function(d) {
+                    var py = y(d.y + d.dy);
+                    var px = py * x(d.dx / 2);
+                    return px;
+                    //return 0;
+                })
+                .attr("dx", "6") // margin
+                .attr("dy", ".35em") // vertical-align
+                .text(function(d) { return d.name; });
+
+        /*var path = svg.selectAll("path")
+                .data(partition.nodes(rootCopy), function(d) { return d.id; })
+                .enter().append("path")
+                .attr("d", myArc)
+                .style("fill", function(d) { return color((d.children ? d : d.parent).id); })
+                .on("click", click);*/
+
+        function click(d) {
+
+            function arcTweenMap(d) {
+                var oldD = oldDataMap[d.id];
+                var newD = dataMap[d.id];
+
+                if (!oldD && !newD) {
+                    return function(t) { return arc(d); };
+                }
+
+                // this node will be added
+                if (!oldD) {
+                    var oldDepth = newD.depth + rootDepth - oldRootDepth;
+                    var isRoot = oldDepth < 0;
+                    var isExtremity = oldDepth < 0 || oldDepth >= subtreeDepth;
+                    var y = isRoot ? 0 : Math.min(1, oldDepth / oldSubtreeDepth);
+                    oldD = {
+                        x: isExtremity ? newD.x : (newD.x <= referenceNode.x ? 0 : 1),
+                        dx: isRoot ? 1 : (isExtremity ? newD.dx : 0),
+                        y: y,
+                        dy: isExtremity ? 0 : newD.y + newD.dy - y
+                    };
+                }
+
+                // this node will be removed
+                if (!newD) {
+                    var newDepth = oldD.depth - rootDepth + oldRootDepth;
+                    var isRoot = newDepth < 0;
+                    var isExtremity = newDepth < 0 || newDepth >= subtreeDepth;
+                    var y = isRoot ? 0 : Math.min(1, newDepth / subtreeDepth);
+                    newD = {
+                        x: isExtremity ? oldD.x : (oldD.x <= selectedNode.x ? 0 : 1),
+                        dx: isRoot ? 1 : (isExtremity ? oldD.dx : 0),
+                        y: y,
+                        dy: isExtremity ? 0 : oldD.y + oldD.dy - y
+                    };
+                }
+
+                var xi = d3.interpolate(oldD.x, newD.x);
+                var dxi = d3.interpolate(oldD.dx, newD.dx);
+                var yi = d3.interpolate(oldD.y, newD.y);
+                var dyi = d3.interpolate(oldD.dy, newD.dy);
+                return function(t) {
+                    var dt = {x: xi(t), dx: dxi(t), y: yi(t), dy: dyi(t)};
+                    return arc(dt);
+                };
+            }
+
+            function transformTween(d) {
+                var oldD = oldDataMap[d.id];
+                var newD = dataMap[d.id];
+
+                if (!oldD && !newD) {
+                    return function(t) { return arc(d); };
+                }
+
+                // this node will be added
+                if (!oldD) {
+                    var oldDepth = newD.depth + rootDepth - oldRootDepth;
+                    var isRoot = oldDepth < 0;
+                    var isExtremity = oldDepth < 0 || oldDepth >= subtreeDepth;
+                    var oldDy = isRoot ? 0 : Math.min(1, oldDepth / oldSubtreeDepth);
+                    oldD = {
+                        x: isExtremity ? newD.x : (newD.x <= referenceNode.x ? 0 : 1),
+                        dx: isRoot ? 1 : (isExtremity ? newD.dx : 0),
+                        y: oldDy,
+                        dy: isExtremity ? 0 : newD.y + newD.dy - oldDy
+                    };
+                }
+
+                // this node will be removed
+                if (!newD) {
+                    var newDepth = oldD.depth - rootDepth + oldRootDepth;
+                    var isRoot = newDepth < 0;
+                    var isExtremity = newDepth < 0 || newDepth >= subtreeDepth;
+                    var newDy = isRoot ? 0 : Math.min(1, newDepth / subtreeDepth);
+                    newD = {
+                        x: isExtremity ? oldD.x : (oldD.x <= selectedNode.x ? 0 : 1),
+                        dx: isRoot ? 1 : (isExtremity ? oldD.dx : 0),
+                        y: newDy,
+                        dy: isExtremity ? 0 : oldD.y + oldD.dy - newDy
+                    };
+                }
+
+                var xi = d3.interpolate(oldD.x, newD.x);
+                var dxi = d3.interpolate(oldD.dx, newD.dx);
+                var yi = d3.interpolate(oldD.y, newD.y);
+                var dyi = d3.interpolate(oldD.dy, newD.dy);
+
+                return function(t) {
+                    var dt = {x: xi(t), dx: dxi(t), y: yi(t), dy: dyi(t)};
+                    var dx = dt.dx == 1 ? 0 : dt.dx;
+                    var phi = x(dt.x + dx / 2);
+                    var z = (y(dt.y + dt.dy) - y(dt.y)) / 2;
+                    var ty = Math.cos(phi) * z;
+                    var tx = Math.sin(phi) * z;
+                    return 'rotate(' + (dt.dx == 1 ? 180 : 0) + ') translate(' + -tx + ',' + ty + ')';
+                }
+            }
+
+            function startOffsetTween(d) {
+                var oldD = oldDataMap[d.id];
+                var newD = dataMap[d.id];
+
+                if (!oldD && !newD) {
+                    return function(t) { return arc(d); };
+                }
+
+                // this node will be added
+                if (!oldD) {
+                    var oldDepth = newD.depth + rootDepth - oldRootDepth;
+                    var isRoot = oldDepth < 0;
+                    var isExtremity = oldDepth < 0 || oldDepth >= subtreeDepth;
+                    var oldDy = isRoot ? 0 : Math.min(1, oldDepth / oldSubtreeDepth);
+                    oldD = {
+                        x: isExtremity ? newD.x : (newD.x <= referenceNode.x ? 0 : 1),
+                        dx: isRoot ? 1 : (isExtremity ? newD.dx : 0),
+                        y: oldDy,
+                        dy: isExtremity ? 0 : newD.y + newD.dy - oldDy
+                    };
+                }
+
+                // this node will be removed
+                if (!newD) {
+                    var newDepth = oldD.depth - rootDepth + oldRootDepth;
+                    var isRoot = newDepth < 0;
+                    var isExtremity = newDepth < 0 || newDepth >= subtreeDepth;
+                    var newDy = isRoot ? 0 : Math.min(1, newDepth / subtreeDepth);
+                    newD = {
+                        x: isExtremity ? oldD.x : (oldD.x <= selectedNode.x ? 0 : 1),
+                        dx: isRoot ? 1 : (isExtremity ? oldD.dx : 0),
+                        y: newDy,
+                        dy: isExtremity ? 0 : oldD.y + oldD.dy - newDy
+                    };
+                }
+
+                var xi = d3.interpolate(oldD.x, newD.x);
+                var dxi = d3.interpolate(oldD.dx, newD.dx);
+                var yi = d3.interpolate(oldD.y, newD.y);
+                var dyi = d3.interpolate(oldD.dy, newD.dy);
+
+                return function(t) {
+                    var dt = {x: xi(t), dx: dxi(t), y: yi(t), dy: dyi(t)};
+                    //var dt = newD;
+                    var py = y(dt.y + dt.dy);
+                    var px = py * x(dt.dx / 2);
+                    return px;
+                }
+            }
+
+            /*path.transition()
+                    .duration(750)
+                    .attrTween("d", arcTween(d));*/
+
+            var originalNode = nodeMap[d.id];
+            //if (!originalNode.parentId) { return; }
+            var parent = originalNode.parentId ? nodeMap[originalNode.parentId] : originalNode;
+
+            /*if (parent == originalNode) {
+                y = d3.scale.sqrt()
+                        .range([0, radius]);
+            } else {
+                y = d3.scale.linear()
+                 .range([0, radius]);
+            }*/
+
+            var filterParent = filterTree(parent, function(node) { return (node.depth != originalNode.depth || node == originalNode) && node.depth - parent.depth < maxDepth; });
+
+            //var parentDy = 10/radius;
+            data = partition.nodes(filterParent);
+            /*if (parent != originalNode) {
+                data.push({
+                    x: 0, dx: 1, y: 0, dy: parentDy, id: parent.id, depth: parent.depth, name: parent.name
+                });
+            }*/
+            oldDataMap = dataMap;
+            oldRootDepth = rootDepth;
+            rootDepth = parent.depth;
+            oldSubtreeDepth = subtreeDepth;
+            subtreeDepth = 0;
+
+            //var oldSelectedNode = selectedNode;
+            var selectedNode = dataMap[d.id];
+            var referenceNode;
+
+            dataMap = {};
+            data.forEach(function(node) {
+                dataMap[node.id] = node;
+                if ((!referenceNode || !referenceNode.x) && (node.id in oldDataMap)) {
+                    referenceNode = node;
+                }
+                if (subtreeDepth < node.depth + 1) {
+                    subtreeDepth = node.depth + 1;
+                }
+            });
+
+            var selection = svg.selectAll("g")
+                    .data(data, function(d) { return d.id; });
+            g = selection.enter()
+                    .append('g')
+                    .on("click", click);
+            path = g.append("path")
+                    //.attr("d", myArc)
+                    .attr('id', function(d) { return d.id; })
+                    .style("fill", function(d) { return color((d.children ? d : d.parent).id); });
+
+            text = g.append("text")
+                    .attr('class', 'unselectable')
+                    .attr('font-family', 'Verdana')
+                    .attr('font-size', 11)
+                    .attr('font-weight', 'strong')
+                    .append('textPath')
+                    .attr('text-anchor', 'middle')
+                    .attr('xlink:href', function(d) { return '#' + d.id; })
+                    .attr("dx", "6") // margin
+                    .attr("dy", ".35em") // vertical-align
+                    .attr('startOffset', 20)
+                    .text(function(d) { return d.name; });
+
+            svg.selectAll("g").selectAll('path')
+                    .transition()
+                    .duration(delay)
+                    .attrTween('d', arcTweenMap);
+            selection.exit()
+                    .selectAll('text').transition().duration(delay).style('opacity', 0);
+            selection.exit().transition().delay(delay).remove();
+
+            selection.selectAll('text')
+                    .transition().duration(delay)
+                    .attrTween('transform', transformTween)
+                    .each(function(d) {
+                        d3.select(this.childNodes[0])
+                                .transition()
+                                .duration(delay)
+                                .attrTween('startOffset', startOffsetTween);
+                        //d3.select(this).select('textPath').attr('startOffset', 50);
+                                /*.transition()
+                                .duration(delay)
+                                .*/
+                    });
+                    //.selectAll('textPath').attrTween('startOffset', startOffsetTween);
+                    //.selectAll('textPath').attr('startOffset', 50);
+
+            //selection.selectAll('text').selectAll('textPath')
+                    //.transition().duration(delay)
+            //        .attr('startOffset', /*startOffsetTween*/50);
+                    /*function(d) {
+                        d = dataMap[d.id];
+                        var dx = d.dx == 1 ? 0 : d.dx;
+                        var phi = x(d.x + dx / 2);
+                        var z = (y(d.y + d.dy) - y(d.y)) / 2;
+                        var ty = Math.cos(phi) * z;
+                        var tx = Math.sin(phi) * z;
+                        return 'translate(' + -tx + ',' + ty + ')';
+                    })
+                    .selectAll('textPath')
+                    .attr('startOffset', function(d) {
+                        d = dataMap[d.id];
+                        var py = y(d.y + d.dy);
+                        var px = py * x(d.dx / 2);
+                        return px;
+                    })*/
+
+            /*selection.selectAll('text')
+                    .attr("x", function(d) { return y(dataMap[d.id].y); })
+                    .attr("dx", "6") // margin
+                    .attr("dy", ".35em") // vertical-align
+                    .attr("transform", function(d) { return "rotate(" + computeTextRotation(dataMap[d.id]) + ")"; });*/
+            /*path = svg.selectAll('path')
+                    .data(partition.nodes(d.parent || d));
+
+            path
+                    .enter().append("path")
+                    .attr("d", arc)
+                    .style("fill", function(d) { return color((d.children ? d : d.parent).id); })
+                    .on("click", click);
+
+            path
+                    .exit()
+                    .remove();*/
+
+            /*var newPath = path.data(partition.nodes(root).filter(function (d) { return (d.dx > 0.30); }));
+            newPath
+                    .enter().append("path")
+                    .attr("d", arc2(d))
+                    .style("fill", function(d) { return color((d.children ? d : d.parent).id); })
+                    .on("click", click);
+            newPath
+                    .exit().remove();*/
+            //path.attr('d', arc2(d));
+            /*path.transition()
+                    .duration(750)
+                    .attrTween("d", arcTween(d));*/
+        }
+    });
+
+    d3.select(self.frameElement).style("height", height + "px");
+
+    // Interpolate the scales!
+    function arcTween(d) {
+        offsetDepth = d.depth;
+        var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+                yd = d3.interpolate(y.domain(), [d.y, 1]),
+                yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+        var dCopy = {};
+        for (var k in d) {
+            if (!d.hasOwnProperty(k)) { continue; }
+            if (k == 'children' || k == 'parent') { continue; }
+            dCopy[k] = d[k];
+        }
+        return function(d, i) {
+            return i ? function(t) { return myArc(d); } :
+                    function(t) {
+                        //console.log('2: ' + JSON.stringify(dCopy) + ' ' + t + ' ' + JSON.stringify(xd(t)) + ' ' + JSON.stringify(yd(t)) + ' ' + JSON.stringify(yr(t)));
+                        x.domain(xd(t)); y.domain(yd(t)).range(yr(t));
+                        return myArc(d);
+                    };
+        };
+    }
+
+    function arc2(d) {
+        offsetDepth = d.depth;
+        x.domain([d.x, d.x + d.dx]); y.domain([d.y, 1]).range([d.y ? 20 : 0, radius]);
+        return myArc;
+    }
+
+</script>

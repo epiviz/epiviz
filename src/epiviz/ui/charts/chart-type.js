@@ -108,9 +108,15 @@ epiviz.ui.charts.ChartType.prototype.chartHtmlAttributeName = function() { throw
 epiviz.ui.charts.ChartType.prototype.chartDisplayType = function() { throw Error('unimplemented abstract method'); };
 
 /**
+ * TODO: Remove
  * @returns {epiviz.measurements.Measurement.Type}
  */
-epiviz.ui.charts.ChartType.prototype.chartContentType = function() { throw Error('unimplemented abstract method'); };
+//epiviz.ui.charts.ChartType.prototype.chartContentType = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {function(epiviz.measurements.Measurement): boolean}
+ */
+epiviz.ui.charts.ChartType.prototype.measurementsFilter = function() { return function(m) { return true; }; };
 
 /**
  * If true, this flag indicates that the corresponding chart can only show measurements that belong to the same

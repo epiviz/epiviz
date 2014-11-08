@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        margin: auto;
+        position: relative;
+        width: 960px;
+    }
+
+    form {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+
+    .node {
+        border: solid 1px white;
+        font: 10px sans-serif;
+        line-height: 12px;
+        overflow: hidden;
+        position: absolute;
+        text-indent: 2px;
+    }
+
+</style>
+<form>
+    <label><input type="radio" name="mode" value="size" checked> Size</label>
+    <label><input type="radio" name="mode" value="count"> Count</label>
+</form>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+    var root =
+    {
+        "name": "Bacteria",
+        "children": [
+            {
+                "name": "Bacteroidetes",
+                "children": [
+                    {
+                        "name": "Bacteroidia",
+                        "children": [
+                            {
+                                "name": "Bacteroidales",
+                                "children": [
+                                    {
+                                        "name": "Prevotellaceae",
+                                        "children": [
+                                            {
+                                                "name": "Prevotella",
+                                                "children": [
+                                                    {
+                                                        "name": "Prevotella sp. BI-42",
+                                                        "children": [
+                                                            {"name": "316", "children": []},
+                                                            {"name": "411", "children": []},
+                                                            {"name": "13536", "children": []},
+                                                            {"name": "17138", "children": []},
+                                                            {"name": "19270", "children": []},
+                                                            {"name": "24034", "children": []},
+                                                            {"name": "25350", "children": []}
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "Prevotella sp. DJF_B112",
+                                                        "children": [
+                                                            {"name": "319", "children": []},
+                                                            {"name": "396", "children": []},
+                                                            {"name": "397", "children": []},
+                                                            {"name": "2552", "children": []},
+                                                            {"name": "13803", "children": []},
+                                                            {"name": "16252", "children": []},
+                                                            {"name": "22439", "children": []},
+                                                            {"name": "23063", "children": []},
+                                                            {"name": "23209", "children": []},
+                                                            {"name": "25124", "children": []},
+                                                            {"name": "26436", "children": []},
+                                                            {"name": "27295", "children": []},
+                                                            {"name": "43072", "children": []}
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "Prevotella sp. DJF_RP53",
+                                                        "children": [
+                                                            {"name": "327", "children": []},
+                                                            {"name": "440", "children": []},
+                                                            {"name": "12817", "children": []},
+                                                            {"name": "13661", "children": []},
+                                                            {"name": "13930", "children": []},
+                                                            {"name": "15438", "children": []},
+                                                            {"name": "17411", "children": []},
+                                                            {"name": "21761", "children": []}
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "Prevotella sp. oral clone BP1-28",
+                                                        "children": [
+                                                            {"name": "12245", "children": []},
+                                                            {"name": "23652", "children": []}
+                                                        ]
+                                                    },
+                                                    {"name": "Prevotella sp. DJF_LS16", "children": [{"name": "13604", "children": []}]},
+                                                    {
+                                                        "name": "Prevotella copri",
+                                                        "children": [
+                                                            {"name": "15597", "children": []},
+                                                            {"name": "16382", "children": []},
+                                                            {"name": "19129", "children": []},
+                                                            {"name": "21695", "children": []},
+                                                            {"name": "22345", "children": []},
+                                                            {"name": "23249", "children": []},
+                                                            {"name": "23294", "children": []},
+                                                            {"name": "27589", "children": []},
+                                                            {"name": "30331", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "Bacteroidaceae",
+                                        "children": [
+                                            {
+                                                "name": "Bacteroides",
+                                                "children": [
+                                                    {
+                                                        "name": "Bacteroides vulgatus",
+                                                        "children": [
+                                                            {"name": "43449", "children": []},
+                                                            {"name": "49450", "children": []},
+                                                            {"name": "55106", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Proteobacteria",
+                "children": [
+                    {
+                        "name": "Gammaproteobacteria",
+                        "children": [
+                            {
+                                "name": "Enterobacteriales",
+                                "children": [
+                                    {
+                                        "name": "Enterobacteriaceae",
+                                        "children": [
+                                            {
+                                                "name": "Escherichia",
+                                                "children": [
+                                                    {
+                                                        "name": "Escherichia coli",
+                                                        "children": [
+                                                            {"name": "3384", "children": []},
+                                                            {"name": "5052", "children": []},
+                                                            {"name": "7349", "children": []},
+                                                            {"name": "58381", "children": []},
+                                                            {"name": "58640", "children": []},
+                                                            {"name": "59842", "children": []},
+                                                            {"name": "63503", "children": []},
+                                                            {"name": "63551", "children": []},
+                                                            {"name": "64795", "children": []},
+                                                            {"name": "64796", "children": []},
+                                                            {"name": "64986", "children": []},
+                                                            {"name": "70246", "children": []},
+                                                            {"name": "71624", "children": []},
+                                                            {"name": "71660", "children": []},
+                                                            {"name": "71687", "children": []},
+                                                            {"name": "71691", "children": []},
+                                                            {"name": "75427", "children": []},
+                                                            {"name": "80484", "children": []},
+                                                            {"name": "80563", "children": []},
+                                                            {"name": "80645", "children": []},
+                                                            {"name": "89655", "children": []},
+                                                            {"name": "100517", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "name": "Citrobacter",
+                                                "children": [{"name": "Citrobacter freundii", "children": [{"name": "64988", "children": []}]}]
+                                            },
+                                            {
+                                                "name": "Klebsiella",
+                                                "children": [
+                                                    {
+                                                        "name": "Klebsiella pneumoniae",
+                                                        "children": [
+                                                            {"name": "110457", "children": []},
+                                                            {"name": "121102", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Pasteurellales",
+                                "children": [
+                                    {
+                                        "name": "Pasteurellaceae",
+                                        "children": [
+                                            {
+                                                "name": "Haemophilus",
+                                                "children": [
+                                                    {
+                                                        "name": "Haemophilus sp. oral clone BP2-46",
+                                                        "children": [{"name": "134492", "children": []}]
+                                                    },
+                                                    {"name": "Haemophilus parainfluenzae", "children": [{"name": "137811", "children": []}]}
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "NA",
+                "children": [
+                    {
+                        "name": "NA",
+                        "children": [
+                            {
+                                "name": "NA",
+                                "children": [
+                                    {
+                                        "name": "NA",
+                                        "children": [
+                                            {
+                                                "name": "NA",
+                                                "children": [
+                                                    {
+                                                        "name": "NA",
+                                                        "children": [
+                                                            {"name": "10433", "children": []},
+                                                            {"name": "13871", "children": []},
+                                                            {"name": "20986", "children": []},
+                                                            {"name": "22475", "children": []},
+                                                            {"name": "36412", "children": []},
+                                                            {"name": "71135", "children": []},
+                                                            {"name": "71612", "children": []},
+                                                            {"name": "92969", "children": []},
+                                                            {"name": "162210", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Firmicutes",
+                "children": [
+                    {
+                        "name": "Clostridia",
+                        "children": [
+                            {
+                                "name": "Clostridiales",
+                                "children": [
+                                    {
+                                        "name": "Lachnospiraceae",
+                                        "children": [
+                                            {
+                                                "name": "Dorea",
+                                                "children": [
+                                                    {
+                                                        "name": "Dorea longicatena",
+                                                        "children": [
+                                                            {"name": "11630", "children": []},
+                                                            {"name": "13083", "children": []},
+                                                            {"name": "29323", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "Ruminococcaceae",
+                                        "children": [
+                                            {
+                                                "name": "Ruminococcus",
+                                                "children": [
+                                                    {"name": "Ruminococcus lactaris", "children": [{"name": "22185", "children": []}]},
+                                                    {"name": "Ruminococcus gnavus", "children": [{"name": "41965", "children": []}]}
+                                                ]
+                                            },
+                                            {
+                                                "name": "Faecalibacterium",
+                                                "children": [
+                                                    {
+                                                        "name": "Faecalibacterium prausnitzii",
+                                                        "children": [
+                                                            {"name": "24342", "children": []},
+                                                            {"name": "41738", "children": []},
+                                                            {"name": "62910", "children": []},
+                                                            {"name": "62990", "children": []},
+                                                            {"name": "62991", "children": []},
+                                                            {"name": "66023", "children": []}
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "Faecalibacterium sp. DJF_VR20",
+                                                        "children": [
+                                                            {"name": "29214", "children": []},
+                                                            {"name": "31069", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "Clostridiaceae",
+                                        "children": [
+                                            {
+                                                "name": "Clostridium",
+                                                "children": [
+                                                    {
+                                                        "name": "Clostridium xylanolyticum",
+                                                        "children": [{"name": "44327", "children": []}]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "Eubacteriaceae",
+                                        "children": [
+                                            {
+                                                "name": "Eubacterium",
+                                                "children": [
+                                                    {
+                                                        "name": "Eubacterium rectale",
+                                                        "children": [
+                                                            {"name": "74643", "children": []},
+                                                            {"name": "83740", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "NA",
+                                        "children": [
+                                            {
+                                                "name": "Blautia",
+                                                "children": [{"name": "Blautia wexlerae", "children": [{"name": "92355", "children": []}]}]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Bacilli",
+                        "children": [
+                            {
+                                "name": "Lactobacillales",
+                                "children": [
+                                    {
+                                        "name": "Lactobacillaceae",
+                                        "children": [
+                                            {
+                                                "name": "Lactobacillus",
+                                                "children": [
+                                                    {
+                                                        "name": "Lactobacillus sp. TSK G32-2",
+                                                        "children": [
+                                                            {"name": "14782", "children": []},
+                                                            {"name": "26067", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "Streptococcaceae",
+                                        "children": [
+                                            {
+                                                "name": "Streptococcus",
+                                                "children": [
+                                                    {
+                                                        "name": "Streptococcus salivarius",
+                                                        "children": [
+                                                            {"name": "91091", "children": []},
+                                                            {"name": "106895", "children": []}
+                                                        ]
+                                                    },
+                                                    {"name": "Streptococcus sp. C151", "children": [{"name": "102968", "children": []}]},
+                                                    {"name": "Streptococcus sp. 13aVMg2", "children": [{"name": "108037", "children": []}]},
+                                                    {
+                                                        "name": "Streptococcus equinus",
+                                                        "children": [
+                                                            {"name": "123236", "children": []},
+                                                            {"name": "142181", "children": []}
+                                                        ]
+                                                    },
+                                                    {"name": "Streptococcus parasanguinis", "children": [{"name": "172372", "children": []}]}
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "Leuconostocaceae",
+                                        "children": [
+                                            {
+                                                "name": "Leuconostoc",
+                                                "children": [{"name": "Leuconostoc citreum", "children": [{"name": "154352", "children": []}]}]
+                                            },
+                                            {
+                                                "name": "Weissella",
+                                                "children": [{"name": "Weissella cibaria", "children": [{"name": "170809", "children": []}]}]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Negativicutes",
+                        "children": [
+                            {
+                                "name": "Selenomonadales",
+                                "children": [
+                                    {
+                                        "name": "Veillonellaceae",
+                                        "children": [
+                                            {
+                                                "name": "Veillonella",
+                                                "children": [
+                                                    {
+                                                        "name": "Veillonella parvula",
+                                                        "children": [
+                                                            {"name": "142560", "children": []},
+                                                            {"name": "153986", "children": []},
+                                                            {"name": "162397", "children": []}
+                                                        ]
+                                                    },
+                                                    {
+                                                        "name": "Veillonella sp. oral clone VeillE4",
+                                                        "children": [{"name": "154508", "children": []}]
+                                                    },
+                                                    {
+                                                        "name": "Veillonella sp. oral clone VeillD5",
+                                                        "children": [{"name": "162189", "children": []}]
+                                                    },
+                                                    {
+                                                        "name": "Veillonella sp. HF9",
+                                                        "children": [
+                                                            {"name": "182738", "children": []},
+                                                            {"name": "196401", "children": []}
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Actinobacteria",
+                "children": [
+                    {
+                        "name": "Actinobacteria (class)",
+                        "children": [
+                            {
+                                "name": "Actinomycetales",
+                                "children": [
+                                    {
+                                        "name": "Micrococcaceae",
+                                        "children": [
+                                            {
+                                                "name": "Rothia",
+                                                "children": [{"name": "Rothia mucilaginosa", "children": [{"name": "21611", "children": []}]}]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+
+
+
+    var margin = {top: 40, right: 10, bottom: 10, left: 10},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+    var color = d3.scale.category20c();
+
+    var treemap = d3.layout.treemap()
+            .size([width, height])
+            .sticky(true)
+            .value(function(d) { return d.size;; });
+
+    var div = d3.select("body").append("div")
+            .style("position", "relative")
+            .style("width", (width + margin.left + margin.right) + "px")
+            .style("height", (height + margin.top + margin.bottom) + "px")
+            .style("left", margin.left + "px")
+            .style("top", margin.top + "px");
+
+    d3.json("tree.json", function(error, root) {
+        var node = div.datum(root).selectAll(".node")
+                .data(treemap.nodes)
+                .enter().append("div")
+                .attr("class", "node")
+                .call(position)
+                .style("background", function(d) { return d.children ? color(d.name) : null; })
+                .text(function(d) { return d.children ? null : d.name; });
+
+        d3.selectAll("input").on("change", function change() {
+            var value = this.value === "count"
+                    ? function() { return 1; }
+                    : function(d) { return d.size; };
+
+            node
+                    .data(treemap.value(value).nodes)
+                    .transition()
+                    .duration(1500)
+                    .call(position);
+        });
+    });
+
+    function position() {
+        this.style("left", function(d) { return d.x + "px"; })
+                .style("top", function(d) { return d.y + "px"; })
+                .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+                .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+    }
+
+</script>

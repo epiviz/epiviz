@@ -156,6 +156,22 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   this._initializeSearchBox();
   this._initializeWorkspaceSaving();
 
+  /* TODO: Debug */
+  $('#sunburst-button').button({
+    text: false,
+    icons: {
+      primary: 'ui-icon ui-icon-heart'
+    }
+  }).click(
+    function() {
+      var sunburst = new epiviz.ui.charts.tree.Sunburst('sunburst-chart', $('#sunburst'), {
+        width: 600, height: 600,
+        colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_D3_CAT20),
+        margins: new epiviz.ui.charts.Margins(10, 10, 10, 10)
+      });
+      sunburst.draw();
+    });
+
   /*
    * Log in/out
    */
@@ -526,8 +542,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
             [new epiviz.ui.controls.DatasourceGroupWizardStep(), new epiviz.ui.controls.MeaurementsWizardStep()] :
             [new epiviz.ui.controls.MeaurementsWizardStep()],
           new epiviz.ui.controls.MeasurementsDialogData(
-            self._measurementsManager.measurements(),
-            chartType.chartContentType(),
+            self._measurementsManager.measurements().subset(chartType.measurementsFilter()),
             undefined, // datasource
             undefined, // datasourceGroup
             undefined, // dataprovider

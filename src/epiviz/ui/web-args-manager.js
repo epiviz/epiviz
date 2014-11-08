@@ -51,11 +51,16 @@ epiviz.ui.WebArgsManager.prototype._updateUrl = function() {
     if (!args.hasOwnProperty(arg)) { continue; }
 
     if (Array.isArray(args[arg])) {
+      var val;
       for (var i = 0; i < args[arg].length; ++i) {
-        url += sprintf('%s[]=%s&', arg, args[arg][i]);
+        val = args[arg][i];
+        if (val == undefined) { val = 'undefined'; }
+        url += sprintf('%s[]=%s&', arg, val);
       }
     } else {
-      url += sprintf('%s=%s&', arg, args[arg]);
+      val = args[arg];
+      if (val == undefined) { val = 'undefined'; }
+      url += sprintf('%s=%s&', arg, val);
     }
   }
 

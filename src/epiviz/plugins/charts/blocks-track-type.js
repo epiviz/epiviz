@@ -58,9 +58,14 @@ epiviz.plugins.charts.BlocksTrackType.prototype.chartHtmlAttributeName = functio
 /**
  * @returns {epiviz.measurements.Measurement.Type}
  */
-epiviz.plugins.charts.BlocksTrackType.prototype.chartContentType = function() {
+/*epiviz.plugins.charts.BlocksTrackType.prototype.chartContentType = function() {
   return epiviz.measurements.Measurement.Type.RANGE;
-};
+};*/
+
+/**
+ * @returns {function(epiviz.measurements.Measurement): boolean}
+ */
+epiviz.plugins.charts.BlocksTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.RANGE; }; };
 
 /**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}

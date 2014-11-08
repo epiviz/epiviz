@@ -50,6 +50,12 @@ epiviz.datatypes.GenomicRangeArray = function(measurement, boundaries, globalSta
    */
   this._metadata = values.metadata;
 
+  /**
+   * @type {?number}
+   * @private
+   */
+  this._size = null;
+
   // If useOffset is true, it means that the values in the start/end arrays are compressed, and each value
   // in the array (with the exception of the first) is the offset between the real value and the previous one.
   // If the values are compressed, here we decompress them:
@@ -97,7 +103,16 @@ epiviz.datatypes.GenomicRangeArray.prototype.get = function(i) {
  * @override
  */
 epiviz.datatypes.GenomicRangeArray.prototype.size = function() {
-  return this._start ? this._start.length : 0;
+  if (this._size == undefined) {
+    var size = Math.max(
+      this._id ? this._id.length : 0,
+      this._start ? this._start.length : 0,
+      this._end ? this._end.length : 0,
+      (this._metadata && Object.keys(this._metadata).length) ?
+        Math.max.apply(undefined, $.map(this._metadata, function(col) { return col.length; })) : 0);
+    this._size = size;
+  }
+  return this._size;
 };
 
 /**
@@ -233,7 +248,7 @@ epiviz.datatypes.GenomicRangeArray.prototype.id = function(index) {
  * @returns {number}
  */
 epiviz.datatypes.GenomicRangeArray.prototype.start = function(index) {
-  return this._start[index];
+  return this._start ? this._start[index] : undefined;
 };
 
 /**
@@ -241,7 +256,7 @@ epiviz.datatypes.GenomicRangeArray.prototype.start = function(index) {
  * @returns {number}
  */
 epiviz.datatypes.GenomicRangeArray.prototype.end = function(index) {
-  return this._end ? this._end[index] : this._start[index];
+  return this._end ? this._end[index] : this.start(index);
 };
 
 /**

@@ -55,7 +55,6 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
   // Filter out measurements that don't match the given restrictions
   this._measurements = data.measurements.subset(
     function(m) {
-      if (data.type && data.type != m.type()) { return false; }
       if (data.datasource && data.datasource != m.datasourceId()) { return false; }
       if (data.datasourceGroup && data.datasourceGroup != m.datasourceGroup()) { return false; }
       if (data.dataprovider && data.dataprovider != m.dataprovider()) { return false; }

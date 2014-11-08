@@ -196,7 +196,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   for (i = 0; i < nEntries; ++i) {
     globalIndex = i + firstGlobalIndex;
     var item = data.get(this.measurements().first()).getByGlobalIndex(globalIndex).rowItem;
-    if (item.start() < range.end() && item.end() > range.start()) {
+    if ((range.start() == undefined || range.end() == undefined) ||
+      item.start() < range.end() && item.end() > range.start()) {
       var colLabel = item.metadata(label) || '' + item.id();
       columnMap[colnames.length] = globalIndex;
       colnames.push(colLabel);

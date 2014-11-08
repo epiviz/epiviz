@@ -240,7 +240,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/data/empty-response-data-provider.js"></script>
     <script src="src/epiviz/data/websocket-data-provider.js"></script>
     <script src="src/epiviz/data/webserver-data-provider.js"></script>
-    <script src="src/epiviz/data/mock-data-provider.js"></script>
+    <script src="src/epiviz/data/metagenomics-data-provider.js"></script> <!-- TODO: Delete! -->
 
     <script src="src/epiviz/datatypes/seq-info.js"></script>
     <script src="src/epiviz/datatypes/genomic-array.js"></script>
@@ -327,6 +327,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/genes-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
+
+    <script src="src/epiviz/ui/charts/tree/node.js"></script>
+    <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
 
     <script src="src/epiviz/main.js"></script>
     
@@ -503,6 +506,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         <span class="separator">|</span>
 
         <button id="help-button">Help</button>
+        <button id="sunburst-button">Sunburst</button>
       </div>
     </div>
 
@@ -515,6 +519,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
           <h3><a href="#"><b><span style="color: #025167">Views by Location</span></b></a></h3>
           <div id="track-container"></div>
       </div>
+      <div id="sunburst"></div>
     </div>
 
     <div id="pagefooter" class="ui-layout-south"></div>

@@ -164,9 +164,10 @@ epiviz.workspaces.WorkspaceManager.prototype.updateWorkspaces = function(workspa
 
   var webArgs = epiviz.ui.WebArgsManager.WEB_ARGS;
 
-  var seqName = webArgs['seqName'] || this._activeWorkspace.range().seqName();
-  var start = parseInt(webArgs['start']) || this._activeWorkspace.range().start();
-  var end = parseInt(webArgs['end']) || this._activeWorkspace.range().end();
+  var seqName = (webArgs['seqName'] != undefined) ? webArgs['seqName'] : this._activeWorkspace.range().seqName();
+  var start = null, end = null;
+  if (webArgs['start'] != 'undefined') { start = parseInt(webArgs['start']) || this._activeWorkspace.range().start(); }
+  if (webArgs['end'] != 'undefined') { end = parseInt(webArgs['end']) || this._activeWorkspace.range().end(); }
 
   this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end));
 

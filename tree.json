@@ -1,0 +1,2128 @@
+{
+  "name": "Bacteria",
+  "size": 1,
+  "children": [
+    {
+      "name": "Bacteroidetes",
+      "size": 1,
+      "children": [
+        {
+          "name": "Bacteroidia",
+          "size": 1,
+          "children": [
+            {
+              "name": "Bacteroidales",
+              "size": 1,
+              "children": [
+                {
+                  "name": "Prevotellaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Prevotella",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Prevotella sp. BI-42",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "316",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "9DrUx7",
+                              "id": "oYNoKZ",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "411",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "9DrUx7",
+                              "id": "VRiiNN",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "13536",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "9DrUx7",
+                              "id": "j3eSPI",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "17138",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "9DrUx7",
+                              "id": "YxK5DU",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "19270",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "9DrUx7",
+                              "id": "iLhafP",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "24034",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "9DrUx7",
+                              "id": "A2PmwK",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "25350",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "9DrUx7",
+                              "id": "6zRdwx",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "ehXh1j",
+                          "id": "9DrUx7",
+                          "nchildren": 7,
+                          "nleaves": 7
+                        },
+                        {
+                          "name": "Prevotella sp. DJF_B112",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "319",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "dOBDEw",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "396",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "3PQBKK",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "397",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "DyF8LW",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "2552",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "Tg2JfK",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "13803",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "BhOHKW",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "16252",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "1nSh2a",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "22439",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "Q9UVXA",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "23063",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "WfTCq6",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "23209",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "Ce4s89",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "25124",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "lqXS9k",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "26436",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "mjRpQ2",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "27295",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "iNglKC",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "43072",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "NqfcCJ",
+                              "id": "MBiTT4",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "ehXh1j",
+                          "id": "NqfcCJ",
+                          "nchildren": 13,
+                          "nleaves": 13
+                        },
+                        {
+                          "name": "Prevotella sp. DJF_RP53",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "327",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "YwHkgq",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "440",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "nqnWXO",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "12817",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "HuvPro",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "13661",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "rBA9mK",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "13930",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "vtRlVk",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "15438",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "56jH9N",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "17411",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "DIIby3",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "21761",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "7s3Dpl",
+                              "id": "QY2szc",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "ehXh1j",
+                          "id": "7s3Dpl",
+                          "nchildren": 8,
+                          "nleaves": 8
+                        },
+                        {
+                          "name": "Prevotella sp. oral clone BP1-28",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "12245",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "kR7Gdd",
+                              "id": "V8r18m",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "23652",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "kR7Gdd",
+                              "id": "udUuPa",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "ehXh1j",
+                          "id": "kR7Gdd",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        },
+                        {
+                          "name": "Prevotella sp. DJF_LS16",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "13604",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "U2R97D",
+                              "id": "N34fpv",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "ehXh1j",
+                          "id": "U2R97D",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        },
+                        {
+                          "name": "Prevotella copri",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "15597",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "XmfyTU",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "16382",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "hD3DsQ",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "19129",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "hAzfir",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "21695",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "zFPu5U",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "22345",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "DVIzE5",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "23249",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "QkoMhk",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "23294",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "yKvX9x",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "27589",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "9Sw1kc",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "30331",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "mqOgxc",
+                              "id": "q56lnX",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "ehXh1j",
+                          "id": "mqOgxc",
+                          "nchildren": 9,
+                          "nleaves": 9
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "tZIpoV",
+                      "id": "ehXh1j",
+                      "nchildren": 6,
+                      "nleaves": 40
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "Y858VK",
+                  "id": "tZIpoV",
+                  "nchildren": 1,
+                  "nleaves": 40
+                },
+                {
+                  "name": "Bacteroidaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Bacteroides",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Bacteroides vulgatus",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "43449",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "6skqFz",
+                              "id": "P3i8hL",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "49450",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "6skqFz",
+                              "id": "oQoffC",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "55106",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "6skqFz",
+                              "id": "xcGEdc",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "uOrgtr",
+                          "id": "6skqFz",
+                          "nchildren": 3,
+                          "nleaves": 3
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "eny3vE",
+                      "id": "uOrgtr",
+                      "nchildren": 1,
+                      "nleaves": 3
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "Y858VK",
+                  "id": "eny3vE",
+                  "nchildren": 1,
+                  "nleaves": 3
+                }
+              ],
+              "depth": 3,
+              "parentId": "VNV7Mg",
+              "id": "Y858VK",
+              "nchildren": 2,
+              "nleaves": 43
+            }
+          ],
+          "depth": 2,
+          "parentId": "lsaWsD",
+          "id": "VNV7Mg",
+          "nchildren": 1,
+          "nleaves": 43
+        }
+      ],
+      "depth": 1,
+      "parentId": "rN24lF",
+      "id": "lsaWsD",
+      "nchildren": 1,
+      "nleaves": 43
+    },
+    {
+      "name": "Proteobacteria",
+      "size": 1,
+      "children": [
+        {
+          "name": "Gammaproteobacteria",
+          "size": 1,
+          "children": [
+            {
+              "name": "Enterobacteriales",
+              "size": 1,
+              "children": [
+                {
+                  "name": "Enterobacteriaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Escherichia",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Escherichia coli",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "3384",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "vWz3Vl",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "5052",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "zfu1Hn",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "7349",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "4V7mxZ",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "58381",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "e73Mzk",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "58640",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "e27akH",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "59842",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "H6mQ1l",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "63503",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "4yYijq",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "63551",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "4XaeXa",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "64795",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "2lKaAS",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "64796",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "3LBXXQ",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "64986",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "MDxAhS",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "70246",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "xePTUe",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "71624",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "PCFlED",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "71660",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "wfkYpb",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "71687",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "J8L1kW",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "71691",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "RzcL9e",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "75427",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "UDw4AJ",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "80484",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "x2kjv2",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "80563",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "jJkY5b",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "80645",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "xAwyEC",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "89655",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "exHUJk",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "100517",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rgqeGR",
+                              "id": "hQ3Esn",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "8rlTp9",
+                          "id": "rgqeGR",
+                          "nchildren": 22,
+                          "nleaves": 22
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "Hcwmqq",
+                      "id": "8rlTp9",
+                      "nchildren": 1,
+                      "nleaves": 22
+                    },
+                    {
+                      "name": "Citrobacter",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Citrobacter freundii",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "64988",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "r6QipO",
+                              "id": "5DXfn2",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "t8d5tK",
+                          "id": "r6QipO",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "Hcwmqq",
+                      "id": "t8d5tK",
+                      "nchildren": 1,
+                      "nleaves": 1
+                    },
+                    {
+                      "name": "Klebsiella",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Klebsiella pneumoniae",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "110457",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "8lPqbB",
+                              "id": "QLtQda",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "121102",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "8lPqbB",
+                              "id": "f3G1z3",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "nCyRWZ",
+                          "id": "8lPqbB",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "Hcwmqq",
+                      "id": "nCyRWZ",
+                      "nchildren": 1,
+                      "nleaves": 2
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "7qf1U5",
+                  "id": "Hcwmqq",
+                  "nchildren": 3,
+                  "nleaves": 25
+                }
+              ],
+              "depth": 3,
+              "parentId": "M1xiRY",
+              "id": "7qf1U5",
+              "nchildren": 1,
+              "nleaves": 25
+            },
+            {
+              "name": "Pasteurellales",
+              "size": 1,
+              "children": [
+                {
+                  "name": "Pasteurellaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Haemophilus",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Haemophilus sp. oral clone BP2-46",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "134492",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "ucwm8a",
+                              "id": "QdiPIP",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "XaqV8f",
+                          "id": "ucwm8a",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        },
+                        {
+                          "name": "Haemophilus parainfluenzae",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "137811",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "nUmhQr",
+                              "id": "hc3Hhv",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "XaqV8f",
+                          "id": "nUmhQr",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "b9OTS8",
+                      "id": "XaqV8f",
+                      "nchildren": 2,
+                      "nleaves": 2
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "KHuLXg",
+                  "id": "b9OTS8",
+                  "nchildren": 1,
+                  "nleaves": 2
+                }
+              ],
+              "depth": 3,
+              "parentId": "M1xiRY",
+              "id": "KHuLXg",
+              "nchildren": 1,
+              "nleaves": 2
+            }
+          ],
+          "depth": 2,
+          "parentId": "bx3qWl",
+          "id": "M1xiRY",
+          "nchildren": 2,
+          "nleaves": 27
+        }
+      ],
+      "depth": 1,
+      "parentId": "rN24lF",
+      "id": "bx3qWl",
+      "nchildren": 1,
+      "nleaves": 27
+    },
+    {
+      "name": "NA",
+      "size": 1,
+      "children": [
+        {
+          "name": "NA",
+          "size": 1,
+          "children": [
+            {
+              "name": "NA",
+              "size": 1,
+              "children": [
+                {
+                  "name": "NA",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "NA",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "NA",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "10433",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "f9aiUl",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "13871",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "NCUZys",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "20986",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "PFPEQO",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "22475",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "7LEPbD",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "36412",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "mv9VX8",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "71135",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "eLkzwY",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "71612",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "xb66NF",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "92969",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "vTCT3r",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "162210",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "QMNqVO",
+                              "id": "5UoAJF",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "gXO1p9",
+                          "id": "QMNqVO",
+                          "nchildren": 9,
+                          "nleaves": 9
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "PqPTO7",
+                      "id": "gXO1p9",
+                      "nchildren": 1,
+                      "nleaves": 9
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "7HYSHR",
+                  "id": "PqPTO7",
+                  "nchildren": 1,
+                  "nleaves": 9
+                }
+              ],
+              "depth": 3,
+              "parentId": "pfviqH",
+              "id": "7HYSHR",
+              "nchildren": 1,
+              "nleaves": 9
+            }
+          ],
+          "depth": 2,
+          "parentId": "jJUc3y",
+          "id": "pfviqH",
+          "nchildren": 1,
+          "nleaves": 9
+        }
+      ],
+      "depth": 1,
+      "parentId": "rN24lF",
+      "id": "jJUc3y",
+      "nchildren": 1,
+      "nleaves": 9
+    },
+    {
+      "name": "Firmicutes",
+      "size": 1,
+      "children": [
+        {
+          "name": "Clostridia",
+          "size": 1,
+          "children": [
+            {
+              "name": "Clostridiales",
+              "size": 1,
+              "children": [
+                {
+                  "name": "Lachnospiraceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Dorea",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Dorea longicatena",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "11630",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "XeuzNN",
+                              "id": "neHEgA",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "13083",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "XeuzNN",
+                              "id": "bR8IC1",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "29323",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "XeuzNN",
+                              "id": "I985Fg",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "C8rUL8",
+                          "id": "XeuzNN",
+                          "nchildren": 3,
+                          "nleaves": 3
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "PWieSA",
+                      "id": "C8rUL8",
+                      "nchildren": 1,
+                      "nleaves": 3
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "6M61PW",
+                  "id": "PWieSA",
+                  "nchildren": 1,
+                  "nleaves": 3
+                },
+                {
+                  "name": "Ruminococcaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Ruminococcus",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Ruminococcus lactaris",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "22185",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "pbdBag",
+                              "id": "zaNQdP",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "yRfvX7",
+                          "id": "pbdBag",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        },
+                        {
+                          "name": "Ruminococcus gnavus",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "41965",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "Fe1oOu",
+                              "id": "Q6R9kI",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "yRfvX7",
+                          "id": "Fe1oOu",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "VLYwFP",
+                      "id": "yRfvX7",
+                      "nchildren": 2,
+                      "nleaves": 2
+                    },
+                    {
+                      "name": "Faecalibacterium",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Faecalibacterium prausnitzii",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "24342",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "avJogR",
+                              "id": "w3awjt",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "41738",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "avJogR",
+                              "id": "NjHj0q",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "62910",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "avJogR",
+                              "id": "2an8AP",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "62990",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "avJogR",
+                              "id": "tGojRp",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "62991",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "avJogR",
+                              "id": "rm1fwf",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "66023",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "avJogR",
+                              "id": "zTcEgp",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "3aIyGc",
+                          "id": "avJogR",
+                          "nchildren": 6,
+                          "nleaves": 6
+                        },
+                        {
+                          "name": "Faecalibacterium sp. DJF_VR20",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "29214",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "4lQreM",
+                              "id": "FmpJWi",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "31069",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "4lQreM",
+                              "id": "7HNiFO",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "3aIyGc",
+                          "id": "4lQreM",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "VLYwFP",
+                      "id": "3aIyGc",
+                      "nchildren": 2,
+                      "nleaves": 8
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "6M61PW",
+                  "id": "VLYwFP",
+                  "nchildren": 2,
+                  "nleaves": 10
+                },
+                {
+                  "name": "Clostridiaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Clostridium",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Clostridium xylanolyticum",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "44327",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "ftAiy7",
+                              "id": "wAVlqt",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "7rbQ56",
+                          "id": "ftAiy7",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "lS6huG",
+                      "id": "7rbQ56",
+                      "nchildren": 1,
+                      "nleaves": 1
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "6M61PW",
+                  "id": "lS6huG",
+                  "nchildren": 1,
+                  "nleaves": 1
+                },
+                {
+                  "name": "Eubacteriaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Eubacterium",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Eubacterium rectale",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "74643",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "vvhnoO",
+                              "id": "HmALZW",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "83740",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "vvhnoO",
+                              "id": "Cl86bf",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "b5Nj6J",
+                          "id": "vvhnoO",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "qxevjl",
+                      "id": "b5Nj6J",
+                      "nchildren": 1,
+                      "nleaves": 2
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "6M61PW",
+                  "id": "qxevjl",
+                  "nchildren": 1,
+                  "nleaves": 2
+                },
+                {
+                  "name": "NA",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Blautia",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Blautia wexlerae",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "92355",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "hFpNYM",
+                              "id": "WgGNas",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "cS8eqi",
+                          "id": "hFpNYM",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "wIg9zP",
+                      "id": "cS8eqi",
+                      "nchildren": 1,
+                      "nleaves": 1
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "6M61PW",
+                  "id": "wIg9zP",
+                  "nchildren": 1,
+                  "nleaves": 1
+                }
+              ],
+              "depth": 3,
+              "parentId": "XhFukn",
+              "id": "6M61PW",
+              "nchildren": 5,
+              "nleaves": 17
+            }
+          ],
+          "depth": 2,
+          "parentId": "0j8plG",
+          "id": "XhFukn",
+          "nchildren": 1,
+          "nleaves": 17
+        },
+        {
+          "name": "Bacilli",
+          "size": 1,
+          "children": [
+            {
+              "name": "Lactobacillales",
+              "size": 1,
+              "children": [
+                {
+                  "name": "Lactobacillaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Lactobacillus",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Lactobacillus sp. TSK G32-2",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "14782",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "RWydbM",
+                              "id": "hxJ0u7",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "26067",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "RWydbM",
+                              "id": "8yfCM6",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "nhhr2t",
+                          "id": "RWydbM",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "5CXvI7",
+                      "id": "nhhr2t",
+                      "nchildren": 1,
+                      "nleaves": 2
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "meVOHm",
+                  "id": "5CXvI7",
+                  "nchildren": 1,
+                  "nleaves": 2
+                },
+                {
+                  "name": "Streptococcaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Streptococcus",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Streptococcus salivarius",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "91091",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "LmZr1V",
+                              "id": "ojFemY",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "106895",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "LmZr1V",
+                              "id": "FIawov",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5lpbJU",
+                          "id": "LmZr1V",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        },
+                        {
+                          "name": "Streptococcus sp. C151",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "102968",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "d4q3Iz",
+                              "id": "cvyIr9",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5lpbJU",
+                          "id": "d4q3Iz",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        },
+                        {
+                          "name": "Streptococcus sp. 13aVMg2",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "108037",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "nEdGsO",
+                              "id": "Y0RylC",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5lpbJU",
+                          "id": "nEdGsO",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        },
+                        {
+                          "name": "Streptococcus equinus",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "123236",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "K6fNJl",
+                              "id": "RS64Ce",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "142181",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "K6fNJl",
+                              "id": "RfsGvw",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5lpbJU",
+                          "id": "K6fNJl",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        },
+                        {
+                          "name": "Streptococcus parasanguinis",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "172372",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "qQOEu8",
+                              "id": "Abb51w",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5lpbJU",
+                          "id": "qQOEu8",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "1vD11N",
+                      "id": "5lpbJU",
+                      "nchildren": 5,
+                      "nleaves": 7
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "meVOHm",
+                  "id": "1vD11N",
+                  "nchildren": 1,
+                  "nleaves": 7
+                },
+                {
+                  "name": "Leuconostocaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Leuconostoc",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Leuconostoc citreum",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "154352",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "5yHEIY",
+                              "id": "HlKBPU",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "7cl5ux",
+                          "id": "5yHEIY",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "DylDpc",
+                      "id": "7cl5ux",
+                      "nchildren": 1,
+                      "nleaves": 1
+                    },
+                    {
+                      "name": "Weissella",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Weissella cibaria",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "170809",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "rJEzwT",
+                              "id": "LjD4Kz",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "XUKCgr",
+                          "id": "rJEzwT",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "DylDpc",
+                      "id": "XUKCgr",
+                      "nchildren": 1,
+                      "nleaves": 1
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "meVOHm",
+                  "id": "DylDpc",
+                  "nchildren": 2,
+                  "nleaves": 2
+                }
+              ],
+              "depth": 3,
+              "parentId": "7iSuvy",
+              "id": "meVOHm",
+              "nchildren": 3,
+              "nleaves": 11
+            }
+          ],
+          "depth": 2,
+          "parentId": "0j8plG",
+          "id": "7iSuvy",
+          "nchildren": 1,
+          "nleaves": 11
+        },
+        {
+          "name": "Negativicutes",
+          "size": 1,
+          "children": [
+            {
+              "name": "Selenomonadales",
+              "size": 1,
+              "children": [
+                {
+                  "name": "Veillonellaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Veillonella",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Veillonella parvula",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "142560",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "0Dqflu",
+                              "id": "S011Ja",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "153986",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "0Dqflu",
+                              "id": "1KAtwf",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "162397",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "0Dqflu",
+                              "id": "L0n6e3",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5fYMXH",
+                          "id": "0Dqflu",
+                          "nchildren": 3,
+                          "nleaves": 3
+                        },
+                        {
+                          "name": "Veillonella sp. oral clone VeillE4",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "154508",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "BfMFqx",
+                              "id": "KOaOJO",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5fYMXH",
+                          "id": "BfMFqx",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        },
+                        {
+                          "name": "Veillonella sp. oral clone VeillD5",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "162189",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "tPWCoG",
+                              "id": "cQORBZ",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5fYMXH",
+                          "id": "tPWCoG",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        },
+                        {
+                          "name": "Veillonella sp. HF9",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "182738",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "oxyeV9",
+                              "id": "fIJ4sg",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            },
+                            {
+                              "name": "196401",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "oxyeV9",
+                              "id": "PpZ5ej",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "5fYMXH",
+                          "id": "oxyeV9",
+                          "nchildren": 2,
+                          "nleaves": 2
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "OlFGW1",
+                      "id": "5fYMXH",
+                      "nchildren": 4,
+                      "nleaves": 7
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "6j8sDX",
+                  "id": "OlFGW1",
+                  "nchildren": 1,
+                  "nleaves": 7
+                }
+              ],
+              "depth": 3,
+              "parentId": "sWkWTH",
+              "id": "6j8sDX",
+              "nchildren": 1,
+              "nleaves": 7
+            }
+          ],
+          "depth": 2,
+          "parentId": "0j8plG",
+          "id": "sWkWTH",
+          "nchildren": 1,
+          "nleaves": 7
+        }
+      ],
+      "depth": 1,
+      "parentId": "rN24lF",
+      "id": "0j8plG",
+      "nchildren": 3,
+      "nleaves": 35
+    },
+    {
+      "name": "Actinobacteria",
+      "size": 1,
+      "children": [
+        {
+          "name": "Actinobacteria (class)",
+          "size": 1,
+          "children": [
+            {
+              "name": "Actinomycetales",
+              "size": 1,
+              "children": [
+                {
+                  "name": "Micrococcaceae",
+                  "size": 1,
+                  "children": [
+                    {
+                      "name": "Rothia",
+                      "size": 1,
+                      "children": [
+                        {
+                          "name": "Rothia mucilaginosa",
+                          "size": 1,
+                          "children": [
+                            {
+                              "name": "21611",
+                              "size": 1,
+                              "children": [],
+                              "depth": 7,
+                              "parentId": "b7lQ8A",
+                              "id": "MpFV6L",
+                              "nchildren": 0,
+                              "nleaves": 1
+                            }
+                          ],
+                          "depth": 6,
+                          "parentId": "GNDxiN",
+                          "id": "b7lQ8A",
+                          "nchildren": 1,
+                          "nleaves": 1
+                        }
+                      ],
+                      "depth": 5,
+                      "parentId": "A6FC9r",
+                      "id": "GNDxiN",
+                      "nchildren": 1,
+                      "nleaves": 1
+                    }
+                  ],
+                  "depth": 4,
+                  "parentId": "ejpeGT",
+                  "id": "A6FC9r",
+                  "nchildren": 1,
+                  "nleaves": 1
+                }
+              ],
+              "depth": 3,
+              "parentId": "7nJibs",
+              "id": "ejpeGT",
+              "nchildren": 1,
+              "nleaves": 1
+            }
+          ],
+          "depth": 2,
+          "parentId": "RnVec3",
+          "id": "7nJibs",
+          "nchildren": 1,
+          "nleaves": 1
+        }
+      ],
+      "depth": 1,
+      "parentId": "rN24lF",
+      "id": "RnVec3",
+      "nchildren": 1,
+      "nleaves": 1
+    }
+  ],
+  "depth": 0,
+  "id": "rN24lF",
+  "nchildren": 5,
+  "nleaves": 115
+}

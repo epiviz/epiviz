@@ -9,7 +9,7 @@ goog.provide('epiviz.data.Request');
 /**
  * @param {number} id
  * @param {Object.<string, string>} args
- * @param {epiviz.data.Request.Method} method
+ * @param {epiviz.data.Request.Method} [method]
  * @constructor
  */
 epiviz.data.Request = function(id, args, method) {
@@ -177,7 +177,7 @@ epiviz.data.Request.emptyRequest = function() {
 
 /**
  * @param {epiviz.measurements.Measurement} datasource
- * @param {epiviz.datatypes.GenomicRange} range
+ * @param {epiviz.datatypes.GenomicRange} [range]
  * @returns {epiviz.data.Request}
  */
 epiviz.data.Request.getRows = function(datasource, range) {
@@ -185,16 +185,16 @@ epiviz.data.Request.getRows = function(datasource, range) {
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_ROWS,
     datasource: datasource.id(),
-    seqName: range.seqName(),
-    start: range.start(),
-    end: range.end(),
+    seqName: range ? range.seqName() : undefined,
+    start: range ? range.start() : undefined,
+    end: range ? range.end() : undefined,
     metadata: datasource.metadata()
   });
 };
 
 /**
  * @param {epiviz.measurements.Measurement} measurement
- * @param {epiviz.datatypes.GenomicRange} range
+ * @param {epiviz.datatypes.GenomicRange} [range]
  * @returns {epiviz.data.Request}
  */
 epiviz.data.Request.getValues = function(measurement, range) {
@@ -203,9 +203,9 @@ epiviz.data.Request.getValues = function(measurement, range) {
     action: epiviz.data.Request.Action.GET_VALUES,
     datasource: measurement.datasource().id(),
     measurement: measurement.id(),
-    seqName: range.seqName(),
-    start: range.start(),
-    end: range.end()
+    seqName: range ? range.seqName() : undefined,
+    start: range ? range.start() : undefined,
+    end: range ? range.end() : undefined
   });
 };
 

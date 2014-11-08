@@ -18,16 +18,11 @@ goog.provide('epiviz.ui.controls.MeasurementsDialogData');
  * @constructor
  * @struct
  */
-epiviz.ui.controls.MeasurementsDialogData = function(measurements, type, datasource, datasourceGroup, dataprovider, annotation, defaultChartType, minSelectedMeasurements) {
+epiviz.ui.controls.MeasurementsDialogData = function(measurements, datasource, datasourceGroup, dataprovider, annotation, defaultChartType, minSelectedMeasurements) {
   /**
    * @type {epiviz.measurements.MeasurementSet}
    */
   this.measurements = measurements;
-
-  /**
-   * @type {epiviz.measurements.Measurement.Type=}
-   */
-  this.type = type;
 
   /**
    * @type {string=}

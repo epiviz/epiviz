@@ -159,7 +159,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
   });
 
-  var nGenes = lastGlobalIndex - firstGlobalIndex;
+  var nItems = lastGlobalIndex - firstGlobalIndex;
 
   var margins = this.margins();
   var width = this.width();
@@ -187,13 +187,14 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   this._drawAxes(xScale, yScale, 15, 15, this._chartContent);
 
   var i, index;
-  var indices = []; //epiviz.utils.range(nSeries * nGenes);
-  for (i = 0; i < nGenes; ++i) {
+  var indices = []; //epiviz.utils.range(nSeries * nItems);
+  for (i = 0; i < nItems; ++i) {
     index = i + firstGlobalIndex;
     var item = data.get(this._measurementsX[0]).getByGlobalIndex(index).rowItem;
-    if (item.start() < range.end() && item.end() > range.start()) {
+    if ((range.start() == undefined || range.end() == undefined) ||
+      (item.start() < range.end() && item.end() > range.start())) {
       for (var j = 0; j < nSeries; ++j) {
-        indices.push(j * nGenes + i);
+        indices.push(j * nItems + i);
       }
     }
   }
@@ -202,9 +203,9 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   var items = [];
   var maxGroupItems = 1;
   for (i = 0; i < indices.length; ++i) {
-    index = indices[i] % nGenes;
+    index = indices[i] % nItems;
     var globalIndex = index + firstGlobalIndex;
-    var seriesIndex = Math.floor(index / nGenes);
+    var seriesIndex = Math.floor(index / nItems);
     var mX = self._measurementsX[seriesIndex];
     var mY = self._measurementsY[seriesIndex];
     var cellX = data.get(mX).getByGlobalIndex(globalIndex);

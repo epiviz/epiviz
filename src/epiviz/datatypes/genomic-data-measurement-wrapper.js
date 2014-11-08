@@ -57,7 +57,8 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
   }
 
   if (firstGlobalIndex != undefined) {
-    if (this._measurement.type() == epiviz.measurements.Measurement.Type.FEATURE) {
+    if (this._measurement.type() == epiviz.measurements.Measurement.Type.FEATURE ||
+      this._measurement.type() == epiviz.measurements.Measurement.Type.UNORDERED) {
       values = this._container.values(this._measurement);
       var valueIndex = firstGlobalIndex - values.globalStartIndex() + index;
       value = values.get(valueIndex);
@@ -94,7 +95,8 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.globalStartIndex = func
 
   if (firstGlobalIndex === null) { return firstGlobalIndex; }
 
-  if (this._measurement.type() == epiviz.measurements.Measurement.Type.FEATURE) {
+  if (this._measurement.type() == epiviz.measurements.Measurement.Type.FEATURE ||
+    this._measurement.type() == epiviz.measurements.Measurement.Type.UNORDERED) {
     values = this._container.values(this._measurement);
     if (!values.globalStartIndex()) { return values.globalStartIndex(); }
     firstGlobalIndex = Math.max(firstGlobalIndex, values.globalStartIndex());
@@ -118,7 +120,8 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.size = function() {
 
   var result = rows.size() - firstGlobalIndex + rows.globalStartIndex();
 
-  if (this._measurement.type() == epiviz.measurements.Measurement.Type.FEATURE) {
+  if (this._measurement.type() == epiviz.measurements.Measurement.Type.FEATURE ||
+    this._measurement.type() == epiviz.measurements.Measurement.Type.UNORDERED) {
     result = Math.min(result, values.size() - firstGlobalIndex + values.globalStartIndex());
   }
 
