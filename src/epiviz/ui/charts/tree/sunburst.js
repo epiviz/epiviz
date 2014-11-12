@@ -95,10 +95,57 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
    * @type {function(epiviz.ui.charts.tree.UiNode): string}
    * @private
    */
-  this._arc = null;
+  this._arcMap = null;
+
+  /**
+   * The number of milliseconds for animations within the chart
+   * @type {number}
+   * @private
+   */
+  this._animationDelay = 500;
+
+  /**
+   * @type {Array.<epiviz.ui.charts.tree.UiNode>}
+   * @private
+   */
+  this._uiData = null;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this._oldSubtreeDepth = null;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this._subtreeDepth = null;
+
+  /**
+   * @type {Object.<string, epiviz.ui.charts.tree.UiNode>}
+   * @private
+   */
+  this._oldUiDataMap = null;
+
+  /**
+   * @type {Object.<string, epiviz.ui.charts.tree.UiNode>}
+   * @private
+   */
+  this._uiDataMap = null;
 
   this._initialize();
 };
+
+/**
+ * Generates an arc given a ui node
+ * @type {function(epiviz.ui.charts.tree.UiNode): string}
+ */
+epiviz.ui.charts.tree.Sunburst.arc = d3.svg.arc()
+  .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+  .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+  .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+  .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
 /**
  * TODO: Create an even more simplified version of the base chart that contains all of this
@@ -116,13 +163,13 @@ epiviz.ui.charts.tree.Sunburst.prototype._initialize = function() {
   this._svg = d3.select('#' + this._svgId);
 
   var x = this._x, y = this._y;
-  this._arc = d3.svg.arc()
-    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-    .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-    .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
   var jSvg = $('#' + this._svgId);
+
+  var self = this;
+  this._arcMap = function(d) {
+    return epiviz.ui.charts.tree.Sunburst.arc(self._uiDataMap[d.id]);
+  };
 
   /**
    * The difference in size between the container and the inner SVG
@@ -166,8 +213,23 @@ epiviz.ui.charts.tree.Sunburst.prototype.containerResize = function() {
  * @param {epiviz.ui.charts.tree.Node} [data]
  */
 epiviz.ui.charts.tree.Sunburst.prototype.draw = function(data) {
+  var self = this;
+
   if (data) {
     this._lastData = data;
+    this._uiData = this._partition.nodes(data);
+    this._oldSubtreeDepth = this._subtreeDepth;
+    this._subtreeDepth = 0;
+    this._oldUiDataMap = this._uiDataMap;
+    this._uiDataMap = {};
+    this._uiData.forEach(function(node) {
+      self._uiDataMap[node.id] = node;
+      if (self._subtreeDepth < node.depth + 1) {
+        self._subtreeDepth = node.depth + 1;
+      }
+    });
+  } else {
+    data = this._lastData;
   }
 
   var width = this.width();
@@ -182,6 +244,10 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(data) {
       .attr('class', 'sunburst-canvas')
       .attr('transform', sprintf('translate(%s,%s) rotate(180)', width * 0.5, height * 0.5));
   }
+
+  if (!data) { return; }
+
+
 };
 
 

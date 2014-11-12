@@ -169,7 +169,20 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
         colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_D3_CAT20),
         margins: new epiviz.ui.charts.Margins(10, 10, 10, 10)
       });
-      sunburst.draw();
+      d3.json("tree.json",
+        /**
+         * @param error
+         * @param {epiviz.ui.charts.tree.Node} root
+         */
+        function(error, root) {
+          var maxDepth = 5;
+          var nodeMap = {};
+
+          epiviz.ui.charts.tree.Node.dfs(root, function(node) { nodeMap[node.id] = node; });
+          var rootCopy = epiviz.ui.charts.tree.Node.filter(root, function(node) { return node.depth < maxDepth; });
+
+          sunburst.draw(rootCopy);
+        });
     });
 
   /*

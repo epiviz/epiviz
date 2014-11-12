@@ -59,3 +59,41 @@ epiviz.ui.charts.tree.Node = function(id, name, children, parentId, size, depth,
    */
   this.nleaves = nleaves;
 };
+
+/**
+ * @param {epiviz.ui.charts.tree.Node} node
+ * @param {function(epiviz.ui.charts.tree.Node): boolean} callback A function called
+ *   for each node in the traversal. If it returns something that evaluates to true, the
+ *   traversal is halted.
+ */
+epiviz.ui.charts.tree.Node.dfs = function(node, callback) {
+  if (!node) { return; }
+  if (callback(node)) { return; }
+  if (node.children) {
+    node.children.forEach(function(child) { epiviz.ui.charts.tree.Node.dfs(node, callback); });
+  }
+};
+
+/**
+ * Creates a copy of the tree filtering out nodes specified by the filter callback
+ * @param {epiviz.ui.charts.tree.Node} node
+ * @param {function(epiviz.ui.charts.tree.Node): boolean} filter
+ */
+epiviz.ui.charts.tree.Node.filter = function(node, filter) {
+  if (!filter(node)) { return null; }
+  var copy = {};
+  for (var key in node) {
+    if (!node.hasOwnProperty(key) || key == 'children') { continue; }
+    copy[key] = node[key];
+  }
+  if (node.children) {
+    copy.children = [];
+    node.children.forEach(function(child) {
+      var childCopy = epiviz.ui.charts.tree.Node.filter(child, filter);
+      if (childCopy !== null) {
+        copy.children.push(childCopy);
+      }
+    });
+  }
+  return copy;
+};
