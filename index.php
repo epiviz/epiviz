@@ -184,9 +184,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/DataTables-1.9.4/extras/ColumnFilter/media/js/jquery.dataTables.columnFilter.js"></script>
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
 
-    <!-- Google Analytics -->
-    <script src="src/lib/google-analytics/google-analytics.js"></script>
-
     <!-- D3 -->
     <script src="src/lib/d3/d3.v3.min.js"></script>
 
@@ -538,6 +535,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       </div>
     </div>
 
+    <!-- Unimportant scripts -->
+
+    <!-- Google Analytics -->
+    <script src="src/lib/google-analytics/google-analytics.js"></script>
   </body>
 
 </html>
