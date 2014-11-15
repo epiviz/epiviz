@@ -298,7 +298,7 @@ epiviz.ui.charts.ChartManager.prototype._registerWindowResize = function() {
     self._resizeInterval = window.setTimeout(function() {
       for (var chartId in self._charts) {
         if (!self._charts.hasOwnProperty(chartId)) { continue; }
-        self._charts[chartId].containerResize();
+        self._charts[chartId].updateSize();
       }
       self._resizeInterval = null;
     }, 500);
@@ -312,7 +312,7 @@ epiviz.ui.charts.ChartManager.prototype._registerWindowResize = function() {
 epiviz.ui.charts.ChartManager.prototype._registerChartHover = function(chart) {
   var self = this;
   chart.onHover().addListener(new epiviz.events.EventListener(
-    /** @param {epiviz.ui.charts.UiObject} selectedObject */
+    /** @param {epiviz.ui.charts.ChartObject} selectedObject */
     function(selectedObject) {
       for (var id in self._charts) {
         if (!self._charts.hasOwnProperty(id)) { continue; }
@@ -342,7 +342,7 @@ epiviz.ui.charts.ChartManager.prototype._registerChartUnhover = function(chart) 
 epiviz.ui.charts.ChartManager.prototype._registerChartSelect = function(chart) {
   var self = this;
   chart.onSelect().addListener(new epiviz.events.EventListener(
-    /** @param {epiviz.ui.charts.UiObject} selectedObject */
+    /** @param {epiviz.ui.charts.ChartObject} selectedObject */
       function(selectedObject) {
       for (var id in self._charts) {
         if (!self._charts.hasOwnProperty(id)) { continue; }

@@ -4,7 +4,7 @@
  * Time: 2:03 PM
  */
 
-goog.provide('epiviz.ui.charts.UiObject');
+goog.provide('epiviz.ui.charts.ChartObject');
 
 /**
  * A struct for various objects in visualizations, like blocks, genes or circles in scatter plots
@@ -19,7 +19,7 @@ goog.provide('epiviz.ui.charts.UiObject');
  * @constructor
  * @struct
  */
-epiviz.ui.charts.UiObject = function(id, start, end, values, seriesIndex, valueItems, measurements, cssClasses) {
+epiviz.ui.charts.ChartObject = function(id, start, end, values, seriesIndex, valueItems, measurements, cssClasses) {
   /**
    * @type {string}
    */
@@ -63,10 +63,10 @@ epiviz.ui.charts.UiObject = function(id, start, end, values, seriesIndex, valueI
 };
 
 /**
- * @param {epiviz.ui.charts.UiObject} other
+ * @param {epiviz.ui.charts.ChartObject} other
  * @returns {boolean}
  */
-epiviz.ui.charts.UiObject.prototype.overlapsWith = function(other) {
+epiviz.ui.charts.ChartObject.prototype.overlapsWith = function(other) {
   if (!other) { return false; }
   if (this === other) { return true; }
 

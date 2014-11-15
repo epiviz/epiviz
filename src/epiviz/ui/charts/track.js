@@ -75,7 +75,7 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
   var result = epiviz.ui.charts.Chart.prototype.draw.call(this, range, data);
@@ -91,7 +91,7 @@ epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
 epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.charts.ChartType.DisplayType.TRACK; };
 
 /**
- * @param {epiviz.ui.charts.UiObject} selectedObject
+ * @param {epiviz.ui.charts.ChartObject} selectedObject
  */
 epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
   epiviz.ui.charts.Chart.prototype.doHover.call(this, selectedObject);
@@ -152,7 +152,7 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
   var start = inverseXScale(d3.mouse(this._background[0][0])[0]) - this._binSize / 2;
   var end = start + this._binSize;
 
-  var selectedObject = new epiviz.ui.charts.UiObject(sprintf('%s-highlight', this._id), start, end, null, null, null, null, null);
+  var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this._id), start, end, null, null, null, null, null);
   this._hover.notify(selectedObject);
 };
 

@@ -52,7 +52,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._addStyles = function() {
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.BlocksTrack.prototype.draw = function(range, data, slide, zoom) {
 
@@ -74,7 +74,7 @@ epiviz.plugins.charts.BlocksTrack.prototype.draw = function(range, data, slide, 
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
  * @param {number} slide
  * @param {number} zoom
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, slide, zoom) {
@@ -112,7 +112,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
   this._drawAxes(xScale, null, 10, 5);
 
   var self = this;
-  /** @type {Array.<epiviz.ui.charts.UiObject>} */
+  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var blocks = [];
 
   var i = 0;
@@ -144,7 +144,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
         }
       }
 
-      seriesBlocks.push(new epiviz.ui.charts.UiObject(
+      seriesBlocks.push(new epiviz.ui.charts.ChartObject(
         sprintf('b-%s-%s-%s', i, cell.rowItem.start(), cell.rowItem.end()),
         cell.rowItem.start(),
         cell.rowItem.end(),

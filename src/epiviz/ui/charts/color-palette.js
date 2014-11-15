@@ -12,6 +12,9 @@ goog.provide('epiviz.ui.charts.ColorPalette');
  */
 epiviz.ui.charts.ColorPalette = function(colors) {
   this._colors = colors;
+
+  this._keyIndices = {};
+  this._nKeys = 0;
 };
 
 /**
@@ -20,6 +23,20 @@ epiviz.ui.charts.ColorPalette = function(colors) {
  */
 epiviz.ui.charts.ColorPalette.prototype.get = function(i) {
   return this._colors[i % this._colors.length];
+};
+
+/**
+ * @param {string|number} key
+ * @returns {string}
+ */
+epiviz.ui.charts.ColorPalette.prototype.getByKey = function(key) {
+  var index = this._keyIndices[key];
+  if (index == undefined) {
+    index = this._nKeys;
+    this._keyIndices[key] = this._nKeys;
+    ++this._nKeys;
+  }
+  return this.get(index);
 };
 
 /**

@@ -39,7 +39,7 @@ epiviz.plugins.charts.LineTrack.prototype._initialize = function() {
  * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zoom) {
 
@@ -60,8 +60,8 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   if (!data || !range) { return []; }
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  var minY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MIN];
-  var maxY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MAX];
+  var minY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  var maxY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
 
   if (minY == CustomSetting.DEFAULT) {
     minY = null;
@@ -117,7 +117,7 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
  * @param {number} zoom
  * @param {function} xScale D3 linear scale
  * @param {function} yScale D3 linear scale
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, delta, zoom, xScale, yScale) {
@@ -158,7 +158,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
   var graph = this._svg.select('.lines');
 
-  /** @type {Array.<epiviz.ui.charts.UiObject>} */
+  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
 
   this.measurements().foreach(function(m, i) {
@@ -194,7 +194,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
     for (var k = 0; k < indices.length; ++k) {
       var cell = series.get(indices[k]);
-      items.push(new epiviz.ui.charts.UiObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i)));
+      items.push(new epiviz.ui.charts.ChartObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i)));
     }
 
     var x = function(j) {

@@ -246,7 +246,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="../epiviz/ui/charts/color-palette.js"></script>
     <script src="../epiviz/ui/charts/axis.js"></script>
     <script src="../epiviz/ui/charts/chart-properties.js"></script>
-    <script src="../epiviz/ui/charts/ui-object.js"></script>
+    <script src="../epiviz/ui/charts/chart-object.js"></script>
     <script src="../epiviz/ui/charts/custom-setting.js"></script>
     <script src="../epiviz/ui/charts/chart.js"></script>
     <script src="../epiviz/ui/charts/track.js"></script>

@@ -94,25 +94,25 @@ epiviz.plugins.charts.ScatterPlotType.prototype.customSettingsDefs = function() 
       'Circle radius ratio'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.X_MIN,
+      epiviz.ui.charts.Visualization.CustomSettings.X_MIN,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Min X'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.X_MAX,
+      epiviz.ui.charts.Visualization.CustomSettings.X_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Max X'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MIN,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Min Y'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MAX,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Max Y')

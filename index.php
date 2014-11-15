@@ -188,7 +188,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/google-analytics/google-analytics.js"></script>
 
     <!-- D3 -->
-    <script src="src/lib/d3/d3.v3.min.js"></script>
+    <script src="src/lib/d3/d3.v3.js"></script>
 
     <!-- String formatting -->
     <script src="src/lib/sprintf-0.6.js"></script>
@@ -268,9 +268,15 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/margins.js"></script>
     <script src="src/epiviz/ui/charts/color-palette.js"></script>
     <script src="src/epiviz/ui/charts/axis.js"></script>
-    <script src="src/epiviz/ui/charts/chart-properties.js"></script>
-    <script src="src/epiviz/ui/charts/ui-object.js"></script>
     <script src="src/epiviz/ui/charts/custom-setting.js"></script>
+
+    <script src="src/epiviz/ui/charts/vis-object.js"></script>
+    <script src="src/epiviz/ui/charts/visualization-properties.js"></script>
+    <script src="src/epiviz/ui/charts/vis-event-args.js"></script>
+    <script src="src/epiviz/ui/charts/visualization.js"></script>
+
+    <script src="src/epiviz/ui/charts/chart-properties.js"></script>
+    <script src="src/epiviz/ui/charts/chart-object.js"></script>
     <script src="src/epiviz/ui/charts/chart.js"></script>
     <script src="src/epiviz/ui/charts/track.js"></script>
     <script src="src/epiviz/ui/charts/plot.js"></script>

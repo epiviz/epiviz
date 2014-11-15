@@ -10,6 +10,7 @@ goog.provide('epiviz.ui.charts.tree.UiNode');
  * @constructor
  * @struct
  * @extends {epiviz.ui.charts.tree.Node}
+ * @implements {epiviz.ui.charts.VisObject}
  */
 epiviz.ui.charts.tree.UiNode = function() {
   epiviz.ui.charts.tree.Node.call(this);
@@ -45,3 +46,9 @@ epiviz.ui.charts.tree.UiNode = function() {
   this.parent = null;
 };
 
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} other
+ */
+epiviz.ui.charts.tree.UiNode.prototype.overlapsWith = function(other) {
+  return (other && other.id == this.id);
+};

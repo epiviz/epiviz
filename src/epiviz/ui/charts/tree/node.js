@@ -70,7 +70,7 @@ epiviz.ui.charts.tree.Node.dfs = function(node, callback) {
   if (!node) { return; }
   if (callback(node)) { return; }
   if (node.children) {
-    node.children.forEach(function(child) { epiviz.ui.charts.tree.Node.dfs(node, callback); });
+    node.children.forEach(function(child) { epiviz.ui.charts.tree.Node.dfs(child, callback); });
   }
 };
 

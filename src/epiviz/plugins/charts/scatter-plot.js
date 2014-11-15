@@ -92,6 +92,9 @@ epiviz.plugins.charts.ScatterPlot.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Plot.prototype._initialize.call(this);
 
+  this._svg.classed('scatter-plot', true);
+  //this._addStyles();
+
   this._chartContent = this._svg.append('g').attr('class', 'chart-content');
   this._jChartContent = this._container.find('.chart-content');
   this._legend = this._svg.append('g').attr('class', 'chart-legend');
@@ -100,7 +103,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._initialize = function() {
 /**
  * @protected
  */
-epiviz.plugins.charts.ScatterPlot.prototype._addStyles = function() {
+/*epiviz.plugins.charts.ScatterPlot.prototype._addStyles = function() {
   var svgId = '#' + this._svgId;
   var style =
     sprintf('%s .items {}\n', svgId) +
@@ -113,12 +116,12 @@ epiviz.plugins.charts.ScatterPlot.prototype._addStyles = function() {
 
   var jSvg = this._container.find('svg');
   jSvg.append(sprintf('<style type="text/css">%s</style>', style));
-};
+};*/
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
  * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
 
@@ -138,7 +141,7 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data) {
@@ -166,10 +169,10 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   var height = this.height();
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  var minY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MIN];
-  var maxY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MAX];
-  var minX = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.X_MIN];
-  var maxX = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.X_MAX];
+  var minY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  var maxY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
+  var minX = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.X_MIN];
+  var maxX = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 
   if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
   if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
@@ -235,7 +238,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
       continue;
     }
 
-    uiObj = new epiviz.ui.charts.UiObject(
+    uiObj = new epiviz.ui.charts.ChartObject(
       sprintf('scatter_%s_%s', seriesIndex, cellX.globalIndex),
       cellX.rowItem.start(),
       cellX.rowItem.end(),
@@ -275,7 +278,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   selection
     .each(
       /**
-       * @param {epiviz.ui.charts.UiObject} d
+       * @param {epiviz.ui.charts.ChartObject} d
        */
       function(d) {
         var circle = d3.select(this);

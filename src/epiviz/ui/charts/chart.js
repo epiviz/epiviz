@@ -110,7 +110,7 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
   // Events
 
   /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.UiObject>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.ChartObject>}
    * @protected
    */
   this._hover = new epiviz.events.Event();
@@ -122,7 +122,7 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
   this._unhover = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.UiObject>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.ChartObject>}
    * @protected
    */
   this._select = new epiviz.events.Event();
@@ -209,11 +209,11 @@ epiviz.ui.charts.Chart.prototype._initialize = function() {
   var width = this.width();
   var height = this.height();
 
-  this._container.append(sprintf('<svg id="%s" class="base-chart" width="%s" height="%s"></svg>', this._svgId, width, height));
+  this._container.append(sprintf('<svg id="%s" class="base-chart" width="%s" height="%s"><style type="text/css"></style></svg>', this._svgId, width, height));
   this._svg = d3.select('#' + this._svgId);
 
-  this._addStyles();
-  this._addFilters();
+  //this._addStyles();
+  //this._addFilters();
 
 
   var jSvg = $('#' + this._svgId);
@@ -325,8 +325,8 @@ epiviz.ui.charts.Chart.prototype._clearAxes = function(svg) {
 };
 
 /**
- * @param xScale D3 linear scale for the x axis
- * @param yScale D3 linear scale for the y axis
+ * @param [xScale] D3 linear scale for the x axis
+ * @param [yScale] D3 linear scale for the y axis
  * @param {number} [xTicks]
  * @param {number} [yTicks]
  * @param [svg] D3 svg container for the axes
@@ -428,7 +428,7 @@ epiviz.ui.charts.Chart.prototype.resize = function(width, height) {
 
 /**
  */
-epiviz.ui.charts.Chart.prototype.containerResize = function() {
+epiviz.ui.charts.Chart.prototype.updateSize = function() {
   this.resize(
     this._widthDif + this._container.width() - epiviz.ui.charts.Chart.SVG_MARGIN,
     this._heightDif + this._container.height() - epiviz.ui.charts.Chart.SVG_MARGIN);
@@ -437,7 +437,7 @@ epiviz.ui.charts.Chart.prototype.containerResize = function() {
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
   if (range) {
@@ -520,7 +520,7 @@ epiviz.ui.charts.Chart.prototype.displayType = function() { throw Error('unimple
 epiviz.ui.charts.Chart.prototype.chartTypeName = function() { throw Error('unimplemented abstract method'); };
 
 /**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.UiObject>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.ChartObject>}
  */
 epiviz.ui.charts.Chart.prototype.onHover = function() { return this._hover; };
 
@@ -530,7 +530,7 @@ epiviz.ui.charts.Chart.prototype.onHover = function() { return this._hover; };
 epiviz.ui.charts.Chart.prototype.onUnhover = function() { return this._unhover; };
 
 /**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.UiObject>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.ChartObject>}
  */
 epiviz.ui.charts.Chart.prototype.onSelect = function() { return this._select; };
 
@@ -540,7 +540,7 @@ epiviz.ui.charts.Chart.prototype.onSelect = function() { return this._select; };
 epiviz.ui.charts.Chart.prototype.onDeselect = function() { return this._deselect; };
 
 /**
- * @param {epiviz.ui.charts.UiObject} selectedObject
+ * @param {epiviz.ui.charts.ChartObject} selectedObject
  */
 epiviz.ui.charts.Chart.prototype.doHover = function(selectedObject) {
   var itemsGroup = this._container.find('.items');
@@ -573,7 +573,7 @@ epiviz.ui.charts.Chart.prototype.doUnhover = function() {
 };
 
 /**
- * @param {epiviz.ui.charts.UiObject} selectedObject
+ * @param {epiviz.ui.charts.ChartObject} selectedObject
  */
 epiviz.ui.charts.Chart.prototype.doSelect = function(selectedObject) {
   var itemsGroup = this._container.find('.items');
@@ -645,7 +645,7 @@ epiviz.ui.charts.Chart.prototype.customSettingsValues = function() { return this
  * @param {Object.<string, *>} settingsValues
  */
 epiviz.ui.charts.Chart.prototype.setCustomSettingsValues = function(settingsValues) {
-  var CustomSettings = epiviz.ui.charts.ChartType.CustomSettings;
+  var CustomSettings = epiviz.ui.charts.Visualization.CustomSettings;
   this._customSettingsValues = settingsValues;
 
   if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {

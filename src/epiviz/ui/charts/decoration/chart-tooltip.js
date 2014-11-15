@@ -43,7 +43,7 @@ epiviz.ui.charts.decoration.ChartTooltip.prototype.decorate = function() {
       //if (!self.chart().showTooltip()) { return false; }
       if (!tooltipButtonDecoration.checked()) { return false; }
 
-      /** @type {epiviz.ui.charts.UiObject} */
+      /** @type {epiviz.ui.charts.ChartObject} */
       var uiObj = d3.select(this).data()[0];
 
       var maxMetadataValueLength = 15;

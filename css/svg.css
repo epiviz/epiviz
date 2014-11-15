@@ -1,5 +1,4 @@
 .base-chart {
-
 }
 
 .chart-legend {
@@ -22,4 +21,46 @@ text {
 .base-chart text {
     font-family: sans-serif;
     font-size: 11px;
+}
+
+/* Sunburst */
+
+.unselectable-text {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+
+    /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.node-label {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 11px;
+    cursor: context-menu;
+}
+
+.node-arc {
+    stroke: #fff;
+    fill-rule: evenodd;
+}
+
+/* Scatter plot */
+
+.scatter-plot {
+}
+
+.scatter-plot .items {
+}
+
+.scatter-plot .items .selected {
+    fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1;
+}
+
+.scatter-plot .items .hovered {
+    fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1;
 }

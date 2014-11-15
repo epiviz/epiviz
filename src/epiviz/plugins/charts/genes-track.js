@@ -59,7 +59,7 @@ epiviz.plugins.charts.GenesTrack.prototype._addStyles = function() {
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, zoom) {
 
@@ -91,7 +91,7 @@ epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, z
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
  * @param {number} slide
  * @param {number} zoom
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, slide, zoom) {
@@ -132,13 +132,13 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
 
   var indices = epiviz.utils.range(series.size());
 
-  /** @type {Array.<epiviz.ui.charts.UiObject>} */
+  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var dataItems = indices.map(function(i) {
     var cell = series.get(i);
     var item = cell.rowItem;
     var classes = sprintf('item gene-%s', item.metadata('gene'));
 
-    return new epiviz.ui.charts.UiObject(
+    return new epiviz.ui.charts.ChartObject(
       item.metadata('gene'),
       item.start(),
       item.end(),
@@ -218,7 +218,7 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
 
 /**
  * @param elem
- * @param {epiviz.ui.charts.UiObject} d
+ * @param {epiviz.ui.charts.ChartObject} d
  * @param delta
  * @private
  */
@@ -239,7 +239,7 @@ epiviz.plugins.charts.GenesTrack.prototype._translateGene = function(elem, d, de
 
 /**
  * @param elem
- * @param {epiviz.ui.charts.UiObject} d
+ * @param {epiviz.ui.charts.ChartObject} d
  * @param {function(number): number} xScale
  * @private
  */

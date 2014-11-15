@@ -29,7 +29,7 @@ epiviz.ui.charts.decoration.CustomSettingsButton.constructor = epiviz.ui.charts.
 epiviz.ui.charts.decoration.CustomSettingsButton.prototype._click = function() {
   var self = this;
   return function(){
-    var CustomSettings = epiviz.ui.charts.ChartType.CustomSettings;
+    var CustomSettings = epiviz.ui.charts.Visualization.CustomSettings;
     var customSettingsDialog = new epiviz.ui.controls.CustomSettingsDialog(
       'Edit custom settings', {
         ok: function(settingsValues) {

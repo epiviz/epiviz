@@ -179,25 +179,25 @@ epiviz.ui.charts.ChartType.prototype.customSettingsValues = function() { return 
 epiviz.ui.charts.ChartType.prototype.customSettingsDefs = function() {
   return [
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui .charts.ChartType.CustomSettings.MARGIN_TOP,
+      epiviz.ui.charts.Visualization.CustomSettings.MARGIN_TOP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       this._defaultMargins.top(),
       'Top margin'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.MARGIN_BOTTOM,
+      epiviz.ui.charts.Visualization.CustomSettings.MARGIN_BOTTOM,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       this._defaultMargins.bottom(),
       'Bottom margin'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.MARGIN_LEFT,
+      epiviz.ui.charts.Visualization.CustomSettings.MARGIN_LEFT,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       this._defaultMargins.left(),
       'Left margin'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.MARGIN_RIGHT,
+      epiviz.ui.charts.Visualization.CustomSettings.MARGIN_RIGHT,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       this._defaultMargins.right(),
       'Right margin')
@@ -214,19 +214,4 @@ epiviz.ui.charts.ChartType.prototype.constructTitle = function(measurements) {
     measurementNames.push(m.name());
   });
   return measurementNames.join(', ');
-};
-
-/**
- * @enum {string}
- */
-epiviz.ui.charts.ChartType.CustomSettings = {
-  MARGIN_LEFT: 'marginLeft',
-  MARGIN_RIGHT: 'marginRight',
-  MARGIN_TOP: 'marginTop',
-  MARGIN_BOTTOM: 'marginBottom',
-  X_MIN: 'xMin',
-  X_MAX: 'xMax',
-  Y_MIN: 'yMin',
-  Y_MAX: 'yMax',
-  LABEL: 'label'
 };

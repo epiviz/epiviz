@@ -28,7 +28,7 @@ epiviz.ui.charts.decoration.ChartResize.prototype.decorate = function() {
   epiviz.ui.charts.decoration.ChartDecoration.prototype.decorate.call(this);
 
   var self = this;
-  var resizeHandler = function(event, ui) { self.chart().containerResize(); };
+  var resizeHandler = function(event, ui) { self.chart().updateSize(); };
   this.chart().container().resizable({
     //resize: resizeHandler,
     stop: resizeHandler

@@ -9,59 +9,13 @@ goog.provide('epiviz.ui.charts.tree.Sunburst');
 /**
  * @param {string} id
  * @param {jQuery} container
- * @param {{width: number|string, height: number|string, margins: epiviz.ui.charts.Margins, colors: epiviz.ui.charts.ColorPalette}} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @constructor
+ * @extends {epiviz.ui.charts.Visualization.<epiviz.ui.charts.tree.Node>}
  */
 epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
-  /**
-   * @type {string}
-   * @protected
-   */
-  this._id = id;
 
-  /**
-   * @type {jQuery}
-   * @protected
-   */
-  this._container = container;
-
-  /**
-   * @type {{width: (number|string), height: (number|string), margins: epiviz.ui.charts.Margins, colors: epiviz.ui.charts.ColorPalette}}
-   * @private
-   */
-  this._properties = properties;
-
-  /**
-   * @type {string}
-   * @protected
-   */
-  this._svgId = sprintf('%s-svg', this._id);
-
-  /**
-   * The D3 svg handler for the chart
-   * @protected
-   */
-  this._svg = null;
-
-  /**
-   * @type {?epiviz.ui.charts.tree.Node}
-   * @protected
-   */
-  this._lastData = null;
-
-  /**
-   * The difference in size between the container and the inner SVG
-   * @type {?number}
-   * @private
-   */
-  this._widthDif = null;
-
-  /**
-   * The difference in size between the container and the inner SVG
-   * @type {?number}
-   * @private
-   */
-  this._heightDif = null;
+  epiviz.ui.charts.Visualization.call(this, id, container, properties);
 
   // Sunburst specific
 
@@ -84,25 +38,35 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
   this._x = d3.scale.linear().range([0, 2 * Math.PI]);
 
   /**
+   * @type {number}
+   * @private
+   */
+  this._radius = null;
+
+  /**
    * Converts y values for a partition (depth) to circle radius
    * @type {function(number): number}
    * @private
    */
-  this._y = d3.scale.pow().exponent(1.2);
+  this._y = null;
 
+  var self = this;
   /**
    * Generates an arc given a ui node
    * @type {function(epiviz.ui.charts.tree.UiNode): string}
-   * @private
    */
-  this._arcMap = null;
+  this._arc = d3.svg.arc()
+    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, self._x(d.x))); })
+    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, self._x(d.x + d.dx))); })
+    .innerRadius(function(d) { return Math.max(0, self._y(d.y)); })
+    .outerRadius(function(d) { return Math.max(0, self._y(d.y + d.dy)); });
 
   /**
    * The number of milliseconds for animations within the chart
    * @type {number}
    * @private
    */
-  this._animationDelay = 500;
+  this._animationDelay = 750;
 
   /**
    * @type {Array.<epiviz.ui.charts.tree.UiNode>}
@@ -123,6 +87,18 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
   this._subtreeDepth = null;
 
   /**
+   * @type {number}
+   * @private
+   */
+  this._oldRootDepth = null;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this._rootDepth = null;
+
+  /**
    * @type {Object.<string, epiviz.ui.charts.tree.UiNode>}
    * @private
    */
@@ -132,111 +108,80 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
    * @type {Object.<string, epiviz.ui.charts.tree.UiNode>}
    * @private
    */
-  this._uiDataMap = null;
+  this._uiDataMap = {};
+
+  /**
+   * @type {epiviz.ui.charts.tree.UiNode}
+   * @private
+   */
+  this._referenceNode = null;
+
+  /**
+   * @type {epiviz.ui.charts.tree.UiNode}
+   * @private
+   */
+  this._selectedNode = null;
 
   this._initialize();
 };
 
-/**
- * Generates an arc given a ui node
- * @type {function(epiviz.ui.charts.tree.UiNode): string}
+/*
+ * Copy methods from upper class
  */
-epiviz.ui.charts.tree.Sunburst.arc = d3.svg.arc()
-  .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-  .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-  .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-  .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+epiviz.ui.charts.tree.Sunburst.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Visualization.prototype);
+epiviz.ui.charts.tree.Sunburst.constructor = epiviz.ui.charts.tree.Sunburst;
 
 /**
- * TODO: Create an even more simplified version of the base chart that contains all of this
  * Initializes the chart and draws the initial SVG in the container
  * @protected
  */
 epiviz.ui.charts.tree.Sunburst.prototype._initialize = function() {
-  if (this._properties.height == '100%') { this._properties.height = this._container.height() - epiviz.ui.charts.tree.Sunburst.SVG_MARGIN; }
-  if (this._properties.width == '100%') { this._properties.width = this._container.width() - epiviz.ui.charts.tree.Sunburst.SVG_MARGIN; }
+  epiviz.ui.charts.Visualization.prototype._initialize.call(this);
 
-  var width = this.width();
-  var height = this.height();
+  this._radius = Math.min(this.width(), this.height()) * 0.5;
+  this._y = d3.scale.pow().exponent(1.2)
+    .range([0, this._radius]);
+};
 
-  this._container.append(sprintf('<svg id="%s" class="base-chart" width="%s" height="%s"></svg>', this._svgId, width, height));
-  this._svg = d3.select('#' + this._svgId);
 
-  var x = this._x, y = this._y;
-
-  var jSvg = $('#' + this._svgId);
+/**
+ * @param {epiviz.ui.charts.tree.Node} [root]
+ * @returns {Array.<epiviz.ui.charts.VisObject>}
+ */
+epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
+  epiviz.ui.charts.Visualization.prototype.draw.call(this, root);
 
   var self = this;
-  this._arcMap = function(d) {
-    return epiviz.ui.charts.tree.Sunburst.arc(self._uiDataMap[d.id]);
-  };
 
-  /**
-   * The difference in size between the container and the inner SVG
-   * @type {number}
-   * @private
-   */
-  this._widthDif = jSvg.width() - (this._container.width() - epiviz.ui.charts.tree.Sunburst.SVG_MARGIN);
+  if (root) {
+    this._oldRootDepth = this._rootDepth;
+    this._rootDepth = root.depth;
+    this._referenceNode = null;
+    this._selectedNode = this._uiDataMap[root.id];
 
-  /**
-   * The difference in size between the container and the inner SVG
-   * @type {number}
-   * @private
-   */
-  this._heightDif = height - (this._container.height() - epiviz.ui.charts.tree.Sunburst.SVG_MARGIN);
-
-  this._properties.width = width;
-  this._properties.height = height;
-};
-
-/**
- * @param {number} width
- * @param {number} height
- */
-epiviz.ui.charts.tree.Sunburst.prototype.resize = function(width, height) {
-  if (width) { this._properties.width = width; }
-  if (height) { this._properties.height = height; }
-
-  this.draw();
-};
-
-/**
- */
-epiviz.ui.charts.tree.Sunburst.prototype.containerResize = function() {
-  this.resize(
-    this._widthDif + this._container.width() - epiviz.ui.charts.tree.Sunburst.SVG_MARGIN,
-    this._heightDif + this._container.height() - epiviz.ui.charts.tree.Sunburst.SVG_MARGIN);
-};
-
-/**
- * TODO: Later we will return the drawn objects
- * @param {epiviz.ui.charts.tree.Node} [data]
- */
-epiviz.ui.charts.tree.Sunburst.prototype.draw = function(data) {
-  var self = this;
-
-  if (data) {
-    this._lastData = data;
-    this._uiData = this._partition.nodes(data);
+    this._uiData = this._partition.nodes(root);
     this._oldSubtreeDepth = this._subtreeDepth;
     this._subtreeDepth = 0;
     this._oldUiDataMap = this._uiDataMap;
     this._uiDataMap = {};
     this._uiData.forEach(function(node) {
       self._uiDataMap[node.id] = node;
+      if ((!self._referenceNode || !self._referenceNode.x) && (node.id in self._oldUiDataMap)) {
+        self._referenceNode = node;
+      }
       if (self._subtreeDepth < node.depth + 1) {
         self._subtreeDepth = node.depth + 1;
       }
     });
+    if (!this._referenceNode) { this._referenceNode = this._uiData[0]; }
+    if (this._oldSubtreeDepth == null) { this._oldSubtreeDepth = this._subtreeDepth; }
+    if (this._oldRootDepth == null) { this._oldRootDepth = this._rootDepth; }
   } else {
-    data = this._lastData;
+    root = this._lastData;
   }
 
   var width = this.width();
   var height = this.height();
-  this._svg
-    .attr('width', width)
-    .attr('height', height);
 
   var canvas = this._svg.select('.sunburst-canvas');
   if (canvas.empty()) {
@@ -245,54 +190,177 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(data) {
       .attr('transform', sprintf('translate(%s,%s) rotate(180)', width * 0.5, height * 0.5));
   }
 
-  if (!data) { return; }
+  if (!root) { return; }
 
+  var groups = canvas.selectAll('g')
+    .data(this._uiData, function(d) { return d.id; });
 
+  var newGroups = groups
+    .enter().append('g')
+    .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
+
+  var newPaths = newGroups.append('path')
+    .attr('id', function(d) { return self.id() + '-' + d.id; })
+    .attr('class', 'node-arc')
+    .style('fill', function(d) { return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); });
+
+  var newLabels = newGroups.append('text')
+    .attr('class', 'unselectable-text node-label')
+    .append('textPath')
+    .attr('text-anchor', 'middle')
+    .attr('xlink:href', function(d) { return '#' + self.id() + '-' + d.id; })
+    .attr("dx", "6") // margin
+    .attr("dy", ".35em") // vertical-align
+    .attr('startOffset', 20)
+    .text(function(d) { return d.name; });
+
+  canvas.selectAll('g').selectAll('path')
+    .transition().duration(this._animationDelay)
+    .attrTween('d', function(d) { return self._nodeArcTween(d); });
+
+  canvas.selectAll('g').selectAll('text')
+    .transition().duration(this._animationDelay)
+    .attrTween('transform', function(d) { return self._nodeLabelTransformTween(d); })
+    .each(function(d) {
+      d3.select(this.childNodes[0])
+        .transition().duration(self._animationDelay)
+        .attrTween('startOffset', function(d) { return self._nodeLabelStartOffsetTween(d); });
+    });
+
+  groups.exit()
+    .selectAll('text').transition().duration(this._animationDelay).style('opacity', 0);
+  groups.exit().transition().delay(this._animationDelay).remove();
+
+  return this._uiData;
 };
 
-
 /**
- * @returns {jQuery}
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @returns {function(number): epiviz.ui.charts.tree.UiNode}
+ * @private
  */
-epiviz.ui.charts.tree.Sunburst.prototype.container = function() { return this._container; };
+epiviz.ui.charts.tree.Sunburst.prototype._nodeTween = function(node) {
+  var self = this;
+  var oldNode = this._oldUiDataMap[node.id];
+  var newNode = this._uiDataMap[node.id];
+
+  if (!oldNode && !newNode) {
+    return function(t) {
+      return node;
+    };
+  }
+
+  var isRoot, isExtremity;
+
+  // this node will be added
+  if (!oldNode) {
+    var oldDepth = newNode.depth + this._rootDepth - this._oldRootDepth;
+    isRoot = oldDepth < 0;
+    isExtremity = oldDepth < 0 || oldDepth >= this._subtreeDepth;
+    var oldY = isRoot ? 0 : Math.min(1, oldDepth / this._oldSubtreeDepth);
+    oldNode = {
+      x: isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1),
+      dx: isRoot ? 1 : (isExtremity ? newNode.dx : 0),
+      y: oldY,
+      dy: isExtremity ? 0 : newNode.y + newNode.dy - oldY
+    };
+  }
+
+  // this node will be removed
+  if (!newNode) {
+    var newDepth = oldNode.depth - this._rootDepth + this._oldRootDepth;
+    isRoot = newDepth < 0;
+    isExtremity = newDepth < 0 || newDepth >= this._subtreeDepth;
+    var newY = isRoot ? 0 : Math.min(1, newDepth / this._subtreeDepth);
+    newNode = {
+      x: isExtremity ? oldNode.x : (oldNode.x <= this._selectedNode.x ? 0 : 1),
+      dx: isRoot ? 1 : (isExtremity ? oldNode.dx : 0),
+      y: newY,
+      dy: isExtremity ? 0 : oldNode.y + oldNode.dy - newY
+    };
+  }
+
+  var xi = d3.interpolate(oldNode.x, newNode.x);
+  var dxi = d3.interpolate(oldNode.dx, newNode.dx);
+  var yi = d3.interpolate(oldNode.y, newNode.y);
+  var dyi = d3.interpolate(oldNode.dy, newNode.dy);
+  return function(t) {
+    return {x: xi(t), dx: dxi(t), y: yi(t), dy: dyi(t)};
+  };
+};
 
 /**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @returns {function(number): string}
+ * @private
+ */
+epiviz.ui.charts.tree.Sunburst.prototype._nodeArcTween = function(node) {
+  var self = this;
+  /** @type {function(number): epiviz.ui.charts.tree.UiNode} */
+  var nodeTween = this._nodeTween(node);
+  return function(t) { return self._arc(nodeTween(t)); };
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @returns {function(number): string}
+ * @private
+ */
+epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelTransformTween = function(node) {
+  var self = this;
+  /** @type {function(number): epiviz.ui.charts.tree.UiNode} */
+  var nodeTween = this._nodeTween(node);
+  return function(t) {
+    var dt = nodeTween(t);
+    var dx = dt.dx == 1 ? 0 : dt.dx;
+    var phi = self._x(dt.x + dx / 2);
+    var z = (self._y(dt.y + dt.dy) - self._y(dt.y)) / 2;
+    var ty = Math.cos(phi) * z;
+    var tx = Math.sin(phi) * z;
+    return 'rotate(' + (dt.dx == 1 ? 180 : 0) + ') translate(' + -tx + ',' + ty + ')';
+  };
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @returns {function(number): string}
+ * @private
+ */
+epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelStartOffsetTween = function(node) {
+  var self = this;
+  /** @type {function(number): epiviz.ui.charts.tree.UiNode} */
+  var nodeTween = this._nodeTween(node);
+  return function(t) {
+    var dt = nodeTween(t);
+    var py = self._y(dt.y + dt.dy);
+    return py * self._x(dt.dx / 2);
+  };
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
  * @returns {string}
+ * @private
  */
-epiviz.ui.charts.tree.Sunburst.prototype.id = function() { return this._id; };
+epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelTransform = function(node) {
+  // Bug in D3.js, making arcs start point be in a different location when the arc transforms into a circle:
+  var dx = node.dx == 1 ? 0 : node.dx;
 
-/**
- * @returns {{width: (number|string), height: (number|string), margins: epiviz.ui.charts.Margins, colors: epiviz.ui.charts.ColorPalette}}
- */
-epiviz.ui.charts.tree.Sunburst.prototype.properties = function() {
-  return this._properties;
+  var y0 = this._y(node.y);
+  var y1 = this._y(node.y + node.dy);
+  var phi = this._x(node.x + dx / 2);
+  var z = (y1 - y0) / 2;
+  var ty = Math.cos(phi) * z;
+  var tx = Math.sin(phi) * z;
+  return 'rotate(' + (node.dx == 1 ? 180 : 0) + ') translate(' + -tx + ',' + ty + ')';
 };
 
 /**
+ * @param {epiviz.ui.charts.tree.UiNode} node
  * @returns {number}
+ * @private
  */
-epiviz.ui.charts.tree.Sunburst.prototype.height = function() {
-  return this._properties.height;
+epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelStartOffset = function(node) {
+  var py = this._y(node.y + node.dy);
+  return py * this._x(node.dx / 2);
 };
-
-/**
- * @returns {number}
- */
-epiviz.ui.charts.tree.Sunburst.prototype.width = function() {
-  return this._properties.width;
-};
-
-/**
- * @returns {epiviz.ui.charts.Margins}
- */
-epiviz.ui.charts.tree.Sunburst.prototype.margins = function() {
-  return this._properties.margins;
-};
-
-/**
- * @returns {epiviz.ui.charts.ColorPalette}
- */
-epiviz.ui.charts.tree.Sunburst.prototype.colors = function() {
-  return this._properties.colors;
-};
-

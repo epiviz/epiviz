@@ -90,7 +90,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._addStyles = function() {
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
 
@@ -159,7 +159,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
@@ -184,7 +184,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var nEntries = lastGlobalIndex - firstGlobalIndex;
 
-  var label = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.LABEL];
+  var label = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.LABEL];
 
   var dendrogramRatio = this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
   var width = this.width() * (1 - dendrogramRatio);
@@ -204,7 +204,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     }
   }
 
-  /** @type {Array.<epiviz.ui.charts.UiObject>} */
+  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
   var colIndex = {};
   data.foreach(function(m, series, seriesIndex) {
@@ -218,7 +218,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
       if (cellsPerCol == 0) {
         var classes = sprintf('item data-series-%s', seriesIndex);
 
-        uiObj = new epiviz.ui.charts.UiObject(
+        uiObj = new epiviz.ui.charts.ChartObject(
           sprintf('heatmap_%s_%s', seriesIndex, globalIndex),
           cell.rowItem.start(),
           cell.rowItem.end(),

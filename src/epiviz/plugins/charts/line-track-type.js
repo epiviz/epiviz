@@ -99,13 +99,13 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
       'Line thickness'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MIN,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Min Y'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MAX,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Max Y'),

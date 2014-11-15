@@ -1,0 +1,69 @@
+/**
+ * Created by Florin Chelaru ( florinc [at] umd [dot] edu )
+ * Date: 11/15/2014
+ * Time: 9:07 AM
+ */
+
+goog.provide('epiviz.ui.charts.VisualizationProperties');
+
+/**
+ * @param {number|string} [width]
+ * @param {number|string} [height]
+ * @param {epiviz.ui.charts.Margins} [margins]
+ * @param {epiviz.ui.charts.ColorPalette} [colors]
+ * @param {Object.<string, string>} [modifiedMethods]
+ * @param {Object<string, *>} [customSettingsValues]
+ * @param {Array.<epiviz.ui.charts.CustomSetting>} [customSettingsDefs]
+ * @constructor
+ * @struct
+ */
+epiviz.ui.charts.VisualizationProperties = function(width, height, margins, colors, modifiedMethods, customSettingsValues, customSettingsDefs) {
+  /**
+   * @type {number|string}
+   */
+  this.width = width;
+
+  /**
+   * @type {number|string}
+   */
+  this.height = height;
+
+  /**
+   * @type {epiviz.ui.charts.Margins}
+   */
+  this.margins = margins;
+
+  /**
+   * @type {epiviz.ui.charts.ColorPalette}
+   */
+  this.colors = colors;
+
+  /**
+   * @type {Object.<string, string>}
+   */
+  this.modifiedMethods = modifiedMethods;
+
+  /**
+   * @type {Object.<string, *>}
+   */
+  this.customSettingsValues = customSettingsValues || {};
+
+  /**
+   * @type {Array.<epiviz.ui.charts.CustomSetting>}
+   */
+  this.customSettingsDefs = customSettingsDefs || [];
+};
+
+/**
+ * @returns {epiviz.ui.charts.VisualizationProperties}
+ */
+epiviz.ui.charts.VisualizationProperties.prototype.copy = function() {
+  return new epiviz.ui.charts.VisualizationProperties(
+    this.width, this.height,
+    this.margins ? this.margins.copy() : this.margins,
+    this.colors ? this.colors.copy() : this.colors,
+    this.modifiedMethods ? epiviz.utils.mapCopy(this.modifiedMethods) : this.modifiedMethods,
+    this.customSettingsValues ? epiviz.utils.mapCopy(this.customSettingsValues) : this.customSettingsValues,
+    this.customSettingsDefs ? this.customSettingsDefs.slice(0) : this.customSettingsDefs);
+};
+
