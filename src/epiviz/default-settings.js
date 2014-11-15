@@ -54,18 +54,33 @@ epiviz.EpiViz.SETTINGS = {
   // Chart default settings
 
   chartSettings: {
+    default: {
+      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT),
+      decorations: [
+        'epiviz.ui.charts.decoration.RemoveChartButton',
+        'epiviz.ui.charts.decoration.SaveChartButton',
+        'epiviz.ui.charts.decoration.ChartColorsButton',
+        'epiviz.ui.charts.decoration.CustomSettingsButton',
+        'epiviz.ui.charts.decoration.ToggleTooltipButton',
+        'epiviz.ui.charts.decoration.EditCodeButton',
+
+        'epiviz.ui.charts.decoration.ChartResize',
+        'epiviz.ui.charts.decoration.ChartTooltip',
+
+        'epiviz.ui.charts.decoration.ChartLoaderAnimation'
+      ]
+    },
+
     plot: {
       width: 400,
       height: 400,
-      margins: new epiviz.ui.charts.Margins(15, 30, 30, 15),
-      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT)
+      margins: new epiviz.ui.charts.Margins(15, 30, 30, 15)
     },
 
     track: {
       width: '100%',
       height: 90,
-      margins: new epiviz.ui.charts.Margins(25, 20, 23, 10),
-      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT)
+      margins: new epiviz.ui.charts.Margins(25, 20, 23, 10)
     },
 
     'epiviz.plugins.charts.GenesTrack': {

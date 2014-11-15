@@ -232,9 +232,10 @@ epiviz.utils.mapEquals = function(m1, m2) {
  * If one key is in both maps, then the value from m1 will be used.
  * @param {Object<*,*>} m1
  * @param {Object<*,*>} m2
+ * @param {boolean} [combineArrayVals] specifies that array values should also be combined
  * @returns {Object<*,*>}
  */
-epiviz.utils.mapCombine = function(m1, m2) {
+epiviz.utils.mapCombine = function(m1, m2, combineArrayVals) {
   var result = {};
 
   var key;
@@ -249,7 +250,13 @@ epiviz.utils.mapCombine = function(m1, m2) {
   if (m1) {
     for (key in m1) {
       if (!m1.hasOwnProperty(key)) { continue; }
-      result[key] = m1[key];
+      if (combineArrayVals &&
+        result[key] && $.isArray(result[key]) &&
+        m1[key] && $.isArray(m1[key])) {
+        result[key] = result[key].concat(m1[key]);
+      } else {
+        result[key] = m1[key];
+      }
     }
   }
 
@@ -296,6 +303,7 @@ epiviz.utils.mapKeyIntersection = function(m1, m2) {
 // Reflection
 
 /**
+ * Evaluates the given string into a constructor for a type
  * @param {string} typeName
  * @returns {?function(new: T)}
  * @template T
@@ -311,6 +319,7 @@ epiviz.utils.evaluateFullyQualifiedTypeName = function(typeName) {
 
     var result = context[func];
     if (typeof(result) !== 'function') {
+      console.error('Unknown type name: ' + typeName);
       return null;
     }
 
@@ -322,6 +331,8 @@ epiviz.utils.evaluateFullyQualifiedTypeName = function(typeName) {
 };
 
 /**
+ * Applies the given constructor to the given parameters and creates
+ * a new instance of the class it defines
  * @param {function(new: T)} ctor
  * @param {Array} params
  * @returns {T}

@@ -29,7 +29,9 @@ epiviz.ui.charts.ChartType = function(config) {
    * @type {Object.<epiviz.Config.ChartPropertySettings|string, *>}
    * @protected
    */
-  this._defaultSettings = epiviz.utils.mapCombine(config.chartSettings[this.typeName()], config.chartSettings[this.chartDisplayType()]);
+  this._defaultSettings = epiviz.utils.mapCombine(
+    epiviz.utils.mapCombine(config.chartSettings[this.typeName()], config.chartSettings[this.chartDisplayType()], true),
+    config.chartSettings['default'], true);
 
   /**
    * @type {string|number}
@@ -54,6 +56,12 @@ epiviz.ui.charts.ChartType = function(config) {
    * @private
    */
   this._defaultColors = this._defaultSettings[ChartPropertySettings.COLORS];
+
+  /**
+   * @type {Array.<string>}
+   * @private
+   */
+  this._decorations = this._defaultSettings[ChartPropertySettings.DECORATIONS];
 
   /**
    * @type {?Object.<string, *>}
@@ -148,6 +156,11 @@ epiviz.ui.charts.ChartType.prototype.defaultMargins = function() { return this._
  * @returns {epiviz.ui.charts.ColorPalette}
  */
 epiviz.ui.charts.ChartType.prototype.defaultColors = function() { return this._defaultColors; };
+
+/**
+ * @returns {Array.<string>}
+ */
+epiviz.ui.charts.ChartType.prototype.decorations = function() { return this._decorations; };
 
 /**
  * @returns {?Object.<string, *>}

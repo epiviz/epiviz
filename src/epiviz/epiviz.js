@@ -172,7 +172,7 @@ epiviz.EpiViz.prototype.config = function() {
 epiviz.EpiViz.prototype._addChart = function(type, measurements, chartId, chartProperties) {
   chartId = this._chartManager.addChart(type, measurements, chartId, chartProperties);
   var range = this._workspaceManager.activeWorkspace().range();
-  this._chartManager.addChartsLoaderAnimation(chartId);
+  this._chartManager.dataWaitStart(chartId);
   var chartMeasurementsMap = {};
   chartMeasurementsMap[chartId] = measurements;
   var self = this;
@@ -655,7 +655,7 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
      * @param {{oldValue: epiviz.datatypes.GenomicRange, newValue: epiviz.datatypes.GenomicRange}} e
      */
     function(e) {
-      self._chartManager.addChartsLoaderAnimation();
+      self._chartManager.dataWaitStart();
 
       /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
       var chartMeasurementsMap = self._chartManager.chartsMeasurements();

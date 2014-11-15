@@ -183,9 +183,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/DataTables-1.9.4/extras/ColumnFilter/media/js/jquery.dataTables.columnFilter.js"></script>
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
 
-    <!-- Google Analytics -->
-    <script src="src/lib/google-analytics/google-analytics.js"></script>
-
     <!-- D3 -->
     <script src="src/lib/d3/d3.v3.min.js"></script>
 
@@ -278,6 +275,20 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
+
+    <script src="src/epiviz/ui/charts/decoration/chart-decoration.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/remove-chart-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/save-chart-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
+
+    <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-loader-animation.js"></script>
+
     <script src="src/epiviz/ui/charts/chart-manager.js"></script>
 
     <script src="src/epiviz/workspaces/user-manager.js"></script>
@@ -524,6 +535,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       </div>
     </div>
 
+    <!-- Unimportant scripts -->
+
+    <!-- Google Analytics -->
+    <script src="src/lib/google-analytics/google-analytics.js"></script>
   </body>
 
 </html>
