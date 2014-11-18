@@ -40,18 +40,18 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._resizeInterval = null;
 
   /**
-   * @type {epiviz.events.Event.<{
-   *   id: string,
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{
    *   type: epiviz.ui.charts.ChartType,
    *   properties: epiviz.ui.charts.ChartProperties,
    *   chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>
-   * }>}
+   * }>>}
    * @private
    */
   this._chartAdded = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{id: string, chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}>}
+   * Argument is chartsOrder: track -> ids, plot -> ids
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>>>}
    * @private
    */
   this._chartRemoved = new epiviz.events.Event();
@@ -63,31 +63,33 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._chartsCleared = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{id: string, colors: epiviz.ui.charts.ColorPalette}>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.ColorPalette>>}
    * @private
    */
   this._chartColorsChanged = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{id: string, modifiedMethods: Object.<string, string>}>}
+   * Event arg: a map of method -> code
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
    * @private
    */
   this._chartMethodsModified = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{id: string, customSettingsValues: Object.<string, *>}>}
+   * Event arg: custom settings values setting -> value
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}
    * @private
    */
   this._chartCustomSettingsChanged = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{id: string, width: number|string, height: number|string}>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{width: number|string, height: number|string}>>}
    * @private
    */
   this._chartSizeChanged = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{id: string, margins: epiviz.ui.charts.Margins}>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.Margins>>}
    * @private
    */
   this._chartMarginsChanged = new epiviz.events.Event();
@@ -157,12 +159,11 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measureme
   if (!(chartType.chartDisplayType() in this._chartsOrder)) { this._chartsOrder[chartType.chartDisplayType()] = []; }
   this._chartsOrder[chartType.chartDisplayType()].push(id);
 
-  this._chartAdded.notify({
-      id: id,
+  this._chartAdded.notify(new epiviz.ui.charts.VisEventArgs(id, {
       type: chartType,
       properties: chartProperties,
       chartsOrder: this._chartsOrder
-    });
+    }));
 
   return id;
 };
@@ -177,7 +178,7 @@ epiviz.ui.charts.ChartManager.prototype.removeChart = function(id) {
   delete this._charts[id];
   this._chartsOrder[chart.displayType()].splice(this._chartsOrder[chart.displayType()].indexOf(id), 1);
 
-  this._chartRemoved.notify({id: id, chartsOrder: this._chartsOrder});
+  this._chartRemoved.notify(new epiviz.ui.charts.VisEventArgs(id, this._chartsOrder));
 };
 
 /**
@@ -235,26 +236,22 @@ epiviz.ui.charts.ChartManager.prototype.clear = function() {
  */
 epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId) {
   if (chartId && this._charts[chartId]) {
-    this._charts[chartId].onDataWaitStart().notify();
+    this._charts[chartId].onDataWaitStart().notify(new epiviz.ui.charts.VisEventArgs(chartId));
     return;
   }
   for (var id in this._charts) {
     if (!this._charts.hasOwnProperty(id)) { continue; }
-    this._charts[id].onDataWaitStart().notify();
+    this._charts[id].onDataWaitStart().notify(new epiviz.ui.charts.VisEventArgs(id));
   }
 };
 
 /**
- * @returns {epiviz.events.Event.<{
- *   id: string,
- *   type: epiviz.ui.charts.ChartType,
- *   properties: epiviz.ui.charts.ChartProperties,
- *   chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties, chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartAdded = function() { return this._chartAdded; };
 
 /**
- * @returns {epiviz.events.Event.<{chartId: string, chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartRemoved = function() { return this._chartRemoved; };
 
@@ -264,27 +261,27 @@ epiviz.ui.charts.ChartManager.prototype.onChartRemoved = function() { return thi
 epiviz.ui.charts.ChartManager.prototype.onChartsCleared = function() { return this._chartsCleared; };
 
 /**
- * @returns {epiviz.events.Event.<{id: string, colors: epiviz.ui.charts.ColorPalette}>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.ColorPalette>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartColorsChanged = function() { return this._chartColorsChanged; };
 
 /**
- * @returns {epiviz.events.Event.<{id: string, modifiedMethods: Object.<string, string>}>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartMethodsModified = function() { return this._chartMethodsModified; };
 
 /**
- * @returns {epiviz.events.Event.<{id: string, customSettingsValues: Object.<string, *>}>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartCustomSettingsChanged = function() { return this._chartCustomSettingsChanged; };
 
 /**
- * @returns {epiviz.events.Event.<{id: string, width: number|string, height: number|string}>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{width: (number|string), height: (number|string)}>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartSizeChanged = function() { return this._chartSizeChanged; };
 
 /**
- * @returns {epiviz.events.Event.<{id: string, margins: epiviz.ui.charts.Margins}>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.Margins>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartMarginsChanged = function() { return this._chartMarginsChanged; };
 
@@ -312,11 +309,11 @@ epiviz.ui.charts.ChartManager.prototype._registerWindowResize = function() {
 epiviz.ui.charts.ChartManager.prototype._registerChartHover = function(chart) {
   var self = this;
   chart.onHover().addListener(new epiviz.events.EventListener(
-    /** @param {epiviz.ui.charts.ChartObject} selectedObject */
-    function(selectedObject) {
+    /** @param {epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.ChartObject>} e */
+    function(e) {
       for (var id in self._charts) {
         if (!self._charts.hasOwnProperty(id)) { continue; }
-        self._charts[id].doHover(selectedObject);
+        self._charts[id].doHover(e.args);
       }
     }));
 };
@@ -342,8 +339,9 @@ epiviz.ui.charts.ChartManager.prototype._registerChartUnhover = function(chart) 
 epiviz.ui.charts.ChartManager.prototype._registerChartSelect = function(chart) {
   var self = this;
   chart.onSelect().addListener(new epiviz.events.EventListener(
-    /** @param {epiviz.ui.charts.ChartObject} selectedObject */
-      function(selectedObject) {
+    /** @param {epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.ChartObject>} e */
+      function(e) {
+      var selectedObject = e.args;
       for (var id in self._charts) {
         if (!self._charts.hasOwnProperty(id)) { continue; }
         self._charts[id].doSelect(selectedObject);
@@ -371,9 +369,9 @@ epiviz.ui.charts.ChartManager.prototype._registerChartDeselect = function(chart)
  */
 epiviz.ui.charts.ChartManager.prototype._registerChartRemove = function(chart) {
   var self = this;
-  chart.onRemove().addListener(new epiviz.events.EventListener(function() {
-    self.removeChart(chart.id());
-  }));
+  chart.onRemove().addListener(new epiviz.events.EventListener(
+    /** @param {epiviz.ui.charts.VisEventArgs} e */
+    function(e) { self.removeChart(e.id); }));
 };
 
 /**
@@ -382,10 +380,12 @@ epiviz.ui.charts.ChartManager.prototype._registerChartRemove = function(chart) {
  */
 epiviz.ui.charts.ChartManager.prototype._registerChartSave = function(chart) {
   var self = this;
-  chart.onSave().addListener(new epiviz.events.EventListener(function(chartId) {
+  chart.onSave().addListener(new epiviz.events.EventListener(
+    /** @param {epiviz.ui.charts.VisEventArgs} e */
+    function(e) {
     var saveSvgDialog = new epiviz.ui.controls.SaveSvgAsImageDialog(
       {ok: function(){}, cancel: function(){}},
-      chartId,
+      e.id,
       self._config.dataServerLocation + self._config.chartSaverLocation);
 
     saveSvgDialog.show();

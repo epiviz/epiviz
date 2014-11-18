@@ -29,7 +29,7 @@ epiviz.ui.charts.decoration.SaveChartButton.constructor = epiviz.ui.charts.decor
 epiviz.ui.charts.decoration.SaveChartButton.prototype._click = function() {
   var self = this;
   return function(){
-    self.chart().onSave().notify(self.chart().id());
+    self.chart().onSave().notify(new epiviz.ui.charts.VisEventArgs(self.chart().id()));
   };
 };
 

@@ -32,19 +32,8 @@ epiviz.plugins.charts.BlocksTrack.constructor = epiviz.plugins.charts.BlocksTrac
 epiviz.plugins.charts.BlocksTrack.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Track.prototype._initialize.call(this);
-};
 
-/**
- * @protected
- */
-epiviz.plugins.charts.BlocksTrack.prototype._addStyles = function() {
-  var svgId = '#' + this._svgId;
-  var style = sprintf('%s .items { shape-rendering: crispEdges; fill-opacity: 0.6; stroke: #555555; stroke-opacity: 0.5; stroke-width: 1; }\n', svgId) +
-    sprintf('%s .items .selected { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }\n', svgId) +
-    sprintf('%s .items .hovered { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }\n', svgId);
-
-  var jSvg = this._container.find('svg');
-  jSvg.append(sprintf('<style type="text/css">%s</style>', style));
+  this._svg.classed('blocks-track', true);
 };
 
 /**
@@ -101,7 +90,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
-  var minBlockDistance = this._customSettingsValues[epiviz.plugins.charts.BlocksTrackType.CustomSettings.MIN_BLOCK_DISTANCE];
+  var minBlockDistance = this.customSettingsValues()[epiviz.plugins.charts.BlocksTrackType.CustomSettings.MIN_BLOCK_DISTANCE];
 
   var xScale = d3.scale.linear()
     .domain([start, end])
@@ -161,21 +150,21 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
 
   var items = this._svg.select('.items');
   var selected = items.select('.selected');
-  var clipPath = this._svg.select('#clip-' + this._id);
+  var clipPath = this._svg.select('#clip-' + this.id());
 
   if (items.empty()) {
     if (clipPath.empty()) {
       this._svg.select('defs')
         .append('clipPath')
-        .attr('id', 'clip-' + this._id)
+        .attr('id', 'clip-' + this.id())
         .append('rect')
         .attr('class', 'clip-path-rect');
     }
 
     items = this._svg.append('g')
       .attr('class', 'items')
-      .attr('id', this._id + '-gene-content')
-      .attr('clip-path', 'url(#clip-' + this._id + ')');
+      .attr('id', this.id() + '-gene-content')
+      .attr('clip-path', 'url(#clip-' + this.id() + ')');
 
     selected = items.append('g').attr('class', 'selected');
     items.append('g').attr('class', 'hovered');
@@ -205,15 +194,15 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
       // We're using b.end + 1 since b.end is the index of the last covered bp
       return zoom * (xScale(b.end + 1) - xScale(b.start));
     })
-    .on('mouseout', function (b) {
-      self._unhover.notify();
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     })
     .on('mouseover', function (b) {
-      self._hover.notify(b);
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
     })
     .on('click', function(b) {
-      self._deselect.notify();
-      self._select.notify(b);
+      self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
       d3.event.stopPropagation();
     });
 
@@ -237,15 +226,10 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
 };
 
 /**
- * @returns {string}
- */
-epiviz.plugins.charts.BlocksTrack.prototype.chartTypeName = function() { return 'epiviz.plugins.charts.BlocksTrack'; };
-
-/**
  * @param {Array.<{name: string, color: string}>} colorMap
  */
 epiviz.plugins.charts.BlocksTrack.prototype.setColorMap = function(colorMap) {
-  this._container.find('.items').remove();
+  this.container().find('.items').remove();
   epiviz.ui.charts.Chart.prototype.setColorMap.call(this, colorMap);
 };
 

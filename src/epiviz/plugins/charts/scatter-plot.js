@@ -25,12 +25,6 @@ epiviz.plugins.charts.ScatterPlot = function(id, container, properties) {
   this._chartContent = null;
 
   /**
-   * @type {jQuery}
-   * @private
-   */
-  this._jChartContent = null;
-
-  /**
    * D3 legend container
    * @type {*}
    * @private
@@ -93,30 +87,10 @@ epiviz.plugins.charts.ScatterPlot.prototype._initialize = function() {
   epiviz.ui.charts.Plot.prototype._initialize.call(this);
 
   this._svg.classed('scatter-plot', true);
-  //this._addStyles();
 
   this._chartContent = this._svg.append('g').attr('class', 'chart-content');
-  this._jChartContent = this._container.find('.chart-content');
   this._legend = this._svg.append('g').attr('class', 'chart-legend');
 };
-
-/**
- * @protected
- */
-/*epiviz.plugins.charts.ScatterPlot.prototype._addStyles = function() {
-  var svgId = '#' + this._svgId;
-  var style =
-    sprintf('%s .items {}\n', svgId) +
-      sprintf('%s .items .selected { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }\n', svgId) +
-      sprintf('%s .items .hovered { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }\n', svgId);
-  var nSeries = Math.min(this._measurementsX.length, this._measurementsY.length);
-  for (var i = 0; i < nSeries; ++i) {
-    style += sprintf('%s .data-series-%s { opacity: 1.0; }\n', svgId, i);
-  }
-
-  var jSvg = this._container.find('svg');
-  jSvg.append(sprintf('<style type="text/css">%s</style>', style));
-};*/
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
@@ -147,7 +121,7 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
 epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data) {
   var self = this;
   var Axis = epiviz.ui.charts.Axis;
-  var circleRadius = Math.max(1,this._customSettingsValues[epiviz.plugins.charts.ScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
+  var circleRadius = Math.max(1,this.customSettingsValues()[epiviz.plugins.charts.ScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
   var gridSquareSize = Math.max(Math.floor(circleRadius), 1);
   var nSeries = Math.min(this._measurementsX.length, this._measurementsY.length);
 
@@ -169,10 +143,10 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   var height = this.height();
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  var minY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
-  var maxY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
-  var minX = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.X_MIN];
-  var maxX = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
+  var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
+  var minX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN];
+  var maxX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 
   if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
   if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
@@ -270,7 +244,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     .enter()
     .insert('circle', ':first-child')
     .attr('id', function (d) {
-      return sprintf('%s-item-%s-%s', self._id, d.seriesIndex, d.valueItems[0][0].globalIndex);
+      return sprintf('%s-item-%s-%s', self.id(), d.seriesIndex, d.valueItems[0][0].globalIndex);
     })
     .style('opacity', 0)
     .style('fill-opacity', 0)
@@ -308,14 +282,14 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
 
   selection
     .on('mouseover', function (d) {
-      self._hover.notify(d);
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
     })
-    .on('mouseout', function (d) {
-      self._unhover.notify();
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     })
     .on('click', function (d) {
-      self._deselect.notify();
-      self._select.notify(d);
+      self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
 
       d3.event.stopPropagation();
     });
@@ -324,22 +298,16 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
 };
 
 /**
- * @returns {string}
- */
-epiviz.plugins.charts.ScatterPlot.prototype.chartTypeName = function() { return 'epiviz.plugins.charts.ScatterPlot'; };
-
-/**
  * @returns {Array.<{name: string, color: string}>}
  */
 epiviz.plugins.charts.ScatterPlot.prototype.colorMap = function() {
-  var self = this;
   var n = Math.min(this._measurementsX.length, this._measurementsY.length);
   var colors = new Array(n);
 
   for (var i = 0; i < n; ++i) {
     colors[i] = {
       name: sprintf('%s vs %s', this._measurementsX[i].name(), this._measurementsY[i].name()),
-      color: this._properties.colors.get(i)
+      color: this.properties().colors.get(i)
     };
   }
 

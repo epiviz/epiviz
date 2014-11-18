@@ -116,16 +116,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
   this._deselect = new epiviz.events.Event();
 
   /**
-   * The event argument is the id of the visualization
-   *
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
    * @private
    */
   this._save = new epiviz.events.Event();
 
   /**
-   * The event argument is the id of the visualization
-   *
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
    * @private
    */
@@ -133,7 +129,7 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
 
   /**
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.ColorPalette>>}
-   * @private
+   * @protected
    */
   this._colorsChanged = new epiviz.events.Event();
 
@@ -193,7 +189,7 @@ epiviz.ui.charts.Visualization.prototype._initialize = function() {
   var width = this.width();
   var height = this.height();
 
-  this._container.append(sprintf('<svg id="%s" class="visualization" width="%s" height="%s"><style type="text/css"></style></svg>', this._svgId, width, height));
+  this._container.append(sprintf('<svg id="%s" class="visualization" width="%s" height="%s"><style type="text/css"></style><defs></defs></svg>', this._svgId, width, height));
   this._svg = d3.select('#' + this._svgId);
 
   var jSvg = $('#' + this._svgId);

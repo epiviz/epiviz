@@ -17,59 +17,29 @@ goog.provide('epiviz.ui.charts.ChartProperties');
  * @param {Array.<epiviz.ui.charts.CustomSetting>} [customSettingsDefs]
  * @constructor
  * @struct
+ * @extends {epiviz.ui.charts.VisualizationProperties}
  */
 epiviz.ui.charts.ChartProperties = function(width, height, margins, measurements, colors, modifiedMethods, customSettingsValues, customSettingsDefs) {
-  /**
-   * @type {number|string}
-   */
-  this.width = width;
 
-  /**
-   * @type {number|string}
-   */
-  this.height = height;
-
-  /**
-   * @type {epiviz.ui.charts.Margins}
-   */
-  this.margins = margins;
+  epiviz.ui.charts.VisualizationProperties.call(this, width, height, margins, colors, modifiedMethods, customSettingsValues, customSettingsDefs);
 
   /**
    * @type {epiviz.measurements.MeasurementSet}
    */
   this.measurements = measurements;
-
-  /**
-   * @type {epiviz.ui.charts.ColorPalette}
-   */
-  this.colors = colors;
-
-  /**
-   * @type {Object.<string, string>}
-   */
-  this.modifiedMethods = modifiedMethods;
-
-  /**
-   * @type {Object.<string, *>}
-   */
-  this.customSettingsValues = customSettingsValues || {};
-
-  /**
-   * @type {Array.<epiviz.ui.charts.CustomSetting>}
-   */
-  this.customSettingsDefs = customSettingsDefs || [];
 };
+
+/*
+ * Copy methods from upper class
+ */
+epiviz.ui.charts.ChartProperties.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.VisualizationProperties.prototype);
+epiviz.ui.charts.ChartProperties.constructor = epiviz.ui.charts.ChartProperties;
 
 /**
  * @returns {epiviz.ui.charts.ChartProperties}
  */
 epiviz.ui.charts.ChartProperties.prototype.copy = function() {
-  return new epiviz.ui.charts.ChartProperties(
-    this.width, this.height,
-    this.margins ? this.margins.copy() : this.margins,
-    this.measurements ? new epiviz.measurements.MeasurementSet(this.measurements) : this.measurements,
-    this.colors ? this.colors.copy() : this.colors,
-    this.modifiedMethods ? epiviz.utils.mapCopy(this.modifiedMethods) : this.modifiedMethods,
-    this.customSettingsValues ? epiviz.utils.mapCopy(this.customSettingsValues) : this.customSettingsValues,
-    this.customSettingsDefs ? this.customSettingsDefs.slice(0) : this.customSettingsDefs);
+  var ret = /** @type {epiviz.ui.charts.ChartProperties} */ epiviz.ui.charts.VisualizationProperties.prototype.copy.call(this);
+  ret.measurements = this.measurements ? new epiviz.measurements.MeasurementSet(this.measurements) : this.measurements;
+  return ret;
 };

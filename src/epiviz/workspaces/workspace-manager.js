@@ -292,16 +292,15 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartAdded = function() {
   var self = this;
   this._chartManager.onChartAdded().addListener(new epiviz.events.EventListener(
     /**
-     * @param {{
-     *   id: string,
+     * @param {epiviz.ui.charts.VisEventArgs.<{
      *   type: epiviz.ui.charts.ChartType,
      *   properties: epiviz.ui.charts.ChartProperties,
-     *   chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}} e
+     *   chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}>} e
      */
     function(e) {
       if (self._activeWorkspaceChanging) { return; }
       if (!self._activeWorkspace) { return; }
-      self._activeWorkspace.chartAdded(e.id, e.type, e.properties, e.chartsOrder);
+      self._activeWorkspace.chartAdded(e.id, e.args.type, e.args.properties, e.args.chartsOrder);
     }));
 };
 
@@ -313,7 +312,7 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartRemoved = function() 
   this._chartManager.onChartRemoved().addListener(new epiviz.events.EventListener(function(e) {
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
-    self._activeWorkspace.chartRemoved(e.id, e.chartsOrder);
+    self._activeWorkspace.chartRemoved(e.id, e.args);
   }));
 };
 
@@ -325,7 +324,7 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartColorsChanged = funct
   this._chartManager.onChartColorsChanged().addListener(new epiviz.events.EventListener(function(e) {
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
-    self._activeWorkspace.chartColorsChanged(e.id, e.colors);
+    self._activeWorkspace.chartColorsChanged(e.id, e.args);
   }));
 };
 
@@ -337,7 +336,7 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartMethodsModified = fun
   this._chartManager.onChartMethodsModified().addListener(new epiviz.events.EventListener(function(e) {
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
-    self._activeWorkspace.chartMethodsModified(e.id, e.modifiedMethods);
+    self._activeWorkspace.chartMethodsModified(e.id, e.args);
   }));
 };
 
@@ -349,7 +348,7 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartCustomSettingsChanged
   this._chartManager.onChartCustomSettingsChanged().addListener(new epiviz.events.EventListener(function(e) {
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
-    self._activeWorkspace.chartCustomSettingsChanged(e.id, e.customSettingsValues);
+    self._activeWorkspace.chartCustomSettingsChanged(e.id, e.args);
   }));
 };
 
@@ -361,7 +360,7 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartSizeChanged = functio
   this._chartManager.onChartSizeChanged().addListener(new epiviz.events.EventListener(function(e) {
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
-    self._activeWorkspace.chartSizeChanged(e.id, e.width, e.height);
+    self._activeWorkspace.chartSizeChanged(e.id, e.args.width, e.args.height);
   }));
 };
 
@@ -373,7 +372,7 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartMarginsChanged = func
   this._chartManager.onChartMarginsChanged().addListener(new epiviz.events.EventListener(function(e) {
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
-    self._activeWorkspace.chartMarginsChanged(e.id, e.margins);
+    self._activeWorkspace.chartMarginsChanged(e.id, e.args);
   }));
 };
 

@@ -60,8 +60,8 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   if (!data || !range) { return []; }
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  var minY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
-  var maxY = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
+  var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
 
   if (minY == CustomSetting.DEFAULT) {
     minY = null;
@@ -121,29 +121,25 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
  * @private
  */
 epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, delta, zoom, xScale, yScale) {
-
-  /** @type {epiviz.ui.charts.Margins} */
-  var margins = this.margins();
-
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
   /** @type {number} */
-  var maxPoints = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.MAX_POINTS];
+  var maxPoints = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.MAX_POINTS];
 
   /** @type {boolean} */
-  var showPoints = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS];
+  var showPoints = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS];
 
   /** @type {boolean} */
-  var showLines = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES];
+  var showLines = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES];
 
   /** @type {number} */
-  var pointRadius = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS];
+  var pointRadius = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS];
 
   /** @type {number} */
-  var lineThickness = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS];
+  var lineThickness = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS];
 
-  var interpolation = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];
+  var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];
 
   var self = this;
 
@@ -225,7 +221,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
         .style('stroke-opacity', '0.7')
         .on('mouseover', function() { self._captureMouseHover(); })
         .on('mousemove', function() { self._captureMouseHover(); })
-        .on('mouseout', function () { self._unhover.notify(); });
+        .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
 
       lines
         .attr('d', line)
@@ -262,7 +258,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
       points
         .on('mouseover', function() { self._captureMouseHover(); })
         .on('mousemove', function() { self._captureMouseHover(); })
-        .on('mouseout', function () { self._unhover.notify(); });
+        .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
 
       points.exit()
         .transition()
@@ -274,8 +270,3 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
   return items;
 };
-
-/**
- * @returns {string}
- */
-epiviz.plugins.charts.LineTrack.prototype.chartTypeName = function() { return 'epiviz.plugins.charts.LineTrack'; };

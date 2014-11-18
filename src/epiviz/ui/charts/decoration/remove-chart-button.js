@@ -29,7 +29,7 @@ epiviz.ui.charts.decoration.RemoveChartButton.constructor = epiviz.ui.charts.dec
 epiviz.ui.charts.decoration.RemoveChartButton.prototype._click = function() {
   var self = this;
   return function(){
-    self.chart().onRemove().notify(self.chart().id());
+    self.chart().onRemove().notify(new epiviz.ui.charts.VisEventArgs(self.chart().id()));
   };
 };
 

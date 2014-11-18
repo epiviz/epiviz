@@ -34,7 +34,7 @@ epiviz.ui.charts.CustomSetting = function(id, type, defaultValue, label, possibl
   this.label = label || id;
 
   /**
-   * @type {Array=}
+   * @type {Array}
    */
   this.possibleValues = possibleValues || null;
 };

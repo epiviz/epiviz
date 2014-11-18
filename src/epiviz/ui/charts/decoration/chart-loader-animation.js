@@ -48,7 +48,7 @@ epiviz.ui.charts.decoration.ChartLoaderAnimation.prototype.decorate = function()
     self._removeLoaderAnimation();
   }));
 
-  this.chart().onSizeChanged().addListener(new epiviz.events.EventListener(function(e) {
+  this.chart().onSizeChanged().addListener(new epiviz.events.EventListener(function() {
     if (self._animationShowing) {
       self._addLoaderAnimation();
     }

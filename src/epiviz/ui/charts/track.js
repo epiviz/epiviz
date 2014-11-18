@@ -67,7 +67,7 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
   this._background
     .on('mouseover', function() { self._captureMouseHover(); })
     .on('mousemove', function() { self._captureMouseHover(); })
-    .on('mouseout', function () { self._unhover.notify(); });
+    .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
 };
 
 /**
@@ -145,15 +145,15 @@ epiviz.ui.charts.Track.prototype.doUnhover = function() {
  */
 epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
   if (!this._lastRange) { return; }
-  this._unhover.notify();
+  this._unhover.notify(new epiviz.ui.charts.VisEventArgs(this.id()));
   var inverseXScale = d3.scale.linear()
     .domain([0, this.width()])
     .range([this._lastRange.start(), this._lastRange.end()]);
   var start = inverseXScale(d3.mouse(this._background[0][0])[0]) - this._binSize / 2;
   var end = start + this._binSize;
 
-  var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this._id), start, end, null, null, null, null, null);
-  this._hover.notify(selectedObject);
+  var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this.id()), start, end);
+  this._hover.notify(new epiviz.ui.charts.VisEventArgs(this.id(), selectedObject));
 };
 
 /**

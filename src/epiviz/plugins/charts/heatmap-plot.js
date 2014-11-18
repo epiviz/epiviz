@@ -25,12 +25,6 @@ epiviz.plugins.charts.HeatmapPlot = function(id, container, properties) {
   this._chartContent = null;
 
   /**
-   * @type {jQuery}
-   * @private
-   */
-  this._jChartContent = null;
-
-  /**
    * @type {number}
    * @private
    */
@@ -63,28 +57,8 @@ epiviz.plugins.charts.HeatmapPlot.constructor = epiviz.plugins.charts.HeatmapPlo
 epiviz.plugins.charts.HeatmapPlot.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Plot.prototype._initialize.call(this);
-
+  this._svg.classed('heatmap-plot', true);
   this._chartContent = this._svg.append('g').attr('class', 'chart-content');
-  this._jChartContent = this._container.find('.chart-content');
-};
-
-/**
- * @protected
- */
-epiviz.plugins.charts.HeatmapPlot.prototype._addStyles = function() {
-  var svgId = '#' + this._svgId;
-  var style = sprintf('%s .items { stroke: #efefef; stroke-opacity: 0.3; shape-rendering: \'crispEdges\'; }\n', svgId) +
-    sprintf('%s .selected .item { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }\n', svgId) +
-    sprintf('%s .hovered .item { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }\n', svgId) +
-    sprintf('%s .col-text { text-anchor: start; font-size: 10px; }\n', svgId) +
-    sprintf('%s .row-text { text-anchor: end; font-size: 9px; }\n', svgId) +
-    sprintf('%s .selected .col-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }\n', svgId) +
-    sprintf('%s .hovered .col-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }\n', svgId) +
-    sprintf('%s .selected .row-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }\n', svgId) +
-    sprintf('%s .hovered .row-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }\n', svgId);
-
-  var jSvg = this._container.find('svg');
-  jSvg.append(sprintf('<style type="text/css">%s</style>', style));
 };
 
 /**
@@ -119,14 +93,14 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
   // Apply clustering
   var clusteringAlgFactory = epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.instance();
   var clusterer = clusteringAlgFactory.algorithm(
-    this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_ALG]);
+    this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_ALG]);
   var metric = clusteringAlgFactory.metric(
-    this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_METRIC]);
+    this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_METRIC]);
   var linkage = clusteringAlgFactory.linkage(
-    this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_LINKAGE]);
+    this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_LINKAGE]);
 
   var population = [];
-  data.foreach(function(measurement, series, i) {
+  data.foreach(function(measurement, series) {
     var row = [];
     for (var j = 0; j < series.size(); ++j) {
       var item = series.get(j).rowItem;
@@ -166,7 +140,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   var self = this;
   var Axis = epiviz.ui.charts.Axis;
 
-  var maxColumns = this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS];
+  var maxColumns = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS];
 
   var firstGlobalIndex = data.first().value.globalStartIndex();
   var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
@@ -184,9 +158,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var nEntries = lastGlobalIndex - firstGlobalIndex;
 
-  var label = this._customSettingsValues[epiviz.ui.charts.Visualization.CustomSettings.LABEL];
+  var label = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.LABEL];
 
-  var dendrogramRatio = this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
+  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
   var width = this.width() * (1 - dendrogramRatio);
   var height = this.height();
 
@@ -272,12 +246,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     .enter()
     .append('rect')
     .attr('id', function (d) {
-      return sprintf('%s-item-%s-%s', self._id, d.seriesIndex, d.valueItems[0][0].globalIndex);
+      return sprintf('%s-item-%s-%s', self.id(), d.seriesIndex, d.valueItems[0][0].globalIndex);
     })
     .attr('class', function(d) { return d.cssClasses; })
     .style('opacity', 0)
     .style('fill-opacity', 0)
-    .attr('x', function(d, i) { return cellWidth * colIndex[d.valueItems[0][0].globalIndex]; })
+    .attr('x', function(d) { return cellWidth * colIndex[d.valueItems[0][0].globalIndex]; })
     .attr('y', function(d) { return cellHeight * d.seriesIndex; })
     .attr('width', cellWidth)
     .attr('height', cellHeight)
@@ -288,7 +262,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     .duration(1000)
     .style('fill-opacity', null)
     .style('opacity', null)
-    .attr('x', function(d, i) {
+    .attr('x', function(d) {
       return cellWidth * colIndex[d.valueItems[0][0].globalIndex];
     })
     .attr('y', function(d) { return cellHeight * d.seriesIndex; })
@@ -305,14 +279,14 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   selection
     .on('mouseover', function (d) {
-      self._hover.notify(d);
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
     })
-    .on('mouseout', function (d) {
-      self._unhover.notify();
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     })
     .on('click', function (d) {
-      self._deselect.notify();
-      self._select.notify(d);
+      self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
 
       d3.event.stopPropagation();
     });
@@ -377,7 +351,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   rowSelection
     .enter()
     .append('text')
-    .attr('class', function(d) { return 'row-text'; })
+    .attr('class', 'row-text')
     .attr('x', 0)
     .attr('y', 0)
     .attr('transform', function(d, i){
@@ -404,9 +378,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 epiviz.plugins.charts.HeatmapPlot.prototype._drawDendrogram = function(dendrogram) {
   this._svg.select('.dendrogram').remove();
 
-  var dendrogramRatio = this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
+  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
   var showDendrogram = dendrogramRatio > 0;
-  var showLabels = this._customSettingsValues[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM_LABELS];
+  var showLabels = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM_LABELS];
 
   if (!showDendrogram) { return; }
 
@@ -445,13 +419,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
     var childTop = top + nextTop;
     var childHeight = (height / node.weight()) * children[i].weight();
     var childWidth = xScale(children[i].distance());
-    var childLeft = left;
 
     var yCenter = this._drawSubDendrogram(
       svg,
       children[i],
       childTop,
-      childLeft,
+      left,
       childWidth,
       childHeight,
       showLabels);
@@ -496,11 +469,6 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
 
   return (firstY + lastY) * 0.5;
 };
-
-/**
- * @returns {string}
- */
-epiviz.plugins.charts.HeatmapPlot.prototype.chartTypeName = function() { return 'epiviz.plugins.charts.HeatmapPlot'; };
 
 /**
  * @returns {Array.<{name: string, color: string}>}
