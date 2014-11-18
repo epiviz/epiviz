@@ -145,6 +145,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
 
+    <script src="src/lib/pace/pace.js"></script>
+    <link href="css/pace/pace-theme-loading-bar.css" rel="stylesheet" />
+
     <!-- CSS -->
 
     <!-- JQuery UI -->
