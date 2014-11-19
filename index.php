@@ -335,7 +335,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
 
     <script src="src/epiviz/ui/charts/tree/node.js"></script>
+    <script src="src/epiviz/ui/charts/tree/ui-node.js"></script>
     <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
+    <script src="src/epiviz/ui/charts/tree/facetzoom.js"></script>
 
     <script src="src/epiviz/main.js"></script>
     

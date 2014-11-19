@@ -166,7 +166,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
     function() {
       var maxDepth = 5;
       var nodeMap = {};
-      var sunburst = new epiviz.ui.charts.tree.Sunburst('sunburst-chart', $('#sunburst'),
+      var sunburst = new epiviz.ui.charts.tree.Facetzoom('sunburst-chart', $('#sunburst'),
         new epiviz.ui.charts.VisualizationProperties(
           600, 600,
           new epiviz.ui.charts.Margins(10, 10, 10, 10),

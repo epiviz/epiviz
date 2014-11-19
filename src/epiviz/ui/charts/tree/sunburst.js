@@ -207,7 +207,6 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
   var newLabels = newGroups.append('text')
     .attr('class', 'unselectable-text node-label')
     .append('textPath')
-    .attr('text-anchor', 'middle')
     .attr('xlink:href', function(d) { return '#' + self.id() + '-' + d.id; })
     .attr("dx", "6") // margin
     .attr("dy", ".35em") // vertical-align

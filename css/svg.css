@@ -42,6 +42,7 @@ text {
     font-family: Verdana, Geneva, sans-serif;
     font-size: 11px;
     cursor: context-menu;
+    text-anchor: middle;
 }
 
 .node-arc {
@@ -138,3 +139,10 @@ text {
 /* Line Track */
 
 .line-track {}
+
+/* Facetzoom */
+
+.facetzoom .item rect {
+    stroke: #fff;
+    fill-rule: evenodd;
+}
