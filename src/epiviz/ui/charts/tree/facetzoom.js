@@ -17,8 +17,6 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
 
   epiviz.ui.charts.Visualization.call(this, id, container, properties);
 
-  // Sunburst specific
-
   /**
    * A D3 function used to partition a tree
    * @private
@@ -29,20 +27,9 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
      * @param {epiviz.ui.charts.tree.Node} d
      * @returns {number}
      */
-    //function(d) { return d.nleaves; }); // If we want the size of the nodes to reflect the number of leaves under them
-      function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
-    .sort(function(d1, d2) { return 0; }); // No reordering of the nodes
-
-  var self = this;
-  /**
-   * Generates an arc given a ui node
-   * @type {function(epiviz.ui.charts.tree.UiNode): string}
-   */
-  /*this._arc = d3.svg.arc()
-    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, self._x(d.x))); })
-    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, self._x(d.x + d.dx))); })
-    .innerRadius(function(d) { return Math.max(0, self._y(d.y)); })
-    .outerRadius(function(d) { return Math.max(0, self._y(d.y + d.dy)); });*/
+    // function(d) { return d.nleaves; }) // If we want the size of the nodes to reflect the number of leaves under them
+    function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
+    .sort(function() { return 0; }); // No reordering of the nodes
 
   /**
    * The number of milliseconds for animations within the chart
@@ -50,6 +37,20 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
    * @private
    */
   this._animationDelay = 750;
+
+  /**
+   * Used to measure maximum number of chars to display
+   * @type {number}
+   * @private
+   */
+  this._charWidth = 10;
+
+  /**
+   * Used to clip labels that are too long
+   * @type {number}
+   * @private
+   */
+  this._nodeMargin = 3;
 
   /**
    * @type {Array.<epiviz.ui.charts.tree.UiNode>}
@@ -139,7 +140,6 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     this._oldRootDepth = this._rootDepth;
     this._rootDepth = root.depth;
     this._referenceNode = null;
-    //var uiRoot = this._uiDataMap[root.id];
     var uiSelected = root.children && root.children.length ? this._uiDataMap[root.children[0].id] : null;
     this._selectedNode = uiSelected ?
       new epiviz.ui.charts.tree.UiNode(uiSelected.id, uiSelected.name, uiSelected.children, uiSelected.parentId, uiSelected.size,
@@ -174,21 +174,36 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
   var xScale = d3.scale.linear().range([0, width - this.margins().sumAxis(Axis.X)]);
 
   /** @type {function(number): number} */
-  var yScale = d3.scale.pow().exponent(1.2).range([0, height - this.margins().sumAxis(Axis.Y)]);
+  var yScale = d3.scale.pow().exponent(1.5).range([0, height - this.margins().sumAxis(Axis.Y)]);
 
   var canvas = this._svg.select('.canvas');
+  var defs = this._svg.select('.defs');
   if (canvas.empty()) {
     canvas = this._svg.append('g')
       .attr('class', 'canvas')
       .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
   }
+  if (defs.empty()) {
+    defs = this._svg.select('defs').append('g')
+      .attr('class', 'defs')
+      .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
+  }
 
   if (!root) { return []; }
 
-
-  var depthDif = this._rootDepth - this._oldRootDepth;
+  var calcOldWidth = function(d) { var node = self._getOldNode(d); return xScale(node.x + node.dx) - xScale(node.x); };
+  var calcOldHeight = function(d) { var node = self._getOldNode(d); return yScale(node.y + node.dy) - yScale(node.y); };
+  var calcOldX = function(d) { return xScale(self._getOldNode(d).x); };
+  var calcOldY = function(d) { return yScale(self._getOldNode(d).y); };
+  var calcNewWidth = function(d) { var node = self._getNewNode(d); return xScale(node.x + node.dx) - xScale(node.x); };
+  var calcNewHeight = function(d) { var node = self._getNewNode(d); return yScale(node.y + node.dy) - yScale(node.y); };
+  var calcNewX = function(d) { return xScale(self._getNewNode(d).x); };
+  var calcNewY = function(d) { return yScale(self._getNewNode(d).y); };
 
   var items = canvas.selectAll('g')
+    .data(this._uiData, function(d) { return d.id; });
+
+  var clips = defs.selectAll('clipPath')
     .data(this._uiData, function(d) { return d.id; });
 
   var newItems = items
@@ -196,36 +211,74 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .attr('class', 'item')
     .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
 
+  var newClips = clips
+    .enter().append('clipPath')
+    .attr('id', function(d) { return self.id() + '-clip-' + d.id; })
+    .append('rect')
+    .attr('x', function(d) { return calcOldX(d) + self._nodeMargin; })
+    .attr('y', function(d) { return calcOldY(d) + self._nodeMargin; })
+    .attr('width', function(d) { return Math.max(0, calcOldWidth(d) - 2 * self._nodeMargin); })
+    .attr('height', function(d) { return Math.max(0, calcOldHeight(d) - 2 * self._nodeMargin); });
+
   var newRects = newItems.append('rect')
     .attr('id', function(d) { return self.id() + '-' + d.id; })
     .style('fill', function(d) { return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); })
-    .attr('x', function(d) { return xScale(self._getOldNode(d).x); })
-    .attr('y', function(d) { return yScale(self._getOldNode(d).y); })
-    .attr('width', function(d) { var node = self._getOldNode(d); return xScale(node.x + node.dx) - xScale(node.x); })
-    .attr('height', function(d) { var node = self._getOldNode(d); return yScale(node.y + node.dy) - yScale(node.y); });
+    .attr('x', calcOldX)
+    .attr('y', calcOldY)
+    .attr('width', calcOldWidth)
+    .attr('height', calcOldHeight);
 
-  /*var newLabels = newItems.append('text')
+  var newLabels = newItems.append('text')
     .attr('class', 'unselectable-text node-label')
-    .text(function(d) { return d.name; });*/
+    .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
+    .text(function(d) {
+      var w = calcOldWidth(d);
+      var maxChars = w / self._charWidth;
+      if (maxChars < d.name.length - 3) {
+        return d.name.substring(0, maxChars) + '...';
+      }
+      return d.name;
+    })
+    .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
+    .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.5; })
+    .style('opacity', 0);
+
+  defs.selectAll('rect')
+    .transition().duration(this._animationDelay)
+    .attr('x', function(d) { return calcNewX(d) + self._nodeMargin; })
+    .attr('y', function(d) { return calcNewY(d) + self._nodeMargin; })
+    .attr('width', function(d) { return Math.max(0, calcNewWidth(d) - 2 * self._nodeMargin); })
+    .attr('height', function(d) { return Math.max(0, calcNewHeight(d) - 2 * self._nodeMargin); });
 
   canvas.selectAll('g').selectAll('rect')
     .transition().duration(this._animationDelay)
-    .attr('x', function(d) { return xScale(self._getNewNode(d).x); })
-    .attr('y', function(d) { return yScale(self._getNewNode(d).y); })
-    .attr('width', function(d) { var node = self._getNewNode(d); return xScale(node.x + node.dx) - xScale(node.x); })
-    .attr('height', function(d) { var node = self._getNewNode(d); return yScale(node.y + node.dy) - yScale(node.y); });
+    .attr('x', calcNewX)
+    .attr('y', calcNewY)
+    .attr('width', calcNewWidth)
+    .attr('height', calcNewHeight);
 
-  /*canvas.selectAll('g').selectAll('text')
+  canvas.selectAll('g').selectAll('text')
     .transition().duration(this._animationDelay)
-    .attrTween('transform', function(d) { return self._nodeLabelTransformTween(d); })
-    .each(function(d) {
-      d3.select(this.childNodes[0])
-        .transition().duration(self._animationDelay)
-        .attrTween('startOffset', function(d) { return self._nodeLabelStartOffsetTween(d); });
-    });*/
+    .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
+    .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; })
+    .style('opacity', 1)
+    .tween('text', function(d) {
+      var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
+      return function(t) {
+        var maxChars = Math.round(w(t) / self._charWidth);
+        if (maxChars < d.name.length - 3) {
+          this.textContent = d.name.substring(0, maxChars) + '...';
+          return;
+        }
+        this.textContent = d.name;
+      };
+    });
 
-  //items.exit()
-  //  .selectAll('text').transition().duration(this._animationDelay).style('opacity', 0);
+  items.exit()
+    .selectAll('text').transition().duration(this._animationDelay)
+    .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
+    .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; })
+    .style('opacity', 0);
   items.exit().transition().delay(this._animationDelay).remove();
 
   return this._uiData;
@@ -248,7 +301,6 @@ epiviz.ui.charts.tree.Facetzoom.prototype._getOldNode = function(node) {
   return new epiviz.ui.charts.tree.UiNode(
     node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves,
 
-    //isExtremity ? newNode.x : (newNode.x <= this._selectedNode.x ? 0 : 1), // x
     isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1), // x
     isExtremity ? newNode.dx : 0, // dx
     oldY, // y

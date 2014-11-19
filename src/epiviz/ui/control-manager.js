@@ -168,7 +168,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
       var nodeMap = {};
       var sunburst = new epiviz.ui.charts.tree.Facetzoom('sunburst-chart', $('#sunburst'),
         new epiviz.ui.charts.VisualizationProperties(
-          600, 600,
+          1000, 300,
           new epiviz.ui.charts.Margins(10, 10, 10, 10),
           new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_D3_CAT20C)));
       sunburst.onSelect().addListener(new epiviz.events.EventListener(function(e) {
