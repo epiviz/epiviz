@@ -164,6 +164,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
     }
   }).click(
     function() {
+      var lastRootId = null;
       var maxDepth = 5;
       var nodeMap = {};
       var sunburst = new epiviz.ui.charts.tree.Facetzoom('sunburst-chart', $('#sunburst'),
@@ -171,7 +172,8 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
           1000, 300,
           new epiviz.ui.charts.Margins(10, 10, 10, 10),
           new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_D3_CAT20C)));
-      var toggleSelectDecoration = new epiviz.ui.charts.tree.decoration.ToggleSelectButton(sunburst);
+      var toggleSelectDecoration = new epiviz.ui.charts.tree.decoration.ToggleSelectButton(sunburst,
+        new epiviz.ui.charts.tree.decoration.PropagateSelectionButton(sunburst));
       toggleSelectDecoration.decorate();
       sunburst.onSelect().addListener(new epiviz.events.EventListener(function(e) {
         var node = e.args;
@@ -183,6 +185,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
           sunburst.selectNode(node, selectionType);
         } else {
           // Navigate
+          lastRootId = node.id;
           var originalNode = nodeMap[node.id];
           var parent = originalNode.parentId ? nodeMap[originalNode.parentId] : originalNode;
           var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
@@ -193,6 +196,24 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
           sunburst.draw(newRoot);
         }
       }));
+
+      sunburst.onPropagateSelection().addListener(new epiviz.events.EventListener(function(selectedNodes) {
+        if (!selectedNodes) { return; }
+        for (var id in selectedNodes) {
+          if (!selectedNodes.hasOwnProperty(id)) { continue; }
+          if (!(id in nodeMap)) { continue; }
+          nodeMap[id].selectionType = selectedNodes[id];
+        }
+
+        var originalNode = nodeMap[lastRootId];
+        var parent = originalNode.parentId ? nodeMap[originalNode.parentId] : originalNode;
+        var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
+          function(node) {
+            return (node.depth != originalNode.depth || node == originalNode) &&
+            node.depth - parent.depth < maxDepth;
+          });
+        sunburst.draw(newRoot);
+      }));
       d3.json("tree.json",
         /**
          * @param error
@@ -202,6 +223,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
           epiviz.ui.charts.tree.Node.dfs(root, function(node) { nodeMap[node.id] = node; });
           var rootCopy = epiviz.ui.charts.tree.Node.filter(root, function(node) { return node.depth < maxDepth; });
 
+          lastRootId = root.id;
           sunburst.draw(rootCopy);
         });
     });

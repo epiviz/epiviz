@@ -31,6 +31,14 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
    */
   this._selectMode = false;
 
+  // Events
+
+  /**
+   * @type {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+   * @private
+   */
+  this._propagateSelection = new epiviz.events.Event();
+
   // Animation
 
   /**
@@ -43,8 +51,8 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
      * @param {epiviz.ui.charts.tree.Node} d
      * @returns {number}
      */
-    function(d) { return d.nleaves; }) // If we want the size of the nodes to reflect the number of leaves under them
-    // function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
+    // function(d) { return d.nleaves; }) // If we want the size of the nodes to reflect the number of leaves under them
+    function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
     .sort(function() { return 0; }); // No reordering of the nodes
 
   /**
@@ -244,7 +252,11 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
   var newItems = items
     .enter().append('g')
     .attr('id', function(d) { return self.id() + '-' + d.id; })
-    .attr('class', function(d) { return 'item ' + epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES[d.selectionType || 0]; })
+    .attr('class', function(d) {
+      var selectionType = self._selectedNodes[d.id];
+      if (selectionType == undefined) { selectionType = d.selectionType || 0; }
+      return 'item ' + epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES[selectionType];
+    })
     .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
 
   var newClips = clips
@@ -262,7 +274,6 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .attr('y', calcOldY)
     .attr('width', calcOldWidth)
     .attr('height', calcOldHeight);
-    //.style('opacity', '0.6');
 
   var newLabels = newItems.append('text')
     .attr('class', 'unselectable-text node-label')
@@ -277,7 +288,6 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     })
     .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
     .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.5; });
-    //.style('opacity', 0);
 
   var newIcons = newItems.append("svg:foreignObject")
     .attr('class', 'icon-container')
@@ -330,30 +340,9 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .selectAll('.node-label').transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; });
-    //.style('opacity', 0);
   items.exit().transition().delay(this._animationDelay).remove();
 
   return this._uiData;
-};
-
-/**
- * @param {epiviz.ui.charts.tree.UiNode} node
- * @param {epiviz.ui.charts.tree.NodeSelectionType} selectionType
- */
-epiviz.ui.charts.tree.Facetzoom.prototype.selectNode = function(node, selectionType) {
-  //var style = this.container().find('svg').find('style');
-  //style.append('#' + this.id() + '-' + node.id + ' { opacity: 0.8 !important; }');
-  //jSvg.append(sprintf('<style type="text/css">%s</style>', style));
-  var selectionClasses = epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES;
-  var item = this._svg.select('#' + this.id() + '-' + node.id);
-
-  for (var t in selectionClasses) {
-    if (!selectionClasses.hasOwnProperty(t)) { continue; }
-    //item.removeClass(selectionClasses[t]);
-    item.classed(selectionClasses[t], false);
-  }
-  //item.addClass(selectionClasses[selectionType]);
-  item.classed(selectionClasses[selectionType], true);
 };
 
 /**
@@ -410,3 +399,43 @@ epiviz.ui.charts.tree.Facetzoom.prototype.selectMode = function() { return this.
  * @param {boolean} mode
  */
 epiviz.ui.charts.tree.Facetzoom.prototype.setSelectMode = function(mode) { this._selectMode = mode; };
+
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @param {epiviz.ui.charts.tree.NodeSelectionType} selectionType
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.selectNode = function(node, selectionType) {
+  this._selectedNodes[node.id] = selectionType;
+
+  // TODO: Later on, we will have controls that set all children in a subtree
+  this._changeNodeSelection(node, selectionType);
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @param {epiviz.ui.charts.tree.NodeSelectionType} selectionType
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype._changeNodeSelection = function(node, selectionType) {
+  var selectionClasses = epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES;
+  var item = this._svg.select('#' + this.id() + '-' + node.id);
+
+  for (var t in selectionClasses) {
+    if (!selectionClasses.hasOwnProperty(t)) { continue; }
+    item.classed(selectionClasses[t], false);
+  }
+  item.classed(selectionClasses[selectionType], true);
+};
+
+/**
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.firePropagateSelection = function() {
+  var selectedNodes = this._selectedNodes;
+  this._selectedNodes = {};
+  this._propagateSelection.notify(selectedNodes);
+};
+
+/**
+ * @returns {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.onPropagateSelection = function() { return this._propagateSelection; };

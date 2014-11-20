@@ -271,8 +271,8 @@ input.file
     /* Better Font Rendering =========== */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /*font-size: 16px;
-    color: #000000;*/
+    /*font-size: 12px;*/
+    /*color: #000000;*/
 }
 
 .epiviz-button .epiviz-icon {
