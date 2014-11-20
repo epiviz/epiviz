@@ -47,6 +47,7 @@ function addTreeMetadata(node) {
   if (node.depth == undefined) { node.depth = 0; }
   node.id = generatePseudoGUID(6);
   node.nchildren = node.children.length;
+  node.selectionType = 2; // LEAVES
   if (!node.children.length) {
     node.nleaves = 1;
     return;

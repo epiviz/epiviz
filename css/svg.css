@@ -36,12 +36,12 @@ text {
     */
     -ms-user-select: none;
     user-select: none;
+    cursor: context-menu;
 }
 
 .node-label {
     font-family: Verdana, Geneva, sans-serif;
     font-size: 11px;
-    cursor: context-menu;
     text-anchor: middle;
 }
 
@@ -52,77 +52,30 @@ text {
 
 /* Scatter plot */
 
-.scatter-plot {
-}
-
-.scatter-plot .items {
-}
-
-.scatter-plot .selected {
-    fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1;
-}
-
-.scatter-plot .hovered {
-    fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1;
-}
+.scatter-plot {}
+.scatter-plot .items {}
+.scatter-plot .selected { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }
+.scatter-plot .hovered { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }
 
 /* Genes Track */
 
-.genes-track {
-}
-
-.genes-track .items {
-    shape-rendering: auto; stroke: #555555; fill-opacity: 0.6;
-}
-
-.genes-track .exons {
-    stroke: none;
-}
-
-.genes-track .gene-name {
-    font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0;
-}
-
-.genes-track .selected {
-    fill-opacity: 1; stroke: #555555;
-}
-
-.genes-track .selected .gene-body {
-    stroke: #555555; stroke-width: 3; stroke-opacity: 0.7;
-}
-
-.genes-track .hovered {
-    fill-opacity: 1; stroke: #555555;
-}
-
-.genes-track .hovered .gene-body {
-    stroke: #555555; stroke-width: 3; stroke-opacity: 0.7;
-}
-
-.genes-track .hovered .gene-name {
-    fill-opacity: 1;
-}
-
-.genes-track .selected .gene-name {
-    fill-opacity: 1;
-}
+.genes-track {}
+.genes-track .items { shape-rendering: auto; stroke: #555555; fill-opacity: 0.6; }
+.genes-track .exons { stroke: none; }
+.genes-track .gene-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }
+.genes-track .selected { fill-opacity: 1; stroke: #555555; }
+.genes-track .selected .gene-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.genes-track .hovered { fill-opacity: 1; stroke: #555555; }
+.genes-track .hovered .gene-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.genes-track .hovered .gene-name { fill-opacity: 1; }
+.genes-track .selected .gene-name { fill-opacity: 1; }
 
 /* Blocks Track */
 
-.blocks-track {
-}
-
-.blocks-track .items {
-    shape-rendering: crispEdges; fill-opacity: 0.6; stroke: #555555; stroke-opacity: 0.5; stroke-width: 1;
-}
-
-.blocks-track .selected {
-    stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1;
-}
-
-.blocks-track .hovered {
-    stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1;
-}
+.blocks-track {}
+.blocks-track .items { shape-rendering: crispEdges; fill-opacity: 0.6; stroke: #555555; stroke-opacity: 0.5; stroke-width: 1; }
+.blocks-track .selected { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }
+.blocks-track .hovered { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }
 
 /* Heatmap */
 
@@ -145,4 +98,56 @@ text {
 .facetzoom .item rect {
     stroke: #fff;
     fill-rule: evenodd;
+}
+
+.facetzoom .icon {
+    font-family: 'epiviz-icons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* For SVG text */
+    /* text-anchor: end; */
+    /* alignment-baseline: before-edge; */
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    color: #000000;
+}
+
+.facetzoom .none-select .icon::before {
+    content: "\f379";
+}
+
+.facetzoom .node-select .icon::before {
+    content: "\f3b2";
+}
+
+.facetzoom .leaves-select .icon::before {
+    content: "\f3b1";
+}
+
+.facetzoom .custom-select .icon::before {
+    content: "\f3b3";
+}
+
+.facetzoom .none-select rect {
+    opacity: 0.5;
+}
+
+.facetzoom .node-select rect {
+    opacity: 0.7;
+}
+
+.facetzoom .custom-select rect {
+    opacity: 0.9;
+}
+
+.facetzoom .leaves-select rect {
+    opacity: 1;
 }

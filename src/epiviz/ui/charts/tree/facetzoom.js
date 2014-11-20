@@ -17,6 +17,22 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
 
   epiviz.ui.charts.Visualization.call(this, id, container, properties);
 
+  // Selection
+
+  /**
+   * @type {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>}
+   * @private
+   */
+  this._selectedNodes = {};
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this._selectMode = false;
+
+  // Animation
+
   /**
    * A D3 function used to partition a tree
    * @private
@@ -27,8 +43,8 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
      * @param {epiviz.ui.charts.tree.Node} d
      * @returns {number}
      */
-    // function(d) { return d.nleaves; }) // If we want the size of the nodes to reflect the number of leaves under them
-    function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
+    function(d) { return d.nleaves; }) // If we want the size of the nodes to reflect the number of leaves under them
+    // function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
     .sort(function() { return 0; }); // No reordering of the nodes
 
   /**
@@ -51,6 +67,12 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
    * @private
    */
   this._nodeMargin = 3;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this._iconSize = 16;
 
   /**
    * @type {Array.<epiviz.ui.charts.tree.UiNode>}
@@ -116,11 +138,24 @@ epiviz.ui.charts.tree.Facetzoom.prototype = epiviz.utils.mapCopy(epiviz.ui.chart
 epiviz.ui.charts.tree.Facetzoom.constructor = epiviz.ui.charts.tree.Facetzoom;
 
 /**
+ * @type {Object.<epiviz.ui.charts.tree.NodeSelectionType, string>}
+ * @const
+ */
+epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES = {
+  0: 'none-select',
+  1: 'node-select',
+  2: 'leaves-select',
+  3: 'custom-select'
+};
+
+/**
  * Initializes the chart and draws the initial SVG in the container
  * @protected
  */
 epiviz.ui.charts.tree.Facetzoom.prototype._initialize = function() {
   epiviz.ui.charts.Visualization.prototype._initialize.call(this);
+
+  this.container().addClass('facetzoom-container ui-widget-content');
 
   this._svg.classed('facetzoom', true);
 };
@@ -143,7 +178,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     var uiSelected = root.children && root.children.length ? this._uiDataMap[root.children[0].id] : null;
     this._selectedNode = uiSelected ?
       new epiviz.ui.charts.tree.UiNode(uiSelected.id, uiSelected.name, uiSelected.children, uiSelected.parentId, uiSelected.size,
-        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
+        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
 
     this._uiData = this._partition.nodes(root);
     this._oldSubtreeDepth = this._subtreeDepth;
@@ -208,7 +243,8 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
 
   var newItems = items
     .enter().append('g')
-    .attr('class', 'item')
+    .attr('id', function(d) { return self.id() + '-' + d.id; })
+    .attr('class', function(d) { return 'item ' + epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES[d.selectionType || 0]; })
     .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
 
   var newClips = clips
@@ -221,12 +257,12 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .attr('height', function(d) { return Math.max(0, calcOldHeight(d) - 2 * self._nodeMargin); });
 
   var newRects = newItems.append('rect')
-    .attr('id', function(d) { return self.id() + '-' + d.id; })
     .style('fill', function(d) { return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); })
     .attr('x', calcOldX)
     .attr('y', calcOldY)
     .attr('width', calcOldWidth)
     .attr('height', calcOldHeight);
+    //.style('opacity', '0.6');
 
   var newLabels = newItems.append('text')
     .attr('class', 'unselectable-text node-label')
@@ -240,8 +276,19 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
       return d.name;
     })
     .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
-    .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.5; })
-    .style('opacity', 0);
+    .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.5; });
+    //.style('opacity', 0);
+
+  var newIcons = newItems.append("svg:foreignObject")
+    .attr('class', 'icon-container')
+    .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
+    .attr('width', this._iconSize)
+    .attr('height', this._iconSize)
+    .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) - self._nodeMargin - self._iconSize; })
+    .attr('y', function(d) { return calcOldY(d) + self._nodeMargin; })
+    .append('xhtml:span')
+    .attr('class', 'unselectable-text icon');
+
 
   defs.selectAll('rect')
     .transition().duration(this._animationDelay)
@@ -257,11 +304,11 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .attr('width', calcNewWidth)
     .attr('height', calcNewHeight);
 
-  canvas.selectAll('g').selectAll('text')
+  canvas.selectAll('g').selectAll('.node-label')
     .transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; })
-    .style('opacity', 1)
+    //.style('opacity', 1)
     .tween('text', function(d) {
       var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
       return function(t) {
@@ -274,14 +321,39 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
       };
     });
 
+  canvas.selectAll('g').selectAll('.icon-container')
+    .transition().duration(this._animationDelay)
+    .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) - self._nodeMargin - self._iconSize; })
+    .attr('y', function(d) { return calcNewY(d) + self._nodeMargin; });
+
   items.exit()
-    .selectAll('text').transition().duration(this._animationDelay)
+    .selectAll('.node-label').transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
-    .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; })
-    .style('opacity', 0);
+    .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; });
+    //.style('opacity', 0);
   items.exit().transition().delay(this._animationDelay).remove();
 
   return this._uiData;
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @param {epiviz.ui.charts.tree.NodeSelectionType} selectionType
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.selectNode = function(node, selectionType) {
+  //var style = this.container().find('svg').find('style');
+  //style.append('#' + this.id() + '-' + node.id + ' { opacity: 0.8 !important; }');
+  //jSvg.append(sprintf('<style type="text/css">%s</style>', style));
+  var selectionClasses = epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES;
+  var item = this._svg.select('#' + this.id() + '-' + node.id);
+
+  for (var t in selectionClasses) {
+    if (!selectionClasses.hasOwnProperty(t)) { continue; }
+    //item.removeClass(selectionClasses[t]);
+    item.classed(selectionClasses[t], false);
+  }
+  //item.addClass(selectionClasses[selectionType]);
+  item.classed(selectionClasses[selectionType], true);
 };
 
 /**
@@ -299,7 +371,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype._getOldNode = function(node) {
   var isExtremity = oldDepth < 0 || oldDepth >= this._subtreeDepth;
   var oldY = isRoot ? 0 : Math.min(1, oldDepth / this._oldSubtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType,
 
     isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1), // x
     isExtremity ? newNode.dx : 0, // dx
@@ -322,9 +394,19 @@ epiviz.ui.charts.tree.Facetzoom.prototype._getNewNode = function(node) {
   var isExtremity = newDepth < 0 || newDepth >= this._subtreeDepth;
   var newY = isRoot ? 0 : Math.min(1, newDepth / this._subtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType,
     isExtremity ? oldNode.x : (oldNode.x <= this._selectedNode.x ? 0 : 1), // x
     isExtremity ? oldNode.dx : 0, // dx
     newY, // y
     isExtremity ? 0 : oldNode.y + oldNode.dy - newY); // dy
 };
+
+/**
+ * @returns {boolean}
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.selectMode = function() { return this._selectMode; };
+
+/**
+ * @param {boolean} mode
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.setSelectMode = function(mode) { this._selectMode = mode; };

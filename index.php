@@ -147,8 +147,11 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <!-- CSS -->
 
+    <!-- Icons -->
+    <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
+
     <!-- JQuery UI -->
-    <link href="css/theme/jquery-ui-1.8.9.custom.css" rel="stylesheet">
+    <link href="css/theme/jquery-ui-1.8.9.custom.css" rel="stylesheet"/>
     <link href="css/theme/jquery.ui.selectmenu.css" rel="stylesheet"/>
     <link href="css/theme/ui.panel.css" rel="stylesheet"/>
     <link href="css/theme/ui.multiselect.css" rel="stylesheet"/>
@@ -285,7 +288,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
 
-    <script src="src/epiviz/ui/charts/decoration/chart-decoration.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/remove-chart-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/save-chart-button.js"></script>
@@ -334,10 +337,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
 
+    <script src="src/epiviz/ui/charts/tree/node-selection-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/node.js"></script>
     <script src="src/epiviz/ui/charts/tree/ui-node.js"></script>
     <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
     <script src="src/epiviz/ui/charts/tree/facetzoom.js"></script>
+
+    <script src="src/epiviz/ui/charts/tree/decoration/toggle-select-button.js"></script>
 
     <script src="src/epiviz/main.js"></script>
     

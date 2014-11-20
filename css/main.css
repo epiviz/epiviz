@@ -223,14 +223,16 @@ input.file
 
 /* Classes for charts */
 
+.visualization-container {
+    position: relative;
+}
+
 .plot-container {
-  position: relative;
   display: inline-block;
   margin: 2px;
 }
 
 .track-container {
-  position: relative;
   margin: 2px;
 }
 
@@ -240,6 +242,43 @@ input.file
 .plot-chart {
   display: inline-block;
   margin: 5px;
+}
+
+.facetzoom-container {
+    display: inline-block;
+}
+
+/* Button Icons */
+
+.epiviz-button label {
+    width: 2.2em;
+    height: 2.2em;
+}
+
+.epiviz-icon {
+    font-family: 'epiviz-icons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* For SVG text */
+    /* text-anchor: end; */
+    /* alignment-baseline: before-edge; */
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /*font-size: 16px;
+    color: #000000;*/
+}
+
+.epiviz-button .epiviz-icon {
+    position: absolute;
+    top: 7px;
+    left: 7px;
 }
 
 ::-webkit-scrollbar{width:9px;height:9px;}

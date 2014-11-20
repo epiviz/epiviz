@@ -7,13 +7,13 @@
 goog.provide('epiviz.ui.charts.decoration.CustomSettingsButton');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
  * @extends {epiviz.ui.charts.decoration.ChartOptionButton}
  * @constructor
  */
-epiviz.ui.charts.decoration.CustomSettingsButton = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartOptionButton.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.CustomSettingsButton = function(visualization, otherDecoration) {
+  epiviz.ui.charts.decoration.ChartOptionButton.call(this, visualization, otherDecoration);
 };
 
 /*
@@ -33,13 +33,13 @@ epiviz.ui.charts.decoration.CustomSettingsButton.prototype._click = function() {
     var customSettingsDialog = new epiviz.ui.controls.CustomSettingsDialog(
       'Edit custom settings', {
         ok: function(settingsValues) {
-          self.chart().setCustomSettingsValues(settingsValues);
-          self.chart().draw();
+          self.visualization().setCustomSettingsValues(settingsValues);
+          self.visualization().draw();
         },
         cancel: function() {}
       },
-      self.chart().properties().customSettingsDefs,
-      self.chart().customSettingsValues());
+      self.visualization().properties().customSettingsDefs,
+      self.visualization().customSettingsValues());
     customSettingsDialog.show();
   };
 };

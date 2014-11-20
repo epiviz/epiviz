@@ -7,25 +7,25 @@
 goog.provide('epiviz.ui.charts.decoration.ChartTooltip');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
- * @extends {epiviz.ui.charts.decoration.ChartDecoration}
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
+ * @extends {epiviz.ui.charts.decoration.VisualizationDecoration}
  * @constructor
  */
-epiviz.ui.charts.decoration.ChartTooltip = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartDecoration.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.ChartTooltip = function(visualization, otherDecoration) {
+  epiviz.ui.charts.decoration.VisualizationDecoration.call(this, visualization, otherDecoration);
 };
 
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.decoration.ChartTooltip.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.ChartDecoration.prototype);
+epiviz.ui.charts.decoration.ChartTooltip.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.VisualizationDecoration.prototype);
 epiviz.ui.charts.decoration.ChartTooltip.constructor = epiviz.ui.charts.decoration.ChartTooltip;
 
 /**
  */
 epiviz.ui.charts.decoration.ChartTooltip.prototype.decorate = function() {
-  epiviz.ui.charts.decoration.ChartDecoration.prototype.decorate.call(this);
+  epiviz.ui.charts.decoration.VisualizationDecoration.prototype.decorate.call(this);
 
   /** @type {epiviz.ui.charts.decoration.ToggleTooltipButton} */
   var tooltipButtonDecoration = undefined;
@@ -37,10 +37,10 @@ epiviz.ui.charts.decoration.ChartTooltip.prototype.decorate = function() {
   }
 
   var self = this;
-  this.chart().container().tooltip({
+  this.visualization().container().tooltip({
     items: '.item',
     content:function () {
-      //if (!self.chart().showTooltip()) { return false; }
+      //if (!self.visualization().showTooltip()) { return false; }
       if (!tooltipButtonDecoration.checked()) { return false; }
 
       /** @type {epiviz.ui.charts.ChartObject} */

@@ -139,15 +139,15 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measureme
   this._registerChartSave(chart);
 
   if (chartType.decorations()) {
-    /** @type {epiviz.ui.charts.decoration.ChartDecoration} */
+    /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
     var topDecoration = undefined;
     for (var i = 0; i < chartType.decorations().length; ++i) {
-      /** @type {?(function(new:epiviz.ui.charts.decoration.ChartDecoration))} */
+      /** @type {?(function(new:epiviz.ui.charts.decoration.VisualizationDecoration))} */
       var decorationCtor = epiviz.utils.evaluateFullyQualifiedTypeName(chartType.decorations()[i]);
 
       if (!decorationCtor) { continue; }
 
-      /** @type {epiviz.ui.charts.decoration.ChartDecoration} */
+      /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
       topDecoration  = epiviz.utils.applyConstructor(decorationCtor, [chart, topDecoration]);
     }
 

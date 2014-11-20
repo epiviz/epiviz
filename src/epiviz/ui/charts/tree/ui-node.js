@@ -15,6 +15,7 @@ goog.provide('epiviz.ui.charts.tree.UiNode');
  * @param {number} [depth]
  * @param {number} [nchildren]
  * @param {number} [nleaves]
+ * @param {epiviz.ui.charts.tree.NodeSelectionType} [selectionType]
  * @param {number} [x]
  * @param {number} [dx]
  * @param {number} [y]
@@ -25,8 +26,8 @@ goog.provide('epiviz.ui.charts.tree.UiNode');
  * @extends {epiviz.ui.charts.tree.Node}
  * @implements {epiviz.ui.charts.VisObject}
  */
-epiviz.ui.charts.tree.UiNode = function(id, name, children, parentId, size, depth, nchildren, nleaves, x, dx, y, dy, parent) {
-  epiviz.ui.charts.tree.Node.call(this, id, name, children, parentId, size, depth, nchildren, nleaves);
+epiviz.ui.charts.tree.UiNode = function(id, name, children, parentId, size, depth, nchildren, nleaves, selectionType, x, dx, y, dy, parent) {
+  epiviz.ui.charts.tree.Node.call(this, id, name, children, parentId, size, depth, nchildren, nleaves, selectionType);
 
   /**
    * @type {number}

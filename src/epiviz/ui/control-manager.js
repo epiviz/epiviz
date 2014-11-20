@@ -171,16 +171,27 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
           1000, 300,
           new epiviz.ui.charts.Margins(10, 10, 10, 10),
           new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_D3_CAT20C)));
+      var toggleSelectDecoration = new epiviz.ui.charts.tree.decoration.ToggleSelectButton(sunburst);
+      toggleSelectDecoration.decorate();
       sunburst.onSelect().addListener(new epiviz.events.EventListener(function(e) {
         var node = e.args;
-        var originalNode = nodeMap[node.id];
-        var parent = originalNode.parentId ? nodeMap[originalNode.parentId] : originalNode;
-        var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
-          function(node) {
-            return (node.depth != originalNode.depth || node == originalNode) &&
-                    node.depth - parent.depth < maxDepth;
-          });
-        sunburst.draw(newRoot);
+        if (sunburst.selectMode()) {
+          // Selection
+          var selectionType = node.selectionType || 0;
+          selectionType = (selectionType + 1) % 3;
+          node.selectionType = selectionType;
+          sunburst.selectNode(node, selectionType);
+        } else {
+          // Navigate
+          var originalNode = nodeMap[node.id];
+          var parent = originalNode.parentId ? nodeMap[originalNode.parentId] : originalNode;
+          var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
+            function(node) {
+              return (node.depth != originalNode.depth || node == originalNode) &&
+                      node.depth - parent.depth < maxDepth;
+            });
+          sunburst.draw(newRoot);
+        }
       }));
       d3.json("tree.json",
         /**

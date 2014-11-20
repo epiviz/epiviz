@@ -189,6 +189,8 @@ epiviz.ui.charts.Visualization.prototype._initialize = function() {
   var width = this.width();
   var height = this.height();
 
+  this._container.addClass('visualization-container');
+
   this._container.append(sprintf('<svg id="%s" class="visualization" width="%s" height="%s"><style type="text/css"></style><defs></defs></svg>', this._svgId, width, height));
   this._svg = d3.select('#' + this._svgId);
 

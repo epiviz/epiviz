@@ -7,13 +7,13 @@
 goog.provide('epiviz.ui.charts.decoration.EditCodeButton');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
  * @extends {epiviz.ui.charts.decoration.ChartOptionButton}
  * @constructor
  */
-epiviz.ui.charts.decoration.EditCodeButton = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartOptionButton.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.EditCodeButton = function(visualization, otherDecoration) {
+  epiviz.ui.charts.decoration.ChartOptionButton.call(this, visualization, otherDecoration);
 };
 
 /*
@@ -32,9 +32,9 @@ epiviz.ui.charts.decoration.EditCodeButton.prototype._click = function() {
   var editCodeDialog = new epiviz.ui.controls.CodeEditDialog(
     'Edit Chart Code', {
       save: function(modifiedMethods) {
-        self.chart().setModifiedMethods(modifiedMethods);
+        self.visualization().setModifiedMethods(modifiedMethods);
       }, cancel: function() {}},
-    this.chart(), 'draw');
+    this.visualization(), 'draw');
 
   return function(){
     editCodeDialog.show();
