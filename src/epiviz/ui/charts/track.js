@@ -96,6 +96,10 @@ epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.cha
 epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
   epiviz.ui.charts.Chart.prototype.doHover.call(this, selectedObject);
 
+  if (selectedObject.start == undefined || selectedObject.end == undefined) {
+    return;
+  }
+
   if (!this._lastRange) { return; }
 
   this._highlightGroup.selectAll('rect').remove();

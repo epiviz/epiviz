@@ -153,6 +153,8 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   if (maxX == CustomSetting.DEFAULT) { maxX = this._measurementsX[0].maxValue(); }
   if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
 
+  var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this._measurementsX[0].type());
+
   var xScale = d3.scale.linear()
     .domain([minX, maxX])
     .range([0, width - margins.sumAxis(Axis.X)]);
@@ -168,7 +170,8 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   for (i = 0; i < nItems; ++i) {
     index = i + firstGlobalIndex;
     var item = data.get(this._measurementsX[0]).getByGlobalIndex(index).rowItem;
-    if ((range.start() == undefined || range.end() == undefined) ||
+    if (!dataHasGenomicLocation ||
+      (range.start() == undefined || range.end() == undefined) ||
       (item.start() < range.end() && item.end() > range.start())) {
       for (var j = 0; j < nSeries; ++j) {
         indices.push(j * nItems + i);

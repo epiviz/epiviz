@@ -180,6 +180,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     if (maxPoints === null || drawBoundaries.length <= maxPoints) {
       indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index);
     } else {
+      // TODO: Use global indices, binSize = range.width() / maxPoints as a constant, and set the first index to be the same over time
       var step = drawBoundaries.length / maxPoints;
 
       indices = [];

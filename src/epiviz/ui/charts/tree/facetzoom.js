@@ -53,7 +53,8 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
      */
     // function(d) { return d.nleaves; }) // If we want the size of the nodes to reflect the number of leaves under them
     function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
-    .sort(function() { return 0; }); // No reordering of the nodes
+    //.sort(function() { return 0; }); // No reordering of the nodes
+    .sort(function(d1, d2) { return (d1.order || 0) - (d2.order || 0); }); // Take predefined order into account
 
   /**
    * The number of milliseconds for animations within the chart
@@ -77,6 +78,7 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
   this._nodeMargin = 3;
 
   /**
+   * Size of icons on nodes. This should be the same as the font size of ".facetzoom .icon" in svg.css
    * @type {number}
    * @private
    */
@@ -294,8 +296,8 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
     .attr('width', this._iconSize)
     .attr('height', this._iconSize)
-    .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) - self._nodeMargin - self._iconSize; })
-    .attr('y', function(d) { return calcOldY(d) + self._nodeMargin; })
+    .attr('x', function(d) { return calcOldX(d) + self._nodeMargin; })
+    .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) - self._nodeMargin - self._iconSize; })
     .append('xhtml:span')
     .attr('class', 'unselectable-text icon');
 
@@ -318,7 +320,6 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; })
-    //.style('opacity', 1)
     .tween('text', function(d) {
       var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
       return function(t) {
@@ -333,8 +334,8 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
 
   canvas.selectAll('g').selectAll('.icon-container')
     .transition().duration(this._animationDelay)
-    .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) - self._nodeMargin - self._iconSize; })
-    .attr('y', function(d) { return calcNewY(d) + self._nodeMargin; });
+    .attr('x', function(d) { return calcNewX(d) + self._nodeMargin; })
+    .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) - self._nodeMargin - self._iconSize; });
 
   items.exit()
     .selectAll('.node-label').transition().duration(this._animationDelay)

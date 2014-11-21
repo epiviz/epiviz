@@ -366,7 +366,7 @@ epiviz.datatypes.GenomicRangeArray.Item.prototype.id = function() {
  * @returns {string}
  */
 epiviz.datatypes.GenomicRangeArray.Item.prototype.seqName = function() {
-  return this._parent.boundaries().seqName();
+  return this._parent.boundaries() ? this._parent.boundaries().seqName() : undefined;
 };
 
 /**

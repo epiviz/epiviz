@@ -145,6 +145,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   var firstGlobalIndex = data.first().value.globalStartIndex();
   var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
   var rownames = [];
+
+  var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
+
   data.foreach(function(measurement, series) {
 
     var firstIndex = series.globalStartIndex();
@@ -170,7 +173,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   for (i = 0; i < nEntries; ++i) {
     globalIndex = i + firstGlobalIndex;
     var item = data.get(this.measurements().first()).getByGlobalIndex(globalIndex).rowItem;
-    if ((range.start() == undefined || range.end() == undefined) ||
+    if (!dataHasGenomicLocation ||
+      (range.start() == undefined || range.end() == undefined) ||
       item.start() < range.end() && item.end() > range.start()) {
       var colLabel = item.metadata(label) || '' + item.id();
       columnMap[colnames.length] = globalIndex;
@@ -209,8 +213,10 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
       } else {
         uiObj = items[items.length - 1];
         uiObj.id += '_' + globalIndex;
-        uiObj.start = Math.min(uiObj.start, cell.rowItem.start());
-        uiObj.end = Math.max(uiObj.end, cell.rowItem.end());
+        if (epiviz.measurements.Measurement.Type.isOrdered(series.measurement().type())) {
+          uiObj.start = Math.min(uiObj.start, cell.rowItem.start());
+          uiObj.end = Math.max(uiObj.end, cell.rowItem.end());
+        }
         uiObj.values[0] = (uiObj.values[0] * uiObj.valueItems[0].length + cell.value) / (uiObj.valueItems[0].length + 1);
         uiObj.valueItems[0].push(cell);
       }
