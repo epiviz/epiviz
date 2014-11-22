@@ -459,6 +459,11 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
   this._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, modifiedMethods));
 };
 
+/**
+ * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
+ */
+epiviz.ui.charts.Visualization.prototype.displayType = function() { throw Error('unimplemented abstract method'); };
+
 /* Events */
 
 /**

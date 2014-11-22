@@ -56,15 +56,6 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.chartHtmlAttributeName = functio
 };
 
 /**
- * @returns {epiviz.measurements.Measurement.Type}
- */
-/*epiviz.plugins.charts.HeatmapPlotType.prototype.chartContentType = function() {
-  // return epiviz.measurements.Measurement.Type.FEATURE;
-  // TODO: Temporary
-  return epiviz.measurements.Measurement.Type.UNORDERED;
-};*/
-
-/**
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
 epiviz.plugins.charts.HeatmapPlotType.prototype.measurementsFilter = function() { return function(m) { return epiviz.measurements.Measurement.Type.hasValues(m.type()); }; };

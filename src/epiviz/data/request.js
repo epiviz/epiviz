@@ -54,6 +54,8 @@ epiviz.data.Request.Action = {
   DELETE_WORKSPACE: 'deleteWorkspace',
   GET_WORKSPACES: 'getWorkspaces',
 
+  GET_METADATA: 'getMetadata',
+
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
   REMOVE_MEASUREMENTS: 'removeMeasurements',
@@ -282,5 +284,19 @@ epiviz.data.Request.getWorkspaces = function(filter, requestWorkspaceId) {
     action: epiviz.data.Request.Action.GET_WORKSPACES,
     q: filter || '',
     ws: requestWorkspaceId
+  });
+};
+
+/**
+ * @param {string} datasourceGroup
+ * @param {string} [nodeId]
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getMetadata = function(datasourceGroup, nodeId) {
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_METADATA,
+    datasourceGroup: datasourceGroup,
+    nodeId: nodeId
   });
 };

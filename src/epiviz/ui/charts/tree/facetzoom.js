@@ -9,7 +9,7 @@ goog.provide('epiviz.ui.charts.tree.Facetzoom');
 /**
  * @param {string} id
  * @param {jQuery} container
- * @param {epiviz.ui.charts.VisualizationProperties} properties
+ * @param {epiviz.ui.charts.ChartProperties} properties
  * @constructor
  * @extends {epiviz.ui.charts.Visualization.<epiviz.ui.charts.tree.Node>}
  */
@@ -146,6 +146,11 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
  */
 epiviz.ui.charts.tree.Facetzoom.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Visualization.prototype);
 epiviz.ui.charts.tree.Facetzoom.constructor = epiviz.ui.charts.tree.Facetzoom;
+
+/**
+ * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.METADATA; };
 
 /**
  * @type {Object.<epiviz.ui.charts.tree.NodeSelectionType, string>}
@@ -440,3 +445,8 @@ epiviz.ui.charts.tree.Facetzoom.prototype.firePropagateSelection = function() {
  * @returns {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
  */
 epiviz.ui.charts.tree.Facetzoom.prototype.onPropagateSelection = function() { return this._propagateSelection; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.datasourceGroup = function() { return this.properties().visConfigSelection.datasourceGroup; };

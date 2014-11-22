@@ -27,7 +27,7 @@ epiviz.ui.charts.ChartManager = function(config) {
 
   /**
    * Each array in the map contains the ids of the charts in order
-   * @type {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}
+   * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}
    * @private
    */
   this._chartsOrder = {};
@@ -43,7 +43,7 @@ epiviz.ui.charts.ChartManager = function(config) {
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{
    *   type: epiviz.ui.charts.ChartType,
    *   properties: epiviz.ui.charts.ChartProperties,
-   *   chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>
+   *   chartsOrder: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>
    * }>>}
    * @private
    */
@@ -51,7 +51,7 @@ epiviz.ui.charts.ChartManager = function(config) {
 
   /**
    * Argument is chartsOrder: track -> ids, plot -> ids
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>>>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>>>}
    * @private
    */
   this._chartRemoved = new epiviz.events.Event();
@@ -99,16 +99,29 @@ epiviz.ui.charts.ChartManager = function(config) {
 
 /**
  * @param {epiviz.ui.charts.ChartType} chartType
- * @param {epiviz.measurements.MeasurementSet} measurements
+ * @param {epiviz.ui.controls.VisConfigSelection} visConfigSelection
  * @param {string} [id] The specific id for the chart. If not
  *   specified, it's generated dynamically
  * @param {epiviz.ui.charts.ChartProperties} [chartProperties]
  * @returns {string} The id of the newly created chart
  */
-epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measurements, id, chartProperties) {
+epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfigSelection, id, chartProperties) {
   id = id || sprintf('%s-%s-%s', chartType.chartDisplayType(), chartType.chartHtmlAttributeName(), epiviz.utils.generatePseudoGUID(5));
   var css = chartType.cssClass();
-  var chartsContainer = $('#' + chartType.chartContainer());
+
+  var chartDisplayTypeContainer = $('#' + chartType.chartContainer());
+  var chartsAccordion = chartDisplayTypeContainer.find('.accordion');
+  var chartsContainer = chartsAccordion.find('.vis-container');
+  if (chartsAccordion.length == 0) {
+    chartsAccordion = $('<div class="accordion"></div>').appendTo(chartDisplayTypeContainer);
+    chartsAccordion.append(
+      sprintf('<h3><a href="#"><b><span style="color: #025167">Views by %s</span></b></a></h3>',
+        epiviz.ui.ControlManager.DISPLAY_TYPE_LABELS[chartType.chartDisplayType()]));
+    chartsContainer = $('<div class="vis-container"></div>').appendTo(chartsAccordion);
+    chartsAccordion.multiAccordion();
+    chartsAccordion.multiAccordion('option', 'active', 'all');
+  }
+
   chartsContainer.append(sprintf('<div id="%s" class="%s"></div>', id, css));
   var container = chartsContainer.find('#' + id);
 
@@ -116,7 +129,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measureme
     chartType.defaultWidth(), // width
     chartType.defaultHeight(), // height
     chartType.defaultMargins(), // margins
-    measurements, // measurements
+    visConfigSelection, // configuration of measurements and other information selected by the user
     chartType.defaultColors(), // colors
     null, // modified methods
     chartType.customSettingsValues(),
@@ -178,6 +191,13 @@ epiviz.ui.charts.ChartManager.prototype.removeChart = function(id) {
   delete this._charts[id];
   this._chartsOrder[chart.displayType()].splice(this._chartsOrder[chart.displayType()].indexOf(id), 1);
 
+  var chartDisplayTypeContainer = $('#' + epiviz.ui.ControlManager.CHART_TYPE_CONTAINERS[chart.displayType()]);
+  var chartsAccordion = chartDisplayTypeContainer.find('.accordion');
+  var chartsContainer = chartsAccordion.find('.vis-container');
+  if (chartsContainer.children().length == 0) {
+    chartDisplayTypeContainer.empty();
+  }
+
   this._chartRemoved.notify(new epiviz.ui.charts.VisEventArgs(id, this._chartsOrder));
 };
 
@@ -208,7 +228,12 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
     if (!this._charts.hasOwnProperty(chartIds[i])) { continue; }
     var chart = this._charts[chartIds[i]];
     if (!chart) { continue; }
-    chart.draw(range, data);
+
+    if (range == undefined) {
+      chart.draw(data);
+    } else {
+      chart.draw(range, data);
+    }
   }
 };
 
@@ -223,6 +248,7 @@ epiviz.ui.charts.ChartManager.prototype.clear = function() {
 
   for (var displayType in chartContainers) {
     if (!chartContainers.hasOwnProperty(displayType)) { continue; }
+    //$('#' + chartContainers[displayType]).find('.vis-container').empty(); // TODO: Clean up
     $('#' + chartContainers[displayType]).empty();
   }
 
@@ -246,12 +272,12 @@ epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId) {
 };
 
 /**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties, chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}>>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties, chartsOrder: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartAdded = function() { return this._chartAdded; };
 
 /**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>>>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartRemoved = function() { return this._chartRemoved; };
 

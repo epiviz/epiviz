@@ -295,7 +295,7 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartAdded = function() {
      * @param {epiviz.ui.charts.VisEventArgs.<{
      *   type: epiviz.ui.charts.ChartType,
      *   properties: epiviz.ui.charts.ChartProperties,
-     *   chartsOrder: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}>} e
+     *   chartsOrder: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}>} e
      */
     function(e) {
       if (self._activeWorkspaceChanging) { return; }

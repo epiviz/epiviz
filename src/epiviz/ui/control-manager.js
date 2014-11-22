@@ -57,7 +57,7 @@ epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurem
   // Events
 
   /**
-   * @type {epiviz.events.Event.<{type: epiviz.ui.charts.ChartType, measurements: epiviz.measurements.MeasurementSet}>}
+   * @type {epiviz.events.Event.<{type: epiviz.ui.charts.ChartType, visConfigSelection: epiviz.ui.controls.VisConfigSelection}>}
    * @private
    */
   this._addChart = new epiviz.events.Event();
@@ -128,11 +128,23 @@ epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurem
 };
 
 /**
- * @type {Object.<string, string>}
+ * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, string>}
+ * @const
  */
 epiviz.ui.ControlManager.CHART_TYPE_CONTAINERS = {
-  'plot': 'chart-container',
-  'track': 'track-container'
+  'plot': 'feature-view',
+  'track': 'location-view',
+  'metadata': 'metadata-view'
+};
+
+/**
+ * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, string>}
+ * @const
+ */
+epiviz.ui.ControlManager.DISPLAY_TYPE_LABELS = {
+  'plot': 'Feature',
+  'track': 'Location',
+  'metadata': 'Metadata'
 };
 
 epiviz.ui.ControlManager.prototype.initialize = function() {
@@ -252,7 +264,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
 };
 
 /**
- * @returns {epiviz.events.Event.<{type: epiviz.ui.charts.ChartType, measurements: epiviz.measurements.MeasurementSet}>}
+ * @returns {epiviz.events.Event.<{type: epiviz.ui.charts.ChartType, visConfigSelection: epiviz.ui.controls.VisConfigSelection}>}
  */
 epiviz.ui.ControlManager.prototype.onAddChart = function() { return this._addChart; };
 
@@ -347,13 +359,22 @@ epiviz.ui.ControlManager.prototype.updateSelectedWorkspace = function(workspaceI
 };
 
 epiviz.ui.ControlManager.prototype._initializeAccordions = function() {
-  var topAccordion = $('#top-accordion');
+  // TODO: Move to chart creation
+  /*var containers = epiviz.ui.ControlManager.CHART_TYPE_CONTAINERS;
+  for (var displayType in containers) {
+    if (!containers.hasOwnProperty(displayType)) { continue; }
+    var container = $('#' + containers[displayType]);
+    container.multiAccordion();
+    container.multiAccordion('option', 'active', 'all');
+  }*/
+
+  /*var topAccordion = $('#feature-view');
   topAccordion.multiAccordion();
   topAccordion.multiAccordion('option', 'active', 'all');
 
-  var bottomAccordion = $('#bottom-accordion');
+  var bottomAccordion = $('#location-view');
   bottomAccordion.multiAccordion();
-  bottomAccordion.multiAccordion('option', 'active', 'all');
+  bottomAccordion.multiAccordion('option', 'active', 'all');*/
 };
 
 epiviz.ui.ControlManager.prototype._initializeChromosomeSelector = function() {
@@ -522,10 +543,9 @@ epiviz.ui.ControlManager.prototype._initializeLocationSettingsDialog = function(
 
 epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
   var self = this;
-  var plotMenu = $('#plot-menu');
-  var trackMenu = $('#track-menu');
+  var visMenu = $('#vis-menu');
 
-  $('#plot-button')
+  $('#vis-menu-button')
     .button({
       text: false,
       icons: {
@@ -534,7 +554,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
       }
     })
     .click(function() {
-      var menu = plotMenu;
+      var menu = visMenu;
       var visible = menu.is(":visible");
       $('.dropdown-menu').find(">:first-child").hide();
       if (!visible) {
@@ -544,34 +564,16 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           of: this
         });
       }
-      $( document ).one( "click", function() {
+      $( document ).one('click', function() {
         menu.hide();
       });
       return false;
     });
 
-  $('#track-button').button({
-    text: false,
-    icons: {
-      primary: 'ui-icon ui-icon-track',// 'ui-icon ui-icon-tag',
-      secondary: "ui-icon-triangle-1-s"
-    }
-  }).click(function() {
-      var menu = trackMenu;
-      var visible = menu.is(":visible");
-      $('.dropdown-menu').find(">:first-child").hide();
-      if (!visible) {
-        menu.show().position({
-          my: "left top",
-          at: "left bottom",
-          of: this
-        });
-      }
-      $( document ).one( "click", function() {
-        menu.hide();
-      });
-      return false;
-    });
+  /** @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<epiviz.ui.charts.ChartType>>} */
+  var chartsByDisplayType = {};
+
+  var displayTypeLabels = epiviz.ui.ControlManager.DISPLAY_TYPE_LABELS;
 
   this._chartFactory.foreach(
     /**
@@ -579,25 +581,44 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
      * @param {epiviz.ui.charts.ChartType} chartType
      */
     function(typeName, chartType) {
+      if (!(chartType.chartDisplayType() in chartsByDisplayType)) { chartsByDisplayType[chartType.chartDisplayType()] = []; }
+      chartsByDisplayType[chartType.chartDisplayType()].push(chartType);
+    });
+
+  for (var displayType in chartsByDisplayType) {
+    if (!chartsByDisplayType.hasOwnProperty(displayType)) { continue; }
+    $(sprintf('<li class="ui-widget-header">%s</li>', displayTypeLabels[displayType])).appendTo(visMenu);
+    chartsByDisplayType[displayType].forEach(function(chartType, i) {
       var id = sprintf('%s-menu-add-%s', chartType.chartDisplayType(), chartType.chartHtmlAttributeName());
-      var menu = (chartType.chartDisplayType() == epiviz.ui.charts.ChartType.DisplayType.PLOT) ? plotMenu : trackMenu;
-      menu.append(
-        sprintf('<li><a href="javascript:void(0)" id="%s">Add New %s</a></li>',
-          id, chartType.chartName()));
+      visMenu.append(sprintf('<li><a href="javascript:void(0)" id="%s">Add New %s</a></li>', id, chartType.chartName()));
 
       $('#' + id).click(function() {
+        var wizardSteps = [];
+        if (chartType.isRestrictedToSameDatasourceGroup()) {
+          wizardSteps.push(new epiviz.ui.controls.DatasourceGroupWizardStep());
+        }
+        if (chartType.hasMeasurements()) {
+          wizardSteps.push(new epiviz.ui.controls.MeaurementsWizardStep());
+        }
+
+        if (!wizardSteps.length) {
+          self._addChart.notify({
+            type: chartType,
+            visConfigSelection: new epiviz.ui.controls.VisConfigSelection(
+              self._measurementsManager.measurements().subset(chartType.measurementsFilter()))});
+          return;
+        }
+
         var dialog = new epiviz.ui.controls.Wizard(
           sprintf('Add new %s', chartType.chartName()),
           {finish:
-            /** @param {{measurements: epiviz.measurements.MeasurementSet}} data */
+            /** @param {epiviz.ui.controls.VisConfigSelection} data */
             function(data) {
-              self._addChart.notify({type: chartType, measurements: data.measurements});
+              self._addChart.notify({type: chartType, visConfigSelection: data});
             }
           },
-          chartType.isRestrictedToSameDatasourceGroup() ?
-            [new epiviz.ui.controls.DatasourceGroupWizardStep(), new epiviz.ui.controls.MeaurementsWizardStep()] :
-            [new epiviz.ui.controls.MeaurementsWizardStep()],
-          new epiviz.ui.controls.MeasurementsDialogData(
+          wizardSteps,
+          new epiviz.ui.controls.VisConfigSelection(
             self._measurementsManager.measurements().subset(chartType.measurementsFilter()),
             undefined, // datasource
             undefined, // datasourceGroup
@@ -610,9 +631,9 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
         dialog.show();
       });
     });
+  }
 
-  plotMenu.hide().menu();
-  trackMenu.hide().menu();
+  visMenu.hide().menu();
 };
 
 epiviz.ui.ControlManager.prototype._initializeComputedMeasurementsMenu = function() {

@@ -18,7 +18,7 @@ epiviz.ui.controls.MeaurementsWizardStep = function() {
   this._dataTable = null;
 
   /**
-   * @type {epiviz.ui.controls.MeasurementsDialogData}
+   * @type {epiviz.ui.controls.VisConfigSelection}
    * @private
    */
   this._data = null;
@@ -32,7 +32,7 @@ epiviz.ui.controls.MeaurementsWizardStep = function() {
 
 /**
  * @param {jQuery} container
- * @param {epiviz.ui.controls.MeasurementsDialogData} data
+ * @param {epiviz.ui.controls.VisConfigSelection} data
  */
 epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(container, data) {
   this._data = data;
@@ -110,7 +110,7 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
  *
  * @returns {{
  *   error: string=,
- *   data: epiviz.ui.controls.MeasurementsDialogData=
+ *   data: epiviz.ui.controls.VisConfigSelection=
  * }}
  */
 epiviz.ui.controls.MeaurementsWizardStep.prototype.next = function() {

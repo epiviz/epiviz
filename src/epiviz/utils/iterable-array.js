@@ -9,7 +9,7 @@ goog.provide('epiviz.utils.IterableArray');
 /**
  * @param {Array.<T>} array
  * @constructor
- * @implements {epiviz.utils.Iterable}
+ * @implements {epiviz.utils.Iterable.<T>}
  * @template T
  */
 epiviz.utils.IterableArray = function(array) {

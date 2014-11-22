@@ -277,6 +277,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/visualization-properties.js"></script>
     <script src="src/epiviz/ui/charts/vis-event-args.js"></script>
     <script src="src/epiviz/ui/charts/visualization.js"></script>
+    <script src="src/epiviz/ui/charts/visualization-type.js"></script>
 
     <script src="src/epiviz/ui/charts/chart-properties.js"></script>
     <script src="src/epiviz/ui/charts/chart-object.js"></script>
@@ -314,7 +315,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/epiviz.js"></script>
 
-    <script src="src/epiviz/ui/controls/measurements-dialog-data.js"></script>
+    <script src="src/epiviz/ui/controls/vis-config-selection.js"></script>
     <script src="src/epiviz/ui/controls/data-table.js"></script>
     <script src="src/epiviz/ui/controls/wizard.js"></script>
     <script src="src/epiviz/ui/controls/datasource-group-wizard-step.js"></script>
@@ -342,6 +343,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/tree/ui-node.js"></script>
     <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
     <script src="src/epiviz/ui/charts/tree/facetzoom.js"></script>
+    <script src="src/epiviz/ui/charts/tree/facetzoom-type.js"></script>
 
     <script src="src/epiviz/ui/charts/tree/decoration/toggle-select-button.js"></script>
     <script src="src/epiviz/ui/charts/tree/decoration/propagate-selection-button.js"></script>
@@ -495,13 +497,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
         <span class="separator">|</span>
 
-        <button id="plot-button">Plots</button>
+        <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">
-          <ul id="plot-menu"></ul>
-        </div>
-        <button id="track-button">Tracks</button>
-        <div class="dropdown-menu">
-          <ul id="track-menu"></ul>
+          <ul id="vis-menu"></ul>
         </div>
 
         <button id="computed-measurements-button">Computed Measurements</button>
@@ -526,15 +524,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     </div>
 
     <div id="pagemain" class="ui-layout-center">
-      <div id="top-accordion">
-        <h3><a href="#"><b><span style="color: #025167">Views by Feature</span></b></a></h3>
-        <div id="chart-container"></div>
-      </div>
-      <div id="bottom-accordion">
-          <h3><a href="#"><b><span style="color: #025167">Views by Location</span></b></a></h3>
-          <div id="track-container"></div>
-      </div>
-      <div id="sunburst"></div>
+      <div id="feature-view"></div>
+      <div id="location-view"></div>
+      <div id="metadata-view"></div>
+      <div id="sunburst">TODO: Remove me!</div>
     </div>
 
     <div id="pagefooter" class="ui-layout-south"></div>

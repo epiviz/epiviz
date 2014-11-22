@@ -338,7 +338,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 ?>
     </script>
 
-    <script src="../epiviz/ui/controls/measurements-dialog-data.js"></script>
+    <script src="../epiviz/ui/controls/vis-config-selection.js"></script>
     <script src="../epiviz/ui/controls/data-table.js"></script>
     <script src="../epiviz/ui/controls/wizard.js"></script>
     <script src="../epiviz/ui/controls/datasource-group-wizard-step.js"></script>
@@ -434,11 +434,11 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
   </div>
 
   <div id="pagemain" class="ui-layout-center">
-    <div id="top-accordion">
+    <div id="feature-view">
       <h3><a href="#"><b><span style="color: #025167">Views by Feature</span></b></a></h3>
       <div id="chart-container"></div>
     </div>
-    <div id="bottom-accordion">
+    <div id="location-view">
       <h3><a href="#"><b><span style="color: #025167">Views by Location</span></b></a></h3>
       <div id="track-container"></div>
     </div>

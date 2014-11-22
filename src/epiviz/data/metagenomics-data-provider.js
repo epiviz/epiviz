@@ -179,6 +179,24 @@ epiviz.data.MetagenomicsDataProvider = function () {
    * @private
    */
   this._colsIndices = colsIndices;
+
+  /**
+   * @type {epiviz.ui.charts.tree.Node}
+   * @private
+   */
+  this._metadata = null;
+  this._nodeMap = {};
+  this._maxDepth = 4;
+  this._lastRootId = null;
+  d3.json("tree.json",
+    /**
+     * @param error
+     * @param {epiviz.ui.charts.tree.Node} root
+     */
+      function(error, root) {
+      self._metadata = root;
+      epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; });
+    });
 };
 
 /**
@@ -195,6 +213,7 @@ epiviz.data.MetagenomicsDataProvider.DEFAULT_ID = 'stocks';
  * @override
  */
 epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, callback) {
+  var self = this;
   var requestId = request.id();
   var action = request.get('action');
   //var seqName = request.get('seqName');
@@ -261,6 +280,24 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       callback(epiviz.data.Response.fromRawObject({
         requestId: request.id(),
         data: []
+      }));
+      return;
+
+    case epiviz.data.Request.Action.GET_METADATA:
+      var datasourceGroup = request.get('datasourceGroup');
+      var nodeId = request.get('nodeId') || this._metadata.id;
+      this._lastRootId = nodeId;
+      var originalNode = this._nodeMap[nodeId];
+      var parent = originalNode.parentId ? this._nodeMap[originalNode.parentId] : originalNode;
+      var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
+        function(node) {
+          return (node.depth != originalNode.depth || node == originalNode) &&
+          node.depth - parent.depth < self._maxDepth;
+        });
+
+      callback(epiviz.data.Response.fromRawObject({
+        requestId: request.id(),
+        data: newRoot
       }));
       return;
 

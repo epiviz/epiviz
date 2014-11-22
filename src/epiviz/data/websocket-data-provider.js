@@ -175,8 +175,8 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
         this._getCurrentLocation(request);
         break;
       case Action.WRITE_DEBUG_MSG: 
-	this._writeDebugMsg(request);
-	break;
+        this._writeDebugMsg(request);
+        break;
     }
   }
 };
@@ -505,4 +505,4 @@ epiviz.data.WebsocketDataProvider.prototype._writeDebugMsg = function(request) {
     var response = new epiviz.data.Response(request.id(), {msg: "that msg"});
     document.getElementById("chart-container").appendChild(msgDiv);
     this._sendMessage(JSON.stringify(response.raw()));
-}
+};

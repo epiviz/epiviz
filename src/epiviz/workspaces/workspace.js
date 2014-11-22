@@ -12,7 +12,7 @@ goog.provide('epiviz.workspaces.Workspace');
  * @param {{
  *   range: epiviz.datatypes.GenomicRange,
  *   computedMeasurements: epiviz.measurements.MeasurementSet,
- *   charts: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{
+ *   charts: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{
  *     id: string,
  *     type: epiviz.ui.charts.ChartType,
  *     properties: epiviz.ui.charts.ChartProperties
@@ -40,7 +40,7 @@ epiviz.workspaces.Workspace = function(id, name, content) {
   this._range = content.range;
 
   /**
-   * @type {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}
+   * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}
    * @private
    */
   this._chartsOrder = {};
@@ -103,7 +103,7 @@ epiviz.workspaces.Workspace.prototype.range = function() {
 };
 
 /**
- * @returns {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties}>>}
+ * @returns {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties}>>}
  */
 epiviz.workspaces.Workspace.prototype.charts = function() {
   var charts = {};
@@ -119,7 +119,7 @@ epiviz.workspaces.Workspace.prototype.charts = function() {
 };
 
 /**
- * @returns {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}
+ * @returns {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}
  */
 epiviz.workspaces.Workspace.prototype.chartsOrder = function() {
   return this._chartsOrder;
@@ -136,7 +136,7 @@ epiviz.workspaces.Workspace.prototype.computedMeasurements = function() {
  * @param {string} id
  * @param {epiviz.ui.charts.ChartType} type
  * @param {epiviz.ui.charts.ChartProperties} properties
- * @param {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>} chartsOrder
+ * @param {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>} chartsOrder
  */
 epiviz.workspaces.Workspace.prototype.chartAdded = function(id, type, properties, chartsOrder) {
   this._chartsById[id] = {
@@ -152,7 +152,7 @@ epiviz.workspaces.Workspace.prototype.chartAdded = function(id, type, properties
 
 /**
  * @param {string} id
- * @param {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>} chartsOrder
+ * @param {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>} chartsOrder
  */
 epiviz.workspaces.Workspace.prototype.chartRemoved = function(id, chartsOrder) {
   if (!this._chartsById[id]) { return; }
@@ -359,7 +359,7 @@ epiviz.workspaces.Workspace.prototype.raw = function() {
       var ms = [];
 
       (function(ms) {
-        props.measurements.foreach(function(m) {
+        props.visConfigSelection.measurements.foreach(function(m) {
           var mIndex = wsMeasurements.get(m);
           if (mIndex === null) {
             mIndex = wsMeasurements.size();
@@ -477,7 +477,7 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
           chartInfo.properties.width,
           chartInfo.properties.height,
           epiviz.ui.charts.Margins.fromRawObject(chartInfo.properties.margins),
-          chartMs,
+          new epiviz.ui.controls.VisConfigSelection(chartMs),
           epiviz.ui.charts.ColorPalette.fromRawObject(chartInfo.properties.colors),
           chartInfo.properties.modifiedMethods,
           chartInfo.properties.customSettings,

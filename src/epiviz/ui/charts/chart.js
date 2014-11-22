@@ -149,21 +149,16 @@ epiviz.ui.charts.Chart.prototype.properties = function() {
  * @returns {epiviz.measurements.MeasurementSet}
  */
 epiviz.ui.charts.Chart.prototype.measurements = function() {
-  return this.properties().measurements;
+  return this.properties().visConfigSelection.measurements;
 };
-
-/**
- * @returns {epiviz.ui.charts.ChartType.DisplayType}
- */
-epiviz.ui.charts.Chart.prototype.displayType = function() { throw Error('unimplemented abstract method'); };
 
 /**
  * @returns {Array.<{name: string, color: string}>}
  */
 epiviz.ui.charts.Chart.prototype.colorMap = function() {
   var self = this;
-  var colors = new Array(this.properties().measurements.size());
-  this.properties().measurements.foreach(
+  var colors = new Array(this.measurements().size());
+  this.measurements().foreach(
     /**
      * @param {epiviz.measurements.Measurement} m
      * @param {number} i

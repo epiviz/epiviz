@@ -23,9 +23,9 @@ epiviz.ui.charts.TrackType.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Cha
 epiviz.ui.charts.TrackType.constructor = epiviz.ui.charts.TrackType;
 
 /**
- * @returns {epiviz.ui.charts.ChartType.DisplayType}
+ * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
-epiviz.ui.charts.TrackType.prototype.chartDisplayType = function() { return epiviz.ui.charts.ChartType.DisplayType.TRACK; };
+epiviz.ui.charts.TrackType.prototype.chartDisplayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.TRACK; };
 
 /**
  * @returns {string}

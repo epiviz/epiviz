@@ -56,7 +56,7 @@ epiviz.Config = function(settingsMap) {
             minValue: ?number, maxValue: ?number,
             metadata: ?Array.<string>
           }>,
-   *      charts: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{
+   *      charts: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{
    *        id: string,
    *        type: string,
    *        properties: {
@@ -134,7 +134,8 @@ epiviz.Config = function(settingsMap) {
 
 
   /**
-   * @type {Object.<epiviz.ui.charts.ChartType.DisplayType|string, Object.<epiviz.Config.ChartPropertySettings, *>>}
+   * TODO: Change to "visualizationSettings"
+   * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType|string, Object.<epiviz.Config.VisualizationPropertySettings, *>>}
    */
   this.chartSettings = {
     default: {
@@ -244,7 +245,7 @@ epiviz.Config.COLORS_D3_CAT20C = ["#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#
 /**
  * @enum {string}
  */
-epiviz.Config.ChartPropertySettings = {
+epiviz.Config.VisualizationPropertySettings = {
   WIDTH: 'width',
   HEIGHT: 'height',
   MARGINS: 'margins',

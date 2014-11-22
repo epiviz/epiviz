@@ -277,6 +277,14 @@ epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap
 };
 
 /**
+ * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.getMetadata = function(chartVisConfigSelectionMap, dataReadyCallback) {
+  this._cache.getMetadata(chartVisConfigSelectionMap, dataReadyCallback);
+};
+
+/**
  * @param {function(Array)} callback
  * @param {string} [filter]
  * @param {string} [requestWorkspaceId]

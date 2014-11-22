@@ -161,7 +161,7 @@ epiviz.EpiViz.prototype.config = function() {
 
 /**
  * @param {epiviz.ui.charts.ChartType} type
- * @param {epiviz.measurements.MeasurementSet} measurements
+ * @param {epiviz.ui.controls.VisConfigSelection} visConfigSelection
  * @param {string} [chartId] If specified, then this will be
  *   the id of the newly created chart. Otherwise, a new one
  *   will be generated.
@@ -169,17 +169,26 @@ epiviz.EpiViz.prototype.config = function() {
  * @returns {string} the id of the chart just created
  * @private
  */
-epiviz.EpiViz.prototype._addChart = function(type, measurements, chartId, chartProperties) {
-  chartId = this._chartManager.addChart(type, measurements, chartId, chartProperties);
-  var range = this._workspaceManager.activeWorkspace().range();
-  this._chartManager.dataWaitStart(chartId);
-  var chartMeasurementsMap = {};
-  chartMeasurementsMap[chartId] = measurements;
+epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, chartProperties) {
+  chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties);
   var self = this;
-  this._dataManager.getData(range, chartMeasurementsMap,
-    function(chartId, data) {
-      self._chartManager.updateCharts(range, data, [chartId]);
-    });
+  if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.METADATA) {
+    var range = this._workspaceManager.activeWorkspace().range();
+    this._chartManager.dataWaitStart(chartId);
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    this._dataManager.getData(range, chartMeasurementsMap,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  } else {
+    var chartVisConfigSelectionMap = {};
+    chartVisConfigSelectionMap[chartId] = visConfigSelection;
+    this._dataManager.getMetadata(chartVisConfigSelectionMap,
+      function(chartId, metadata) {
+        self._chartManager.updateCharts(undefined, metadata, [chartId]);
+      });
+  }
 
   return chartId;
 };
@@ -258,9 +267,9 @@ epiviz.EpiViz.prototype._registerRequestWorkspaces = function() {
 epiviz.EpiViz.prototype._registerUiAddChart = function() {
   var self = this;
   this._controlManager.onAddChart().addListener(new epiviz.events.EventListener(
-    /** @param {{type: epiviz.ui.charts.ChartType, measurements: epiviz.measurements.MeasurementSet}} e */
+    /** @param {{type: epiviz.ui.charts.ChartType, visConfigSelection: epiviz.ui.controls.VisConfigSelection}} e */
     function(e) {
-      self._addChart(e.type, e.measurements);
+      self._addChart(e.type, e.visConfigSelection);
     }));
 };
 
@@ -455,7 +464,7 @@ epiviz.EpiViz.prototype._registerDataAddChart = function() {
     function(e) {
       try {
         var chartType = self._chartFactory.get(e.type);
-        var chartId = self._addChart(chartType, e.measurements);
+        var chartId = self._addChart(chartType, new epiviz.ui.controls.VisConfigSelection(e.measurements));
         e.result.success = true;
         e.result.value = { id: chartId };
       } catch (error) {
@@ -628,7 +637,7 @@ epiviz.EpiViz.prototype._registerActiveWorkspaceChanged = function() {
       self._chartManager.clear();
 
       /**
-       * @type {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties}>>}
+       * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties}>>}
        */
       var charts = e.newValue.charts();
 
@@ -636,7 +645,7 @@ epiviz.EpiViz.prototype._registerActiveWorkspaceChanged = function() {
         if (!charts.hasOwnProperty(displayType)) { continue; }
 
         for (var i = 0; i < charts[displayType].length; ++i) {
-          self._addChart(charts[displayType][i].type, charts[displayType][i].properties.measurements, charts[displayType][i].id, charts[displayType][i].properties.copy());
+          self._addChart(charts[displayType][i].type, charts[displayType][i].properties.visConfigSelection, charts[displayType][i].id, charts[displayType][i].properties.copy());
         }
       }
 

@@ -4,11 +4,10 @@
  * Time: 3:31 PM
  */
 
-goog.provide('epiviz.ui.controls.MeasurementsDialogData');
+goog.provide('epiviz.ui.controls.VisConfigSelection');
 
 /**
- * @param {epiviz.measurements.MeasurementSet} measurements
- * @param {epiviz.measurements.Measurement.Type} [type]
+ * @param {epiviz.measurements.MeasurementSet} [measurements]
  * @param {string} [datasource]
  * @param {string} [datasourceGroup]
  * @param {string} [dataprovider]
@@ -18,34 +17,34 @@ goog.provide('epiviz.ui.controls.MeasurementsDialogData');
  * @constructor
  * @struct
  */
-epiviz.ui.controls.MeasurementsDialogData = function(measurements, datasource, datasourceGroup, dataprovider, annotation, defaultChartType, minSelectedMeasurements) {
+epiviz.ui.controls.VisConfigSelection = function(measurements, datasource, datasourceGroup, dataprovider, annotation, defaultChartType, minSelectedMeasurements) {
   /**
    * @type {epiviz.measurements.MeasurementSet}
    */
   this.measurements = measurements;
 
   /**
-   * @type {string=}
+   * @type {string}
    */
   this.datasource = datasource;
 
   /**
-   * @type {string=}
+   * @type {string}
    */
   this.datasourceGroup = datasourceGroup;
 
   /**
-   * @type {string=}
+   * @type {string}
    */
   this.dataprovider = dataprovider;
 
   /**
-   * @type {Object.<string, string>=}
+   * @type {Object.<string, string>}
    */
   this.annotation = annotation;
 
   /**
-   * @type {string=}
+   * @type {string}
    */
   this.defaultChartType = defaultChartType;
 

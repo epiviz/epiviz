@@ -86,9 +86,9 @@ epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
 };
 
 /**
- * @returns {epiviz.ui.charts.ChartType.DisplayType}
+ * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
-epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.charts.ChartType.DisplayType.TRACK; };
+epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.TRACK; };
 
 /**
  * @param {epiviz.ui.charts.ChartObject} selectedObject
