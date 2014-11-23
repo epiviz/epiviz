@@ -11,7 +11,7 @@ goog.provide('epiviz.data.MetagenomicsDataProvider');
  * @extends {epiviz.data.DataProvider}
  */
 epiviz.data.MetagenomicsDataProvider = function () {
-  epiviz.data.DataProvider.call(this);
+  epiviz.data.DataProvider.call(this, 'metagenomics-provider');
 
   /**
    * @type {Array.<Array.<number>>}
@@ -134,6 +134,12 @@ epiviz.data.MetagenomicsDataProvider = function () {
     [2.136055426,0,0,8.845541465,0,0,0,5.720391696,1.792044962,0,1.95520039,0,0,0,0,0,2.992869351,0,0,0,0,0,2.8815524,0,0,0,0,4.030108559,1.221294271,4.318348466,0,4.741524853,0,1.255175933,2.35241283,0,0,0,0,0,0,1.640918907,0,2.301374909,0,0,0,0,3.340906893,1.781999348,0,0,4.041235755,0,0,0,0,0,1.511899039,6.910471793,1.385653692,0,0,1.46012053,3.095446785,0,0,0,0,0,0,2.642645028,0,0,0,0,0,0,0,5.238068927,2.809830944,1.517123172,0,4.57634937,4.828801899,0,4.928973727,0,0,0,1.493074462,1.866117748,0,2.172734535,0,0,0,0,0,0,4.582003125,5.717825408,7.371984904,3.02915668,2.65168682,0,6.172852405,2.046103514,0,2.62792129,0,4.797226964,0,2.109945405,0]];
 
   /**
+   * @type {Array.<Array.<number>>}
+   * @private
+   */
+  this._selectedValues = this._values;
+
+  /**
    * @type {Array.<string>}
    * @private
    */
@@ -144,6 +150,12 @@ epiviz.data.MetagenomicsDataProvider = function () {
    * @private
    */
   this._rows = ['316', '319', '327', '396', '397', '411', '440', '2552', '3384', '5052', '7349', '10433', '11630', '12245', '12817', '13083', '13536', '13604', '13661', '13803', '13871', '13930', '14782', '15438', '15597', '16252', '16382', '17138', '17411', '19129', '19270', '20986', '21611', '21695', '21761', '22185', '22345', '22439', '22475', '23063', '23209', '23249', '23294', '23652', '24034', '24342', '25124', '25350', '26067', '26436', '27295', '27589', '29214', '29323', '30331', '31069', '36412', '41738', '41965', '43072', '43449', '44327', '49450', '55106', '58381', '58640', '59842', '62910', '62990', '62991', '63503', '63551', '64795', '64796', '64986', '64988', '66023', '70246', '71135', '71612', '71624', '71660', '71687', '71691', '74643', '75427', '80484', '80563', '80645', '83740', '89655', '91091', '92355', '92969', '100517', '102968', '106895', '108037', '110457', '121102', '123236', '134492', '137811', '142181', '142560', '153986', '154352', '154508', '162189', '162210', '162397', '170809', '172372', '182738', '196401'];
+
+  /**
+   * @type {Array.<string>}
+   * @private
+   */
+  this._selectedRows = this._rows;
 
   var self = this;
   var measurements = [];
@@ -179,6 +191,17 @@ epiviz.data.MetagenomicsDataProvider = function () {
    * @private
    */
   this._colsIndices = colsIndices;
+
+  var rowIndices = {};
+  this._rows.forEach(function(col, i) {
+    rowIndices[col] = i;
+  });
+
+  /**
+   * @type {Object.<string, number>}
+   * @private
+   */
+  this._rowIndices = rowIndices;
 
   /**
    * @type {epiviz.ui.charts.tree.Node}
@@ -232,7 +255,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       }*/
 
       callback(epiviz.data.Response.fromRawObject({
-        data: { values: { metadata: { bacteria: this._rows } } },
+        data: { values: { metadata: { bacteria: this._selectedRows } } },
         requestId: requestId
       }));
 
@@ -249,7 +272,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
         return;
       }*/
 
-      var values = this._values.map(function(row, i) { return row[colIndex]; });
+      var values = this._selectedValues.map(function(row, i) { return row[colIndex]; });
 
       callback(epiviz.data.Response.fromRawObject({
         data: { values: values },
@@ -301,9 +324,87 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       }));
       return;
 
+    case epiviz.data.Request.Action.PROPAGATE_METADATA_SELECTION:
+      var datasourceGroup = request.get('datasourceGroup');
+      var selection = request.get('selection');
+
+      if (!selection) { return; }
+      for (var id in selection) {
+        if (!selection.hasOwnProperty(id)) { continue; }
+        if (!(id in this._nodeMap)) { continue; }
+        this._nodeMap[id].selectionType = selection[id];
+      }
+
+      var originalNode = this._nodeMap[this._lastRootId];
+      var parent = originalNode.parentId ? this._nodeMap[originalNode.parentId] : originalNode;
+      var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
+        function(node) {
+          return (node.depth != originalNode.depth || node == originalNode) &&
+          node.depth - parent.depth < self._maxDepth;
+        });
+      this._updateSelection();
+
+      callback(epiviz.data.Response.fromRawObject({
+        requestId: request.id(),
+        data: newRoot
+      }));
+      return;
+
     default:
       epiviz.data.DataProvider.prototype.getData.call(this, request, callback);
       break;
   }
 };
 
+epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
+  /**
+   * @type {epiviz.ui.charts.tree.Node}
+   */
+  var root = this._metadata;
+
+  var selection = this._getNodeSelection(root);
+  this._selectedRows = selection.rows;
+  this._selectedValues = selection.values;
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.Node} node
+ * @returns {{rows: Array.<string>, values: Array.<Array.<number>>}}
+ * @private
+ */
+epiviz.data.MetagenomicsDataProvider.prototype._getNodeSelection = function(node) {
+  var NodeSelectionType = epiviz.ui.charts.tree.NodeSelectionType;
+  if (node.selectionType == NodeSelectionType.NONE) {
+    return {rows: [], values: []};
+  }
+  if (!node.nchildren) {
+    return {rows: [node.name], values: [this._values[this._rowIndices[node.name]]]};
+  }
+  var self = this;
+  var result = {rows:[], values: []};
+  if (node.selectionType == NodeSelectionType.LEAVES) {
+    node.children.forEach(function(child, i) {
+      var childResult = self._getNodeSelection(child);
+      result.rows = result.rows.concat(childResult.rows);
+      result.values = result.values.concat(childResult.values);
+    });
+    return result;
+  }
+
+  if (node.selectionType == NodeSelectionType.NODE) {
+    result.rows = [node.name]; // should use id
+    var values = [];
+    node.children.forEach(function(child, i) {
+      var childResult = self._getNodeSelection(child);
+      values = values.concat(childResult.values);
+    });
+    result.values = values.reduce(function(v1, v2) {
+      var ret = [];
+      for (var i = 0; i < self._cols.length; ++i) {
+        ret.push(v1[i] + v2[i]);
+      }
+      return ret;
+    }).map(function(v) { return v / values.length; });
+    return result;
+  }
+};

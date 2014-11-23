@@ -17,6 +17,25 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
 
   epiviz.ui.charts.Visualization.call(this, id, container, properties);
 
+  /**
+   * @type {string}
+   * @private
+   */
+  this._datasourceGroup = properties.visConfigSelection.datasourceGroup;
+
+  /**
+   * @type {string}
+   * @private
+   */
+  this._dataprovider = properties.visConfigSelection.dataprovider;
+
+  if (!this._dataprovider) {
+    var self = this;
+    properties.visConfigSelection.measurements.foreach(function(m) {
+      if (m.dataprovider()) { self._dataprovider = m.dataprovider(); return true; }
+    })
+  }
+
   // Selection
 
   /**
@@ -34,7 +53,7 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
   // Events
 
   /**
-   * @type {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
    * @private
    */
   this._propagateSelection = new epiviz.events.Event();
@@ -264,7 +283,19 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
       if (selectionType == undefined) { selectionType = d.selectionType || 0; }
       return 'item ' + epiviz.ui.charts.tree.Facetzoom.SELECTION_CLASSES[selectionType];
     })
-    .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
+    .on('click', function(d) {
+      //self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      if (self._selectMode) {
+        var selectionType = d.selectionType || 0;
+        selectionType = (selectionType + 1) % 3;
+        d.selectionType = selectionType;
+        self.selectNode(d, selectionType);
+      } else {
+        self._requestMetadata.notify(new epiviz.ui.charts.VisEventArgs(
+          self.id(),
+          new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, d.id)));
+      }
+    });
 
   var newClips = clips
     .enter().append('clipPath')
@@ -276,7 +307,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(root) {
     .attr('height', function(d) { return Math.max(0, calcOldHeight(d) - 2 * self._nodeMargin); });
 
   var newRects = newItems.append('rect')
-    .style('fill', function(d) { return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); })
+    .style('fill', function(d) { return self.colors().getByKey((d.nchildren ? d : d.parent).id); })
     .attr('x', calcOldX)
     .attr('y', calcOldY)
     .attr('width', calcOldWidth)
@@ -438,15 +469,22 @@ epiviz.ui.charts.tree.Facetzoom.prototype._changeNodeSelection = function(node, 
 epiviz.ui.charts.tree.Facetzoom.prototype.firePropagateSelection = function() {
   var selectedNodes = this._selectedNodes;
   this._selectedNodes = {};
-  this._propagateSelection.notify(selectedNodes);
+  this._propagateSelection.notify(new epiviz.ui.charts.VisEventArgs(
+    this.id(),
+    new epiviz.ui.controls.VisConfigSelection(undefined, undefined, this.datasourceGroup(), this.dataprovider(), undefined, undefined, undefined, selectedNodes)));
 };
 
 /**
- * @returns {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
  */
 epiviz.ui.charts.tree.Facetzoom.prototype.onPropagateSelection = function() { return this._propagateSelection; };
 
 /**
  * @returns {string}
  */
-epiviz.ui.charts.tree.Facetzoom.prototype.datasourceGroup = function() { return this.properties().visConfigSelection.datasourceGroup; };
+epiviz.ui.charts.tree.Facetzoom.prototype.datasourceGroup = function() { return this._datasourceGroup; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.tree.Facetzoom.prototype.dataprovider = function() { return this._dataprovider; };

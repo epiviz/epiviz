@@ -281,7 +281,31 @@ epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap
  * @param {function(string, *)} dataReadyCallback
  */
 epiviz.data.DataManager.prototype.getMetadata = function(chartVisConfigSelectionMap, dataReadyCallback) {
-  this._cache.getMetadata(chartVisConfigSelectionMap, dataReadyCallback);
+  for (var chartId in chartVisConfigSelectionMap) {
+    if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
+    var visConfigSelection = chartVisConfigSelectionMap[chartId];
+  }
+  var dataprovider = visConfigSelection.dataprovider || visConfigSelection.measurements.first().dataprovider();
+  var provider = this._dataProviderFactory.get(dataprovider);
+  provider.getData(epiviz.data.Request.getMetadata(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
+    dataReadyCallback(chartId, response.data());
+  });
+};
+
+/**
+ * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.propagateMetadataSelection = function(chartVisConfigSelectionMap, dataReadyCallback) {
+  for (var chartId in chartVisConfigSelectionMap) {
+    if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
+    var visConfigSelection = chartVisConfigSelectionMap[chartId];
+  }
+  var dataprovider = visConfigSelection.dataprovider || visConfigSelection.measurements.first().dataprovider();
+  var provider = this._dataProviderFactory.get(dataprovider);
+  provider.getData(epiviz.data.Request.propagateMetadataSelection(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
+    dataReadyCallback(chartId, response.data());
+  });
 };
 
 /**

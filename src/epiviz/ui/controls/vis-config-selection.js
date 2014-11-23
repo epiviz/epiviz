@@ -14,10 +14,12 @@ goog.provide('epiviz.ui.controls.VisConfigSelection');
  * @param {Object.<string, string>} [annotation]
  * @param {string} [defaultChartType]
  * @param {number} [minSelectedMeasurements]
+ * @param {T} [customData]
  * @constructor
  * @struct
+ * @template T
  */
-epiviz.ui.controls.VisConfigSelection = function(measurements, datasource, datasourceGroup, dataprovider, annotation, defaultChartType, minSelectedMeasurements) {
+epiviz.ui.controls.VisConfigSelection = function(measurements, datasource, datasourceGroup, dataprovider, annotation, defaultChartType, minSelectedMeasurements, customData) {
   /**
    * @type {epiviz.measurements.MeasurementSet}
    */
@@ -52,4 +54,9 @@ epiviz.ui.controls.VisConfigSelection = function(measurements, datasource, datas
    * @type {number}
    */
   this.minSelectedMeasurements = minSelectedMeasurements || 1;
+
+  /**
+   * @type {T}
+   */
+  this.customData = customData;
 };

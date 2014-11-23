@@ -99,6 +99,9 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerUiActiveWorkspaceChanged();
   this._registerUiSearch();
 
+  this._registerChartRequestMetadata();
+  this._registerChartPropagateSelection();
+
   // Register for Data events
 
   this._registerDataAddMeasurements();
@@ -412,6 +415,34 @@ epiviz.EpiViz.prototype._registerUiSearch = function() {
         e.callback(results);
       }, e.searchTerm);
     }));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerChartRequestMetadata = function() {
+  var self = this;
+  this._chartManager.onChartRequestMetadata().addListener(new epiviz.events.EventListener(function(e) {
+    var map = {};
+    map[e.id] = e.args;
+    self._dataManager.getMetadata(map, function(chartId, data) {
+      self._chartManager.updateCharts(undefined, data, [chartId]);
+    })
+  }));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerChartPropagateSelection = function() {
+  var self = this;
+  this._chartManager.onChartPropagateSelection().addListener(new epiviz.events.EventListener(function(e) {
+    var map = {};
+    map[e.id] = e.args;
+    self._dataManager.propagateMetadataSelection(map, function(chartId, data) {
+      self._chartManager.updateCharts(undefined, data, [chartId]);
+    })
+  }));
 };
 
 /*****************************************************************************

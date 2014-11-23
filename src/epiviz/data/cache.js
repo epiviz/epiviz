@@ -660,14 +660,14 @@ epiviz.data.Cache.prototype._extractUnorderedMeasurements = function(chartMeasur
  * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
  * @param {function(string, *)} dataReadyCallback
  */
-epiviz.data.Cache.prototype.getMetadata = function(chartVisConfigSelectionMap, dataReadyCallback) {
+/*epiviz.data.Cache.prototype.getMetadata = function(chartVisConfigSelectionMap, dataReadyCallback) {
   for (var chartId in chartVisConfigSelectionMap) {
     if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
     var visConfigSelection = chartVisConfigSelectionMap[chartId];
   }
   var dataprovider = visConfigSelection.dataprovider || visConfigSelection.measurements.first().dataprovider();
-  var dataProvider = this._dataProviderFactory.get(visConfigSelection.dataprovider);
-  dataProvider.getData(epiviz.data.Request.getMetadata(visConfigSelection.datasourceGroup), function(response) {
+  var provider = this._dataProviderFactory.get(dataprovider);
+  provider.getData(epiviz.data.Request.getMetadata(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
     dataReadyCallback(chartId, response.data());
   });
-};
+};*/

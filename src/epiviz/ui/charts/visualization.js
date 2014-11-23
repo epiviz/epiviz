@@ -170,6 +170,15 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @private
    */
   this._dataWaitEnd = new epiviz.events.Event();
+
+  // Metadata events
+
+  /**
+   * event -> event args -> selection -> data
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<T>>>}
+   * @protected
+   */
+  this._requestMetadata = new epiviz.events.Event();
 };
 
 /**
@@ -593,6 +602,11 @@ epiviz.ui.charts.Visualization.prototype.onDataWaitStart = function() { return t
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
 epiviz.ui.charts.Visualization.prototype.onDataWaitEnd = function() { return this._dataWaitEnd; };
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<T>>>}
+ */
+epiviz.ui.charts.Visualization.prototype.onRequestMetadata = function() { return this._requestMetadata; };
 
 /**
  * @enum {string}

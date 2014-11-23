@@ -94,6 +94,20 @@ epiviz.ui.charts.ChartManager = function(config) {
    */
   this._chartMarginsChanged = new epiviz.events.Event();
 
+  /**
+   * event -> event args -> selection -> data
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<*>>>}
+   * @protected
+   */
+  this._chartRequestMetadata = new epiviz.events.Event();
+
+  /**
+   * TODO: This is a hack for Facetzoom. In the future, find a way to abstract this!
+   * @type {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+   * @private
+   */
+  this._chartPropagateSelection = new epiviz.events.Event();
+
   this._registerWindowResize();
 };
 
@@ -150,6 +164,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartMarginsChanged(chart);
   this._registerChartRemove(chart);
   this._registerChartSave(chart);
+  this._registerChartRequestMetadata(chart);
+  this._registerChartPropagateSelection(chart); // TODO: Find a more elegant way of doing this!
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -312,6 +328,16 @@ epiviz.ui.charts.ChartManager.prototype.onChartSizeChanged = function() { return
 epiviz.ui.charts.ChartManager.prototype.onChartMarginsChanged = function() { return this._chartMarginsChanged; };
 
 /**
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<*>>>}
+ */
+epiviz.ui.charts.ChartManager.prototype.onChartRequestMetadata = function() { return this._chartRequestMetadata; };
+
+/**
+ * @returns {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+ */
+epiviz.ui.charts.ChartManager.prototype.onChartPropagateSelection = function() { return this._chartPropagateSelection; };
+
+/**
  * @private
  */
 epiviz.ui.charts.ChartManager.prototype._registerWindowResize = function() {
@@ -472,3 +498,27 @@ epiviz.ui.charts.ChartManager.prototype._registerChartMarginsChanged = function(
     self._chartMarginsChanged.notify(e);
   }));
 };
+
+/**
+ * @param {epiviz.ui.charts.Chart} chart
+ * @private
+ */
+epiviz.ui.charts.ChartManager.prototype._registerChartRequestMetadata = function(chart) {
+  var self = this;
+  chart.onRequestMetadata().addListener(new epiviz.events.EventListener(function(e) {
+    self._chartRequestMetadata.notify(e);
+  }));
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.Facetzoom} chart
+ * @private
+ */
+epiviz.ui.charts.ChartManager.prototype._registerChartPropagateSelection = function(chart) {
+  var self = this;
+  if (!chart.onPropagateSelection) { return; }
+  chart.onPropagateSelection().addListener(new epiviz.events.EventListener(function(e) {
+    self._chartPropagateSelection.notify(e);
+  }));
+};
+

@@ -55,6 +55,7 @@ epiviz.data.Request.Action = {
   GET_WORKSPACES: 'getWorkspaces',
 
   GET_METADATA: 'getMetadata',
+  PROPAGATE_METADATA_SELECTION: 'propagateMetadataSelection',
 
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
@@ -300,3 +301,19 @@ epiviz.data.Request.getMetadata = function(datasourceGroup, nodeId) {
     nodeId: nodeId
   });
 };
+
+/**
+ * @param {string} datasourceGroup
+ * @param {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>} [selection]
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.propagateMetadataSelection = function(datasourceGroup, selection) {
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.PROPAGATE_METADATA_SELECTION,
+    datasourceGroup: datasourceGroup,
+    selection: selection
+  });
+};
+
+
