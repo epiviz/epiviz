@@ -226,7 +226,7 @@ epiviz.ui.charts.ChartManager.prototype.chartsMeasurements = function() {
   var result = {};
   for (var chartId in this._charts) {
     if (!this._charts.hasOwnProperty(chartId)) { continue; }
-
+    if (this._charts[chartId].displayType() == epiviz.ui.charts.VisualizationType.DisplayType.METADATA) { continue; }
     result[chartId] = this._charts[chartId].measurements();
   }
 

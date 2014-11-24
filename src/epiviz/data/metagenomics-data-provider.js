@@ -344,10 +344,20 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
         });
       this._updateSelection();
 
-      callback(epiviz.data.Response.fromRawObject({
-        requestId: request.id(),
-        data: newRoot
-      }));
+      setTimeout(function(){
+        self.onRequestClearDatasourceGroupCache().notify({
+          datasourceGroup: datasourceGroup,
+          result: new epiviz.events.EventResult()
+        });
+        self.onRequestRedraw().notify({
+          result: new epiviz.events.EventResult()
+        });
+
+        callback(epiviz.data.Response.fromRawObject({
+          requestId: request.id(),
+          data: newRoot
+        }));
+      }, 0);
       return;
 
     default:
@@ -398,13 +408,13 @@ epiviz.data.MetagenomicsDataProvider.prototype._getNodeSelection = function(node
       var childResult = self._getNodeSelection(child);
       values = values.concat(childResult.values);
     });
-    result.values = values.reduce(function(v1, v2) {
+    result.values = [values.reduce(function(v1, v2) {
       var ret = [];
       for (var i = 0; i < self._cols.length; ++i) {
         ret.push(v1[i] + v2[i]);
       }
       return ret;
-    }).map(function(v) { return v / values.length; });
+    }).map(function(v) { return v / values.length; })];
     return result;
   }
 };
