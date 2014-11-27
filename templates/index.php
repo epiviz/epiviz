@@ -145,7 +145,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <link rel="shortcut icon" href="img/epiviz_2_icon.png"/>
 
-    <!-- CSS -->
+      <!-- CSS -->
 
     <!-- JQuery UI -->
     <link href="css/theme/jquery-ui-1.8.9.custom.css" rel="stylesheet">
@@ -177,6 +177,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/jquery.watermark.min.js"></script>
     <script src="src/lib/jquery/jquery.layout-latest.js"></script>
     <script src="src/lib/jquery/jquery.activity-indicator-1.0.0.min.js"></script>
+    <script src="src/lib/jquery/farbtastic-color-picker/farbtastic.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/TableTools.js"></script>
@@ -192,15 +193,16 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <!-- Expression evaluation -->
     <script src="src/lib/expression-parser/parser.js"></script>
-
+    
     <!-- Code editor -->
     <script src="src/lib/codemirror-4.5/lib/codemirror.js"></script>
     <script src="src/lib/codemirror-4.5/addon/edit/matchbrackets.js"></script>
     <script src="src/lib/codemirror-4.5/addon/comment/continuecomment.js"></script>
     <script src="src/lib/codemirror-4.5/addon/comment/comment.js"></script>
     <script src="src/lib/codemirror-4.5/mode/javascript/javascript.js"></script>
-
-    <!-- File upload: src/file-upload/webtoolkit.aim.js -->
+    
+    <!-- File upload -->
+    <!-- <script src="src/file-upload/webtoolkit.aim.js"></script> -->
 
     <!-- Google Closure -->
     <script src="src/lib/closure/goog/base.js"></script>
@@ -209,7 +211,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- EpiViz framework -->
     <script src="src/epiviz/utils/utils.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
-    <script src="src/epiviz/utils/farbtastic.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
     <script src="src/epiviz/utils/iterable-array.js"></script>
     <script src="src/epiviz/config.js"></script>
@@ -275,20 +276,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
-
-    <script src="src/epiviz/ui/charts/decoration/chart-decoration.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/remove-chart-button.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/save-chart-button.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
-
-    <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
-    <script src="src/epiviz/ui/charts/decoration/chart-loader-animation.js"></script>
-
     <script src="src/epiviz/ui/charts/chart-manager.js"></script>
 
     <script src="src/epiviz/workspaces/user-manager.js"></script>
@@ -326,7 +313,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
 
     <script src="src/epiviz/main.js"></script>
-    
+
+
     <!-- Dynamic initializations -->
     <script src="<?php echo $settings_file; ?>"></script>
 
@@ -445,13 +433,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     
   </head>
   <body>
-    <div class="ui-layout-north">
+        <div class="ui-layout-north">
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
           <img src="img/epiviz_2_logo_medium.png" alt="EpiViz" width="100" height="24" />
         </div>
-        <div style="float: right; font-size: small; margin-top: 7px; margin-left: 7px; margin-right: 7px">
+        <div style="float: right; font-size: small; margin-top: 7px; margin-left: 7px; margin-right: 7px">      
           <?php
           if ($user === null) {
             echo "<a id=\"login-link\" href=\"javascript:void(0)\">Login</a>";
@@ -462,7 +450,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
           ?>
         </div>
 
-        <select id="chromosome-selector"></select>
+	        <select id="chromosome-selector"></select>
         <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
         <button id="moveleft">Slide left</button>
         <button id="moveright">Slide right</button>
@@ -503,7 +491,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       </div>
     </div>
 
-    <div id="pagemain" class="ui-layout-center">
+       <div id="pagemain" class="ui-layout-center">
       <div id="top-accordion">
         <h3><a href="#"><b><span style="color: #025167">Views by Feature</span></b></a></h3>
         <div id="chart-container"></div>
@@ -514,9 +502,12 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       </div>
     </div>
 
+    <div class="ui-layout-east"></div>
     <div id="pagefooter" class="ui-layout-south"></div>
 
+
     <div id="dialogs">
+
       <div id="location-settings-dialog" title="Location Settings">
         <table>
           <tr>
@@ -542,3 +533,4 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
   </body>
 
 </html>
+     
