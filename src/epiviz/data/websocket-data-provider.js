@@ -177,6 +177,9 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.GET_CHART_SETTINGS:
         this._getChartSettings(request);
         break;
+      case Action.SET_CHART_SETTINGS:
+        this._setChartSettings(request);
+        break;
       case Action.WRITE_DEBUG_MSG: 
         this._writeDebugMsg(request);
         break;
@@ -434,7 +437,26 @@ epiviz.data.WebsocketDataProvider.prototype._getChartSettings = function(request
 
   var response = new epiviz.data.Response(request.id(), result);
   this._sendMessage(JSON.stringify(response.raw()));
-}
+};
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._setChartSettings = function(request) {
+  var chartId = request.get('chartId');
+  var settings = JSON.parse(request.get('settings'));
+  var result = new epiviz.events.EventResult();
+
+  this._fireEvent(this.onRequestSetChartCustomSettings(), {
+    id: chartId,
+    settings: settings,
+    result: result
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
 
 /**
  * @param {epiviz.data.Request} request

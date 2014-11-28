@@ -67,7 +67,8 @@ epiviz.data.Request.Action = {
   REDRAW: 'redraw',
   GET_CURRENT_LOCATION: 'getCurrentLocation',
   WRITE_DEBUG_MSG: 'writeMsg',
-  GET_CHART_SETTINGS: 'getChartSettings'
+  GET_CHART_SETTINGS: 'getChartSettings',
+  SET_CHART_SETTINGS: 'setChartSettings'
 };
 
 /**

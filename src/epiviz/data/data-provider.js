@@ -61,6 +61,12 @@ epiviz.data.DataProvider = function(id) {
   this._requestGetChartCustomSettings = new epiviz.events.Event();
 
   /**
+   * @type {epiviz.events.Event.<{id: string, settings: Array, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestSetChartCustomSettings = new epiviz.events.Event();
+
+  /**
    * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
    * @private
    */
@@ -146,6 +152,11 @@ epiviz.data.DataProvider.prototype.onRequestRemoveChart = function() { return th
  * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataProvider.prototype.onRequestGetChartCustomSettings = function() { console.log("dp onrequest"); return this._requestGetChartCustomSettings; };
+
+/**
+ * @returns {epiviz.events.Event.<{id: string, settings: Array, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataProvider.prototype.onRequestSetChartCustomSettings = function() { return this._requestSetChartCustomSettings; };
 
 /**
  * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}

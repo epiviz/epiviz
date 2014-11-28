@@ -113,6 +113,11 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._requestGetChartCustomSettings = new epiviz.events.Event();
 
+  /**
+   * @type {epiviz.events.Event.<{id: string, settings: Array.string, result: epiviz.events.Eventresult}>}
+   */
+  this._requestSetChartCustomSettings = new epiviz.events.Event();
+
   this._registerProviderAddMeasurements();
   this._registerProviderRemoveMeasurements();
   this._registerProviderAddChart();
@@ -125,6 +130,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderClearDatasourceGroupCache();
   this._registerProviderGetCurrentLocation();
   this._registerProviderGetChartCustomSettings();
+  this._registerProviderSetChartCustomSettings();
 };
 
 /**
@@ -187,6 +193,11 @@ epiviz.data.DataManager.prototype.onRequestCurrentLocation = function() { return
  *
  */
 epiviz.data.DataManager.prototype.onRequestGetChartCustomSettings = function() { return this._requestGetChartCustomSettings; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestSetChartCustomSettings = function() { return this._requestSetChartCustomSettings; };
 
 /**
  * @param {function(Array.<epiviz.datatypes.SeqInfo>)} callback
@@ -568,4 +579,17 @@ epiviz.data.DataManager.prototype._registerProviderGetChartCustomSettings = func
         self._requestGetChartCustomSettings.notify(e);
       }));
   })
-}
+};
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderSetChartCustomSettings = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestSetChartCustomSettings().addListener(new epiviz.events.EventListener(
+      function (e) {
+        self._requestSetChartCustomSettings.notify(e);
+      }));
+  })
+};

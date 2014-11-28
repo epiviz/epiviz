@@ -208,6 +208,17 @@ epiviz.ui.charts.ChartManager.prototype.getChartCustomSettings = function(id) {
   result['colorMap'] = chart.colorMap();
   return result;
 }
+
+/**
+ * @param {string} id The id of the chart settings are updated
+ * @param {settings} Array updated setting values
+ */
+epiviz.ui.charts.ChartManager.prototype.setChartCustomSettings = function(id, settings) {
+  var chart = this._charts[id];
+  chart.setCustomSettingsValues(settings);
+  chart.draw();
+};
+
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
