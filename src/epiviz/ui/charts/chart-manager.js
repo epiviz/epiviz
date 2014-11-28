@@ -135,7 +135,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measureme
   this._registerChartMarginsChanged(chart);
   this._registerChartRemove(chart);
   this._registerChartSave(chart);
-  this._registerChartGetCustomSettings(chart);
+  //TODO: remove this this._registerChartGetCustomSettings(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.ChartDecoration} */
@@ -197,6 +197,18 @@ epiviz.ui.charts.ChartManager.prototype.chartsMeasurements = function() {
   return result;
 };
 
+/**
+ * @param {string} id The id of the chart settings are requested for
+ */
+epiviz.ui.charts.ChartManager.prototype.getChartCustomSettings = function(id) {
+  console.log("cm get settings");
+  var chart = this._charts[id];
+  var result = {};
+  result['defs'] = chart.properties().customSettingsDefs;
+  result['vals'] = chart.customSettingsValues();
+  result['colorMap'] = chart.colorMap();
+  return result;
+}
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
@@ -381,12 +393,14 @@ epiviz.ui.charts.ChartManager.prototype._registerChartRemove = function(chart) {
  * @param {epiviz.ui.charts.Chart} chart
  * @private
  */
-epiviz.ui.charts.ChartManager.prototype._registerChartGetCustomSettings = function(chart) {
-  var self = this;
-  chart.onGetCustomSettings().addListener(new epiviz.events.EventListener(function() {
-    console.dir(self.properties())
-  }))
-}
+/* TODO: remove this epiviz.ui.charts.ChartManager.prototype._registerChartGetCustomSettings = function(chart) {
+*  var self = this;
+ * chart.onGetCustomSettings().addListener(new epiviz.events.EventListener(function() {
+  *  console.dir(self.properties())
+  *}))
+*}
+*/
+
 /**
  * @param {epiviz.ui.charts.Chart} chart
  * @private

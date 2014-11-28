@@ -145,7 +145,7 @@ epiviz.data.DataProvider.prototype.onRequestRemoveChart = function() { return th
 /**
  * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
  */
-epiviz.data.DataProvider.prototype.onRequestGetChartCustomSettings = function() { return this._requestGetChartCustomSettings; };
+epiviz.data.DataProvider.prototype.onRequestGetChartCustomSettings = function() { console.log("dp onrequest"); return this._requestGetChartCustomSettings; };
 
 /**
  * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}

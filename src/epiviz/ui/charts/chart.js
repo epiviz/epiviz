@@ -155,7 +155,7 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
    * @type {epiviz.events.Event.<string>}
    * @private
    */
-  this._getCustomSettings = new epiviz.events.Event();
+ //TODO: remove this this._getCustomSettings = new epiviz.events.Event();
 
   /**
    * @type {epiviz.events.Event.<{id: string, colors: epiviz.ui.charts.ColorPalette}>}
@@ -704,7 +704,7 @@ epiviz.ui.charts.Chart.prototype.onRemove = function() { return this._remove; };
 /**
  * @returns {epiviz.events.Event.<string>}
  */
-epiviz.ui.charts.Chart.prototype.onGetCustomSettings = function() { return this._getCustomSettings; };
+//TODO: remove this epiviz.ui.charts.Chart.prototype.onGetCustomSettings = function() { return this._getCustomSettings; };
 
 /**
  * @returns {epiviz.events.Event.<{id: string, colors: epiviz.ui.charts.ColorPalette}>}

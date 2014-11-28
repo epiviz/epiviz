@@ -426,7 +426,7 @@ epiviz.data.WebsocketDataProvider.prototype._removeChart = function (request) {
 epiviz.data.WebsocketDataProvider.prototype._getChartSettings = function(request) {
   var chartId = request.get('chartId');
   var result = new epiviz.events.EventResult();
-
+  console.log("wsdp getChartSettings")
   this._fireEvent(this.onRequestGetChartCustomSettings(), {
     id: chartId,
     result: result
