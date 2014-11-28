@@ -135,7 +135,6 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, measureme
   this._registerChartMarginsChanged(chart);
   this._registerChartRemove(chart);
   this._registerChartSave(chart);
-  //TODO: remove this this._registerChartGetCustomSettings(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.ChartDecoration} */
@@ -388,18 +387,6 @@ epiviz.ui.charts.ChartManager.prototype._registerChartRemove = function(chart) {
     self.removeChart(chart.id());
   }));
 };
-
-/**
- * @param {epiviz.ui.charts.Chart} chart
- * @private
- */
-/* TODO: remove this epiviz.ui.charts.ChartManager.prototype._registerChartGetCustomSettings = function(chart) {
-*  var self = this;
- * chart.onGetCustomSettings().addListener(new epiviz.events.EventListener(function() {
-  *  console.dir(self.properties())
-  *}))
-*}
-*/
 
 /**
  * @param {epiviz.ui.charts.Chart} chart
