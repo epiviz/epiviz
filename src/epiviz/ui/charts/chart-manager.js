@@ -199,7 +199,7 @@ epiviz.ui.charts.ChartManager.prototype.chartsMeasurements = function() {
 /**
  * @param {string} id The id of the chart settings are requested for
  */
-epiviz.ui.charts.ChartManager.prototype.getChartCustomSettings = function(id) {
+epiviz.ui.charts.ChartManager.prototype.getChartSettings = function(id) {
   console.log("cm get settings");
   var chart = this._charts[id];
   var result = {};
@@ -213,10 +213,16 @@ epiviz.ui.charts.ChartManager.prototype.getChartCustomSettings = function(id) {
  * @param {string} id The id of the chart settings are updated
  * @param {settings} Array updated setting values
  */
-epiviz.ui.charts.ChartManager.prototype.setChartCustomSettings = function(id, settings) {
+epiviz.ui.charts.ChartManager.prototype.setChartSettings = function(id, settings, colorMap) {
   var chart = this._charts[id];
-  chart.setCustomSettingsValues(settings);
-  chart.draw();
+
+  if (settings != null) {
+    chart.setCustomSettingsValues(settings);
+    if (colorMap == null) chart.draw(); // to avoid calling 'draw()' twice
+  }
+  if (colorMap != null) {
+    chart.setColorMap(colorMap); // this calls 'draw()'
+  }
 };
 
 /**

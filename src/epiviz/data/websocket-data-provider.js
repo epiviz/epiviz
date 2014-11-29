@@ -430,7 +430,7 @@ epiviz.data.WebsocketDataProvider.prototype._getChartSettings = function(request
   var chartId = request.get('chartId');
   var result = new epiviz.events.EventResult();
   console.log("wsdp getChartSettings")
-  this._fireEvent(this.onRequestGetChartCustomSettings(), {
+  this._fireEvent(this.onRequestGetChartSettings(), {
     id: chartId,
     result: result
   });
@@ -446,11 +446,13 @@ epiviz.data.WebsocketDataProvider.prototype._getChartSettings = function(request
 epiviz.data.WebsocketDataProvider.prototype._setChartSettings = function(request) {
   var chartId = request.get('chartId');
   var settings = JSON.parse(request.get('settings'));
+  var colorMap = JSON.parse(request.get('colorMap'));
   var result = new epiviz.events.EventResult();
 
-  this._fireEvent(this.onRequestSetChartCustomSettings(), {
+  this._fireEvent(this.onRequestSetChartSettings(), {
     id: chartId,
     settings: settings,
+    colorMap: colorMap,
     result: result
   });
 

@@ -110,8 +110,8 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerDataNavigate();
   this._registerDataRedraw();
   this._registerDataGetCurrentLocation();
-  this._registerDataGetChartCustomSettings();
-  this._registerDataSetChartCustomSettings();
+  this._registerDataGetChartSettings();
+  this._registerDataSetChartSettings();
 
   // Register for Workspace events
 
@@ -592,16 +592,16 @@ epiviz.EpiViz.prototype._registerDataGetCurrentLocation = function() {
 /**
  * @private
  */
-epiviz.EpiViz.prototype._registerDataGetChartCustomSettings = function() {
+epiviz.EpiViz.prototype._registerDataGetChartSettings = function() {
   var self = this;
-  this._dataManager.onRequestGetChartCustomSettings().addListener(new epiviz.events.EventListener(
+  this._dataManager.onRequestGetChartSettings().addListener(new epiviz.events.EventListener(
     /**
      * @param {{id: string, result: epiviz.events.EventResult}} e
      */
     function(e) {
       console.log('dm listener');
       try {
-        var properties = self._chartManager.getChartCustomSettings(e.id);
+        var properties = self._chartManager.getChartSettings(e.id);
         e.result.value = properties;
         e.result.success = true;
       } catch (error) {
@@ -614,15 +614,15 @@ epiviz.EpiViz.prototype._registerDataGetChartCustomSettings = function() {
 /**
  * @private
  */
-epiviz.EpiViz.prototype._registerDataSetChartCustomSettings = function() {
+epiviz.EpiViz.prototype._registerDataSetChartSettings = function() {
   var self = this;
-  this._dataManager.onRequestSetChartCustomSettings().addListener(new epiviz.events.EventListener(
+  this._dataManager.onRequestSetChartSettings().addListener(new epiviz.events.EventListener(
     /**
-     * @param {{id: string, settings: Array, result: epiviz.events.EventResult}} e
+     * @param {{id: string, settings: Array, colorMap: Array, result: epiviz.events.EventResult}} e
      */
     function(e) {
       try {
-        self._chartManager.setChartCustomSettings(e.id, e.settings);
+        self._chartManager.setChartSettings(e.id, e.settings, e.colorMap);
         e.result.success = true;
       } catch(error) {
         e.result.success = false;
