@@ -27,7 +27,7 @@ epiviz.plugins.charts.BlocksTrackType.constructor = epiviz.plugins.charts.Blocks
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.BlocksTrack}
  */
 epiviz.plugins.charts.BlocksTrackType.prototype.createNew = function(id, container, properties) {

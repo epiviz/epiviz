@@ -276,17 +276,21 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/vis-object.js"></script>
     <script src="src/epiviz/ui/charts/visualization-properties.js"></script>
     <script src="src/epiviz/ui/charts/vis-event-args.js"></script>
+    <script src="src/epiviz/ui/charts/display-type.js"></script>
     <script src="src/epiviz/ui/charts/visualization.js"></script>
     <script src="src/epiviz/ui/charts/visualization-type.js"></script>
 
-    <script src="src/epiviz/ui/charts/chart-properties.js"></script>
     <script src="src/epiviz/ui/charts/chart-object.js"></script>
     <script src="src/epiviz/ui/charts/chart.js"></script>
     <script src="src/epiviz/ui/charts/track.js"></script>
     <script src="src/epiviz/ui/charts/plot.js"></script>
+    <script src="src/epiviz/ui/charts/data-structure-visualization.js"></script>
+    <script src="src/epiviz/ui/charts/tree/hierarchy-visualization.js"></script>
     <script src="src/epiviz/ui/charts/chart-type.js"></script>
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
+    <script src="src/epiviz/ui/charts/data-structure-visualization-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/hierarchy-visualization-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
 
     <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
@@ -519,15 +523,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         <span class="separator">|</span>
 
         <button id="help-button">Help</button>
-        <button id="sunburst-button">Sunburst</button>
       </div>
     </div>
 
     <div id="pagemain" class="ui-layout-center">
       <div id="feature-view"></div>
       <div id="location-view"></div>
-      <div id="metadata-view"></div>
-      <div id="sunburst">TODO: Remove me!</div>
+      <div id="data-structure-view"></div>
     </div>
 
     <div id="pagefooter" class="ui-layout-south"></div>

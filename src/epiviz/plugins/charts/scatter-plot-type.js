@@ -27,7 +27,7 @@ epiviz.plugins.charts.ScatterPlotType.constructor = epiviz.plugins.charts.Scatte
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.ScatterPlot}
  */
 epiviz.plugins.charts.ScatterPlotType.prototype.createNew = function(id, container, properties) {

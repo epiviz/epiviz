@@ -134,7 +134,7 @@ epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurem
 epiviz.ui.ControlManager.CHART_TYPE_CONTAINERS = {
   'plot': 'feature-view',
   'track': 'location-view',
-  'metadata': 'metadata-view'
+  'data-structure': 'data-structure-view'
 };
 
 /**
@@ -144,7 +144,7 @@ epiviz.ui.ControlManager.CHART_TYPE_CONTAINERS = {
 epiviz.ui.ControlManager.DISPLAY_TYPE_LABELS = {
   'plot': 'Feature',
   'track': 'Location',
-  'metadata': 'Metadata'
+  'data-structure': 'Data Structure'
 };
 
 epiviz.ui.ControlManager.prototype.initialize = function() {
@@ -169,7 +169,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   this._initializeWorkspaceSaving();
 
   /* TODO: Debug */
-  $('#sunburst-button').button({
+  /*$('#sunburst-button').button({
     text: false,
     icons: {
       primary: 'ui-icon ui-icon-heart'
@@ -209,7 +209,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
         }
       }));
 
-      sunburst.onPropagateSelection().addListener(new epiviz.events.EventListener(function(selectedNodes) {
+      sunburst.onPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(selectedNodes) {
         if (!selectedNodes) { return; }
         for (var id in selectedNodes) {
           if (!selectedNodes.hasOwnProperty(id)) { continue; }
@@ -227,10 +227,6 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
         sunburst.draw(newRoot);
       }));
       d3.json("tree.json",
-        /**
-         * @param error
-         * @param {epiviz.ui.charts.tree.Node} root
-         */
         function(error, root) {
           epiviz.ui.charts.tree.Node.dfs(root, function(node) { nodeMap[node.id] = node; });
           var rootCopy = epiviz.ui.charts.tree.Node.filter(root, function(node) { return node.depth < maxDepth; });
@@ -238,7 +234,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
           lastRootId = root.id;
           sunburst.draw(rootCopy);
         });
-    });
+    });*/
 
   /*
    * Log in/out
@@ -597,7 +593,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
         if (chartType.isRestrictedToSameDatasourceGroup()) {
           wizardSteps.push(new epiviz.ui.controls.DatasourceGroupWizardStep());
         }
-        if (chartType.hasMeasurements()) {
+        if (chartType.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
           wizardSteps.push(new epiviz.ui.controls.MeaurementsWizardStep());
         }
 

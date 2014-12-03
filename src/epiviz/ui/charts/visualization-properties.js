@@ -10,6 +10,7 @@ goog.provide('epiviz.ui.charts.VisualizationProperties');
  * @param {number|string} [width]
  * @param {number|string} [height]
  * @param {epiviz.ui.charts.Margins} [margins]
+ * @param {epiviz.ui.controls.VisConfigSelection} [visConfigSelection]
  * @param {epiviz.ui.charts.ColorPalette} [colors]
  * @param {Object.<string, string>} [modifiedMethods]
  * @param {Object<string, *>} [customSettingsValues]
@@ -17,7 +18,7 @@ goog.provide('epiviz.ui.charts.VisualizationProperties');
  * @constructor
  * @struct
  */
-epiviz.ui.charts.VisualizationProperties = function(width, height, margins, colors, modifiedMethods, customSettingsValues, customSettingsDefs) {
+epiviz.ui.charts.VisualizationProperties = function(width, height, margins, visConfigSelection, colors, modifiedMethods, customSettingsValues, customSettingsDefs) {
   /**
    * @type {number|string}
    */
@@ -32,6 +33,11 @@ epiviz.ui.charts.VisualizationProperties = function(width, height, margins, colo
    * @type {epiviz.ui.charts.Margins}
    */
   this.margins = margins;
+
+  /**
+   * @type {epiviz.ui.controls.VisConfigSelection}
+   */
+  this.visConfigSelection = visConfigSelection;
 
   /**
    * @type {epiviz.ui.charts.ColorPalette}
@@ -58,9 +64,17 @@ epiviz.ui.charts.VisualizationProperties = function(width, height, margins, colo
  * @returns {epiviz.ui.charts.VisualizationProperties}
  */
 epiviz.ui.charts.VisualizationProperties.prototype.copy = function() {
+  var visConfigSelection = new epiviz.ui.controls.VisConfigSelection(
+    this.visConfigSelection.measurements ? new epiviz.measurements.MeasurementSet(this.visConfigSelection.measurements) : undefined,
+    this.visConfigSelection.datasource,
+    this.visConfigSelection.dataprovider,
+    epiviz.utils.mapCopy(this.visConfigSelection.annotation),
+    this.visConfigSelection.defaultChartType,
+    this.visConfigSelection.minSelectedMeasurements);
   return new epiviz.ui.charts.VisualizationProperties(
     this.width, this.height,
     this.margins ? this.margins.copy() : this.margins,
+    visConfigSelection,
     this.colors ? this.colors.copy() : this.colors,
     this.modifiedMethods ? epiviz.utils.mapCopy(this.modifiedMethods) : this.modifiedMethods,
     this.customSettingsValues ? epiviz.utils.mapCopy(this.customSettingsValues) : this.customSettingsValues,

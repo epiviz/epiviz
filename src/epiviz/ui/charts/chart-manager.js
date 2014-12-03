@@ -42,7 +42,7 @@ epiviz.ui.charts.ChartManager = function(config) {
   /**
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{
    *   type: epiviz.ui.charts.ChartType,
-   *   properties: epiviz.ui.charts.ChartProperties,
+   *   properties: epiviz.ui.charts.VisualizationProperties,
    *   chartsOrder: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>
    * }>>}
    * @private
@@ -99,14 +99,13 @@ epiviz.ui.charts.ChartManager = function(config) {
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<*>>>}
    * @protected
    */
-  this._chartRequestMetadata = new epiviz.events.Event();
+  this._chartRequestHierarchy = new epiviz.events.Event();
 
   /**
-   * TODO: This is a hack for Facetzoom. In the future, find a way to abstract this!
    * @type {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
    * @private
    */
-  this._chartPropagateSelection = new epiviz.events.Event();
+  this._chartPropagateHierarchySelection = new epiviz.events.Event();
 
   this._registerWindowResize();
 };
@@ -116,7 +115,7 @@ epiviz.ui.charts.ChartManager = function(config) {
  * @param {epiviz.ui.controls.VisConfigSelection} visConfigSelection
  * @param {string} [id] The specific id for the chart. If not
  *   specified, it's generated dynamically
- * @param {epiviz.ui.charts.ChartProperties} [chartProperties]
+ * @param {epiviz.ui.charts.VisualizationProperties} [chartProperties]
  * @returns {string} The id of the newly created chart
  */
 epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfigSelection, id, chartProperties) {
@@ -139,7 +138,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   chartsContainer.append(sprintf('<div id="%s" class="%s"></div>', id, css));
   var container = chartsContainer.find('#' + id);
 
-  chartProperties = chartProperties || new epiviz.ui.charts.ChartProperties(
+  chartProperties = chartProperties || new epiviz.ui.charts.VisualizationProperties(
     chartType.defaultWidth(), // width
     chartType.defaultHeight(), // height
     chartType.defaultMargins(), // margins
@@ -164,8 +163,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartMarginsChanged(chart);
   this._registerChartRemove(chart);
   this._registerChartSave(chart);
-  this._registerChartRequestMetadata(chart);
-  this._registerChartPropagateSelection(chart); // TODO: Find a more elegant way of doing this!
+  this._registerChartRequestHierarchy(chart);
+  this._registerChartPropagateHierarchySelection(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -226,7 +225,7 @@ epiviz.ui.charts.ChartManager.prototype.chartsMeasurements = function() {
   var result = {};
   for (var chartId in this._charts) {
     if (!this._charts.hasOwnProperty(chartId)) { continue; }
-    if (this._charts[chartId].displayType() == epiviz.ui.charts.VisualizationType.DisplayType.METADATA) { continue; }
+    if (this._charts[chartId].displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { continue; }
     result[chartId] = this._charts[chartId].measurements();
   }
 
@@ -244,12 +243,7 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
     if (!this._charts.hasOwnProperty(chartIds[i])) { continue; }
     var chart = this._charts[chartIds[i]];
     if (!chart) { continue; }
-
-    if (range == undefined) {
-      chart.draw(data);
-    } else {
-      chart.draw(range, data);
-    }
+    chart.draw(range, data);
   }
 };
 
@@ -288,7 +282,7 @@ epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId) {
 };
 
 /**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties, chartsOrder: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}>>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.VisualizationProperties, chartsOrder: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartAdded = function() { return this._chartAdded; };
 
@@ -330,12 +324,12 @@ epiviz.ui.charts.ChartManager.prototype.onChartMarginsChanged = function() { ret
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<*>>>}
  */
-epiviz.ui.charts.ChartManager.prototype.onChartRequestMetadata = function() { return this._chartRequestMetadata; };
+epiviz.ui.charts.ChartManager.prototype.onChartRequestHierarchy = function() { return this._chartRequestHierarchy; };
 
 /**
  * @returns {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
  */
-epiviz.ui.charts.ChartManager.prototype.onChartPropagateSelection = function() { return this._chartPropagateSelection; };
+epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchySelection = function() { return this._chartPropagateHierarchySelection; };
 
 /**
  * @private
@@ -500,25 +494,30 @@ epiviz.ui.charts.ChartManager.prototype._registerChartMarginsChanged = function(
 };
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
+ * @param {epiviz.ui.charts.Visualization} chart
  * @private
  */
-epiviz.ui.charts.ChartManager.prototype._registerChartRequestMetadata = function(chart) {
+epiviz.ui.charts.ChartManager.prototype._registerChartRequestHierarchy = function(chart) {
   var self = this;
-  chart.onRequestMetadata().addListener(new epiviz.events.EventListener(function(e) {
-    self._chartRequestMetadata.notify(e);
-  }));
+  if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    var dataStructVis = /** @type {epiviz.ui.charts.DataStructureVisualization} */ chart; // Assignment done for consistency
+    dataStructVis.onRequestHierarchy().addListener(new epiviz.events.EventListener(function(e) {
+      self._chartRequestHierarchy.notify(e);
+    }));
+  }
 };
 
 /**
- * @param {epiviz.ui.charts.tree.Facetzoom} chart
+ * @param {epiviz.ui.charts.Visualization} chart
  * @private
  */
-epiviz.ui.charts.ChartManager.prototype._registerChartPropagateSelection = function(chart) {
+epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchySelection = function(chart) {
   var self = this;
-  if (!chart.onPropagateSelection) { return; }
-  chart.onPropagateSelection().addListener(new epiviz.events.EventListener(function(e) {
-    self._chartPropagateSelection.notify(e);
-  }));
+  if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    var dataStructVis = /** @type {epiviz.ui.charts.DataStructureVisualization} */ chart; // Assignment done for consistency
+    dataStructVis.onPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(e) {
+      self._chartPropagateHierarchySelection.notify(e);
+    }));
+  }
 };
 

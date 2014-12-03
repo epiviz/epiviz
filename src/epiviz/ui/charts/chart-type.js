@@ -28,7 +28,7 @@ epiviz.ui.charts.ChartType.constructor = epiviz.ui.charts.ChartType;
 /**
  * @param {string} id
  * @param {jQuery} container
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.ui.charts.Chart}
  */
 epiviz.ui.charts.ChartType.prototype.createNew = function(id, container, properties) { throw Error('unimplemented abstract method'); };

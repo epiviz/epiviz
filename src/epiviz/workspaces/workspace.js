@@ -15,7 +15,7 @@ goog.provide('epiviz.workspaces.Workspace');
  *   charts: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{
  *     id: string,
  *     type: epiviz.ui.charts.ChartType,
- *     properties: epiviz.ui.charts.ChartProperties
+ *     properties: epiviz.ui.charts.VisualizationProperties
  *   }>>
  * }} content
  * @constructor
@@ -49,7 +49,7 @@ epiviz.workspaces.Workspace = function(id, name, content) {
    * @type {Object.<string, {
    *   id: string,
    *   type: epiviz.ui.charts.ChartType,
-   *   properties: epiviz.ui.charts.ChartProperties
+   *   properties: epiviz.ui.charts.VisualizationProperties
    * }>}
    * @private
    */
@@ -103,7 +103,7 @@ epiviz.workspaces.Workspace.prototype.range = function() {
 };
 
 /**
- * @returns {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties}>>}
+ * @returns {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.VisualizationProperties}>>}
  */
 epiviz.workspaces.Workspace.prototype.charts = function() {
   var charts = {};
@@ -135,7 +135,7 @@ epiviz.workspaces.Workspace.prototype.computedMeasurements = function() {
 /**
  * @param {string} id
  * @param {epiviz.ui.charts.ChartType} type
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @param {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>} chartsOrder
  */
 epiviz.workspaces.Workspace.prototype.chartAdded = function(id, type, properties, chartsOrder) {
@@ -473,7 +473,7 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
       charts[t].push({
         id: chartInfo.id,
         type: chartType,
-        properties: new epiviz.ui.charts.ChartProperties(
+        properties: new epiviz.ui.charts.VisualizationProperties(
           chartInfo.properties.width,
           chartInfo.properties.height,
           epiviz.ui.charts.Margins.fromRawObject(chartInfo.properties.margins),

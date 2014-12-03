@@ -99,8 +99,8 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerUiActiveWorkspaceChanged();
   this._registerUiSearch();
 
-  this._registerChartRequestMetadata();
-  this._registerChartPropagateSelection();
+  this._registerChartRequestHierarchy();
+  this._registerChartPropagateHierarchySelection();
 
   // Register for Data events
 
@@ -168,14 +168,22 @@ epiviz.EpiViz.prototype.config = function() {
  * @param {string} [chartId] If specified, then this will be
  *   the id of the newly created chart. Otherwise, a new one
  *   will be generated.
- * @param {epiviz.ui.charts.ChartProperties} [chartProperties]
+ * @param {epiviz.ui.charts.VisualizationProperties} [chartProperties]
  * @returns {string} the id of the chart just created
  * @private
  */
 epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, chartProperties) {
   chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties);
   var self = this;
-  if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.METADATA) {
+  // TODO: Maybe later implement hierarchical display type (see display-type.js for the start of the idea)
+  if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    var chartVisConfigSelectionMap = {};
+    chartVisConfigSelectionMap[chartId] = visConfigSelection;
+    this._dataManager.getHierarchy(chartVisConfigSelectionMap,
+      function(chartId, hierarchy) {
+        self._chartManager.updateCharts(undefined, hierarchy, [chartId]);
+      });
+  } else {
     var range = this._workspaceManager.activeWorkspace().range();
     this._chartManager.dataWaitStart(chartId);
     var chartMeasurementsMap = {};
@@ -183,13 +191,6 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
     this._dataManager.getData(range, chartMeasurementsMap,
       function(chartId, data) {
         self._chartManager.updateCharts(range, data, [chartId]);
-      });
-  } else {
-    var chartVisConfigSelectionMap = {};
-    chartVisConfigSelectionMap[chartId] = visConfigSelection;
-    this._dataManager.getMetadata(chartVisConfigSelectionMap,
-      function(chartId, metadata) {
-        self._chartManager.updateCharts(undefined, metadata, [chartId]);
       });
   }
 
@@ -420,12 +421,12 @@ epiviz.EpiViz.prototype._registerUiSearch = function() {
 /**
  * @private
  */
-epiviz.EpiViz.prototype._registerChartRequestMetadata = function() {
+epiviz.EpiViz.prototype._registerChartRequestHierarchy = function() {
   var self = this;
-  this._chartManager.onChartRequestMetadata().addListener(new epiviz.events.EventListener(function(e) {
+  this._chartManager.onChartRequestHierarchy().addListener(new epiviz.events.EventListener(function(e) {
     var map = {};
     map[e.id] = e.args;
-    self._dataManager.getMetadata(map, function(chartId, data) {
+    self._dataManager.getHierarchy(map, function(chartId, data) {
       self._chartManager.updateCharts(undefined, data, [chartId]);
     })
   }));
@@ -434,12 +435,12 @@ epiviz.EpiViz.prototype._registerChartRequestMetadata = function() {
 /**
  * @private
  */
-epiviz.EpiViz.prototype._registerChartPropagateSelection = function() {
+epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
   var self = this;
-  this._chartManager.onChartPropagateSelection().addListener(new epiviz.events.EventListener(function(e) {
+  this._chartManager.onChartPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(e) {
     var map = {};
     map[e.id] = e.args;
-    self._dataManager.propagateMetadataSelection(map, function(chartId, data) {
+    self._dataManager.propagateHierarchySelection(map, function(chartId, data) {
       self._chartManager.updateCharts(undefined, data, [chartId]);
     })
   }));
@@ -668,7 +669,7 @@ epiviz.EpiViz.prototype._registerActiveWorkspaceChanged = function() {
       self._chartManager.clear();
 
       /**
-       * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties}>>}
+       * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.VisualizationProperties}>>}
        */
       var charts = e.newValue.charts();
 

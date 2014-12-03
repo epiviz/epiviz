@@ -76,7 +76,7 @@ epiviz.ui.charts.VisualizationType = function(config) {
 epiviz.ui.charts.VisualizationType.DisplayType = {
   PLOT: 'plot',
   TRACK: 'track',
-  METADATA: 'metadata'
+  DATA_STRUCTURE: 'data-structure'
 };
 
 /**
@@ -119,12 +119,6 @@ epiviz.ui.charts.VisualizationType.prototype.measurementsFilter = function() { r
  * @returns {boolean}
  */
 epiviz.ui.charts.VisualizationType.prototype.isRestrictedToSameDatasourceGroup = function() { return false; };
-
-/**
- * If false, then this visualization doesn't display measurements, but metadata, or other kinds of data
- * @returns {boolean}
- */
-epiviz.ui.charts.VisualizationType.prototype.hasMeasurements = function() { return true; };
 
 /**
  * Gets the minimum number of measurements that must be selected for the chart to be displayed

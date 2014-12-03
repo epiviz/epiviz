@@ -89,6 +89,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._lastData = null;
 
+  /**
+   * @type {epiviz.datatypes.Range}
+   * @protected
+   */
+  this._lastRange = null;
+
   // Events
 
   /**
@@ -170,15 +176,6 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @private
    */
   this._dataWaitEnd = new epiviz.events.Event();
-
-  // Metadata events
-
-  /**
-   * event -> event args -> selection -> data
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<T>>>}
-   * @protected
-   */
-  this._requestMetadata = new epiviz.events.Event();
 };
 
 /**
@@ -348,10 +345,14 @@ epiviz.ui.charts.Visualization.prototype.updateSize = function() {
 };
 
 /**
+ * @param {epiviz.datatypes.Range} [range]
  * @param {T} [data]
  * @returns {Array.<epiviz.ui.charts.VisObject>}
  */
-epiviz.ui.charts.Visualization.prototype.draw = function(data) {
+epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
+  if (range != undefined) {
+    this._lastRange = range;
+  }
   if (data != undefined) {
     this._lastData = data;
     this._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(this._id));
@@ -602,11 +603,6 @@ epiviz.ui.charts.Visualization.prototype.onDataWaitStart = function() { return t
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
 epiviz.ui.charts.Visualization.prototype.onDataWaitEnd = function() { return this._dataWaitEnd; };
-
-/**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<T>>>}
- */
-epiviz.ui.charts.Visualization.prototype.onRequestMetadata = function() { return this._requestMetadata; };
 
 /**
  * @enum {string}

@@ -9,7 +9,7 @@ goog.provide('epiviz.plugins.charts.BlocksTrack');
 /**
  * @param id
  * @param {jQuery} container
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @extends {epiviz.ui.charts.Track}
  * @constructor
  */

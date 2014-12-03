@@ -12,6 +12,5 @@ goog.provide('epiviz.ui.charts.tree.NodeSelectionType');
 epiviz.ui.charts.tree.NodeSelectionType = {
   NONE: 0,
   NODE: 1,
-  LEAVES: 2,
-  CUSTOM: 3
+  LEAVES: 2
 };

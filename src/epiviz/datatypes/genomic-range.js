@@ -14,6 +14,7 @@ goog.provide('epiviz.datatypes.GenomicRange');
  * @param {number} start
  * @param {number} width
  * @constructor
+ * @implements {epiviz.datatypes.Range}
  */
 epiviz.datatypes.GenomicRange = function(seqname, start, width) {
 

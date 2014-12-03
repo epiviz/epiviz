@@ -9,7 +9,7 @@ goog.provide('epiviz.ui.charts.Plot');
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @extends {epiviz.ui.charts.Chart}
  * @constructor
  */

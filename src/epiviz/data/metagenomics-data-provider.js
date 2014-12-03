@@ -207,9 +207,9 @@ epiviz.data.MetagenomicsDataProvider = function () {
    * @type {epiviz.ui.charts.tree.Node}
    * @private
    */
-  this._metadata = null;
+  this._hierarchy = null;
   this._nodeMap = {};
-  this._maxDepth = 4;
+  this._maxDepth = 5;
   this._lastRootId = null;
   d3.json("tree.json",
     /**
@@ -217,7 +217,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
      * @param {epiviz.ui.charts.tree.Node} root
      */
       function(error, root) {
-      self._metadata = root;
+      self._hierarchy = root;
       epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; });
     });
 };
@@ -306,9 +306,9 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       }));
       return;
 
-    case epiviz.data.Request.Action.GET_METADATA:
+    case epiviz.data.Request.Action.GET_HIERARCHY:
       var datasourceGroup = request.get('datasourceGroup');
-      var nodeId = request.get('nodeId') || this._metadata.id;
+      var nodeId = request.get('nodeId') || this._hierarchy.id;
       this._lastRootId = nodeId;
       var originalNode = this._nodeMap[nodeId];
       var parent = originalNode.parentId ? this._nodeMap[originalNode.parentId] : originalNode;
@@ -324,7 +324,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       }));
       return;
 
-    case epiviz.data.Request.Action.PROPAGATE_METADATA_SELECTION:
+    case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_SELECTION:
       var datasourceGroup = request.get('datasourceGroup');
       var selection = request.get('selection');
 
@@ -370,7 +370,7 @@ epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
   /**
    * @type {epiviz.ui.charts.tree.Node}
    */
-  var root = this._metadata;
+  var root = this._hierarchy;
 
   var selection = this._getNodeSelection(root);
   this._selectedRows = selection.rows;

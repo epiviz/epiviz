@@ -8,18 +8,18 @@ goog.provide('epiviz.ui.charts.tree.FacetzoomType');
 
 /**
  * @param {epiviz.Config} config
- * @extends {epiviz.ui.charts.VisualizationType}
+ * @extends {epiviz.ui.charts.tree.HierarchyVisualizationType}
  * @constructor
  */
 epiviz.ui.charts.tree.FacetzoomType = function(config) {
   // Call superclass constructor
-  epiviz.ui.charts.VisualizationType.call(this, config);
+  epiviz.ui.charts.DataStructureVisualizationType.call(this, config);
 };
 
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.tree.FacetzoomType.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.VisualizationType.prototype);
+epiviz.ui.charts.tree.FacetzoomType.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.tree.HierarchyVisualizationType.prototype);
 epiviz.ui.charts.tree.FacetzoomType.constructor = epiviz.ui.charts.tree.FacetzoomType;
 
 /**
@@ -54,31 +54,9 @@ epiviz.ui.charts.tree.FacetzoomType.prototype.chartHtmlAttributeName = function(
 };
 
 /**
+ * TODO: Clean up code
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
-epiviz.ui.charts.tree.FacetzoomType.prototype.measurementsFilter = function() { return function(m) { return !epiviz.measurements.Measurement.Type.isOrdered(m.type()); }; };
+//epiviz.ui.charts.tree.FacetzoomType.prototype.measurementsFilter = function() { return function(m) { return !epiviz.measurements.Measurement.Type.isOrdered(m.type()); }; };
 
-/**
- * If true, this flag indicates that the corresponding chart can only show measurements that belong to the same
- * data source group
- * @returns {boolean}
- */
-epiviz.ui.charts.tree.FacetzoomType.prototype.isRestrictedToSameDatasourceGroup = function() { return true; };
 
-/**
- * If false, then this visualization doesn't display measurements, but metadata, or other kinds of data
- * @returns {boolean}
- */
-epiviz.ui.charts.tree.FacetzoomType.prototype.hasMeasurements = function() { return false; };
-
-/**
- * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
- */
-epiviz.ui.charts.tree.FacetzoomType.prototype.chartDisplayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.METADATA; };
-
-/**
- * @returns {string}
- */
-epiviz.ui.charts.tree.FacetzoomType.prototype.cssClass = function() {
-  return 'facetzoom-container ui-widget-content';
-};

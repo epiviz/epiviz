@@ -54,8 +54,8 @@ epiviz.data.Request.Action = {
   DELETE_WORKSPACE: 'deleteWorkspace',
   GET_WORKSPACES: 'getWorkspaces',
 
-  GET_METADATA: 'getMetadata',
-  PROPAGATE_METADATA_SELECTION: 'propagateMetadataSelection',
+  GET_HIERARCHY: 'getHierarchy',
+  PROPAGATE_HIERARCHY_SELECTION: 'propagateHierarchySelection',
 
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
@@ -293,10 +293,10 @@ epiviz.data.Request.getWorkspaces = function(filter, requestWorkspaceId) {
  * @param {string} [nodeId]
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.getMetadata = function(datasourceGroup, nodeId) {
+epiviz.data.Request.getHierarchy = function(datasourceGroup, nodeId) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
-    action: epiviz.data.Request.Action.GET_METADATA,
+    action: epiviz.data.Request.Action.GET_HIERARCHY,
     datasourceGroup: datasourceGroup,
     nodeId: nodeId
   });
@@ -307,10 +307,10 @@ epiviz.data.Request.getMetadata = function(datasourceGroup, nodeId) {
  * @param {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>} [selection]
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.propagateMetadataSelection = function(datasourceGroup, selection) {
+epiviz.data.Request.propagateHierarchySelection = function(datasourceGroup, selection) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
-    action: epiviz.data.Request.Action.PROPAGATE_METADATA_SELECTION,
+    action: epiviz.data.Request.Action.PROPAGATE_HIERARCHY_SELECTION,
     datasourceGroup: datasourceGroup,
     selection: selection
   });

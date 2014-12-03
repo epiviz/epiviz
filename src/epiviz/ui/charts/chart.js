@@ -9,19 +9,13 @@ goog.provide('epiviz.ui.charts.Chart');
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @constructor
  * @extends {epiviz.ui.charts.Visualization}
  */
 epiviz.ui.charts.Chart = function(id, container, properties) {
   // Call superclass constructor
   epiviz.ui.charts.Visualization.call(this, id, container, properties);
-
-  /**
-   * @type {?epiviz.datatypes.GenomicRange}
-   * @protected
-   */
-  this._lastRange = null;
 
   /**
    * Constant used for mouse highlighting by location
@@ -129,20 +123,19 @@ epiviz.ui.charts.Chart.prototype._addFilters = function() {
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
-  epiviz.ui.charts.Visualization.prototype.draw.call(this, data);
+  epiviz.ui.charts.Visualization.prototype.draw.call(this, range, data);
   if (range) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
-    this._lastRange = range;
   }
 
   return [];
 };
 
 /**
- * @returns {epiviz.ui.charts.ChartProperties}
+ * @returns {epiviz.ui.charts.VisualizationProperties}
  */
 epiviz.ui.charts.Chart.prototype.properties = function() {
-  return /** @type {epiviz.ui.charts.ChartProperties} */ epiviz.ui.charts.Visualization.prototype.properties.call(this);
+  return /** @type {epiviz.ui.charts.VisualizationProperties} */ epiviz.ui.charts.Visualization.prototype.properties.call(this);
 };
 
 /**

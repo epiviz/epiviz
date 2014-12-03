@@ -49,7 +49,8 @@ epiviz.ui.charts.decoration.ChartTooltip.prototype.decorate = function() {
       var maxMetadataValueLength = 15;
 
       var metadataCols = uiObj.measurements[0].metadata();
-      var colsHeader = sprintf('<th><b>Start</b></th><th><b>End</b></th>%s%s',
+      var colsHeader = sprintf('%s%s%s',
+        (uiObj.start != undefined && uiObj.end != undefined) ? '<th><b>Start</b></th><th><b>End</b></th>' : '',
         metadataCols ? '<th><b>' + metadataCols.join('</b></th><th><b>') + '</b></th>' : '',
         uiObj.values ? '<th><b>' + uiObj.measurements.join('</b></th><th><b>') + '</b></th>': '');
 
@@ -58,10 +59,10 @@ epiviz.ui.charts.decoration.ChartTooltip.prototype.decorate = function() {
         var row = '';
         var rowItem = uiObj.valueItems[0][j].rowItem;
         var start = Globalize.format(rowItem.start(), 'n0');
-        if (start == undefined) { start = ''; }
         var end = Globalize.format(rowItem.end(), 'n0');
-        if (end == undefined) { end = ''; }
-        row += sprintf('<td>%s</td><td>%s</td>', start, end);
+        if (start != undefined && end != undefined) {
+          row += sprintf('<td>%s</td><td>%s</td>', start, end);
+        }
         var rowMetadata = rowItem.rowMetadata();
         if (metadataCols && rowMetadata) {
           for (var k = 0; k < metadataCols.length; ++k) {
