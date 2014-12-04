@@ -285,7 +285,16 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
     if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
     var visConfigSelection = chartVisConfigSelectionMap[chartId];
   }
-  var dataprovider = visConfigSelection.dataprovider || visConfigSelection.measurements.first().dataprovider();
+  var dataprovider = visConfigSelection.dataprovider;
+  if (!dataprovider) {
+    visConfigSelection.measurements.foreach(function(m) {
+      if (m.dataprovider()) {
+        dataprovider = m.dataprovider();
+        return true;
+      }
+      return false;
+    });
+  }
   var provider = this._dataProviderFactory.get(dataprovider);
   provider.getData(epiviz.data.Request.getHierarchy(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
     dataReadyCallback(chartId, response.data());
@@ -301,7 +310,16 @@ epiviz.data.DataManager.prototype.propagateHierarchyChanges = function(chartVisC
   for (var chartId in chartVisConfigSelectionMap) {
     if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
     var visConfigSelection = chartVisConfigSelectionMap[chartId];
-    var dataprovider = visConfigSelection.dataprovider || visConfigSelection.measurements.first().dataprovider();
+    var dataprovider = visConfigSelection.dataprovider;
+    if (!dataprovider) {
+      visConfigSelection.measurements.foreach(function(m) {
+        if (m.dataprovider()) {
+          dataprovider = m.dataprovider();
+          return true;
+        }
+        return false;
+      });
+    }
     var provider = this._dataProviderFactory.get(dataprovider);
     (function(chartId) {
       provider.getData(epiviz.data.Request.propagateHierarchyChanges(
