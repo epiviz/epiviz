@@ -94,7 +94,7 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
 
   /**
    * @type {Object.<string, epiviz.ui.charts.tree.UiNode>}
-   * @private
+   * @protected
    */
   this._uiDataMap = {};
 
@@ -248,6 +248,11 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
  * @returns {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>}
  */
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectedNodes = function() { return this._selectedNodes; };
+
+/**
+ * @returns {Object.<string, number>}
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.nodesOrder = function() { return this._nodesOrder; };
 
 /**
  * @param {epiviz.ui.charts.tree.UiNode} node

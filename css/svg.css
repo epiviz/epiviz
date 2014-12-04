@@ -156,3 +156,5 @@ text {
 .facetzoom .selected rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
 
 .facetzoom .dragstart rect { fill-opacity: 0.3; }
+
+.facetzoom .selected { cursor: w-resize; }
