@@ -45,6 +45,8 @@ epiviz.ui.charts.DataStructureVisualization = function(id, container, properties
    */
   this._propagateHierarchySelection = new epiviz.events.Event();
 
+
+
   /**
    * event -> event args -> selection -> data
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<T>>>}

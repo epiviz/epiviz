@@ -97,6 +97,7 @@ text {
 
 .facetzoom .item rect {
     stroke: #fff;
+    stroke-width: 0;
     fill-rule: evenodd;
 }
 
@@ -151,3 +152,7 @@ text {
 .facetzoom .leaves-select rect {
     opacity: 1;
 }
+
+.facetzoom .selected rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
+
+.facetzoom .dragstart rect { fill-opacity: 0.3; }

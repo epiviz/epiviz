@@ -41,6 +41,12 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
   this._nodeMargin = 3;
 
   /**
+   * @type {number}
+   * @private
+   */
+  this._nodeBorder = 1;
+
+  /**
    * Size of icons on nodes. This should be the same as the font size of ".facetzoom .icon" in svg.css
    * @type {number}
    * @private
@@ -106,14 +112,139 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
 
   if (!root) { return []; }
 
-  var calcOldWidth = function(d) { var node = self._getOldNode(d); return xScale(node.x + node.dx) - xScale(node.x); };
-  var calcOldHeight = function(d) { var node = self._getOldNode(d); return yScale(node.y + node.dy) - yScale(node.y); };
-  var calcOldX = function(d) { return xScale(self._getOldNode(d).x); };
-  var calcOldY = function(d) { return yScale(self._getOldNode(d).y); };
-  var calcNewWidth = function(d) { var node = self._getNewNode(d); return xScale(node.x + node.dx) - xScale(node.x); };
-  var calcNewHeight = function(d) { var node = self._getNewNode(d); return yScale(node.y + node.dy) - yScale(node.y); };
-  var calcNewX = function(d) { return xScale(self._getNewNode(d).x); };
-  var calcNewY = function(d) { return yScale(self._getNewNode(d).y); };
+  var calcOldWidth = function(d) { var node = self._getOldNode(d); return Math.max(0, xScale(node.x + node.dx) - xScale(node.x) - 2 * self._nodeBorder); };
+  var calcOldHeight = function(d) { var node = self._getOldNode(d); return Math.max(0, yScale(node.y + node.dy) - yScale(node.y) - 2 * self._nodeBorder); };
+  var calcOldX = function(d) { return xScale(self._getOldNode(d).x) + self._nodeBorder; };
+  var calcOldY = function(d) { return yScale(self._getOldNode(d).y) + self._nodeBorder; };
+  var calcNewWidth = function(d) { var node = self._getNewNode(d); return Math.max(0, xScale(node.x + node.dx) - xScale(node.x) - 2 * self._nodeBorder); };
+  var calcNewHeight = function(d) { var node = self._getNewNode(d); return Math.max(0, yScale(node.y + node.dy) - yScale(node.y) - 2 * self._nodeBorder); };
+  var calcNewX = function(d) { return xScale(self._getNewNode(d).x) + self._nodeBorder; };
+  var calcNewY = function(d) { return yScale(self._getNewNode(d).y) + self._nodeBorder; };
+  var getOverlappingNode = function(x, y) {
+    var ret = null;
+    uiData.forEach(function(uiNode) {
+      var nodeRect = {
+        x: calcNewX(uiNode),
+        y: calcNewY(uiNode),
+        width: calcNewWidth(uiNode),
+        height: calcNewHeight(uiNode)
+      };
+      if (nodeRect.x <= x && x < nodeRect.x + nodeRect.width &&
+        nodeRect.y <= y && y < nodeRect.y + nodeRect.height) {
+        ret = uiNode;
+      }
+    });
+    return ret;
+  };
+
+  var drag = d3.behavior.drag()
+    .origin(function(d) { return d; })
+    .on('dragstart', function(d) {
+      self._svg.selectAll('.item').sort(function (a, b) { return (a.id != d.id) ? -1 : 1; });
+      self._svg.selectAll('.item').classed('dragstart', true);
+      self._svg.select('#' + self.id() + '-' + d.id).classed('selected', true).classed('dragstart', false);
+      d3.event.sourceEvent.stopPropagation();
+    })
+    .on('drag', function(d) {
+      d3.select(this)
+        .attr('transform', 'translate(' + d3.event.x + ',' + d3.event.y + ')');
+      var mouseCoordinates = d3.mouse(self._svg[0][0]);
+      var uiNodeHovered = getOverlappingNode(mouseCoordinates[0], mouseCoordinates[1]);
+      if (uiNodeHovered && uiNodeHovered.parentId == d.parentId) {
+        self._svg.selectAll('.item').classed('selected', false).classed('dragstart', true);
+        self._svg.select('#' + self.id() + '-' + d.id).classed('selected', true).classed('dragstart', false);
+        self._svg.select('#' + self.id() + '-' + uiNodeHovered.id).classed('selected', true).classed('dragstart', false);
+      }
+      // See http://stackoverflow.com/questions/13595175/updating-svg-element-z-index-with-d3 for bringing to front
+    })
+    .on('dragend', function(d) {
+      self._svg.selectAll('.item').classed('selected', false).classed('dragstart', false);
+      d3.select(this)
+        .attr('transform', null);
+      // Change the order
+      var mouseCoordinates = d3.mouse(self._svg[0][0]);
+      var uiNodeHovered = getOverlappingNode(mouseCoordinates[0], mouseCoordinates[1]);
+      if (!uiNodeHovered || uiNodeHovered.parentId != d.parentId || uiNodeHovered.id == d.id) { return; }
+
+      /** @type {epiviz.ui.charts.tree.UiNode} */
+      var parent = self._uiDataMap[d.parentId];
+      var hoverIndex = -1;
+      var dIndex = -1;
+      parent.children.every(function(child, i) {
+        if (child.id == uiNodeHovered.id) { hoverIndex = i; }
+        if (child.id == d.id) { dIndex = i; }
+        return !(hoverIndex >= 0 && dIndex >= 0); // break if false
+      });
+      var uiNodeX = calcNewX(uiNodeHovered);
+      var uiNodeWidth = calcNewWidth(uiNodeHovered);
+      /*var after = false;*/
+      if (mouseCoordinates[0] >= uiNodeX + uiNodeWidth * 0.5) { hoverIndex += 1; }
+
+      var uiNodeOrder = self._calcNodeOrder(uiNodeHovered);
+      var order;
+      if (hoverIndex == 0) { order = uiNodeOrder - 1; }
+      else if (hoverIndex >= parent.nchildren - 1) { order = uiNodeOrder + 1; }
+      else { order = (uiNodeOrder + self._calcNodeOrder(parent.children[hoverIndex - 1])) * 0.5; }
+
+      self._nodesOrder[d.id] = order;
+      self.draw(range, root);
+
+      //if (mouseCoordinates[0] >= uiNodeX + uiNodeWidth * 0.5) { after = true; }
+      //if (hoverIndex == dIndex) { return; }
+
+      /*var i, aux;
+      var dX = calcNewX(d);
+      var dWidth = calcNewWidth(d);
+      parent.children.forEach(function(child) {
+        var childX = calcNewX(child);
+        var childWidth = calcNewWidth(child);
+        if (childX < Math.min(dX, uiNodeX)) { return; }
+        if (childX > Math.max(dX + dWidth, uiNodeX + uiNodeWidth)) { return; }
+        if (child.id == uiNodeHovered.id && after) { return; }
+        if (childX > dX) {
+          var item = self._svg.select('#' + self.id() + '-' + child.id);
+          item.select('rect')
+            .transition().duration(self._animationDelay)
+            .attr('x', childX + self._nodeMargin - dWidth);
+          item.select('.node-label')
+            .transition().duration(self._animationDelay)
+            .attr('x', childX + childWidth * 0.5 - dWidth);
+          item.select('.icon-container')
+            .transition().duration(self._animationDelay)
+            .attr('x', function(d) { return childX + self._nodeMargin - dWidth; });
+          defs.select('#' + self.id() + '-clip-' + child.id).select('rect')
+            .transition().duration(self._animationDelay)
+            .attr('x', childX + self._nodeMargin - dWidth);
+        }
+      });
+      var dItem = self._svg.select('#' + self.id() + '-' + d.id);
+      dItem.select('rect')
+        .transition().duration(self._animationDelay)
+        .attr('x', after ? uiNodeX + uiNodeWidth + self._nodeMargin : uiNodeX);
+      dItem.select('.node-label')
+        .transition().duration(self._animationDelay)
+        .attr('x', after ? uiNodeX + uiNodeWidth + dWidth * 0.5 : uiNodeX + dWidth * 0.5);
+      dItem.select('.icon-container')
+        .transition().duration(self._animationDelay)
+        .attr('x', function(d) { return after ? uiNodeX + uiNodeWidth + self._nodeMargin : uiNodeX + self._nodeMargin; });
+      defs.select('#' + self.id() + '-clip-' + d.id).select('rect')
+        .transition().duration(self._animationDelay)
+        .attr('x', after ? uiNodeX + uiNodeWidth + self._nodeMargin : uiNodeX + self._nodeMargin);*/
+      /*if (hoverIndex < dIndex) {
+        aux = parent.children[dIndex];
+        for (i = dIndex; i > hoverIndex; --i) {
+          parent.children[i] = parent.children[i - 1];
+
+        }
+        parent.children[hoverIndex] = aux;
+      } else {
+        aux = parent.children[dIndex];
+        for (i = dIndex; i < hoverIndex - 1; ++i) {
+          parent.children[i] = parent.children[i + 1];
+        }
+        parent.children[hoverIndex - 1] = aux;
+      }*/
+    });
 
   var items = canvas.selectAll('g')
     .data(uiData, function(d) { return d.id; });
@@ -137,11 +268,12 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
         d.selectionType = selectionType;
         self.selectNode(d, selectionType);
       } else {
-        self._requestHierarchy.notify(new epiviz.ui.charts.VisEventArgs(
+        self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
           self.id(),
           new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, d.id)));
       }
-    });
+    })
+    .call(drag);
 
   var newClips = clips
     .enter().append('clipPath')
@@ -224,6 +356,8 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; });
   items.exit().transition().delay(this._animationDelay).remove();
+
+
 
   return uiData;
 };

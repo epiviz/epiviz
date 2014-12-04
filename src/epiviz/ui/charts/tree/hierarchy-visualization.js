@@ -27,6 +27,12 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
   this._selectedNodes = {};
 
   /**
+   * @type {Object.<string, number>}
+   * @private
+   */
+  this._nodesOrder = {};
+
+  /**
    * @type {boolean}
    * @private
    */
@@ -34,6 +40,7 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
 
   // Animation
 
+  var self = this;
   /**
    * A D3 function used to partition a tree
    * @private
@@ -47,7 +54,7 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
       // function(d) { return d.nleaves; }) // If we want the size of the nodes to reflect the number of leaves under them
       function(d) { return 1; }) // If we want the size of the nodes to reflect only the number of leaves in the current subtree
     //.sort(function() { return 0; }); // No reordering of the nodes
-    .sort(function(d1, d2) { return (d1.order || 0) - (d2.order || 0); }); // Take predefined order into account
+    .sort(function(d1, d2) { return (self._calcNodeOrder(d1) || 0) - (self._calcNodeOrder(d2) || 0); }); // Take predefined order into account
 
   /**
    * @type {Array.<epiviz.ui.charts.tree.UiNode>}
@@ -161,6 +168,15 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
   }
 
   return this._uiData;
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @protected
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype._calcNodeOrder = function(node) {
+  if (node.id in this._nodesOrder) { return this._nodesOrder[node.id]; }
+  return node.order;
 };
 
 /**

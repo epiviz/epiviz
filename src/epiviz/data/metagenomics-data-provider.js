@@ -209,7 +209,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
    */
   this._hierarchy = null;
   this._nodeMap = {};
-  this._maxDepth = 5;
+  this._maxDepth = 3;
   this._lastRootId = null;
   d3.json("tree.json",
     /**

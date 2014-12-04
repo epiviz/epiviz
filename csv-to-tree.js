@@ -57,6 +57,7 @@ function addTreeMetadata(node) {
   for (var i = 0; i < node.children.length; ++i) {
     node.children[i].depth = node.depth + 1;
     node.children[i].parentId = node.id;
+    node.children[i].order = i;
     addTreeMetadata(node.children[i]);
     nleaves += node.children[i].nleaves;
   }
