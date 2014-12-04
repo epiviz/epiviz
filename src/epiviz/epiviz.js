@@ -100,6 +100,8 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerUiSearch();
 
   this._registerChartRequestHierarchy();
+  // TODO Cleanup
+  //this._registerChartPropagateHierarchySelection();
   this._registerChartPropagateHierarchySelection();
 
   // Register for Data events
@@ -432,15 +434,44 @@ epiviz.EpiViz.prototype._registerChartRequestHierarchy = function() {
   }));
 };
 
+// TODO Cleanup
+/**
+ * @private
+ */
+/*epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
+  var self = this;
+  this._chartManager.onChartPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(e) {
+    var map = {};
+    map[e.id] = e.args;
+    self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
+      self._chartManager.updateCharts(undefined, data, [chartId]);
+    })
+  }));
+};*/
+
+/**
+ * @private
+ */
+/*epiviz.EpiViz.prototype._registerChartPropagateHierarchyOrder = function() {
+  var self = this;
+  this._chartManager.onChartPropagateHierarchyOrder().addListener(new epiviz.events.EventListener(function(e) {
+    var map = {};
+    map[e.id] = e.args;
+    self._dataManager.propagateHierarchyOrder(map, function(chartId, data) {
+      self._chartManager.updateCharts(undefined, data, [chartId]);
+    })
+  }));
+};*/
+
 /**
  * @private
  */
 epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
   var self = this;
-  this._chartManager.onChartPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(e) {
+  this._chartManager.onChartPropagateHierarchyChanges().addListener(new epiviz.events.EventListener(function(e) {
     var map = {};
     map[e.id] = e.args;
-    self._dataManager.propagateHierarchySelection(map, function(chartId, data) {
+    self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
       self._chartManager.updateCharts(undefined, data, [chartId]);
     })
   }));

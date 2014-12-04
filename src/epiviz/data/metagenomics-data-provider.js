@@ -216,9 +216,12 @@ epiviz.data.MetagenomicsDataProvider = function () {
      * @param error
      * @param {epiviz.ui.charts.tree.Node} root
      */
-      function(error, root) {
+    function(error, root) {
       self._hierarchy = root;
       epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; });
+
+      self._updateOrder();
+      self._updateSelection();
     });
 };
 
@@ -324,15 +327,27 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       }));
       return;
 
-    case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_SELECTION:
+    case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
       var datasourceGroup = request.get('datasourceGroup');
       var selection = request.get('selection');
+      var order = request.get('order');
 
-      if (!selection) { return; }
-      for (var id in selection) {
-        if (!selection.hasOwnProperty(id)) { continue; }
-        if (!(id in this._nodeMap)) { continue; }
-        this._nodeMap[id].selectionType = selection[id];
+      if (!selection && !order) { return; }
+
+      if (selection) {
+        for (var id in selection) {
+          if (!selection.hasOwnProperty(id)) { continue; }
+          if (!(id in this._nodeMap)) { continue; }
+          this._nodeMap[id].selectionType = selection[id];
+        }
+      }
+
+      if (order) {
+        for (var id in order) {
+          if (!order.hasOwnProperty(id)) { continue; }
+          if (!(id in this._nodeMap)) { continue; }
+          this._nodeMap[id].order = order[id];
+        }
       }
 
       var originalNode = this._nodeMap[this._lastRootId];
@@ -342,6 +357,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
           return (node.depth != originalNode.depth || node == originalNode) &&
           node.depth - parent.depth < self._maxDepth;
         });
+      this._updateOrder();
       this._updateSelection();
 
       setTimeout(function(){
@@ -364,6 +380,16 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       epiviz.data.DataProvider.prototype.getData.call(this, request, callback);
       break;
   }
+};
+
+/**
+ * @private
+ */
+epiviz.data.MetagenomicsDataProvider.prototype._updateOrder = function() {
+  epiviz.ui.charts.tree.Node.dfs(this._hierarchy, function(node) {
+    if (!node.nchildren) { return; }
+    node.children.sort(function(node1, node2) { return node1.order - node2.order; });
+  });
 };
 
 epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {

@@ -272,10 +272,13 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._changeNodeSelection = fu
 
 /**
  */
-epiviz.ui.charts.tree.HierarchyVisualization.prototype.firePropagateHierarchySelection = function() {
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.firePropagateHierarchyChanges = function() {
   var selectedNodes = this._selectedNodes;
+  var nodesOrder = this._nodesOrder;
   this._selectedNodes = {};
-  this.onPropagateHierarchySelection().notify(new epiviz.ui.charts.VisEventArgs(
+  this._nodesOrder = {};
+  this.onPropagateHierarchyChanges().notify(new epiviz.ui.charts.VisEventArgs(
     this.id(),
-    new epiviz.ui.controls.VisConfigSelection(undefined, undefined, this.datasourceGroup(), this.dataprovider(), undefined, undefined, undefined, selectedNodes)));
+    new epiviz.ui.controls.VisConfigSelection(undefined, undefined, this.datasourceGroup(), this.dataprovider(), undefined, undefined, undefined,
+      {selection: selectedNodes, order: nodesOrder})));
 };

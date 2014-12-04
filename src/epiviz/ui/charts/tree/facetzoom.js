@@ -59,6 +59,18 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
    */
   this._iconSize = 16;
 
+  /**
+   * @type {function(number): number}
+   * @private
+   */
+  this._xScale = null;
+
+  /**
+   * @type {function(number): number}
+   * @private
+   */
+  this._yScale = null;
+
   this._initialize();
 };
 
@@ -97,11 +109,8 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
   var width = this.width();
   var height = this.height();
 
-  /** @type {function(number): number} */
-  var xScale = d3.scale.linear().range([0, width - this.margins().sumAxis(Axis.X)]);
-
-  /** @type {function(number): number} */
-  var yScale = d3.scale.pow().exponent(1.5).range([0, height - this.margins().sumAxis(Axis.Y)]);
+  this._xScale = d3.scale.linear().range([0, width - this.margins().sumAxis(Axis.X)]);
+  this._yScale = d3.scale.pow().exponent(1.5).range([0, height - this.margins().sumAxis(Axis.Y)]);
 
   var canvas = this._svg.select('.canvas');
   var defs = this._svg.select('.defs');
@@ -118,15 +127,15 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
 
   if (!root) { return []; }
 
-  var calcOldWidth = function(d) { var node = self._getOldNode(d); return Math.max(0, xScale(node.x + node.dx) - xScale(node.x) - 2 * self._nodeBorder); };
-  var calcOldHeight = function(d) { var node = self._getOldNode(d); return Math.max(0, yScale(node.y + node.dy) - yScale(node.y) - 2 * self._nodeBorder); };
-  var calcOldX = function(d) { return xScale(self._getOldNode(d).x) + self._nodeBorder; };
-  var calcOldY = function(d) { return yScale(self._getOldNode(d).y) + self._nodeBorder; };
-  var calcNewWidth = function(d) { var node = self._getNewNode(d); return Math.max(0, xScale(node.x + node.dx) - xScale(node.x) - 2 * self._nodeBorder); };
-  var calcNewHeight = function(d) { var node = self._getNewNode(d); return Math.max(0, yScale(node.y + node.dy) - yScale(node.y) - 2 * self._nodeBorder); };
-  var calcNewX = function(d) { return xScale(self._getNewNode(d).x) + self._nodeBorder; };
-  var calcNewY = function(d) { return yScale(self._getNewNode(d).y) + self._nodeBorder; };
-  var getOverlappingNode = function(x, y) {
+  var calcOldWidth = function(d) { var node = self._getOldNode(d); return Math.max(0, self._xScale(node.x + node.dx) - self._xScale(node.x) - 2 * self._nodeBorder); };
+  var calcOldHeight = function(d) { var node = self._getOldNode(d); return Math.max(0, self._yScale(node.y + node.dy) - self._yScale(node.y) - 2 * self._nodeBorder); };
+  var calcOldX = function(d) { return self._xScale(self._getOldNode(d).x) + self._nodeBorder; };
+  var calcOldY = function(d) { return self._yScale(self._getOldNode(d).y) + self._nodeBorder; };
+  var calcNewWidth = function(d) { var node = self._getNewNode(d); return Math.max(0, self._xScale(node.x + node.dx) - self._xScale(node.x) - 2 * self._nodeBorder); };
+  var calcNewHeight = function(d) { var node = self._getNewNode(d); return Math.max(0, self._yScale(node.y + node.dy) - self._yScale(node.y) - 2 * self._nodeBorder); };
+  var calcNewX = function(d) { return self._xScale(self._getNewNode(d).x) + self._nodeBorder; };
+  var calcNewY = function(d) { return self._yScale(self._getNewNode(d).y) + self._nodeBorder; };
+  var getOverlappingNode = function(x, y, depth) {
     var ret = null;
     uiData.forEach(function(uiNode) {
       var nodeRect = {
@@ -135,8 +144,8 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
         width: calcNewWidth(uiNode),
         height: calcNewHeight(uiNode)
       };
-      if (nodeRect.x <= x && x < nodeRect.x + nodeRect.width &&
-        nodeRect.y <= y && y < nodeRect.y + nodeRect.height) {
+      if (nodeRect.x <= x && x < nodeRect.x + nodeRect.width && uiNode.depth == depth) {
+        //&& nodeRect.y <= y && y < nodeRect.y + nodeRect.height) {
         ret = uiNode;
       }
     });
@@ -154,7 +163,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
       d3.select(this)
         .attr('transform', 'translate(' + d3.event.x + ',' + d3.event.y + ')');
       var mouseCoordinates = d3.mouse(self._svg[0][0]);
-      var uiNodeHovered = getOverlappingNode(mouseCoordinates[0], mouseCoordinates[1]);
+      var uiNodeHovered = getOverlappingNode(mouseCoordinates[0], mouseCoordinates[1], d.depth);
       if (uiNodeHovered && uiNodeHovered.parentId == d.parentId) {
         lastUiNodeHovered = uiNodeHovered;
         self._svg.selectAll('.item').classed('selected', false).classed('dragstart', true);
@@ -163,6 +172,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
       }
     })
     .on('dragend', function(d) {
+      if (!self._dragging) { return; }
       self._svg.selectAll('.item').classed('selected', false).classed('dragstart', false);
       d3.select(this)
         .attr('transform', null);

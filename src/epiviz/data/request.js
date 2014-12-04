@@ -55,7 +55,7 @@ epiviz.data.Request.Action = {
   GET_WORKSPACES: 'getWorkspaces',
 
   GET_HIERARCHY: 'getHierarchy',
-  PROPAGATE_HIERARCHY_SELECTION: 'propagateHierarchySelection',
+  PROPAGATE_HIERARCHY_CHANGES: 'propagateHierarchyChanges',
 
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
@@ -305,14 +305,16 @@ epiviz.data.Request.getHierarchy = function(datasourceGroup, nodeId) {
 /**
  * @param {string} datasourceGroup
  * @param {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>} [selection]
+ * @param {Object.<string, number>} [order]
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.propagateHierarchySelection = function(datasourceGroup, selection) {
+epiviz.data.Request.propagateHierarchyChanges = function(datasourceGroup, selection, order) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
-    action: epiviz.data.Request.Action.PROPAGATE_HIERARCHY_SELECTION,
+    action: epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES,
     datasourceGroup: datasourceGroup,
-    selection: selection
+    selection: selection,
+    order: order
   });
 };
 

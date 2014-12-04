@@ -29,7 +29,7 @@ epiviz.ui.charts.tree.decoration.PropagateSelectionButton.constructor = epiviz.u
 epiviz.ui.charts.tree.decoration.PropagateSelectionButton.prototype._click = function() {
   var self = this;
   return function(){
-    self.visualization().firePropagateHierarchySelection();
+    self.visualization().firePropagateHierarchyChanges();
   };
 };
 

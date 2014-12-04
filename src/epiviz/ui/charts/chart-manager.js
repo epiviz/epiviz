@@ -102,10 +102,22 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._chartRequestHierarchy = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
    * @private
    */
-  this._chartPropagateHierarchySelection = new epiviz.events.Event();
+  //this._chartPropagateHierarchySelection = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
+   * @private
+   */
+  //this._chartPropagateHierarchyOrder = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
+   * @private
+   */
+  this._chartPropagateHierarchyChanges = new epiviz.events.Event();
 
   this._registerWindowResize();
 };
@@ -164,7 +176,10 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartRemove(chart);
   this._registerChartSave(chart);
   this._registerChartRequestHierarchy(chart);
-  this._registerChartPropagateHierarchySelection(chart);
+  // TODO Cleanup
+  //this._registerChartPropagateHierarchySelection(chart);
+  //this._registerChartPropagateHierarchyOrder(chart);
+  this._registerChartPropagateHierarchyChanges(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -326,10 +341,21 @@ epiviz.ui.charts.ChartManager.prototype.onChartMarginsChanged = function() { ret
  */
 epiviz.ui.charts.ChartManager.prototype.onChartRequestHierarchy = function() { return this._chartRequestHierarchy; };
 
+// TODO Cleanup
 /**
- * @returns {epiviz.events.Event.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
  */
-epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchySelection = function() { return this._chartPropagateHierarchySelection; };
+//epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchySelection = function() { return this._chartPropagateHierarchySelection; };
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
+ */
+//epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchyOrder = function() { return this._chartPropagateHierarchyOrder; };
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
+ */
+epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchyChanges = function() { return this._chartPropagateHierarchyChanges; };
 
 /**
  * @private
@@ -511,13 +537,27 @@ epiviz.ui.charts.ChartManager.prototype._registerChartRequestHierarchy = functio
  * @param {epiviz.ui.charts.Visualization} chart
  * @private
  */
-epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchySelection = function(chart) {
+epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchyChanges = function(chart) {
   var self = this;
   if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     var dataStructVis = /** @type {epiviz.ui.charts.DataStructureVisualization} */ chart; // Assignment done for consistency
-    dataStructVis.onPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(e) {
-      self._chartPropagateHierarchySelection.notify(e);
+    dataStructVis.onPropagateHierarchyChanges().addListener(new epiviz.events.EventListener(function(e) {
+      self._chartPropagateHierarchyChanges.notify(e);
     }));
   }
 };
 
+// TODO Cleanup
+/**
+ * @param {epiviz.ui.charts.Visualization} chart
+ * @private
+ */
+/*epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchyOrder = function(chart) {
+  var self = this;
+  if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    var dataStructVis = chart; // Assignment done for consistency
+    dataStructVis.onPropagateHierarchyOrder().addListener(new epiviz.events.EventListener(function(e) {
+      self._chartPropagateHierarchyOrder.notify(e);
+    }));
+  }
+};*/

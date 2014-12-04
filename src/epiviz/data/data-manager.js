@@ -292,23 +292,28 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
   });
 };
 
+// TODO Cleanup
 /**
  * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
  * @param {function(string, *)} dataReadyCallback
  */
-epiviz.data.DataManager.prototype.propagateHierarchySelection = function(chartVisConfigSelectionMap, dataReadyCallback) {
+epiviz.data.DataManager.prototype.propagateHierarchyChanges = function(chartVisConfigSelectionMap, dataReadyCallback) {
   for (var chartId in chartVisConfigSelectionMap) {
     if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
     var visConfigSelection = chartVisConfigSelectionMap[chartId];
     var dataprovider = visConfigSelection.dataprovider || visConfigSelection.measurements.first().dataprovider();
     var provider = this._dataProviderFactory.get(dataprovider);
     (function(chartId) {
-      provider.getData(epiviz.data.Request.propagateHierarchySelection(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
+      provider.getData(epiviz.data.Request.propagateHierarchyChanges(
+        visConfigSelection.datasourceGroup,
+        visConfigSelection.customData.selection,
+        visConfigSelection.customData.order), function(response) {
         dataReadyCallback(chartId, response.data());
       });
     })(chartId);
   }
 };
+
 
 /**
  * @param {function(Array)} callback
