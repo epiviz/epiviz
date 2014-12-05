@@ -171,7 +171,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
       'heatmap',
       null, // annotation
       0, 15,
-      ['bacteria']);
+      ['bacteria', 'hierarchy-path']);
     measurements.push(m);
   });
 
@@ -208,6 +208,20 @@ epiviz.data.MetagenomicsDataProvider = function () {
    * @private
    */
   this._hierarchy = null;
+
+  /**
+   * node.name -> path string of node ids on the path to the root
+   * @type {Object.<string, string>}
+   * @private
+   */
+  this._hierarchyPathsMap = {};
+
+  /**
+   * @type {Array.<string>}
+   * @private
+   */
+  this._selectedPaths = [];
+
   this._nodeMap = {};
   this._maxDepth = 5;
   this._lastRootId = null;
@@ -219,7 +233,21 @@ epiviz.data.MetagenomicsDataProvider = function () {
     function(error, root) {
       self._hierarchy = root;
       epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; });
+      epiviz.ui.charts.tree.Node.dfs(root, function(node) {
+        if (!node.parentId) { self._hierarchyPathsMap[node.name] = node.id; return; } // TODO: Should use id. In the future, rows should store node id and that will fix everything
+        var parent = self._nodeMap[node.parentId];
+        var path = node.id;//parent.id;
+        //parent = self._nodeMap[parent.parentId];
+        while (parent) {
+          path += ',' + parent.id;
+          parent = self._nodeMap[parent.parentId];
+        }
+        self._hierarchyPathsMap[node.name] = path;
+      });
 
+      self._selectedRows.forEach(function(nodeName, i) {
+        self._selectedPaths.push(self._hierarchyPathsMap[nodeName]);
+      });
       self._updateOrder();
       self._updateSelection();
     });
@@ -258,7 +286,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       }*/
 
       callback(epiviz.data.Response.fromRawObject({
-        data: { values: { metadata: { bacteria: this._selectedRows } } },
+        data: { values: { metadata: { bacteria: this._selectedRows, 'hierarchy-path': this._selectedPaths } } },
         requestId: requestId
       }));
 
@@ -401,6 +429,12 @@ epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
   var selection = this._getNodeSelection(root);
   this._selectedRows = selection.rows;
   this._selectedValues = selection.values;
+
+  this._selectedPaths = [];
+  var self = this;
+  this._selectedRows.forEach(function(nodeName, i) {
+    self._selectedPaths.push(self._hierarchyPathsMap[nodeName]);
+  });
 };
 
 /**
@@ -428,7 +462,7 @@ epiviz.data.MetagenomicsDataProvider.prototype._getNodeSelection = function(node
   }
 
   if (node.selectionType == NodeSelectionType.NODE) {
-    result.rows = [node.name]; // should use id
+    result.rows = [node.name]; // TODO: should use id
     var values = [];
     node.children.forEach(function(child, i) {
       var childResult = self._getNodeSelection(child);

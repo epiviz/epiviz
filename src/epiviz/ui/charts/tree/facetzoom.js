@@ -238,6 +238,23 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
           new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, d.id)));
       }
     })
+    .on('mouseover', function(d) {
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), new epiviz.ui.charts.ChartObject(
+        self.id() + '-' + d.id,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined, // valueItems one for each measurement
+        undefined, // measurements
+        undefined,
+        [[{'hierarchy-path': d.id}]],
+        true
+      )));
+    })
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+    })
     .call(drag);
 
   var newClips = clips
