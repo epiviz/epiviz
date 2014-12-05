@@ -184,6 +184,21 @@ epiviz.utils.indexOfMin = function(matrix, isSymmetrical) {
   return {min: min, index: ret};
 };
 
+/**
+ * @param {Array.<number|string>} arr1
+ * @param {Array.<number|string>} arr2
+ * @returns {Array.<number|string>}
+ */
+epiviz.utils.arrayIntersection = function(arr1, arr2) {
+  var arr1Map = {};
+  arr1.forEach(function(e) { arr1Map[e] = e; });
+
+  var ret = [];
+  arr2.forEach(function(e) { if (e in arr1Map) { ret.push(e); }});
+
+  return ret;
+};
+
 // Object (Hashtable)
 
 /**

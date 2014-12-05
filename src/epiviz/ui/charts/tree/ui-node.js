@@ -16,6 +16,7 @@ goog.provide('epiviz.ui.charts.tree.UiNode');
  * @param {number} [nchildren]
  * @param {number} [nleaves]
  * @param {epiviz.ui.charts.tree.NodeSelectionType} [selectionType]
+ * @param {number} [order]
  * @param {number} [x]
  * @param {number} [dx]
  * @param {number} [y]
@@ -24,10 +25,9 @@ goog.provide('epiviz.ui.charts.tree.UiNode');
  * @constructor
  * @struct
  * @extends {epiviz.ui.charts.tree.Node}
- * @implements {epiviz.ui.charts.VisObject}
  */
-epiviz.ui.charts.tree.UiNode = function(id, name, children, parentId, size, depth, nchildren, nleaves, selectionType, x, dx, y, dy, parent) {
-  epiviz.ui.charts.tree.Node.call(this, id, name, children, parentId, size, depth, nchildren, nleaves, selectionType);
+epiviz.ui.charts.tree.UiNode = function(id, name, children, parentId, size, depth, nchildren, nleaves, selectionType, order, x, dx, y, dy, parent) {
+  epiviz.ui.charts.tree.Node.call(this, id, name, children, parentId, size, depth, nchildren, nleaves, selectionType, order);
 
   /**
    * @type {number}
@@ -52,7 +52,7 @@ epiviz.ui.charts.tree.UiNode = function(id, name, children, parentId, size, dept
   /**
    * @type {epiviz.ui.charts.tree.UiNode}
    */
-  this.parent = null;
+  this.parent = parent || null;
 };
 
 /*
@@ -62,8 +62,19 @@ epiviz.ui.charts.tree.UiNode.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.t
 epiviz.ui.charts.tree.UiNode.constructor = epiviz.ui.charts.tree.UiNode;
 
 /**
- * @param {epiviz.ui.charts.tree.UiNode} other
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @returns {epiviz.ui.charts.tree.UiNode}
  */
-epiviz.ui.charts.tree.UiNode.prototype.overlapsWith = function(other) {
-  return (other && other.id == this.id);
+epiviz.ui.charts.tree.UiNode.deepCopy = function(node) {
+  var copy = new epiviz.ui.charts.tree.UiNode(node.id, node.name, [], node.parentId,
+    node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order, node.x, node.dx, node.y, node.dy, null);
+  if (node.children && node.children.length) {
+    node.children.forEach(function(child) {
+      var childCopy = epiviz.ui.charts.tree.UiNode.deepCopy(child);
+      copy.children.push(childCopy);
+      childCopy.parent = copy;
+    });
+  }
+
+  return copy;
 };

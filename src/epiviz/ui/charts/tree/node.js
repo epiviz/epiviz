@@ -16,10 +16,14 @@ goog.provide('epiviz.ui.charts.tree.Node');
  * @param {number} [nchildren]
  * @param {number} [nleaves]
  * @param {epiviz.ui.charts.tree.NodeSelectionType} [selectionType]
+ * @param {number} [order]
  * @constructor
  * @struct
+ * @extends {epiviz.ui.charts.VisObject}
  */
-epiviz.ui.charts.tree.Node = function(id, name, children, parentId, size, depth, nchildren, nleaves, selectionType) {
+epiviz.ui.charts.tree.Node = function(id, name, children, parentId, size, depth, nchildren, nleaves, selectionType, order) {
+  epiviz.ui.charts.VisObject.call(this);
+
   /**
    * @type {string}
    */
@@ -64,7 +68,43 @@ epiviz.ui.charts.tree.Node = function(id, name, children, parentId, size, depth,
    * @type {epiviz.ui.charts.tree.NodeSelectionType}
    */
   this.selectionType = selectionType || epiviz.ui.charts.tree.NodeSelectionType.NONE;
+
+  /**
+   * @type {number}
+   */
+  this.order = order;
 };
+
+/*
+ * Copy methods from upper class
+ */
+epiviz.ui.charts.tree.Node.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.VisObject.prototype);
+epiviz.ui.charts.tree.Node.constructor = epiviz.ui.charts.tree.Node;
+
+/**
+ * Measurement i, object j
+ * @param {number} i
+ * @param {number} j
+ * @param {string} metadataCol
+ * @returns {string}
+ */
+epiviz.ui.charts.tree.Node.prototype.getMetadata = function(i, j, metadataCol) { return (i != 0 || j != 0 || metadataCol != 'hierarchy-path') ? null : this.id; };
+
+/**
+ * @returns {Array.<string>}
+ */
+epiviz.ui.charts.tree.Node.prototype.metadataColumns = function() { return ['hierarchy-path']; };
+
+/**
+ * Number of measurements times number of objects stored per measurement
+ * @returns {Array.<number>}
+ */
+epiviz.ui.charts.tree.Node.prototype.dimensions = function() { return [1, 1]; };
+
+/**
+ * @returns {boolean}
+ */
+epiviz.ui.charts.tree.Node.prototype.metadataLooseCompare = function() { return true; };
 
 /**
  * @param {epiviz.ui.charts.tree.Node} node

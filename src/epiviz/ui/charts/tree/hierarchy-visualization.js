@@ -145,9 +145,20 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     var uiSelected = root.children && root.children.length ? this._uiDataMap[root.children[0].id] : null;
     this._selectedNode = uiSelected ?
       new epiviz.ui.charts.tree.UiNode(uiSelected.id, uiSelected.name, uiSelected.children, uiSelected.parentId, uiSelected.size,
-        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
+        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
 
-    this._uiData = this._partition.nodes(root);
+    var uiData = this._partition.nodes(root);
+    this._uiData = [];
+    var rootCopy = null;
+    uiData.every(function(node) {
+      if (node.id == root.id) {
+        rootCopy = epiviz.ui.charts.tree.UiNode.deepCopy(node);
+        return false; // break
+      }
+      return true;
+    });
+    epiviz.ui.charts.tree.Node.dfs(rootCopy, function(node) { self._uiData.push(node); });
+
     this._oldSubtreeDepth = this._subtreeDepth;
     this._subtreeDepth = 0;
     this._oldUiDataMap = this._uiDataMap;
@@ -194,7 +205,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getOldNode = function(no
   var isExtremity = oldDepth < 0 || oldDepth >= this._subtreeDepth;
   var oldY = isRoot ? 0 : Math.min(1, oldDepth / this._oldSubtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order,
 
     isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1), // x
     isExtremity ? newNode.dx : 0, // dx
@@ -217,7 +228,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getNewNode = function(no
   var isExtremity = newDepth < 0 || newDepth >= this._subtreeDepth;
   var newY = isRoot ? 0 : Math.min(1, newDepth / this._subtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order,
     isExtremity ? oldNode.x : (oldNode.x <= this._selectedNode.x ? 0 : 1), // x
     isExtremity ? oldNode.dx : 0, // dx
     newY, // y
