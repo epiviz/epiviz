@@ -500,63 +500,36 @@ epiviz.ui.charts.Visualization.prototype.onDeselect = function() { return this._
  * @param {epiviz.ui.charts.VisObject} selectedObject
  */
 epiviz.ui.charts.Visualization.prototype.doHover = function(selectedObject) {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
-
-  var filter = function() {
-    return selectedObject.overlapsWith(d3.select(this).data()[0]);
-  };
-  var selectItems = itemsGroup.find('> .item').filter(filter);
-  unselectedHoveredGroup.append(selectItems);
-
-  selectItems = selectedGroup.find('> .item').filter(filter);
-  selectedHoveredGroup.append(selectItems);
+  var itemsGroup = this._svg.select('.items');
+  itemsGroup.classed('unhovered', true);
+  var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+    return selectedObject.overlapsWith(d);
+  });
+  selectItems.classed('hovered', true);
 };
 
 /**
  */
 epiviz.ui.charts.Visualization.prototype.doUnhover = function() {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
-
-  itemsGroup.prepend(unselectedHoveredGroup.children());
-
-  selectedGroup.prepend(selectedHoveredGroup.children());
+  this._svg.select('.items').classed('unhovered', false);
+  this._svg.select('.items').selectAll('.item').classed('hovered', false);
 };
 
 /**
  * @param {epiviz.ui.charts.ChartObject} selectedObject
  */
 epiviz.ui.charts.Visualization.prototype.doSelect = function(selectedObject) {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
-
-  var filter = function() {
-    return selectedObject.overlapsWith(d3.select(this).data()[0]);
-  };
-  var selectItems = itemsGroup.find('> .item').filter(filter);
-  selectedGroup.append(selectItems);
-
-  selectItems = unselectedHoveredGroup.find('> .item').filter(filter);
-  selectedHoveredGroup.append(selectItems);
+  var itemsGroup = this._svg.select('.items');
+  var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+    return selectedObject.overlapsWith(d);
+  });
+  selectItems.classed('selected', true);
 };
 
 /**
  */
 epiviz.ui.charts.Visualization.prototype.doDeselect = function() {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
-
-  itemsGroup.prepend(selectedGroup.find('> .item'));
-  unselectedHoveredGroup.prepend(selectedHoveredGroup.children());
+  this._svg.select('.items').selectAll('.selected').classed('selected', false);
 };
 
 /**

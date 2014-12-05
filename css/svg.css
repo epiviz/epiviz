@@ -80,8 +80,8 @@ text {
 /* Heatmap */
 
 .heatmap-plot .items { stroke: #efefef; stroke-opacity: 0.3; shape-rendering: 'crispEdges'; }
-.heatmap-plot .selected .item { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
-.heatmap-plot .hovered .item { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
+.heatmap-plot .selected { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
+.heatmap-plot .hovered { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
 .heatmap-plot .col-text { text-anchor: start; font-size: 10px; }
 .heatmap-plot .row-text { text-anchor: end; font-size: 9px; }
 .heatmap-plot .selected .col-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }
@@ -153,8 +153,14 @@ text {
     opacity: 1;
 }
 
-.facetzoom .selected rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
+.facetzoom .selected rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
 
-.facetzoom .dragstart rect { fill-opacity: 0.3; }
+.facetzoom .hovered rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
+
+.facetzoom .unhovered rect { fill-opacity: 0.4; }
+
+.facetzoom .unselected rect { fill-opacity: 0.4; }
+
+.facetzoom .dragstart rect { fill-opacity: 0.4; }
 
 .facetzoom .selected { cursor: w-resize; }

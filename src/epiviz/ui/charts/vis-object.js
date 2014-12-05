@@ -77,7 +77,7 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
   var thisDim = this.dimensions();
   var otherDim = other.dimensions();
 
-  if (!thisDim[0] || !otherDim[0] &&
+  if ((!thisDim[0] || !otherDim[0]) &&
     (this.regionStart() == undefined || other.regionStart() == undefined || this.regionEnd() == undefined || other.regionEnd() == undefined)) {
 
     return false;

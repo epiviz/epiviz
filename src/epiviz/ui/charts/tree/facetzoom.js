@@ -112,12 +112,16 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
   this._xScale = d3.scale.linear().range([0, width - this.margins().sumAxis(Axis.X)]);
   this._yScale = d3.scale.pow().exponent(1.5).range([0, height - this.margins().sumAxis(Axis.Y)]);
 
-  var canvas = this._svg.select('.canvas');
+  var itemsGroup = this._svg.select('.items');
   var defs = this._svg.select('.defs');
-  if (canvas.empty()) {
-    canvas = this._svg.append('g')
-      .attr('class', 'canvas')
+  if (itemsGroup.empty()) {
+    itemsGroup = this._svg.append('g')
+      .attr('class', 'items')
       .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
+
+    var selectedGroup = itemsGroup.append('g').attr('class', 'selected');
+    itemsGroup.append('g').attr('class', 'hovered');
+    selectedGroup.append('g').attr('class', 'hovered');
   }
   if (defs.empty()) {
     defs = this._svg.select('defs').append('g')
@@ -211,7 +215,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
       }, 0);
     });
 
-  var items = canvas.selectAll('g')
+  var items = itemsGroup.selectAll('.item')
     .data(uiData, function(d) { return d.id; });
 
   var clips = defs.selectAll('clipPath')
@@ -294,14 +298,14 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
     .attr('width', function(d) { return Math.max(0, calcNewWidth(d) - 2 * self._nodeMargin); })
     .attr('height', function(d) { return Math.max(0, calcNewHeight(d) - 2 * self._nodeMargin); });
 
-  canvas.selectAll('g').selectAll('rect')
+  itemsGroup.selectAll('.item').selectAll('rect')
     .transition().duration(this._animationDelay)
     .attr('x', calcNewX)
     .attr('y', calcNewY)
     .attr('width', calcNewWidth)
     .attr('height', calcNewHeight);
 
-  canvas.selectAll('g').selectAll('.node-label')
+  itemsGroup.selectAll('.item').selectAll('.node-label')
     .transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; })
@@ -317,7 +321,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
       };
     });
 
-  canvas.selectAll('g').selectAll('.icon-container')
+  itemsGroup.selectAll('.item').selectAll('.icon-container')
     .transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + self._nodeMargin; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) - self._nodeMargin - self._iconSize; });
