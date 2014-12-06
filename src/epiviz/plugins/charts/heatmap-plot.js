@@ -90,6 +90,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
  * @private
  */
 epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, data) {
+  var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
+
   // Apply clustering
   var clusteringAlgFactory = epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.instance();
   var clusterer = clusteringAlgFactory.algorithm(
@@ -104,7 +106,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
     var row = [];
     for (var j = 0; j < series.size(); ++j) {
       var item = series.get(j).rowItem;
-      if (item.start() < range.end() && item.end() > range.start()) {
+      if (!dataHasGenomicLocation ||
+        (range.start() == undefined || range.end() == undefined) ||
+        item.start() < range.end() && item.end() > range.start()) {
         row.push(series.get(j).value);
       }
     }
@@ -145,6 +149,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   var firstGlobalIndex = data.first().value.globalStartIndex();
   var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
   var rownames = [];
+  var rowIds = [];
 
   var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
 
@@ -157,6 +162,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
 
     rownames.push(measurement.name());
+    rowIds.push(measurement.id());
   });
 
   var nEntries = lastGlobalIndex - firstGlobalIndex;
@@ -352,7 +358,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   // Row names
 
   var rowSelection = itemsGroup.selectAll('.row-text')
-    .data(rownames, String);
+    .data(rownames, function(d, i) { return rowIds[i]; });
 
   rowSelection
     .enter()
