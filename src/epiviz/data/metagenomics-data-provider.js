@@ -317,7 +317,11 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       if (seqName != 'metagenomics') {
         // Nothing to return
         callback(epiviz.data.Response.fromRawObject({
-          data: { values: { metadata: { bacteria: [], ancestors: [], 'hierarchy-path': [] } } },
+          data: {
+            globalStartIndex: null,
+            values: {
+              id: [], start: [], end: [],
+              metadata: { bacteria: [], ancestors: [], 'hierarchy-path': [] } } },
           requestId: requestId
         }));
         return;

@@ -125,7 +125,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
   var colors = this.colors();
 
   /** @type {number} */
-  var maxPoints = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.MAX_POINTS];
+  var step = parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.STEP]);
 
   /** @type {boolean} */
   var showPoints = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS];
@@ -149,7 +149,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
   var deltaInBp = invXScale(delta) - range.start();
   var extendedRange = epiviz.datatypes.GenomicRange.fromStartEnd(
     range.seqName(),
-    Math.min(range.start(), range.start() + deltaInBp),
+    Math.min(range.start(), range.start() - deltaInBp),
     Math.max(range.end(), range.end() + deltaInBp));
 
   var graph = this._svg.select('.lines');
@@ -165,27 +165,17 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     var drawBoundaries = series.binarySearchStarts(extendedRange);
     if (drawBoundaries.length == 0) { return; }
 
-    // Also take the last point that won't be displayed on the left side
-    if (drawBoundaries.index > 0) {
-      --drawBoundaries.index;
-      ++drawBoundaries.length;
-    }
-
-    // And the first point on the right side that won't be displayed
-    if (drawBoundaries.index + drawBoundaries.length < series.size()) {
-      ++drawBoundaries.length;
-    }
+    var index = Math.ceil(drawBoundaries.index / step) * step;
+    drawBoundaries.length -= index - drawBoundaries.index;
+    drawBoundaries.index = index;
 
     var indices = null;
-    if (maxPoints === null || drawBoundaries.length <= maxPoints) {
+    if (step === null || step <= 1) {
       indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index);
     } else {
-      // TODO: Use global indices, binSize = range.width() / maxPoints as a constant, and set the first index to be the same over time
-      var step = drawBoundaries.length / maxPoints;
-
       indices = [];
       for (var j = 0; Math.round(j) < drawBoundaries.length; j += step) {
-        indices.push(drawBoundaries.index + Math.round(j));
+        indices.push(drawBoundaries.index + j);
       }
     }
 

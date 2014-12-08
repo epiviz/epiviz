@@ -69,15 +69,22 @@ epiviz.plugins.charts.StackedLineTrackType.prototype.chartHtmlAttributeName = fu
 epiviz.plugins.charts.StackedLineTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.FEATURE; }; };
 
 /**
+ * If true, this flag indicates that the corresponding chart can only show measurements that belong to the same
+ * data source group
+ * @returns {boolean}
+ */
+epiviz.plugins.charts.StackedLineTrackType.prototype.isRestrictedToSameDatasourceGroup = function() { return true; };
+
+/**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}
  */
 epiviz.plugins.charts.StackedLineTrackType.prototype.customSettingsDefs = function() {
   return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.StackedLineTrackType.CustomSettings.MAX_POINTS,
+      epiviz.plugins.charts.StackedLineTrackType.CustomSettings.STEP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      100,
-      'Maximum points'),
+      1,
+      'Step'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.StackedLineTrackType.CustomSettings.INTERPOLATION,
@@ -92,7 +99,7 @@ epiviz.plugins.charts.StackedLineTrackType.prototype.customSettingsDefs = functi
  * @enum {string}
  */
 epiviz.plugins.charts.StackedLineTrackType.CustomSettings = {
-  MAX_POINTS: 'maxPoints',
+  STEP: 'step',
   INTERPOLATION: 'interpolation'
 };
 

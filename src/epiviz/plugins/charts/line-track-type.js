@@ -73,10 +73,10 @@ epiviz.plugins.charts.LineTrackType.prototype.measurementsFilter = function() { 
 epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
   return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.MAX_POINTS,
+      epiviz.plugins.charts.LineTrackType.CustomSettings.STEP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      100,
-      'Maximum points'),
+      1,
+      'Step'),
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
@@ -123,7 +123,7 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
  * @enum {string}
  */
 epiviz.plugins.charts.LineTrackType.CustomSettings = {
-  MAX_POINTS: 'maxPoints',
+  STEP: 'step',
   SHOW_POINTS: 'showPoints',
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',

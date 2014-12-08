@@ -96,7 +96,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   var colors = this.colors();
 
   /** @type {number} */
-  var maxPoints = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.MAX_POINTS];
+  var step = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.STEP];
 
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.INTERPOLATION];
 
@@ -108,7 +108,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   var deltaInBp = invXScale(delta) - range.start();
   var extendedRange = epiviz.datatypes.GenomicRange.fromStartEnd(
     range.seqName(),
-    Math.min(range.start(), range.start() + deltaInBp),
+    Math.min(range.start(), range.start() - deltaInBp),
     Math.max(range.end(), range.end() + deltaInBp));
 
   var graph = this._svg.select('.lines');
@@ -118,52 +118,41 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
 
   var seriesAreas = [];
 
+  var firstGlobalIndex = data.first().value.globalStartIndex();
+  var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
+
+  data.foreach(function(measurement, series) {
+    var firstIndex = series.globalStartIndex();
+    var lastIndex = series.size() + firstIndex;
+
+    if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
+    if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
+  });
+
+  firstGlobalIndex = Math.ceil(firstGlobalIndex / step) * step;
+  lastGlobalIndex = Math.floor(lastGlobalIndex / step) * step;
+
   this.measurements().foreach(function(m, i) {
     /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
     var series = data.get(m);
 
-    /** @type {{index: ?number, length: number}} */
-    var drawBoundaries = series.binarySearchStarts(extendedRange);
-    if (drawBoundaries.length == 0) { return; }
-
-    // Also take the last point that won't be displayed on the left side
-    if (drawBoundaries.index > 0) {
-      --drawBoundaries.index;
-      ++drawBoundaries.length;
-    }
-
-    // And the first point on the right side that won't be displayed
-    if (drawBoundaries.index + drawBoundaries.length < series.size()) {
-      ++drawBoundaries.length;
-    }
-
-    var indices = null;
-    if (maxPoints === null || drawBoundaries.length <= maxPoints) {
-      indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index);
-    } else {
-      // TODO: Use global indices, binSize = range.width() / maxPoints as a constant, and set the first index to be the same over time
-      var step = drawBoundaries.length / maxPoints;
-
-      indices = [];
-      for (var j = 0; Math.round(j) < drawBoundaries.length; j += step) {
-        indices.push(drawBoundaries.index + Math.round(j));
-      }
-    }
+    var indices = epiviz.utils.range((lastGlobalIndex - firstGlobalIndex) / step)
+      .map(function(i) { return i * step + firstGlobalIndex; });
 
     for (var k = 0; k < indices.length; ++k) {
-      var cell = series.get(indices[k]);
+      var cell = series.getByGlobalIndex(indices[k]);
       items.push(new epiviz.ui.charts.ChartObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i)));
     }
 
     var x = function(j) {
       /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
-      var cell = series.get(j);
+      var cell = series.getByGlobalIndex(j);
       return cell.rowItem.start();
     };
 
     var y = function(j) {
       /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
-      var cell = series.get(j);
+      var cell = series.getByGlobalIndex(j);
       return cell.value;
     };
 
@@ -177,7 +166,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
 
   var yScale = d3.scale.linear()
     .domain([
-      d3.min(layers, function(layer) { return d3.min(layer, function(d) { return d.y0 + d.y; }); }),
+      Math.min(0, d3.min(layers, function(layer) { return d3.min(layer, function(d) { return d.y0 + d.y; }); })),
       d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
     .range([this.height() - this.margins().sumAxis(epiviz.ui.charts.Axis.Y), 0]);
 

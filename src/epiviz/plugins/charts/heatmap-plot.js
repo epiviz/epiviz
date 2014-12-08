@@ -151,10 +151,11 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   var rownames = [];
   var rowIds = [];
 
+  // TODO: This might not be needed anymore
+  // TODO: Search for all usages of this method
   var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
 
   data.foreach(function(measurement, series) {
-
     var firstIndex = series.globalStartIndex();
     var lastIndex = series.size() + firstIndex;
 
