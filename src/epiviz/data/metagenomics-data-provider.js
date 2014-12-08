@@ -181,7 +181,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
       'heatmap',
       null, // annotation
       0, 15,
-      ['bacteria', 'hierarchy-path']);
+      ['bacteria', 'ancestors', 'hierarchy-path']);
     measurements.push(m);
   });
 
@@ -226,11 +226,20 @@ epiviz.data.MetagenomicsDataProvider = function () {
    */
   this._hierarchyPathsMap = {};
 
+  this._ancestryMap = {};
+
   /**
    * @type {Array.<string>}
    * @private
    */
   this._selectedPaths = [];
+
+  /**
+   * Same as selectedPaths, but with node names
+   * @type {Array.<string>}
+   * @private
+   */
+  this._selectedAncestry = [];
 
   this._nodeMap = {};
   this._nodeNameMap = {};
@@ -245,19 +254,25 @@ epiviz.data.MetagenomicsDataProvider = function () {
       self._hierarchy = root;
       epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; self._nodeNameMap[node.name] = node; });
       epiviz.ui.charts.tree.Node.dfs(root, function(node) {
-        if (!node.parentId) { self._hierarchyPathsMap[node.name] = node.id; return; } // TODO: Should use id. In the future, rows should store node id and that will fix everything
+        if (!node.parentId) { self._hierarchyPathsMap[node.name] = node.id; self._ancestryMap[node.name] = ''; return; } // TODO: Should use id. In the future, rows should store node id and that will fix everything
         var parent = self._nodeMap[node.parentId];
         var path = node.id;//parent.id;
         //parent = self._nodeMap[parent.parentId];
+        var ancestry = '';
         while (parent) {
           path += ',' + parent.id;
+          ancestry += ',' + parent.name;
           parent = self._nodeMap[parent.parentId];
         }
         self._hierarchyPathsMap[node.name] = path;
+
+        if (ancestry.length > 0) { ancestry = ancestry.substring(1); }
+        self._ancestryMap[node.name] = ancestry;
       });
 
       self._selectedRows.forEach(function(nodeName, i) {
         self._selectedPaths.push(self._hierarchyPathsMap[nodeName]);
+        self._selectedAncestry.push(self._ancestryMap[nodeName]);
       });
       self._updateOrder();
       self._updateSelection();
@@ -302,7 +317,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       if (seqName != 'metagenomics') {
         // Nothing to return
         callback(epiviz.data.Response.fromRawObject({
-          data: { values: { metadata: { bacteria: [], 'hierarchy-path': [] } } },
+          data: { values: { metadata: { bacteria: [], ancestors: [], 'hierarchy-path': [] } } },
           requestId: requestId
         }));
         return;
@@ -323,7 +338,11 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
             id: epiviz.utils.range(endIndex - startIndex + 1, start),
             start: self._selectedRowsRanges.map(function(range) { return range[0]; }).slice(startIndex, endIndex + 1),
             end: self._selectedRowsRanges.map(function(range) { return range[0] + range[1] - 1; }).slice(startIndex, endIndex + 1),
-            metadata: { bacteria: this._selectedRows.slice(startIndex, endIndex + 1), 'hierarchy-path': this._selectedPaths.slice(startIndex, endIndex + 1) }
+            metadata: {
+              bacteria: this._selectedRows.slice(startIndex, endIndex + 1),
+              ancestors: this._selectedAncestry.slice(startIndex, endIndex + 1),
+              'hierarchy-path': this._selectedPaths.slice(startIndex, endIndex + 1)
+            }
           }
         },
         requestId: requestId
@@ -478,11 +497,13 @@ epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
   this._selectedValues = selection.values;
 
   this._selectedPaths = [];
+  this._selectedAncestry = [];
   this._selectedRowsRanges = [];
   var lastEnd = 0;
   var self = this;
   this._selectedRows.forEach(function(nodeName) {
     self._selectedPaths.push(self._hierarchyPathsMap[nodeName]);
+    self._selectedAncestry.push(self._ancestryMap[nodeName]);
     self._selectedRowsRanges.push([lastEnd, self._nodeNameMap[nodeName].nleaves]);
     lastEnd += self._nodeNameMap[nodeName].nleaves;
   });
