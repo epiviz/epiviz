@@ -46,6 +46,7 @@ epiviz.EpiViz.SETTINGS = {
   chartTypes: [
     'epiviz.plugins.charts.BlocksTrackType',
     'epiviz.plugins.charts.LineTrackType',
+    'epiviz.plugins.charts.StackedLineTrackType',
     'epiviz.plugins.charts.ScatterPlotType',
     'epiviz.plugins.charts.GenesTrackType',
     'epiviz.plugins.charts.HeatmapPlotType'
