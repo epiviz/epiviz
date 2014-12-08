@@ -206,7 +206,12 @@ epiviz.workspaces.Workspace.prototype.chartMethodsModified = function(chartId, m
       this._chartsById[chartId].properties.modifiedMethods,
       modifiedMethods)) { return; }
 
-  this._chartsById[chartId].properties.modifiedMethods = epiviz.utils.mapCopy(modifiedMethods);
+  this._chartsById[chartId].properties.modifiedMethods = epiviz.utils.mapCombine(
+    modifiedMethods,
+    this._chartsById[chartId].properties.modifiedMethods);
+
+  // TODO Cleanup
+    //epiviz.utils.mapCopy(modifiedMethods);
 
   this._setChanged();
 };
