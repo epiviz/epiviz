@@ -82,7 +82,7 @@ epiviz.plugins.charts.StackedLineTrackType.prototype.customSettingsDefs = functi
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.StackedLineTrackType.CustomSettings.INTERPOLATION,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
-      'linear',
+      'basis',
       'Interpolation',
       ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone'])
   ]);

@@ -176,7 +176,9 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   var layers = stack(seriesAreas);
 
   var yScale = d3.scale.linear()
-    .domain([0, d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
+    .domain([
+      d3.min(layers, function(layer) { return d3.min(layer, function(d) { return d.y0 + d.y; }); }),
+      d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
     .range([this.height() - this.margins().sumAxis(epiviz.ui.charts.Axis.Y), 0]);
 
   var area = d3.svg.area()
