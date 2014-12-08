@@ -727,7 +727,14 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
      * @param {{oldValue: epiviz.datatypes.GenomicRange, newValue: epiviz.datatypes.GenomicRange}} e
      */
     function(e) {
-      self._chartManager.dataWaitStart();
+      self._chartManager.dataWaitStart(undefined,
+        /**
+         * @param {epiviz.ui.charts.Visualization} chart
+         * @returns {boolean}
+         */
+        function(chart) {
+          return chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE;
+        });
 
       /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
       var chartMeasurementsMap = self._chartManager.chartsMeasurements();

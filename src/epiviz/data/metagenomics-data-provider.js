@@ -160,13 +160,20 @@ epiviz.data.MetagenomicsDataProvider = function () {
    */
   this._selectedRows = this._rows;
 
+  /**
+   * rowIndex -> [start, length]
+   * @type {Array.<Array.<number>>}
+   * @private
+   */
+  this._selectedRowsRanges = this._rows.map(function(row, i) { return [i, 1]; });
+
   var self = this;
   var measurements = [];
   this._cols.forEach(function(col, i) {
     var m = new epiviz.measurements.Measurement(
       col, // id
       self._colNames[i], // name
-      epiviz.measurements.Measurement.Type.UNORDERED,
+      epiviz.measurements.Measurement.Type.FEATURE,
       'metagenomics', // datasource
       'metagenomics', // datasource group
       self.id(), // data provider
@@ -226,6 +233,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
   this._selectedPaths = [];
 
   this._nodeMap = {};
+  this._nodeNameMap = {};
   this._maxDepth = 5;
   this._lastRootId = null;
   d3.json("tree.json",
@@ -235,7 +243,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
      */
     function(error, root) {
       self._hierarchy = root;
-      epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; });
+      epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; self._nodeNameMap[node.name] = node; });
       epiviz.ui.charts.tree.Node.dfs(root, function(node) {
         if (!node.parentId) { self._hierarchyPathsMap[node.name] = node.id; return; } // TODO: Should use id. In the future, rows should store node id and that will fix everything
         var parent = self._nodeMap[node.parentId];
@@ -273,23 +281,51 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
   var self = this;
   var requestId = request.id();
   var action = request.get('action');
-  //var seqName = request.get('seqName');
+  var seqName = request.get('seqName');
+  var start = parseInt(request.get('start'));
+  var end = parseInt(request.get('end'));
   var datasource = request.get('datasource');
   var measurement = request.get('measurement');
 
+  var startIndex, endIndex;
+  if (seqName == 'metagenomics' && !isNaN(start) && !isNaN(end)) {
+    this._selectedRowsRanges.forEach(function(range, i) {
+      if (range[0] <= end && range[0] + range[1] > start) {
+        if (startIndex == undefined) { startIndex = i; }
+        endIndex = i;
+      }
+    });
+  }
+
   switch (action) {
     case epiviz.data.Request.Action.GET_ROWS:
-      /*if (seqName != 'metagenomics') {
+      if (seqName != 'metagenomics') {
         // Nothing to return
         callback(epiviz.data.Response.fromRawObject({
-          data: { values: { metadata: { bacteria: [] } } },
+          data: { values: { metadata: { bacteria: [], 'hierarchy-path': [] } } },
           requestId: requestId
         }));
         return;
-      }*/
+      }
+
+      /*self.onRequestClearDatasourceGroupCache().notify({
+        datasourceGroup: datasourceGroup,
+        result: new epiviz.events.EventResult()
+      });
+      self.onRequestRedraw().notify({
+        result: new epiviz.events.EventResult()
+      });*/
 
       callback(epiviz.data.Response.fromRawObject({
-        data: { values: { metadata: { bacteria: this._selectedRows, 'hierarchy-path': this._selectedPaths } } },
+        data: {
+          globalStartIndex: start,
+          values: {
+            id: epiviz.utils.range(endIndex - startIndex + 1, start),
+            start: self._selectedRowsRanges.map(function(range) { return range[0]; }).slice(startIndex, endIndex + 1),
+            end: self._selectedRowsRanges.map(function(range) { return range[0] + range[1] - 1; }).slice(startIndex, endIndex + 1),
+            metadata: { bacteria: this._selectedRows.slice(startIndex, endIndex + 1), 'hierarchy-path': this._selectedPaths.slice(startIndex, endIndex + 1) }
+          }
+        },
         requestId: requestId
       }));
 
@@ -297,19 +333,27 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
 
     case epiviz.data.Request.Action.GET_VALUES:
       var colIndex = this._colsIndices[measurement];
-      /*if (seqName != 'metagenomics' || colIndex == undefined) {
+      if (seqName != 'metagenomics' || colIndex == undefined) {
         // Nothing to return
         callback(epiviz.data.Response.fromRawObject({
           data: { values: [] },
           requestId: requestId
         }));
         return;
-      }*/
+      }
 
       var values = this._selectedValues.map(function(row, i) { return row[colIndex]; });
 
+      /*self.onRequestClearDatasourceGroupCache().notify({
+        datasourceGroup: datasourceGroup,
+        result: new epiviz.events.EventResult()
+      });
+      self.onRequestRedraw().notify({
+        result: new epiviz.events.EventResult()
+      });*/
+
       callback(epiviz.data.Response.fromRawObject({
-        data: { values: values },
+        data: { globalStartIndex: start, values: values.slice(startIndex, endIndex + 1) },
         requestId: requestId
       }));
 
@@ -336,7 +380,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
     case epiviz.data.Request.Action.GET_SEQINFOS:
       callback(epiviz.data.Response.fromRawObject({
         requestId: request.id(),
-        data: []
+        data: [['metagenomics', 0, this._rows.length]]
       }));
       return;
 
@@ -434,9 +478,13 @@ epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
   this._selectedValues = selection.values;
 
   this._selectedPaths = [];
+  this._selectedRowsRanges = [];
+  var lastEnd = 0;
   var self = this;
-  this._selectedRows.forEach(function(nodeName, i) {
+  this._selectedRows.forEach(function(nodeName) {
     self._selectedPaths.push(self._hierarchyPathsMap[nodeName]);
+    self._selectedRowsRanges.push([lastEnd, self._nodeNameMap[nodeName].nleaves]);
+    lastEnd += self._nodeNameMap[nodeName].nleaves;
   });
 };
 
@@ -451,7 +499,7 @@ epiviz.data.MetagenomicsDataProvider.prototype._getNodeSelection = function(node
     return {rows: [], values: []};
   }
   if (!node.nchildren) {
-    return {rows: [node.name], values: [this._values[this._rowIndices[node.name]]]};
+    return {rows: [node.name], values: [this._values[this._rowIndices[node.name]]]}; // TODO: Use id instead
   }
   var self = this;
   var result = {rows:[], values: []};
@@ -481,3 +529,43 @@ epiviz.data.MetagenomicsDataProvider.prototype._getNodeSelection = function(node
     return result;
   }
 };
+
+/**
+ * @param {number} start
+ * @param {number} end
+ * @returns {Array.<number>}
+ * @private
+ */
+/*epiviz.data.MetagenomicsDataProvider.prototype._selectRowIndices = function(start, end) {
+  var self = this;
+  var ranges = {};
+  var root = this._hierarchy;
+  ranges[root.id] = [0, root.nleaves];
+  var selectedNodes = [];
+  var computeRanges = function(node) {
+    if (!node.nchildren) { return; }
+    var lastEnd = ranges[node.id][0];
+    node.children.every(function(child) {
+      var childRange = [lastEnd, child.nleaves];
+      ranges[child.id] = childRange;
+      lastEnd += child.nleaves;
+      if (childRange[0] + childRange[1] > start && childRange[0] <= end) {
+        switch (child.selectionType) {
+          case epiviz.ui.charts.tree.NodeSelectionType.NONE:
+            // Ignore the node
+            break;
+          case epiviz.ui.charts.tree.NodeSelectionType.NODE:
+            selectedNodes.push(child);
+            break;
+          case epiviz.ui.charts.tree.NodeSelectionType.LEAVES:
+            if (child.nchildren) {
+              computeRanges(child);
+            } else {
+              selectedNodes.push(child);
+            }
+            break;
+        }
+      }
+    });
+  };
+};*/

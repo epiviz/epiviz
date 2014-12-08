@@ -108,7 +108,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
       var item = series.get(j).rowItem;
       if (!dataHasGenomicLocation ||
         (range.start() == undefined || range.end() == undefined) ||
-        item.start() < range.end() && item.end() > range.start()) {
+        item.start() < range.end() && item.end() >= range.start()) {
         row.push(series.get(j).value);
       }
     }
@@ -181,7 +181,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     var item = data.get(this.measurements().first()).getByGlobalIndex(globalIndex).rowItem;
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
-      item.start() < range.end() && item.end() > range.start()) {
+      item.start() < range.end() && item.end() >= range.start()) {
       var colLabel = item.metadata(label) || '' + item.id();
       columnMap[colnames.length] = globalIndex;
       colnames.push(colLabel);

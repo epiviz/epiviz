@@ -64,7 +64,7 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
  * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} dataReadyCallback
  */
 epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
-  this.getUnorderedData(chartMeasurementsMap, dataReadyCallback);
+  //this.getUnorderedData(range, chartMeasurementsMap, dataReadyCallback); // TODO: Cleanup
 
   var MeasurementType = epiviz.measurements.Measurement.Type;
 
@@ -255,9 +255,9 @@ epiviz.data.Cache.prototype._calcMeasurementNeededRanges = function(ranges, char
 
     (function(chartMeasurements) {
       chartMeasurementsMap[chartId].foreach(function(m) {
-        if (m.type() == epiviz.measurements.Measurement.Type.UNORDERED) {
+        /*if (m.type() == epiviz.measurements.Measurement.Type.UNORDERED) { // TODO: Cleanup
           return;
-        }
+        }*/
 
         var compMs = m.componentMeasurements();
         compMs.foreach(function(compM) {

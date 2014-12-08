@@ -284,14 +284,16 @@ epiviz.ui.charts.ChartManager.prototype.clear = function() {
  * Tells all charts that new data has been requested.
  * Used, for example, by ChartLoaderAnimation decoration.
  * @param {string} [chartId]
+ * @param {function(epiviz.ui.charts.Visualization): boolean} [chartFilter]
  */
-epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId) {
+epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId, chartFilter) {
   if (chartId && this._charts[chartId]) {
     this._charts[chartId].onDataWaitStart().notify(new epiviz.ui.charts.VisEventArgs(chartId));
     return;
   }
   for (var id in this._charts) {
     if (!this._charts.hasOwnProperty(id)) { continue; }
+    if (!chartFilter || !chartFilter[this._charts[id]]) { continue; }
     this._charts[id].onDataWaitStart().notify(new epiviz.ui.charts.VisEventArgs(id));
   }
 };

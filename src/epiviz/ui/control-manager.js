@@ -605,6 +605,10 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           return;
         }
 
+        var wizardMeasurements = self._measurementsManager.measurements().subset(chartType.measurementsFilter());
+        wizardMeasurements.addAll(self._measurementsManager.measurements()
+          .map(function(m) { return m.datasource(); })
+          .subset(chartType.measurementsFilter()));
         var dialog = new epiviz.ui.controls.Wizard(
           sprintf('Add new %s', chartType.chartName()),
           {finish:
@@ -615,7 +619,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           },
           wizardSteps,
           new epiviz.ui.controls.VisConfigSelection(
-            self._measurementsManager.measurements().subset(chartType.measurementsFilter()),
+            wizardMeasurements, // measurements
             undefined, // datasource
             undefined, // datasourceGroup
             undefined, // dataprovider
