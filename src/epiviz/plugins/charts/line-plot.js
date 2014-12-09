@@ -102,10 +102,6 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
     var graph = this._svg.append('g')
       .attr('class', 'lines')
       .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
-    /*this.measurements().foreach(function(m, i) {
-      graph.append('g').attr('class', 'line-series-index-' + i);
-      graph.append('g').attr('class', 'point-series-index-' + i);
-    });*/
   }
   return this._drawLines(range, data, xScale, yScale);
 };
@@ -211,10 +207,24 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       .append('path').attr('class', 'line-series')
       .attr('d', lineData)
       .style('shape-rendering', 'auto')
-      .style('opacity', '0');
-      //.on('mouseover', function() { self._captureMouseHover(); })
-      //.on('mousemove', function() { self._captureMouseHover(); })
-      //.on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); })
+      .style('opacity', '0')
+      .on('mouseover', function(index) {
+        // For now, create the chart object here, but later, we will have to create the set of items
+        var item = data.first().value.getByGlobalIndex(index).rowItem;
+        var d = new epiviz.ui.charts.ChartObject(
+          sprintf('line-series-%s', index),
+          item.start(),
+          item.end(),
+          valuesForIndex(index),
+          undefined,
+          [self.measurements().toArray().map(function(m, i) { return data.get(m).getByGlobalIndex(index); })], // valueItems one for each measurement
+          self.measurements().toArray(), // measurements
+          '');
+        self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      })
+      .on('mouseout', function () {
+        self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      });
 
     lines
       .transition()
