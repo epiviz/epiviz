@@ -234,6 +234,7 @@ epiviz.ui.charts.Visualization.prototype._clearAxes = function(svg) {
 };
 
 /**
+ * TODO Cleanup
  * @param [xScale] D3 linear scale for the x axis
  * @param [yScale] D3 linear scale for the y axis
  * @param {number} [xTicks]
@@ -244,7 +245,7 @@ epiviz.ui.charts.Visualization.prototype._clearAxes = function(svg) {
  * @param {epiviz.ui.charts.Margins} [margins]
  * @protected
  */
-epiviz.ui.charts.Visualization.prototype._drawAxes = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
+/*epiviz.ui.charts.Visualization.prototype._drawAxesOld = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
   svg = svg || this._svg;
   margins = margins || this.margins();
   height = height || this.height();
@@ -316,6 +317,116 @@ epiviz.ui.charts.Visualization.prototype._drawAxes = function(xScale, yScale, xT
     var yAxis = d3.svg.axis()
       .scale(yScale)
       .orient('left');
+    yAxisLine
+      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
+      .call(yAxis);
+  }
+};*/
+
+/**
+ * @param [xScale] D3 linear scale for the x axis
+ * @param [yScale] D3 linear scale for the y axis
+ * @param {number} [xTicks]
+ * @param {number} [yTicks]
+ * @param [svg] D3 svg container for the axes
+ * @param {number} [width]
+ * @param {number} [height]
+ * @param {epiviz.ui.charts.Margins} [margins]
+ * @param {function} [xAxisFormat]
+ * @param {function} [yAxisFormat]
+ * @param {Array.<string>} [xLabels]
+ * @param {Array.<string>} [yLabels]
+ * @protected
+ */
+epiviz.ui.charts.Visualization.prototype._drawAxes = function (xScale, yScale, xTicks, yTicks, svg, width, height, margins, xAxisFormat, yAxisFormat, xLabels, yLabels) {
+
+  svg = svg || this._svg;
+  margins = margins || this.margins();
+  height = height || this.height();
+  width = width || this.width();
+
+  var axesGroup = svg.select('.axes'),
+    xAxisGrid = axesGroup.select('.xAxis-grid'),
+    yAxisGrid = axesGroup.select('.yAxis-grid'),
+    xAxisLine = axesGroup.select('.xAxis-line'),
+    yAxisLine = axesGroup.select('.yAxis-line');
+
+  if (axesGroup.empty()) { axesGroup = svg.append('g').attr('class', 'axes'); }
+
+  if (xAxisGrid.empty()) { xAxisGrid = axesGroup.append('g').attr('class', 'xAxis xAxis-grid'); }
+  if (yAxisGrid.empty()) { yAxisGrid = axesGroup.append('g').attr('class', 'yAxis yAxis-grid'); }
+  if (xAxisLine.empty()) { xAxisLine = axesGroup.append('g').attr('class', 'xAxis xAxis-line'); }
+  if (yAxisLine.empty()) { yAxisLine = axesGroup.append('g').attr('class', 'yAxis yAxis-line'); }
+
+  if (xScale) {
+    // Draw X-axis grid lines
+    xAxisGrid
+      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
+      .selectAll('line.x')
+      .data(xScale.ticks(xTicks))
+      .enter().append('line')
+      .attr('x1', xScale)
+      .attr('x2', xScale)
+      .attr('y1', 0)
+      .attr('y2', height - margins.top() - margins.bottom())
+      .style('stroke', '#eeeeee')
+      .style('shape-rendering', 'crispEdges');
+
+    var xAxisTickFormat = xAxisFormat ||
+      ((xLabels) ?
+        function(i) { return xLabels[i]; } :
+        function(x) {
+          var format = d3.format('s');
+          var rounded = Math.round(x * 1000) / 1000;
+          return format(rounded);
+        });
+
+    var xAxis = d3.svg.axis()
+      .scale(xScale)
+      .orient('bottom')
+      .ticks(xTicks)
+      .tickFormat(xAxisTickFormat);
+
+    xAxisLine
+      .attr('transform', 'translate(' + margins.left() + ', ' + (height - margins.bottom()) + ')')
+      .call(xAxis);
+
+    if (xLabels) {
+      xAxisLine
+      .selectAll('text')
+      .style('text-anchor', 'end')
+      .attr('dx', '-.8em')
+      .attr('dy', '-0.5em')
+      .attr('transform', 'rotate(-90)');
+    }
+  }
+
+  if (yScale) {
+    // Draw Y-axis grid lines
+    yAxisGrid
+      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
+      .selectAll('line.y')
+      .data(yScale.ticks(yTicks - 1))
+      .enter().append('line')
+      .attr('x1', 0)
+      .attr('x2', width - margins.left() - margins.right())
+      .attr('y1', yScale)
+      .attr('y2', yScale)
+      .style('stroke', '#eeeeee')
+      .style('shape-rendering', 'crispEdges');
+
+    var yAxisTickFormat = (yLabels) ? function(i) { return yLabels[i]; } :
+      function(y) {
+        var format = d3.format('s');
+        var rounded = Math.round(y * 1000) / 1000;
+        return format(rounded);
+      };
+
+    var yAxis = d3.svg.axis()
+      .ticks(yTicks - 1)
+      .scale(yScale)
+      .orient('left')
+      .tickFormat(yAxisTickFormat);
     yAxisLine
       .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
       .call(yAxis);

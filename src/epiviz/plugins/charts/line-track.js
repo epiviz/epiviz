@@ -149,7 +149,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
   var deltaInBp = invXScale(delta) - range.start();
   var extendedRange = epiviz.datatypes.GenomicRange.fromStartEnd(
     range.seqName(),
-    Math.min(range.start(), range.start() - deltaInBp),
+    Math.min(range.start(), range.start() + deltaInBp),
     Math.max(range.end(), range.end() + deltaInBp));
 
   var graph = this._svg.select('.lines');

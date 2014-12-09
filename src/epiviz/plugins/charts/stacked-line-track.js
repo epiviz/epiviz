@@ -60,26 +60,10 @@ epiviz.plugins.charts.StackedLineTrack.prototype.draw = function(range, data, sl
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  var CustomSetting = epiviz.ui.charts.CustomSetting;
-
   var Axis = epiviz.ui.charts.Axis;
-  var xScale = d3.scale.linear()
-    .domain([range.start(), range.end()])
-    .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
-
-  this._clearAxes();
-  this._drawAxes(xScale, undefined, 10);
-
   slide = slide || 0;
   var delta = slide * (this.width() - this.margins().sumAxis(Axis.X)) / range.width();
-  var linesGroup = this._svg.selectAll('.lines');
-
-  if (linesGroup.empty()) {
-    var graph = this._svg.append('g')
-      .attr('class', 'lines')
-      .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
-  }
-  return this._drawLines(range, data, delta, zoom || 1, xScale);
+  return this._drawLines(range, data, delta, zoom || 1);
 };
 
 /**
@@ -87,11 +71,12 @@ epiviz.plugins.charts.StackedLineTrack.prototype.draw = function(range, data, sl
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
  * @param {number} delta
  * @param {number} zoom
- * @param {function} xScale D3 linear scale
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
-epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, data, delta, zoom, xScale) {
+epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, data, delta, zoom) {
+  var Axis = epiviz.ui.charts.Axis;
+
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
@@ -107,15 +92,15 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   var self = this;
 
   var invXScale = d3.scale.linear()
-    .domain([0, this.width() - this.margins().sumAxis(epiviz.ui.charts.Axis.X)])
+    .domain([0, this.width() - this.margins().sumAxis(Axis.X)])
     .range([range.start(), range.end()]);
   var deltaInBp = invXScale(delta) - range.start();
+
+  // TODO: Re-introduce extendedRange (this is what we need to draw to make the track look continuous on navigation transition)
   var extendedRange = epiviz.datatypes.GenomicRange.fromStartEnd(
     range.seqName(),
-    Math.min(range.start(), range.start() - deltaInBp),
+    Math.min(range.start(), range.start() + deltaInBp),
     Math.max(range.end(), range.end() + deltaInBp));
-
-  var graph = this._svg.select('.lines');
 
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
@@ -135,6 +120,10 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
 
   firstGlobalIndex = Math.ceil(firstGlobalIndex / step) * step;
   lastGlobalIndex = Math.floor(lastGlobalIndex / step) * step;
+
+  // TODO: Continue getting the labels on the x axis
+  /** @type {Array.<string>} */
+  var labels;
 
   this.measurements().foreach(function(m, i) {
     /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
@@ -163,7 +152,35 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     var areas = [];
     indices.forEach(function(j) { areas.push({x: x(j), y: y(j)}); });
     seriesAreas.push(areas);
+    if (!labels) {
+      labels = [];
+      indices.forEach(function(j) {
+        /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+        var cell = series.getByGlobalIndex(j);
+        labels.push(cell.rowItem.metadata('bacteria'));
+      });
+    }
   });
+
+  var xScale = d3.scale.linear()
+    .domain([range.start(), range.end()])
+    .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
+
+  this._clearAxes();
+  var firstSeries = data.first().value;
+
+  this._drawAxes(xScale, undefined, 10);
+  /* this._drawAxes(
+    xScale, undefined, // scales
+    labels.length, undefined, // ticks
+    undefined, undefined, undefined, undefined, undefined, undefined, labels, undefined);*/
+
+  var graph = this._svg.select('.lines');
+  if (graph.empty()) {
+    graph = this._svg.append('g')
+      .attr('class', 'lines')
+      .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
+  }
 
   Math.seedrandom(0);
   var stack = d3.layout.stack().offset(offset);
@@ -173,7 +190,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     .domain([
       Math.min(0, d3.min(layers, function(layer) { return d3.min(layer, function(d) { return d.y0 + d.y; }); })),
       d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
-    .range([this.height() - this.margins().sumAxis(epiviz.ui.charts.Axis.Y), 0]);
+    .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);
 
   var area = d3.svg.area()
     .x(function(d) { return xScale(d.x); })

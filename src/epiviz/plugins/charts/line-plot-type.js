@@ -1,92 +1,99 @@
 /**
  * Created by Florin Chelaru ( florinc [at] umd [dot] edu )
- * Date: 11/14/13
- * Time: 9:30 AM
+ * Date: 12/9/2014
+ * Time: 1:09 AM
  */
 
-goog.provide('epiviz.plugins.charts.LineTrackType');
+goog.provide('epiviz.plugins.charts.LinePlotType');
 
 goog.require('epiviz.ui.charts.Chart');
 
 /**
  * @param {epiviz.Config} config
- * @extends {epiviz.ui.charts.TrackType}
+ * @extends {epiviz.ui.charts.PlotType}
  * @constructor
  */
-epiviz.plugins.charts.LineTrackType = function(config) {
+epiviz.plugins.charts.LinePlotType = function(config) {
   // Call superclass constructor
-  epiviz.ui.charts.TrackType.call(this, config);
+  epiviz.ui.charts.PlotType.call(this, config);
 };
 
 /*
  * Copy methods from upper class
  */
-epiviz.plugins.charts.LineTrackType.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.TrackType.prototype);
-epiviz.plugins.charts.LineTrackType.constructor = epiviz.plugins.charts.LineTrackType;
+epiviz.plugins.charts.LinePlotType.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.PlotType.prototype);
+epiviz.plugins.charts.LinePlotType.constructor = epiviz.plugins.charts.LinePlotType;
 
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
  * @param {epiviz.ui.charts.VisualizationProperties} properties
- * @returns {epiviz.plugins.charts.LineTrack}
+ * @returns {epiviz.plugins.charts.LinePlot}
  */
-epiviz.plugins.charts.LineTrackType.prototype.createNew = function(id, container, properties) {
-  return new epiviz.plugins.charts.LineTrack(id, container, properties);
+epiviz.plugins.charts.LinePlotType.prototype.createNew = function(id, container, properties) {
+  return new epiviz.plugins.charts.LinePlot(id, container, properties);
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.LineTrackType.prototype.typeName = function() {
-  return 'epiviz.plugins.charts.LineTrack';
+epiviz.plugins.charts.LinePlotType.prototype.typeName = function() {
+  return 'epiviz.plugins.charts.LinePlot';
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.LineTrackType.prototype.chartName = function() {
-  return 'Line Track';
+epiviz.plugins.charts.LinePlotType.prototype.chartName = function() {
+  return 'Line Plot';
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.LineTrackType.prototype.chartHtmlAttributeName = function() {
-  return 'lines';
+epiviz.plugins.charts.LinePlotType.prototype.chartHtmlAttributeName = function() {
+  return 'line-plot';
 };
 
 /**
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
-epiviz.plugins.charts.LineTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.FEATURE; }; };
+epiviz.plugins.charts.LinePlotType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.FEATURE; }; };
+
+/**
+ * If true, this flag indicates that the corresponding chart can only show measurements that belong to the same
+ * data source group
+ * @returns {boolean}
+ */
+epiviz.plugins.charts.LinePlotType.prototype.isRestrictedToSameDatasourceGroup = function() { return true; };
 
 /**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}
  */
-epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
-  return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([
+epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
+  return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.STEP,
+      epiviz.plugins.charts.LinePlotType.CustomSettings.STEP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       1,
       'Step'),
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS,
+      epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_POINTS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       false,
       'Show points'),
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES,
+      epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_LINES,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
       'Show lines'),
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS,
+      epiviz.plugins.charts.LinePlotType.CustomSettings.POINT_RADIUS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       1,
       'Point radius'),
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS,
+      epiviz.plugins.charts.LinePlotType.CustomSettings.LINE_THICKNESS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       1,
       'Line thickness'),
@@ -104,7 +111,7 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
       'Max Y'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION,
+      epiviz.plugins.charts.LinePlotType.CustomSettings.INTERPOLATION,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       'linear',
       'Interpolation',
@@ -115,7 +122,7 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
 /**
  * @enum {string}
  */
-epiviz.plugins.charts.LineTrackType.CustomSettings = {
+epiviz.plugins.charts.LinePlotType.CustomSettings = {
   STEP: 'step',
   SHOW_POINTS: 'showPoints',
   SHOW_LINES: 'showLines',
@@ -123,3 +130,4 @@ epiviz.plugins.charts.LineTrackType.CustomSettings = {
   LINE_THICKNESS: 'lineThickness',
   INTERPOLATION: 'interpolation'
 };
+
