@@ -98,7 +98,11 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   /** @type {number} */
   var step = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.STEP];
 
+  /** @type {string} */
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.INTERPOLATION];
+
+  /** @type {string} */
+  var offset = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.OFFSET];
 
   var self = this;
 
@@ -161,7 +165,8 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     seriesAreas.push(areas);
   });
 
-  var stack = d3.layout.stack().offset('wiggle');
+  Math.seedrandom(0);
+  var stack = d3.layout.stack().offset(offset);
   var layers = stack(seriesAreas);
 
   var yScale = d3.scale.linear()

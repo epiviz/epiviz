@@ -87,6 +87,13 @@ epiviz.plugins.charts.StackedLineTrackType.prototype.customSettingsDefs = functi
       'Step'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedLineTrackType.CustomSettings.OFFSET,
+      epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
+      'zero',
+      'Offset',
+      ['zero', 'wiggle']),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.StackedLineTrackType.CustomSettings.INTERPOLATION,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       'basis',
@@ -100,6 +107,7 @@ epiviz.plugins.charts.StackedLineTrackType.prototype.customSettingsDefs = functi
  */
 epiviz.plugins.charts.StackedLineTrackType.CustomSettings = {
   STEP: 'step',
+  OFFSET: 'offset',
   INTERPOLATION: 'interpolation'
 };
 
