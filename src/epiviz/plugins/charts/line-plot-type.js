@@ -73,10 +73,10 @@ epiviz.plugins.charts.LinePlotType.prototype.isRestrictedToSameDatasourceGroup =
 epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
   return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LinePlotType.CustomSettings.STEP,
-      epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      1,
-      'Step'),
+      epiviz.ui.charts.Visualization.CustomSettings.LABEL,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      'bacteria',
+      'Columns labels'),
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_POINTS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
@@ -90,12 +90,12 @@ epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LinePlotType.CustomSettings.POINT_RADIUS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      1,
+      4,
       'Point radius'),
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LinePlotType.CustomSettings.LINE_THICKNESS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      1,
+      3,
       'Line thickness'),
 
     new epiviz.ui.charts.CustomSetting(
@@ -113,7 +113,7 @@ epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LinePlotType.CustomSettings.INTERPOLATION,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
-      'linear',
+      'basis',
       'Interpolation',
       ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone'])
   ]);
@@ -128,6 +128,7 @@ epiviz.plugins.charts.LinePlotType.CustomSettings = {
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',
   LINE_THICKNESS: 'lineThickness',
-  INTERPOLATION: 'interpolation'
+  INTERPOLATION: 'interpolation',
+  LABEL: 'label'
 };
 
