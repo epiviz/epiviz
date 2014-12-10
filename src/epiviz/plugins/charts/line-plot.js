@@ -32,6 +32,8 @@ epiviz.plugins.charts.LinePlot.constructor = epiviz.plugins.charts.LinePlot;
 epiviz.plugins.charts.LinePlot.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Plot.prototype._initialize.call(this);
+
+  this._svg.classed('line-plot', true);
 };
 
 /**
@@ -100,7 +102,7 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
 
   if (linesGroup.empty()) {
     var graph = this._svg.append('g')
-      .attr('class', 'lines')
+      .attr('class', 'lines items')
       .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
   }
   return this._drawLines(range, data, xScale, yScale);
@@ -137,9 +139,6 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   var self = this;
 
   var graph = this._svg.select('.lines');
-
-  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
-  var items = [];
 
   var firstGlobalIndex = data.first().value.globalStartIndex();
   var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
@@ -196,43 +195,66 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   var indices = epiviz.utils.range(nEntries, firstGlobalIndex);
 
+  var lineItems;
   if (!showLines) {
     graph.selectAll('.line-series').remove();
   } else {
+    lineItems = indices.map(function(index) {
+      var rowItem = data.first().value.getByGlobalIndex(index).rowItem;
+      return new epiviz.ui.charts.ChartObject(
+        sprintf('line-series-%s', index),
+        rowItem.start(),
+        rowItem.end(),
+        valuesForIndex(index),
+        index,
+        self.measurements().toArray().map(function(m, i) { return [data.get(m).getByGlobalIndex(index)]; }), // valueItems one for each measurement
+        self.measurements().toArray(), // measurements
+        '');
+    });
     var lines = graph.selectAll('.line-series')
-      .data(indices, String);
+      .data(lineItems, function(d) { return d.id; });
 
     lines
       .enter()
-      .append('path').attr('class', 'line-series')
-      .attr('d', lineData)
-      .style('shape-rendering', 'auto')
+      .append('g').attr('class', 'line-series item')
       .style('opacity', '0')
-      .on('mouseover', function(index) {
-        // For now, create the chart object here, but later, we will have to create the set of items
-        var item = data.first().value.getByGlobalIndex(index).rowItem;
-        var d = new epiviz.ui.charts.ChartObject(
-          sprintf('line-series-%s', index),
-          item.start(),
-          item.end(),
-          valuesForIndex(index),
-          undefined,
-          [self.measurements().toArray().map(function(m, i) { return data.get(m).getByGlobalIndex(index); })], // valueItems one for each measurement
-          self.measurements().toArray(), // measurements
-          '');
+      .on('mouseover', function(d) {
         self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
       })
       .on('mouseout', function () {
         self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      })
+      .each(function(d) {
+        d3.select(this)
+          .append('path').attr('class', 'bg-line')
+          //.attr('d', lineData(index))
+          .attr('d', lineFunc(d.values))
+          .style('shape-rendering', 'auto')
+          .style('stroke-width', 10)
+          .style('stroke', '#dddddd')
+          .style('stroke-opacity', '0.1');
+        d3.select(this)
+          .append('path').attr('class', 'main-line')
+          //.attr('d', lineData(index))
+          .attr('d', lineFunc(d.values))
+          .style('shape-rendering', 'auto');
       });
 
     lines
       .transition()
       .duration(500)
-      .attr('d', lineData)
       .style('opacity', '0.7')
-      .style('stroke', function(index) { return colors.get(index); })
-      .style('stroke-width', lineThickness);
+      .each(function(d) {
+        d3.select(this)
+          .selectAll('.bg-line')
+          //.attr('d', lineData(index));
+          .attr('d', lineFunc(d.values));
+        d3.select(this).selectAll('.main-line')
+          //.attr('d', lineData(index))
+          .attr('d', lineFunc(d.values))
+          .style('stroke', colors.get(d.seriesIndex))
+          .style('stroke-width', lineThickness);
+      });
 
     lines
       .exit()
@@ -297,7 +319,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     .append('text')
     .attr('class', 'chart-title')
     .attr('font-weight', 'bold')
-    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('fill', function(index, i) { return colors.get(index); })
     .attr('y', self.margins().top() - 5)
     .text(function(index) { return data.first().value.getByGlobalIndex(index).rowItem.metadata(label); });
 
@@ -314,5 +336,5 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     return self.margins().left() + 3 + titleEntriesStartPosition[i];
   });
 
-  return items; // TODO: Put something in this array
+  return lineItems; // TODO: Put something in this array
 };

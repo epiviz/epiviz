@@ -89,6 +89,11 @@ text {
 .heatmap-plot .selected .row-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }
 .heatmap-plot .hovered .row-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }
 
+/* Line Plot */
+
+.line-plot .items .bg-line { stroke: #dddddd; stroke-opacity: 0.1; }
+.line-plot .hovered .bg-line { stroke-opacity: 1!important; opacity: 1!important; }
+
 /* Line Track */
 
 .line-track {}

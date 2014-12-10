@@ -327,14 +327,6 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
         return;
       }
 
-      /*self.onRequestClearDatasourceGroupCache().notify({
-        datasourceGroup: datasourceGroup,
-        result: new epiviz.events.EventResult()
-      });
-      self.onRequestRedraw().notify({
-        result: new epiviz.events.EventResult()
-      });*/
-
       callback(epiviz.data.Response.fromRawObject({
         data: {
           globalStartIndex: start,
@@ -366,14 +358,6 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       }
 
       var values = this._selectedValues.map(function(row, i) { return row[colIndex]; });
-
-      /*self.onRequestClearDatasourceGroupCache().notify({
-        datasourceGroup: datasourceGroup,
-        result: new epiviz.events.EventResult()
-      });
-      self.onRequestRedraw().notify({
-        result: new epiviz.events.EventResult()
-      });*/
 
       callback(epiviz.data.Response.fromRawObject({
         data: { globalStartIndex: start, values: values.slice(startIndex, endIndex + 1) },
@@ -554,43 +538,3 @@ epiviz.data.MetagenomicsDataProvider.prototype._getNodeSelection = function(node
     return result;
   }
 };
-
-/**
- * @param {number} start
- * @param {number} end
- * @returns {Array.<number>}
- * @private
- */
-/*epiviz.data.MetagenomicsDataProvider.prototype._selectRowIndices = function(start, end) {
-  var self = this;
-  var ranges = {};
-  var root = this._hierarchy;
-  ranges[root.id] = [0, root.nleaves];
-  var selectedNodes = [];
-  var computeRanges = function(node) {
-    if (!node.nchildren) { return; }
-    var lastEnd = ranges[node.id][0];
-    node.children.every(function(child) {
-      var childRange = [lastEnd, child.nleaves];
-      ranges[child.id] = childRange;
-      lastEnd += child.nleaves;
-      if (childRange[0] + childRange[1] > start && childRange[0] <= end) {
-        switch (child.selectionType) {
-          case epiviz.ui.charts.tree.NodeSelectionType.NONE:
-            // Ignore the node
-            break;
-          case epiviz.ui.charts.tree.NodeSelectionType.NODE:
-            selectedNodes.push(child);
-            break;
-          case epiviz.ui.charts.tree.NodeSelectionType.LEAVES:
-            if (child.nchildren) {
-              computeRanges(child);
-            } else {
-              selectedNodes.push(child);
-            }
-            break;
-        }
-      }
-    });
-  };
-};*/
