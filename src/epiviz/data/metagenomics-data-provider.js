@@ -411,7 +411,15 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
 
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
       var datasourceGroup = request.get('datasourceGroup');
+
+      /**
+       * @type {Object.<string, number>}
+       */
       var selection = request.get('selection');
+
+      /**
+       * @type {Object.<string, number>}
+       */
       var order = request.get('order');
 
       if (!selection && !order) { return; }

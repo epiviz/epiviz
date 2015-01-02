@@ -51,12 +51,14 @@ epiviz.ui.charts.decoration.ChartTooltip.prototype.decorate = function() {
       }
     },
     track: true,
-    show: false,
+    show: false
+    // TODO: Use a better tooltip
+    /*,
     position: {
       my: 'left+10 bottom-10',
       of: event,
       collision: 'fit'
-    }
+    }*/
   });
 };
 

@@ -62,10 +62,10 @@ function addTreeMetadata(node) {
     nleaves += node.children[i].nleaves;
   }
 
-  for (i = 0; i < node.children.length; ++i) {
+  /*for (i = 0; i < node.children.length; ++i) {
     node.children[i].nextSibling = (i < node.children.length - 1) ? node.children[i + 1].id : undefined;
     node.children[i].prevSibling = (i > 0) ? node.children[i - 1].id : undefined;
-  }
+  }*/
   node.nleaves = nleaves;
 }
 

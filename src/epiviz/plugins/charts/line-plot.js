@@ -104,6 +104,10 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
     var graph = this._svg.append('g')
       .attr('class', 'lines items')
       .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
+
+    var selectedGroup = graph.append('g').attr('class', 'selected');
+    graph.append('g').attr('class', 'hovered');
+    selectedGroup.append('g').attr('class', 'hovered');
   }
   return this._drawLines(range, data, xScale, yScale);
 };
@@ -216,7 +220,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
     lines
       .enter()
-      .append('g').attr('class', 'line-series item')
+      .insert('g', ':first-child').attr('class', 'line-series item')
       .style('opacity', '0')
       .on('mouseover', function(d) {
         self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
