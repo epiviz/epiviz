@@ -1,10 +1,10 @@
 /**
  * Created by Florin Chelaru ( florinc [at] umd [dot] edu )
- * Date: 12/9/2014
- * Time: 1:09 AM
+ * Date: 1/2/2015
+ * Time: 3:50 PM
  */
 
-goog.provide('epiviz.plugins.charts.LinePlot');
+goog.provide('epiviz.plugins.charts.StackedLinePlot');
 
 /**
  * @param {string} id
@@ -13,7 +13,7 @@ goog.provide('epiviz.plugins.charts.LinePlot');
  * @extends {epiviz.ui.charts.Plot}
  * @constructor
  */
-epiviz.plugins.charts.LinePlot = function(id, container, properties) {
+epiviz.plugins.charts.StackedLinePlot = function(id, container, properties) {
   // Call superclass constructor
   epiviz.ui.charts.Plot.call(this, id, container, properties);
 
@@ -23,17 +23,17 @@ epiviz.plugins.charts.LinePlot = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.plugins.charts.LinePlot.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Plot.prototype);
-epiviz.plugins.charts.LinePlot.constructor = epiviz.plugins.charts.LinePlot;
+epiviz.plugins.charts.StackedLinePlot.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Plot.prototype);
+epiviz.plugins.charts.StackedLinePlot.constructor = epiviz.plugins.charts.StackedLinePlot;
 
 /**
  * @protected
  */
-epiviz.plugins.charts.LinePlot.prototype._initialize = function() {
+epiviz.plugins.charts.StackedLinePlot.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Plot.prototype._initialize.call(this);
 
-  this._svg.classed('line-plot', true);
+  this._svg.classed('stacked-line-plot', true);
 };
 
 /**
@@ -43,7 +43,7 @@ epiviz.plugins.charts.LinePlot.prototype._initialize = function() {
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
-epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoom) {
+epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, slide, zoom) {
 
   var lastRange = this._lastRange;
 
@@ -62,10 +62,10 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
   if (!data || !range) { return []; }
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
-  var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
+  //var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  //var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
 
-  if (minY == CustomSetting.DEFAULT) {
+  /*if (minY == CustomSetting.DEFAULT) {
     minY = null;
     this.measurements().foreach(function(m) {
       if (m === null) { return; }
@@ -79,22 +79,22 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
       if (m === null) { return; }
       if (maxY === null || m.maxValue() > maxY) { maxY = m.maxValue(); }
     });
-  }
+  }*/
 
-  if (minY === null && maxY === null) { minY = -1; maxY = 1; }
+  /*if (minY === null && maxY === null) { minY = -1; maxY = 1; }
   if (minY === null) { minY = maxY - 1; }
-  if (maxY === null) { maxY = minY + 1; }
+  if (maxY === null) { maxY = minY + 1; }*/
 
   var Axis = epiviz.ui.charts.Axis;
   var xScale = d3.scale.linear()
     .domain([0, this.measurements().size() - 1])
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
-  var yScale = d3.scale.linear()
+  /*var yScale = d3.scale.linear()
     .domain([minY, maxY])
-    .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);
+    .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);*/
 
   this._clearAxes();
-  this._drawAxes(xScale, yScale, this.measurements().size(), 5,
+  this._drawAxes(xScale, undefined, this.measurements().size(), 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
     this.measurements().toArray().map(function(m) { return m.name(); }));
 
@@ -109,36 +109,28 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
     graph.append('g').attr('class', 'hovered');
     selectedGroup.append('g').attr('class', 'hovered');
   }
-  return this._drawLines(range, data, xScale, yScale);
+  return this._drawLines(range, data, xScale);
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
  * @param {function} xScale D3 linear scale
- * @param {function} yScale D3 linear scale
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
-epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xScale, yScale) {
+epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, data, xScale) {
+  var Axis = epiviz.ui.charts.Axis;
+
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
-  /** @type {boolean} */
-  var showPoints = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_POINTS];
-
-  /** @type {boolean} */
-  var showLines = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_LINES];
-
-  /** @type {number} */
-  var pointRadius = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.POINT_RADIUS];
-
-  /** @type {number} */
-  var lineThickness = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.LINE_THICKNESS];
-
-  var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.INTERPOLATION];
+  var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION];
 
   var label = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.LABEL];
+
+  /** @type {string} */
+  var offset = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.OFFSET];
 
   var self = this;
 
@@ -200,117 +192,122 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   var indices = epiviz.utils.range(nEntries, firstGlobalIndex);
 
   var lineItems;
-  if (!showLines) {
-    graph.selectAll('.line-series').remove();
-  } else {
-    lineItems = indices.map(function(index) {
-      var rowItem = data.first().value.getByGlobalIndex(index).rowItem;
-      return new epiviz.ui.charts.ChartObject(
-        sprintf('line-series-%s', index),
-        rowItem.start(),
-        rowItem.end(),
-        valuesForIndex(index),
-        index,
-        self.measurements().toArray().map(function(m, i) { return [data.get(m).getByGlobalIndex(index)]; }), // valueItems one for each measurement
-        self.measurements().toArray(), // measurements
-        '');
+
+  lineItems = indices.map(function(index) {
+    var rowItem = data.first().value.getByGlobalIndex(index).rowItem;
+    return new epiviz.ui.charts.ChartObject(
+      sprintf('line-series-%s', index),
+      rowItem.start(),
+      rowItem.end(),
+      valuesForIndex(index),
+      index,
+      self.measurements().toArray().map(function(m, i) { return [data.get(m).getByGlobalIndex(index)]; }), // valueItems one for each measurement
+      self.measurements().toArray(), // measurements
+      '');
+  });
+
+  var seriesAreas = indices.map(function(index) { return valuesForIndex(index); });
+  var stack = d3.layout.stack().offset(offset);
+  var layers = stack(seriesAreas);
+
+  var yScale = d3.scale.linear()
+    .domain([
+      Math.min(0, d3.min(layers, function(layer) { return d3.min(layer, function(d) { return d.y0 + d.y; }); })),
+      d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); })])
+    .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);
+
+  var area = d3.svg.area()
+    .x(function(d) { return xScale(d.x); })
+    .y0(function(d) { return yScale(d.y0); })
+    .y1(function(d) { return yScale(d.y0 + d.y); })
+    .interpolate(interpolation);
+
+  var lines = graph
+    .selectAll('.line-series')
+    //.data(layers);
+    .data(lineItems, function(d) { return d.seriesIndex; });
+
+  lines.enter()
+    .insert('path', ':first-child').attr('class', 'line-series item')
+    //.attr('d', area)
+    .attr('d', function(d, i) { return area(layers[i]); })
+    .style('opacity', '0')
+    .style('shape-rendering', 'auto')
+    .style('fill', function(d, i) { return colors.get(d.seriesIndex); })
+    .on('mouseover', function(d, i) {
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+    })
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     });
-    var lines = graph.selectAll('.line-series')
-      .data(lineItems, function(d) { return d.id; });
 
-    lines
-      .enter()
-      .insert('g', ':first-child').attr('class', 'line-series item')
-      .style('opacity', '0')
-      .on('mouseover', function(d) {
-        self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
-      })
-      .on('mouseout', function () {
-        self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-      })
-      .each(function(d) {
-        d3.select(this)
-          .append('path').attr('class', 'bg-line')
-          //.attr('d', lineData(index))
-          .attr('d', lineFunc(d.values))
-          .style('shape-rendering', 'auto')
-          .style('stroke-width', 10)
-          .style('stroke', '#dddddd')
-          .style('stroke-opacity', '0.1');
-        d3.select(this)
-          .append('path').attr('class', 'main-line')
-          //.attr('d', lineData(index))
-          .attr('d', lineFunc(d.values))
-          .style('shape-rendering', 'auto');
-      });
+  lines
+    .transition()
+    .duration(500)
+    .style('opacity', '1')
+    //.attr('d', area)
+    .attr('d', function(d, i) { return area(layers[i]); })
+    .style('fill', function(d, i) { return colors.get(d.seriesIndex); });
 
-    lines
-      .transition()
-      .duration(500)
-      .style('opacity', '0.7')
-      .each(function(d) {
-        d3.select(this)
-          .selectAll('.bg-line')
-          //.attr('d', lineData(index));
-          .attr('d', lineFunc(d.values));
-        d3.select(this).selectAll('.main-line')
-          //.attr('d', lineData(index))
-          .attr('d', lineFunc(d.values))
-          .style('stroke', colors.get(d.seriesIndex))
-          .style('stroke-width', lineThickness);
-      });
 
-    lines
-      .exit()
-      .transition()
-      .duration(500)
-      .style('opacity', '0')
-      .remove();
-  }
 
-  if (!showPoints) {
-    graph.selectAll('.points').remove();
-  } else {
-    var points = graph.selectAll('.points')
-      .data(indices, String);
 
-    points
-      .enter()
-      .append('g').attr('class', 'points')
-      .each(function(index) {
-        d3.select(this).selectAll('circle')
-          .data(valuesForIndex(index))
-          .enter()
-          .append('circle')
-          .attr('cx', function(d) { return xScale(d.x); })
-          .attr('cy', function(d) { return yScale(d.y); })
-          .attr('r', pointRadius)
-          .attr('fill', 'none')
-          .attr('stroke', colors.get(index));
-      })
-      .style('opacity', '0');
 
-    points
-      .each(function(index) {
-        d3.select(this).selectAll('circle')
-          .transition()
-          .duration(500)
-          .attr('cx', function(d) { return xScale(d.x); })
-          .attr('cy', function(d) { return yScale(d.y); })
-          .attr('r', pointRadius)
-          .style('stroke-width', 2)
-          .attr('stroke', colors.get(index));
-      })
-      .transition()
-      .duration(500)
-      .style('opacity', '1');
 
-    points
-      .exit()
-      .transition()
-      .duration(500)
-      .style('opacity', '0');
-  }
+
+  /*var lines = graph.selectAll('.line-series')
+    .data(lineItems, function(d) { return d.id; });
+
+  lines
+    .enter()
+    .insert('g', ':first-child').attr('class', 'line-series item')
+    .style('opacity', '0')
+    .on('mouseover', function(d) {
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+    })
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+    })
+    .each(function(d) {
+      d3.select(this)
+        .append('path').attr('class', 'bg-line')
+        //.attr('d', lineData(index))
+        .attr('d', lineFunc(d.values))
+        .style('shape-rendering', 'auto')
+        .style('stroke-width', 10)
+        .style('stroke', '#dddddd')
+        .style('stroke-opacity', '0.1');
+      d3.select(this)
+        .append('path').attr('class', 'main-line')
+        //.attr('d', lineData(index))
+        .attr('d', lineFunc(d.values))
+        .style('shape-rendering', 'auto');
+    });*/
+
+  /*lines
+    .transition()
+    .duration(500)
+    .style('opacity', '0.7')
+    .each(function(d) {
+      d3.select(this)
+        .selectAll('.bg-line')
+        //.attr('d', lineData(index));
+        .attr('d', lineFunc(d.values));
+      d3.select(this).selectAll('.main-line')
+        //.attr('d', lineData(index))
+        .attr('d', lineFunc(d.values))
+        .style('stroke', colors.get(d.seriesIndex))
+        .style('stroke-width', lineThickness);
+    });*/
+
+  lines
+    .exit()
+    .transition()
+    .duration(500)
+    .style('opacity', '0')
+    .remove();
+
+
 
   // Draw legend
   var title = '';
@@ -342,3 +339,4 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   return lineItems; // TODO: Put something in this array
 };
+

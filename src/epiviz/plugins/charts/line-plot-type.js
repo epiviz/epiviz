@@ -123,12 +123,10 @@ epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
  * @enum {string}
  */
 epiviz.plugins.charts.LinePlotType.CustomSettings = {
-  STEP: 'step',
   SHOW_POINTS: 'showPoints',
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',
   LINE_THICKNESS: 'lineThickness',
-  INTERPOLATION: 'interpolation',
-  LABEL: 'label'
+  INTERPOLATION: 'interpolation'
 };
 

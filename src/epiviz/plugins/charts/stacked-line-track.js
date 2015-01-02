@@ -198,29 +198,27 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     .y1(function(d) { return yScale(d.y0 + d.y); })
     .interpolate(interpolation);
 
+  var lines = graph
+    .selectAll('path')
+    .data(layers);
 
+  lines.enter()
+    .append('path')
+    .attr('d', area)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .style('fill', function(d, i) { return colors.get(i); })
+    .on('mouseover', function() { self._captureMouseHover(); })
+    .on('mousemove', function() { self._captureMouseHover(); })
+    .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
 
-    var lines = graph
-      .selectAll('path')
-      .data(layers);
-
-    lines.enter()
-      .append('path')
-      .attr('d', area)
-      .style('shape-rendering', 'auto')
-      .style('stroke-width', '0')
-      .style('fill', function(d, i) { return colors.get(i); })
-      .on('mouseover', function() { self._captureMouseHover(); })
-      .on('mousemove', function() { self._captureMouseHover(); })
-      .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
-
-    lines
-      .attr('d', area)
-      .style('fill', function(d, i) { return colors.get(i); })
-      .attr('transform', 'translate(' + (+delta) + ')')
-      .transition()
-      .duration(500)
-      .attr('transform', 'translate(' + (0) + ')');
+  lines
+    .attr('d', area)
+    .style('fill', function(d, i) { return colors.get(i); })
+    .attr('transform', 'translate(' + (+delta) + ')')
+    .transition()
+    .duration(500)
+    .attr('transform', 'translate(' + (0) + ')');
 
   return items;
 };
