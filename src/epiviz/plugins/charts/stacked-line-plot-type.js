@@ -90,7 +90,13 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       'step-after',
       'Interpolation',
-      ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone'])
+      ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone']),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedLinePlotType.CustomSettings.SCALE_TO_PERCENT,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Scale to Percent')
   ]);
 };
 
@@ -99,5 +105,6 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
  */
 epiviz.plugins.charts.StackedLinePlotType.CustomSettings = {
   INTERPOLATION: 'interpolation',
-  OFFSET: 'offset'
+  OFFSET: 'offset',
+  SCALE_TO_PERCENT: 'scaleToPercent'
 };

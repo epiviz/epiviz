@@ -336,9 +336,11 @@ epiviz.ui.charts.Visualization.prototype._clearAxes = function(svg) {
  * @param {function} [yAxisFormat]
  * @param {Array.<string>} [xLabels]
  * @param {Array.<string>} [yLabels]
+ * @param {boolean} [xLabelsBtTicks]
+ * @param {boolean} [yLabelsBtTicks]
  * @protected
  */
-epiviz.ui.charts.Visualization.prototype._drawAxes = function (xScale, yScale, xTicks, yTicks, svg, width, height, margins, xAxisFormat, yAxisFormat, xLabels, yLabels) {
+epiviz.ui.charts.Visualization.prototype._drawAxes = function (xScale, yScale, xTicks, yTicks, svg, width, height, margins, xAxisFormat, yAxisFormat, xLabels, yLabels, xLabelsBtTicks, yLabelsBtTicks) {
 
   svg = svg || this._svg;
   margins = margins || this.margins();
@@ -392,12 +394,14 @@ epiviz.ui.charts.Visualization.prototype._drawAxes = function (xScale, yScale, x
       .call(xAxis);
 
     if (xLabels) {
+      var xTransform = 'rotate(-90)';
+      if (xLabelsBtTicks) { xTransform += 'translate(0,' + (xScale(0.5) - xScale(0)) + ')'; }
       xAxisLine
       .selectAll('text')
       .style('text-anchor', 'end')
       .attr('dx', '-.8em')
       .attr('dy', '-0.5em')
-      .attr('transform', 'rotate(-90)');
+      .attr('transform', xTransform);
     }
   }
 

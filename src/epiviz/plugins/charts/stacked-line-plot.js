@@ -85,9 +85,12 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   if (minY === null) { minY = maxY - 1; }
   if (maxY === null) { maxY = minY + 1; }*/
 
+  var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION];
+  var xBound = interpolation.indexOf('step') == 0 ? this.measurements().size() : this.measurements().size() - 1;
+
   var Axis = epiviz.ui.charts.Axis;
   var xScale = d3.scale.linear()
-    .domain([0, this.measurements().size() - 1])
+    .domain([0, xBound])
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
   /*var yScale = d3.scale.linear()
     .domain([minY, maxY])
@@ -96,7 +99,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   this._clearAxes();
   this._drawAxes(xScale, undefined, this.measurements().size(), 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
-    this.measurements().toArray().map(function(m) { return m.name(); }));
+    this.measurements().toArray().map(function(m) { return m.name(); }), undefined, interpolation.indexOf('step') == 0);
 
   var linesGroup = this._svg.selectAll('.lines');
 
@@ -131,6 +134,9 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
 
   /** @type {string} */
   var offset = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.OFFSET];
+
+  /** @type {boolean} */
+  var scaleToPercent = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.SCALE_TO_PERCENT];
 
   var self = this;
 
@@ -167,29 +173,37 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   firstGlobalIndex = firstIndex;
   lastGlobalIndex = lastIndex;
   nEntries = lastIndex - firstIndex;
+  var indices = epiviz.utils.range(nEntries, firstGlobalIndex);
 
-  var width = this.width();
+  /** @type {epiviz.measurements.MeasurementHashtable} */
+  var msSums = null;
+  if (scaleToPercent) {
+    msSums = new epiviz.measurements.MeasurementHashtable();
 
-  var lineFunc = d3.svg.line()
-    .x(function(d) {
-      return xScale(d.x);
-    })
-    .y(function(d) {
-      return yScale(d.y);
-    })
-    .interpolate(interpolation);
+    this.measurements().foreach(function(m) {
+      var sum = indices
+        .map(function(i) { return data.get(m).getByGlobalIndex(i).value; })
+        .reduce(function(v1, v2) { return v1 + v2; });
+      msSums.put(m, sum);
+    });
+  }
 
   var valuesForIndex = function(index) {
-    return self.measurements().toArray().map(function(m, i) {
-      return { x: i, y: data.get(m).getByGlobalIndex(index).value };
-    });
-  };
+    var ret = [];
+    if (interpolation == 'step-before') {
+      ret.push({ x: 0, y: 0 })
+    }
+    ret = ret.concat(self.measurements().toArray().map(function(m, i) {
+      var div = scaleToPercent ? msSums.get(m) : 1;
+      div = div || 1; // Prevent division by 0
+      return { x: ret.length + i, y: data.get(m).getByGlobalIndex(index).value / div };
+    }));
 
-  var lineData = function(index) {
-    return lineFunc(valuesForIndex(index));
+    if (interpolation == 'step-after') {
+      ret.push({ x: ret.length, y: 0 });
+    }
+    return ret;
   };
-
-  var indices = epiviz.utils.range(nEntries, firstGlobalIndex);
 
   var lineItems;
 
