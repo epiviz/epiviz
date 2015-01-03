@@ -65,6 +65,17 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
       case epiviz.ui.charts.CustomSetting.Type.STRING:
         this._customSettingsValues[setting.id] = (val === '' || val) ? val : setting.defaultValue;
         break;
+      case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA:
+        var possibleValues = {};
+        properties.visConfigSelection.measurements.foreach(function(m) {
+          m.metadata().forEach(function(metadataCol) { possibleValues[metadataCol] = metadataCol; });
+        });
+        setting.possibleValues = Object.keys(possibleValues);
+        setting.possibleValues.sort();
+        val = val || setting.defaultValue;
+        this._customSettingsValues[setting.id] = (val in possibleValues) ?
+          val : ((setting.possibleValues.length) ? setting.possibleValues[0] : '');
+        break;
       default:
         this._customSettingsValues[setting.id] = val || setting.defaultValue;
         break;

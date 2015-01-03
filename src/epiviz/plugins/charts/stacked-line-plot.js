@@ -175,6 +175,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   nEntries = lastIndex - firstIndex;
   var indices = epiviz.utils.range(nEntries, firstGlobalIndex);
 
+  if (indices.length == 0) { return []; }
+
   /** @type {epiviz.measurements.MeasurementHashtable} */
   var msSums = null;
   if (scaleToPercent) {

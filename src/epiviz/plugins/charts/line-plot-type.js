@@ -74,8 +74,8 @@ epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
   return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
       epiviz.ui.charts.Visualization.CustomSettings.LABEL,
-      epiviz.ui.charts.CustomSetting.Type.STRING,
-      'bacteria',
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
+      'label',
       'Columns labels'),
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_POINTS,

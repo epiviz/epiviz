@@ -157,7 +157,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
       indices.forEach(function(j) {
         /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
         var cell = series.getByGlobalIndex(j);
-        labels.push(cell.rowItem.metadata('bacteria'));
+        labels.push(cell.rowItem.metadata('bacteria')); // TODO: Change to something more generic
       });
     }
   });
