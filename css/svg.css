@@ -102,8 +102,8 @@ text {
 
 .stacked-line-plot {}
 .stacked-line-plot .item { stroke-width: 0; }
-.stacked-line-plot .selected .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }
-.stacked-line-plot .hovered .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2px!important; stroke-opacity: 1.0; opacity: 1; }
+.stacked-line-plot .selected .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1!important; }
+.stacked-line-plot .hovered .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2px!important; stroke-opacity: 1.0; opacity: 1!important; }
 
 /* Facetzoom */
 

@@ -231,7 +231,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   lines
     .transition()
     .duration(500)
-    .style('opacity', '1')
+    .style('opacity', '0.7')
     .attr('d', function(d, i) { return area(layers[i]); })
     .style('fill', function(d, i) { return colors.get(d.seriesIndex); });
 
@@ -273,3 +273,13 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   return lineItems;
 };
 
+/**
+ * @returns {Array.<string>}
+ */
+epiviz.plugins.charts.StackedLinePlot.prototype.colorLabels = function() {
+  var labels = [];
+  for (var i = 0; i < this.colors().size() && i < 20; ++i) {
+    labels.push('Color ' + (i + 1));
+  }
+  return labels;
+};

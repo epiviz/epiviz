@@ -342,3 +342,14 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   return lineItems;
 };
+
+/**
+ * @returns {Array.<string>}
+ */
+epiviz.plugins.charts.LinePlot.prototype.colorLabels = function() {
+  var labels = [];
+  for (var i = 0; i < this.colors().size() && i < 20; ++i) {
+    labels.push('Color ' + (i + 1));
+  }
+  return labels;
+};
