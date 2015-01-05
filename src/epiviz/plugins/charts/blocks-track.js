@@ -226,10 +226,10 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
 };
 
 /**
- * @param {Array.<{name: string, color: string}>} colorMap
+ * @param {epiviz.ui.charts.ColorPalette} colors
  */
-epiviz.plugins.charts.BlocksTrack.prototype.setColorMap = function(colorMap) {
+epiviz.plugins.charts.BlocksTrack.prototype.setColors = function(colors) {
   this.container().find('.items').remove();
-  epiviz.ui.charts.Chart.prototype.setColorMap.call(this, colorMap);
+  epiviz.ui.charts.Visualization.prototype.setColors.call(this, colors);
 };
 

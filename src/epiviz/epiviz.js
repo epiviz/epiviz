@@ -100,8 +100,6 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerUiSearch();
 
   this._registerChartRequestHierarchy();
-  // TODO Cleanup
-  //this._registerChartPropagateHierarchySelection();
   this._registerChartPropagateHierarchySelection();
 
   // Register for Data events
@@ -245,7 +243,7 @@ epiviz.EpiViz.prototype._registerRequestWorkspaces = function() {
         var ws = [];
         var activeWorkspace = null;
         for (var i = 0; i < rawWorkspaces.length; ++i) {
-           var w = epiviz.workspaces.Workspace.fromRawObject(rawWorkspaces[i], self._chartFactory);
+           var w = epiviz.workspaces.Workspace.fromRawObject(rawWorkspaces[i], self._chartFactory, self._config);
 
           if (w.id() === null) {
             // This is a workspace retrieved using e.activeWorkspaceId
@@ -298,7 +296,7 @@ epiviz.EpiViz.prototype._registerUiSaveWorkspace = function() {
         workspace = self._workspaceManager.activeWorkspace().copy(e.name);
       }
 
-      self._dataManager.saveWorkspace(workspace, function(id) {
+      self._dataManager.saveWorkspace(workspace, self._config, function(id) {
         workspace = workspace.copy(workspace.name(), id);
         workspace.resetChanged();
 
@@ -366,7 +364,7 @@ epiviz.EpiViz.prototype._registerUiActiveWorkspaceChanged = function() {
           self._dataManager.getWorkspaces(function(rawWorkspaces) {
             var result = null;
             for (var i = 0; i < rawWorkspaces.length; ++i) {
-              var w = epiviz.workspaces.Workspace.fromRawObject(rawWorkspaces[i], self._chartFactory);
+              var w = epiviz.workspaces.Workspace.fromRawObject(rawWorkspaces[i], self._chartFactory, self._config);
 
               if (w.id() === null) {
                 // This is a workspace retrieved using e.activeWorkspaceId
@@ -433,35 +431,6 @@ epiviz.EpiViz.prototype._registerChartRequestHierarchy = function() {
     })
   }));
 };
-
-// TODO Cleanup
-/**
- * @private
- */
-/*epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
-  var self = this;
-  this._chartManager.onChartPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(e) {
-    var map = {};
-    map[e.id] = e.args;
-    self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
-      self._chartManager.updateCharts(undefined, data, [chartId]);
-    })
-  }));
-};*/
-
-/**
- * @private
- */
-/*epiviz.EpiViz.prototype._registerChartPropagateHierarchyOrder = function() {
-  var self = this;
-  this._chartManager.onChartPropagateHierarchyOrder().addListener(new epiviz.events.EventListener(function(e) {
-    var map = {};
-    map[e.id] = e.args;
-    self._dataManager.propagateHierarchyOrder(map, function(chartId, data) {
-      self._chartManager.updateCharts(undefined, data, [chartId]);
-    })
-  }));
-};*/
 
 /**
  * @private

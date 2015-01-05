@@ -146,9 +146,9 @@ epiviz.ui.charts.Chart.prototype.measurements = function() {
 };
 
 /**
- * @returns {Array.<{name: string, color: string}>}
+ * @returns {Array.<string>}
  */
-epiviz.ui.charts.Chart.prototype.colorMap = function() {
+epiviz.ui.charts.Chart.prototype.colorLabels = function() {
   var self = this;
   var colors = new Array(this.measurements().size());
   this.measurements().foreach(
@@ -157,24 +157,8 @@ epiviz.ui.charts.Chart.prototype.colorMap = function() {
      * @param {number} i
      */
     function(m, i) {
-      colors[i] = { name: m.name(), color: self.properties().colors.get(i) };
+      colors[i] = m.name();
     });
 
   return colors;
-};
-
-/**
- * @param {Array.<{name: string, color: string}>} colorMap
- */
-epiviz.ui.charts.Chart.prototype.setColorMap = function(colorMap) {
-  var colors = [];
-  for (var i = 0; i < colorMap.length; ++i) {
-    colors.push(colorMap[i].color);
-  }
-
-  for (; i < this.properties().colors.size(); ++i) {
-    colors.push(this.properties().colors.get(i));
-  }
-
-  this.setColors(new epiviz.ui.charts.ColorPalette(colors));
 };

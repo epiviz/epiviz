@@ -248,15 +248,16 @@ epiviz.data.Request.getSeqInfos = function() {
 
 /**
  * @param {epiviz.workspaces.Workspace} workspace
+ * @param {epiviz.Config} config
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.saveWorkspace = function(workspace) {
+epiviz.data.Request.saveWorkspace = function(workspace, config) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.SAVE_WORKSPACE,
     id: workspace.id(),
     name: workspace.name(),
-    content: encodeURIComponent(JSON.stringify(workspace.raw().content))
+    content: encodeURIComponent(JSON.stringify(workspace.raw(config).content))
   },
   epiviz.data.Request.Method.POST);
 };

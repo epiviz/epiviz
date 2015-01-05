@@ -61,30 +61,6 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  var CustomSetting = epiviz.ui.charts.CustomSetting;
-  //var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
-  //var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
-
-  /*if (minY == CustomSetting.DEFAULT) {
-    minY = null;
-    this.measurements().foreach(function(m) {
-      if (m === null) { return; }
-      if (minY === null || m.minValue() < minY) { minY = m.minValue(); }
-    });
-  }
-
-  if (maxY == CustomSetting.DEFAULT) {
-    maxY = null;
-    this.measurements().foreach(function(m) {
-      if (m === null) { return; }
-      if (maxY === null || m.maxValue() > maxY) { maxY = m.maxValue(); }
-    });
-  }*/
-
-  /*if (minY === null && maxY === null) { minY = -1; maxY = 1; }
-  if (minY === null) { minY = maxY - 1; }
-  if (maxY === null) { maxY = minY + 1; }*/
-
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION];
   var xBound = interpolation.indexOf('step') == 0 ? this.measurements().size() : this.measurements().size() - 1;
 
@@ -92,9 +68,6 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   var xScale = d3.scale.linear()
     .domain([0, xBound])
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
-  /*var yScale = d3.scale.linear()
-    .domain([minY, maxY])
-    .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);*/
 
   this._clearAxes();
   this._drawAxes(xScale, undefined, this.measurements().size(), 5,
@@ -240,12 +213,10 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
 
   var lines = graph
     .selectAll('.line-series')
-    //.data(layers);
     .data(lineItems, function(d) { return d.seriesIndex; });
 
   lines.enter()
     .insert('path', ':first-child').attr('class', 'line-series item')
-    //.attr('d', area)
     .attr('d', function(d, i) { return area(layers[i]); })
     .style('opacity', '0')
     .style('shape-rendering', 'auto')
@@ -261,60 +232,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .transition()
     .duration(500)
     .style('opacity', '1')
-    //.attr('d', area)
     .attr('d', function(d, i) { return area(layers[i]); })
     .style('fill', function(d, i) { return colors.get(d.seriesIndex); });
-
-
-
-
-
-
-
-  /*var lines = graph.selectAll('.line-series')
-    .data(lineItems, function(d) { return d.id; });
-
-  lines
-    .enter()
-    .insert('g', ':first-child').attr('class', 'line-series item')
-    .style('opacity', '0')
-    .on('mouseover', function(d) {
-      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
-    })
-    .on('mouseout', function () {
-      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-    })
-    .each(function(d) {
-      d3.select(this)
-        .append('path').attr('class', 'bg-line')
-        //.attr('d', lineData(index))
-        .attr('d', lineFunc(d.values))
-        .style('shape-rendering', 'auto')
-        .style('stroke-width', 10)
-        .style('stroke', '#dddddd')
-        .style('stroke-opacity', '0.1');
-      d3.select(this)
-        .append('path').attr('class', 'main-line')
-        //.attr('d', lineData(index))
-        .attr('d', lineFunc(d.values))
-        .style('shape-rendering', 'auto');
-    });*/
-
-  /*lines
-    .transition()
-    .duration(500)
-    .style('opacity', '0.7')
-    .each(function(d) {
-      d3.select(this)
-        .selectAll('.bg-line')
-        //.attr('d', lineData(index));
-        .attr('d', lineFunc(d.values));
-      d3.select(this).selectAll('.main-line')
-        //.attr('d', lineData(index))
-        .attr('d', lineFunc(d.values))
-        .style('stroke', colors.get(d.seriesIndex))
-        .style('stroke-width', lineThickness);
-    });*/
 
   lines
     .exit()
@@ -322,8 +241,6 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .duration(500)
     .style('opacity', '0')
     .remove();
-
-
 
   // Draw legend
   var title = '';
@@ -353,6 +270,6 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     return self.margins().left() + 3 + titleEntriesStartPosition[i];
   });
 
-  return lineItems; // TODO: Put something in this array
+  return lineItems;
 };
 

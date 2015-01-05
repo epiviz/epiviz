@@ -52,11 +52,3 @@ epiviz.ui.charts.tree.FacetzoomType.prototype.chartName = function() {
 epiviz.ui.charts.tree.FacetzoomType.prototype.chartHtmlAttributeName = function() {
   return 'facetzoom';
 };
-
-/**
- * TODO: Clean up code
- * @returns {function(epiviz.measurements.Measurement): boolean}
- */
-//epiviz.ui.charts.tree.FacetzoomType.prototype.measurementsFilter = function() { return function(m) { return !epiviz.measurements.Measurement.Type.isOrdered(m.type()); }; };
-
-

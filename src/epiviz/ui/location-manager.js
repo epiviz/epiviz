@@ -107,17 +107,6 @@ epiviz.ui.LocationManager.prototype._doChangeCurrentLocation = function(range) {
   if (!(range.seqName() in this._seqInfos)) {
     if (!oldValue) { return; }
     seqName = oldValue.seqName();
-    /*if (!oldValue) {
-      for (var s in this._seqInfos) {
-        if (this._seqInfos.hasOwnProperty(s)) {
-          seqName = s;
-          break;
-        }
-      }
-    } else {
-      seqName = oldValue.seqName();
-    }*/
-
   }
 
   var start = undefined, end = undefined;

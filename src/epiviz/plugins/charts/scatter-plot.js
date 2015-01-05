@@ -303,15 +303,12 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
 /**
  * @returns {Array.<{name: string, color: string}>}
  */
-epiviz.plugins.charts.ScatterPlot.prototype.colorMap = function() {
+epiviz.plugins.charts.ScatterPlot.prototype.colorLabels = function() {
   var n = Math.min(this._measurementsX.length, this._measurementsY.length);
   var colors = new Array(n);
 
   for (var i = 0; i < n; ++i) {
-    colors[i] = {
-      name: sprintf('%s vs %s', this._measurementsX[i].name(), this._measurementsY[i].name()),
-      color: this.properties().colors.get(i)
-    };
+    colors[i] = sprintf('%s vs %s', this._measurementsX[i].name(), this._measurementsY[i].name());
   }
 
   return colors;

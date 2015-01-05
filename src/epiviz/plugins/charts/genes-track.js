@@ -285,10 +285,8 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGene = function(elem, d, xScale)
 /**
  * @returns {Array.<{name: string, color: string}>}
  */
-epiviz.plugins.charts.GenesTrack.prototype.colorMap = function() {
-  return [
-    {name: 'Genes', color: this.properties().colors.get(0)},
-    {name: 'Exons', color: this.properties().colors.get(1)}];
+epiviz.plugins.charts.GenesTrack.prototype.colorLabels = function() {
+  return ['Genes', 'Exons'];
 };
 
 /**

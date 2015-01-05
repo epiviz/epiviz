@@ -67,20 +67,6 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
       return true;
     });
 
-  // TODO Aici
-  /*if (data.type && data.type == epiviz.measurements.Measurement.Type.RANGE) {
-    // Also add all datasources
-    var self = this;
-    var datasourceGroupMap = {};
-    data.measurements.foreach(function(m) {
-      if (m.type() == epiviz.measurements.Measurement.Type.RANGE ||
-        m.datasourceGroup() in datasourceGroupMap ||
-        m.isComputed()) { return; }
-      self._measurements.add(m.datasource());
-      datasourceGroupMap[m.datasourceGroup()] = true;
-    });
-  }*/
-
   this._dataTable = new epiviz.ui.controls.DataTable(container, columns, this._measurements,
     /**
      * @param {epiviz.measurements.Measurement} m

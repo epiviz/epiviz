@@ -156,7 +156,7 @@ epiviz.workspaces.WorkspaceManager.prototype.updateWorkspaces = function(workspa
   if (!activeWorkspace) {
     activeWorkspace = (workspaces && workspaces.length) ?
       workspaces[0] :
-      epiviz.workspaces.Workspace.fromRawObject(this._config.defaultWorkspaceSettings, this._chartFactory);
+      epiviz.workspaces.Workspace.fromRawObject(this._config.defaultWorkspaceSettings, this._chartFactory, this._config);
   }
 
   var oldActiveWorkspace = this._activeWorkspace;
@@ -208,7 +208,7 @@ epiviz.workspaces.WorkspaceManager.prototype.deleteActiveWorkspace = function() 
   }
 
   if (!newActiveWorkspace) {
-    newActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(this._config.defaultWorkspaceSettings, this._chartFactory);
+    newActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(this._config.defaultWorkspaceSettings, this._chartFactory, this._config);
   }
 
   this._activeWorkspace = newActiveWorkspace;

@@ -340,5 +340,5 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     return self.margins().left() + 3 + titleEntriesStartPosition[i];
   });
 
-  return lineItems; // TODO: Put something in this array
+  return lineItems;
 };

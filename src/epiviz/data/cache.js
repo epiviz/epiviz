@@ -64,8 +64,6 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
  * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} dataReadyCallback
  */
 epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
-  //this.getUnorderedData(range, chartMeasurementsMap, dataReadyCallback); // TODO: Cleanup
-
   var MeasurementType = epiviz.measurements.Measurement.Type;
 
   var self = this;
@@ -255,10 +253,6 @@ epiviz.data.Cache.prototype._calcMeasurementNeededRanges = function(ranges, char
 
     (function(chartMeasurements) {
       chartMeasurementsMap[chartId].foreach(function(m) {
-        /*if (m.type() == epiviz.measurements.Measurement.Type.UNORDERED) { // TODO: Cleanup
-          return;
-        }*/
-
         var compMs = m.componentMeasurements();
         compMs.foreach(function(compM) {
           chartMeasurements.add(compM);
@@ -586,60 +580,6 @@ epiviz.data.Cache.prototype.clearDatasourceGroupCache = function(datasourceGroup
 
 /**
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
- * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} dataReadyCallback
- */
-epiviz.data.Cache.prototype.getUnorderedData = function(chartMeasurementsMap, dataReadyCallback) {
-  var self = this;
-  var unorderedMs = this._extractUnorderedMeasurements(chartMeasurementsMap);
-  var datasources = unorderedMs.map(function(m) { return m.datasource(); });
-
-  // TODO: For now, the data doesn't go in the cache; later, we'll improve the implementation
-
-  /**
-   * @type {Object.<string, epiviz.datatypes.PartialSummarizedExperiment>}
-   */
-  var dataMap = {};
-
-  // TODO: Right now we're iterating through data sources, but we should do it for data source groups. Later.
-  datasources.foreach(function(m) {
-    dataMap[m.datasourceGroup()] = new epiviz.datatypes.PartialSummarizedExperiment();
-    var dataProvider = self._dataProviderFactory.get(m.dataprovider());
-    dataProvider.getData(epiviz.data.Request.getRows(m), function(response) {
-      dataMap[m.datasourceGroup()].addRowData(new epiviz.datatypes.GenomicRangeArray(m, undefined, 0, response.data().values));
-    });
-  });
-
-  unorderedMs.foreach(function(m) {
-    var dataProvider = self._dataProviderFactory.get(m.dataprovider());
-    dataProvider.getData(epiviz.data.Request.getValues(m), function(response) {
-      dataMap[m.datasourceGroup()].addValues(new epiviz.datatypes.FeatureValueArray(m, undefined, 0, response.data().values));
-    });
-  });
-
-  for (var chartId in chartMeasurementsMap) {
-    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue;}
-
-    /** @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} */
-    var chartData = new epiviz.measurements.MeasurementHashtable();
-
-    var unorderedDataChart = true;
-    (function(chartData) {
-      chartMeasurementsMap[chartId].foreach(function(m) {
-        if (m.type() != epiviz.measurements.Measurement.Type.UNORDERED) {
-          unorderedDataChart = false;
-          return true; // break
-        }
-
-        chartData.put(m, new epiviz.datatypes.GenomicDataMeasurementWrapper(m, dataMap[m.datasourceGroup()]));
-      });
-    })(chartData);
-    if (!unorderedDataChart) { continue; }
-    dataReadyCallback(chartId, chartData);
-  }
-};
-
-/**
- * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
  * @returns {epiviz.measurements.MeasurementSet}
  * @private
  */
@@ -655,19 +595,3 @@ epiviz.data.Cache.prototype._extractUnorderedMeasurements = function(chartMeasur
   }
   return ret;
 };
-
-/**
- * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
- * @param {function(string, *)} dataReadyCallback
- */
-/*epiviz.data.Cache.prototype.getHierarchy = function(chartVisConfigSelectionMap, dataReadyCallback) {
-  for (var chartId in chartVisConfigSelectionMap) {
-    if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
-    var visConfigSelection = chartVisConfigSelectionMap[chartId];
-  }
-  var dataprovider = visConfigSelection.dataprovider || visConfigSelection.measurements.first().dataprovider();
-  var provider = this._dataProviderFactory.get(dataprovider);
-  provider.getData(epiviz.data.Request.getHierarchy(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
-    dataReadyCallback(chartId, response.data());
-  });
-};*/

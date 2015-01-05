@@ -75,7 +75,7 @@ epiviz.ui.charts.VisualizationProperties.prototype.copy = function() {
     this.width, this.height,
     this.margins ? this.margins.copy() : this.margins,
     visConfigSelection,
-    this.colors ? this.colors.copy() : this.colors,
+    this.colors,
     this.modifiedMethods ? epiviz.utils.mapCopy(this.modifiedMethods) : this.modifiedMethods,
     this.customSettingsValues ? epiviz.utils.mapCopy(this.customSettingsValues) : this.customSettingsValues,
     this.customSettingsDefs ? this.customSettingsDefs.slice(0) : this.customSettingsDefs);

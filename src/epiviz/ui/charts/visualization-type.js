@@ -55,7 +55,7 @@ epiviz.ui.charts.VisualizationType = function(config) {
    * @type {epiviz.ui.charts.ColorPalette}
    * @private
    */
-  this._defaultColors = this._defaultSettings[VisualizationPropertySettings.COLORS];
+  this._defaultColors = config.colorPalettesMap[this._defaultSettings[VisualizationPropertySettings.COLORS]];
 
   /**
    * @type {Array.<string>}

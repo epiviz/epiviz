@@ -245,96 +245,6 @@ epiviz.ui.charts.Visualization.prototype._clearAxes = function(svg) {
 };
 
 /**
- * TODO Cleanup
- * @param [xScale] D3 linear scale for the x axis
- * @param [yScale] D3 linear scale for the y axis
- * @param {number} [xTicks]
- * @param {number} [yTicks]
- * @param [svg] D3 svg container for the axes
- * @param {number} [width]
- * @param {number} [height]
- * @param {epiviz.ui.charts.Margins} [margins]
- * @protected
- */
-/*epiviz.ui.charts.Visualization.prototype._drawAxesOld = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
-  svg = svg || this._svg;
-  margins = margins || this.margins();
-  height = height || this.height();
-  width = width || this.width();
-
-  var axesGroup = svg.select('.axes'),
-    xAxisGrid = axesGroup.select('.xAxis-grid'),
-    yAxisGrid = axesGroup.select('.yAxis-grid'),
-    xAxisLine = axesGroup.select('.xAxis-line'),
-    yAxisLine = axesGroup.select('.yAxis-line');
-
-  if (axesGroup.empty()) {
-    axesGroup = svg.append('g').attr('class', 'axes');
-  }
-
-  if (xAxisGrid.empty()) {
-    xAxisGrid = axesGroup.append('g').attr('class', 'xAxis xAxis-grid');
-  }
-
-  if (yAxisGrid.empty()) {
-    yAxisGrid = axesGroup.append('g').attr('class', 'yAxis yAxis-grid');
-  }
-
-  if (xAxisLine.empty()) {
-    xAxisLine = axesGroup.append('g').attr('class', 'xAxis xAxis-line');
-  }
-
-  if (yAxisLine.empty()) {
-    yAxisLine = axesGroup.append('g').attr('class', 'yAxis yAxis-line');
-  }
-
-  if (xScale) {
-    // Draw X-axis grid lines
-    xAxisGrid
-      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
-      .selectAll('line.x')
-      .data(xScale.ticks(xTicks))
-      .enter().append('line')
-      .attr('x1', xScale)
-      .attr('x2', xScale)
-      .attr('y1', 0)
-      .attr('y2', height - margins.top() - margins.bottom())
-      .style('stroke', '#eeeeee')
-      .style('shape-rendering', 'crispEdges');
-
-    var xAxis = d3.svg.axis()
-      .scale(xScale)
-      .orient('bottom')
-      .tickFormat(d3.format('s'));
-    xAxisLine
-      .attr('transform', 'translate(' + margins.left() + ', ' + (height - margins.bottom()) + ')')
-      .call(xAxis);
-  }
-
-  if (yScale) {
-    // Draw Y-axis grid lines
-    yAxisGrid
-      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
-      .selectAll('line.y')
-      .data(yScale.ticks(yTicks))
-      .enter().append('line')
-      .attr('x1', 0)
-      .attr('x2', width - margins.left() - margins.right())
-      .attr('y1', yScale)
-      .attr('y2', yScale)
-      .style('stroke', '#eeeeee')
-      .style('shape-rendering', 'crispEdges');
-
-    var yAxis = d3.svg.axis()
-      .scale(yScale)
-      .orient('left');
-    yAxisLine
-      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
-      .call(yAxis);
-  }
-};*/
-
-/**
  * @param [xScale] D3 linear scale for the x axis
  * @param [yScale] D3 linear scale for the y axis
  * @param {number} [xTicks]
@@ -622,7 +532,7 @@ epiviz.ui.charts.Visualization.prototype.onSelect = function() { return this._se
  */
 epiviz.ui.charts.Visualization.prototype.onDeselect = function() { return this._deselect; };
 
-// TODO: Cleanup code
+// Deprecated code, kept here for future reference
 // Selection and hovering by changing the class of the selected items
 
 /**

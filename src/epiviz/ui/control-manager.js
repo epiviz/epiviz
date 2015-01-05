@@ -150,11 +150,6 @@ epiviz.ui.ControlManager.DISPLAY_TYPE_LABELS = {
 epiviz.ui.ControlManager.prototype.initialize = function() {
 
   /*
-   * Accordions: left, bottom
-   */
-  this._initializeAccordions();
-
-  /*
    * Toolbar
    */
   this._initializeChromosomeSelector();
@@ -167,74 +162,6 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   this._initializeHelpButton();
   this._initializeSearchBox();
   this._initializeWorkspaceSaving();
-
-  /* TODO: Debug */
-  /*$('#sunburst-button').button({
-    text: false,
-    icons: {
-      primary: 'ui-icon ui-icon-heart'
-    }
-  }).click(
-    function() {
-      var lastRootId = null;
-      var maxDepth = 5;
-      var nodeMap = {};
-      var sunburst = new epiviz.ui.charts.tree.Facetzoom('sunburst-chart', $('#sunburst'),
-        new epiviz.ui.charts.VisualizationProperties(
-          1000, 300,
-          new epiviz.ui.charts.Margins(10, 10, 10, 10),
-          new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_D3_CAT20C)));
-      var toggleSelectDecoration = new epiviz.ui.charts.tree.decoration.ToggleSelectButton(sunburst,
-        new epiviz.ui.charts.tree.decoration.PropagateSelectionButton(sunburst));
-      toggleSelectDecoration.decorate();
-      sunburst.onSelect().addListener(new epiviz.events.EventListener(function(e) {
-        var node = e.args;
-        if (sunburst.selectMode()) {
-          // Selection
-          var selectionType = node.selectionType || 0;
-          selectionType = (selectionType + 1) % 3;
-          node.selectionType = selectionType;
-          sunburst.selectNode(node, selectionType);
-        } else {
-          // Navigate
-          lastRootId = node.id;
-          var originalNode = nodeMap[node.id];
-          var parent = originalNode.parentId ? nodeMap[originalNode.parentId] : originalNode;
-          var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
-            function(node) {
-              return (node.depth != originalNode.depth || node == originalNode) &&
-                      node.depth - parent.depth < maxDepth;
-            });
-          sunburst.draw(newRoot);
-        }
-      }));
-
-      sunburst.onPropagateHierarchySelection().addListener(new epiviz.events.EventListener(function(selectedNodes) {
-        if (!selectedNodes) { return; }
-        for (var id in selectedNodes) {
-          if (!selectedNodes.hasOwnProperty(id)) { continue; }
-          if (!(id in nodeMap)) { continue; }
-          nodeMap[id].selectionType = selectedNodes[id];
-        }
-
-        var originalNode = nodeMap[lastRootId];
-        var parent = originalNode.parentId ? nodeMap[originalNode.parentId] : originalNode;
-        var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
-          function(node) {
-            return (node.depth != originalNode.depth || node == originalNode) &&
-            node.depth - parent.depth < maxDepth;
-          });
-        sunburst.draw(newRoot);
-      }));
-      d3.json("tree.json",
-        function(error, root) {
-          epiviz.ui.charts.tree.Node.dfs(root, function(node) { nodeMap[node.id] = node; });
-          var rootCopy = epiviz.ui.charts.tree.Node.filter(root, function(node) { return node.depth < maxDepth; });
-
-          lastRootId = root.id;
-          sunburst.draw(rootCopy);
-        });
-    });*/
 
   /*
    * Log in/out
@@ -352,25 +279,6 @@ epiviz.ui.ControlManager.prototype.updateSelectedWorkspace = function(workspaceI
     self._activeWorkspaceInfo = oldValue;
   }};
   this._activeWorkspaceChanged.notify(args);
-};
-
-epiviz.ui.ControlManager.prototype._initializeAccordions = function() {
-  // TODO: Move to chart creation
-  /*var containers = epiviz.ui.ControlManager.CHART_TYPE_CONTAINERS;
-  for (var displayType in containers) {
-    if (!containers.hasOwnProperty(displayType)) { continue; }
-    var container = $('#' + containers[displayType]);
-    container.multiAccordion();
-    container.multiAccordion('option', 'active', 'all');
-  }*/
-
-  /*var topAccordion = $('#feature-view');
-  topAccordion.multiAccordion();
-  topAccordion.multiAccordion('option', 'active', 'all');
-
-  var bottomAccordion = $('#location-view');
-  bottomAccordion.multiAccordion();
-  bottomAccordion.multiAccordion('option', 'active', 'all');*/
 };
 
 epiviz.ui.ControlManager.prototype._initializeChromosomeSelector = function() {

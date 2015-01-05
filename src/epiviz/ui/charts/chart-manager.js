@@ -176,9 +176,6 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartRemove(chart);
   this._registerChartSave(chart);
   this._registerChartRequestHierarchy(chart);
-  // TODO Cleanup
-  //this._registerChartPropagateHierarchySelection(chart);
-  //this._registerChartPropagateHierarchyOrder(chart);
   this._registerChartPropagateHierarchyChanges(chart);
 
   if (chartType.decorations()) {
@@ -191,7 +188,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
       if (!decorationCtor) { continue; }
 
       /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
-      topDecoration  = epiviz.utils.applyConstructor(decorationCtor, [chart, topDecoration]);
+      topDecoration  = epiviz.utils.applyConstructor(decorationCtor, [chart, topDecoration, this._config]);
     }
 
     if (topDecoration) {
@@ -273,7 +270,6 @@ epiviz.ui.charts.ChartManager.prototype.clear = function() {
 
   for (var displayType in chartContainers) {
     if (!chartContainers.hasOwnProperty(displayType)) { continue; }
-    //$('#' + chartContainers[displayType]).find('.vis-container').empty(); // TODO: Clean up
     $('#' + chartContainers[displayType]).empty();
   }
 
@@ -342,17 +338,6 @@ epiviz.ui.charts.ChartManager.prototype.onChartMarginsChanged = function() { ret
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<*>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartRequestHierarchy = function() { return this._chartRequestHierarchy; };
-
-// TODO Cleanup
-/**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
- */
-//epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchySelection = function() { return this._chartPropagateHierarchySelection; };
-
-/**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
- */
-//epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchyOrder = function() { return this._chartPropagateHierarchyOrder; };
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
@@ -548,18 +533,3 @@ epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchyChanges 
     }));
   }
 };
-
-// TODO Cleanup
-/**
- * @param {epiviz.ui.charts.Visualization} chart
- * @private
- */
-/*epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchyOrder = function(chart) {
-  var self = this;
-  if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
-    var dataStructVis = chart; // Assignment done for consistency
-    dataStructVis.onPropagateHierarchyOrder().addListener(new epiviz.events.EventListener(function(e) {
-      self._chartPropagateHierarchyOrder.notify(e);
-    }));
-  }
-};*/

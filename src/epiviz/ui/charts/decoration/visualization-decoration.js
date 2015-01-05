@@ -9,9 +9,10 @@ goog.provide('epiviz.ui.charts.decoration.VisualizationDecoration');
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
+ * @param {epiviz.Config} [config]
  * @constructor
  */
-epiviz.ui.charts.decoration.VisualizationDecoration = function(visualization, otherDecoration) {
+epiviz.ui.charts.decoration.VisualizationDecoration = function(visualization, otherDecoration, config) {
   /**
    * @type {epiviz.ui.charts.Visualization}
    * @private
@@ -23,6 +24,12 @@ epiviz.ui.charts.decoration.VisualizationDecoration = function(visualization, ot
    * @private
    */
   this._otherDecoration = otherDecoration;
+
+  /**
+   * @type {epiviz.Config}
+   * @private
+   */
+  this._config = config;
 };
 
 /**
@@ -40,3 +47,8 @@ epiviz.ui.charts.decoration.VisualizationDecoration.prototype.visualization = fu
  * @returns {epiviz.ui.charts.decoration.VisualizationDecoration}
  */
 epiviz.ui.charts.decoration.VisualizationDecoration.prototype.otherDecoration = function() { return this._otherDecoration; };
+
+/**
+ * @returns {epiviz.Config}
+ */
+epiviz.ui.charts.decoration.VisualizationDecoration.prototype.config = function() { return this._config; };

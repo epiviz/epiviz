@@ -486,9 +486,6 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
 /**
  * @returns {Array.<{name: string, color: string}>}
  */
-epiviz.plugins.charts.HeatmapPlot.prototype.colorMap = function() {
-  return [
-    { name: 'Min', color: this.colors().get(0) },
-    { name: 'Max', color: this.colors().get(1) }
-  ];
+epiviz.plugins.charts.HeatmapPlot.prototype.colorLabels = function() {
+  return ['Min', 'Max'];
 };

@@ -7,12 +7,14 @@
 goog.provide('epiviz.ui.controls.ColorPickerDialog');
 
 /**
- * @param {{ok: function(Array.<{name: string, color: string}>), cancel: function(), reset: function()}} handlers
- * @param {Array.<{name: string, color: string}>} colors A map of measurement name and corresponding color
+ * @param {{ok: function(epiviz.ui.charts.ColorPalette), cancel: function(), reset: function()}} handlers
+ * @param {Array.<string>} names A list of measurement names
+ * @param {Array.<epiviz.ui.charts.ColorPalette>} palettes
+ * @param {epiviz.ui.charts.ColorPalette} selectedPalette
  * @constructor
  * @extends {epiviz.ui.controls.Dialog}
  */
-epiviz.ui.controls.ColorPickerDialog = function(handlers, colors) {
+epiviz.ui.controls.ColorPickerDialog = function(handlers, names, palettes, selectedPalette) {
   epiviz.ui.controls.Dialog.call(this, 'Pick Colors', handlers);
 
   this._dialog = $('#' + this._id);
@@ -22,28 +24,16 @@ epiviz.ui.controls.ColorPickerDialog = function(handlers, colors) {
       '<div class="chart-picker" style="float: right;"></div>' +
     '</div>');
 
-  /**
-   * @type {Array.<{name: string, color: string}>}
-   * @private
-   */
-  this._initialColors = colors;
-
-  /**
-   * @type {Array.<{name: string, color: string}>}
-   * @private
-   */
-  this._colors = colors;
-
   var colorPickerForm = this._dialog.find('.color-picker-form');
   var tableContent = '';
-  for (var i = 0; i < this._colors.length; ++i) {
+  for (var i = 0; i < names.length; ++i) {
     var inputClass = sprintf('color-%s', i);
     tableContent += sprintf(
       '<tr>' +
         '<td><label>%s:&nbsp;</label></td>' +
         '<td><input type="text" name="%s" class="colorwell %s" value="%s" /></td>' +
       '</tr>',
-      colors[i].name, inputClass, inputClass, this._colors[i].color);
+      names[i], inputClass, inputClass, selectedPalette.get(i));
   }
   colorPickerForm.append(sprintf('<table class="color-picker-table">%s</table>', tableContent));
 
@@ -61,8 +51,51 @@ epiviz.ui.controls.ColorPickerDialog = function(handlers, colors) {
       $(selected = this).css('opacity', 1).addClass('colorwell-selected');
     });
 
+  colorPickerForm.append('<select class="palettes-selector"></select>');
+  var palettesSelector = colorPickerForm.find('.palettes-selector');
+  var palettesMap = {};
+  if (palettes) {
+    palettes.forEach(function(palette) {
+      palettesSelector.append(sprintf('<option value="%s"%s>%s</option>',
+        palette.id(), palette.id() == selectedPalette.id() ? ' selected="selected"' : '', palette.name()));
+      palettesMap[palette.id()] = palette;
+    });
+  }
+  if (!(selectedPalette.id() in palettesMap)) {
+    palettesSelector.prepend(sprintf('<option value="%s" selected="selected">%s</option>',
+      selectedPalette.id(), selectedPalette.name()));
+    palettesMap[selectedPalette.id()] = selectedPalette;
+  }
+  palettesSelector.selectmenu({
+    style: 'popup',
+    width: '200',
+    maxHeight: '150',
+    menuWidth: '200'
+  });
+
+  var updateColorFields = function() {
+    var inputs = colorPickerForm.find('.colorwell');
+    for (var i = 0; i < inputs.length; ++i) {
+      var input = inputs[i];
+
+      // First, connect farbtastic to this input
+      f.linkTo($(input));
+
+      // Use farbtastic to modify this input
+      f.setColor(selectedPalette.get(i));
+    }
+
+    // Reconnect farbtastic to the selected input
+    // so that it receives focus once again
+    if (selected) {f.linkTo(selected); }
+  };
+
+  palettesSelector.change(function() {
+    selectedPalette = palettesMap[$(this).val()];
+    updateColorFields();
+  });
+
   var self = this;
-  //this._dialog.css('display', 'inline');
 
   this._dialog.dialog({
     autoOpen: false,
@@ -72,11 +105,18 @@ epiviz.ui.controls.ColorPickerDialog = function(handlers, colors) {
       Ok: function() {
         var inputs = colorPickerForm.find('.colorwell');
 
+        var paletteChanged = false;
+        var colors = [];
         for (var i = 0; i < inputs.length; ++i) {
-          self._colors[i].color = inputs[i].value;
+          colors.push(inputs[i].value);
+          if (colors[i] != selectedPalette.get(i)) {
+            paletteChanged = true;
+          }
         }
 
-        self._handlers.ok(self._colors);
+        if (paletteChanged) { selectedPalette = new epiviz.ui.charts.ColorPalette(colors); }
+        self._handlers.ok(selectedPalette);
+
         $(this).dialog('close');
       },
       Cancel: function() {
@@ -84,23 +124,7 @@ epiviz.ui.controls.ColorPickerDialog = function(handlers, colors) {
         $(this).dialog('close');
       },
       Reset: function() {
-        self._colors = self._initialColors;
-
-        for (var i = 0; i < self._colors.length; ++i) {
-          var inputClass = sprintf('.color-%s', i);
-
-          // First, connect farbtastic to this input
-          f.linkTo($(sprintf('#%s %s', self._id, inputClass)));
-
-          // Use farbtastic to modify this input
-          f.setColor(self._colors[i].color);
-
-          ++i;
-        }
-
-        // Reconnect farbtastic to the selected input
-        // so that it receives focus once again
-        if (selected) {f.linkTo(selected); }
+        updateColorFields();
 
         self._handlers.reset();
       }

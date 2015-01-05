@@ -16,33 +16,37 @@ epiviz.Config = function(settingsMap) {
    * The server storing all the back-end PHP scripts
    * @type {string}
    */
-  this.dataServerLocation = '';
+  this.dataServerLocation = null;
 
   /**
    * The path of the php script that handles chart saving, relative to dataServerLocation
    * @type {string}
    */
-  this.chartSaverLocation = '';
+  this.chartSaverLocation = null;
 
   /**
+   * A number between 0 and 1
    * @type {number}
    */
-  this.zoominRatio = 0.8;
+  this.zoominRatio = null;
 
   /**
+   * A number greater than 1
    * @type {number}
    */
-  this.zoomoutRatio = 1.2;
+  this.zoomoutRatio = null;
 
   /**
+   * A number between 0 and 1
    * @type {number}
    */
-  this.navigationStepRatio = 0.2;
+  this.navigationStepRatio = null;
 
   /**
+   * The delay in milliseconds between a user command and the command being propagated to the data layer
    * @type {number}
    */
-  this.navigationDelay = 100;
+  this.navigationDelay = null;
 
   /**
    * @type {{
@@ -67,21 +71,7 @@ epiviz.Config = function(settingsMap) {
    *    }
    * }}
    */
-  this.defaultWorkspaceSettings = {
-    name: 'Default Workspace',//epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
-    content: {
-      range: {
-        seqName: 'chr11',
-        start: 99800000,
-        width: 3583180
-      },
-      measurements: [],
-      charts: {
-        track: [],
-        plot: []
-      }
-    }
-  };
+  this.defaultWorkspaceSettings = null;
 
   /**
    * An array of strings in the following format:
@@ -91,18 +81,12 @@ epiviz.Config = function(settingsMap) {
    *
    * @type {Array.<string>}
    */
-  this.dataProviders = [
-    sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-      'dp1',//epiviz.data.WebServerDataProvider.DEFAULT_ID,
-      'de1')//epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT)
-  ];
+  this.dataProviders = null;
 
   /**
    * @type {string}
    */
-  this.workspacesDataProvider = sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-    'workspaces_provider',
-    'de1');//epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT);
+  this.workspacesDataProvider = null;
 
   /**
    * The time interval used by the cache to clear away unneeded loaded data
@@ -114,12 +98,12 @@ epiviz.Config = function(settingsMap) {
    * The maximum number of search results to show in the gene search box
    * @type {number}
    */
-  this.maxSearchResults = 12;
+  this.maxSearchResults = null;
 
   /**
    * @type {Array.<string>}
    */
-  this.chartTypes = [];
+  this.chartTypes = null;
 
   // Default chart properties: these settings map either generic chart display types (plot or track),
   // or specific chart types (for example epiviz.plugins.charts.BlocksTrack) to corresponding
@@ -134,26 +118,9 @@ epiviz.Config = function(settingsMap) {
 
 
   /**
-   * TODO: Change to "visualizationSettings"
    * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType|string, Object.<epiviz.Config.VisualizationPropertySettings, *>>}
    */
-  this.chartSettings = {
-    default: {
-      margins: new epiviz.ui.charts.Margins(10, 5, 5, 5),
-      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT),
-      decorations: []
-    },
-
-    plot: {
-      width: 600,
-      height: 400
-    },
-
-    track: {
-      width: '100%',
-      height: 120
-    }
-  };
+  this.chartSettings = null;
 
   /**
    * A map of chart type and settings specific to that particular chart type
@@ -165,16 +132,22 @@ epiviz.Config = function(settingsMap) {
    * }
    * @type {Object<string, Object<string, *>>}
    */
-  this.chartCustomSettings = {};
+  this.chartCustomSettings = null;
 
-  this.clustering = {
-    algorithms: [
-      'epiviz.ui.charts.transform.clustering.NoneClustering',
-      'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
-    ],
-    metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
-    linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
-  };
+  /**
+   * @type {{algorithms: Array.<string>, metrics: Array.<string>, linkages: Array.<string>}}
+   */
+  this.clustering = null;
+
+  /**
+   * @type {Array.<epiviz.ui.charts.ColorPalette>}
+   */
+  this.colorPalettes = null;
+
+  /**
+   * @type {Object.<string, epiviz.ui.charts.ColorPalette>}
+   */
+  this.colorPalettesMap = null;
 
   // Override settings included in the given object
   if (settingsMap) {
@@ -192,6 +165,12 @@ epiviz.Config = function(settingsMap) {
       }
     }
   }
+
+  var colorPalettesMap = {};
+  this.colorPalettes.forEach(function(palette) {
+    colorPalettesMap[palette.id()] = palette;
+  });
+  this.colorPalettesMap = colorPalettesMap;
 };
 
 /**

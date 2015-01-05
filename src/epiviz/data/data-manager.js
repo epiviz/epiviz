@@ -301,7 +301,6 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
   });
 };
 
-// TODO Cleanup
 /**
  * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
  * @param {function(string, *)} dataReadyCallback
@@ -371,15 +370,16 @@ epiviz.data.DataManager.prototype.getWorkspaces = function(callback, filter, req
 
 /**
  * @param {epiviz.workspaces.Workspace} workspace
+ * @param {epiviz.Config} config
  * @param {function(string)} callback
  */
-epiviz.data.DataManager.prototype.saveWorkspace = function(workspace, callback) {
+epiviz.data.DataManager.prototype.saveWorkspace = function(workspace, config, callback) {
   var workspaceProvider = this._dataProviderFactory.workspacesDataProvider();
 
   if (!workspaceProvider) { throw Error('Invalid data provider for workspaces (see Config.workspaceDataProvider)'); }
 
   //workspaceProvider.saveWorkspace(workspace, callback);
-  workspaceProvider.getData(epiviz.data.Request.saveWorkspace(workspace),
+  workspaceProvider.getData(epiviz.data.Request.saveWorkspace(workspace, config),
     /**
      * @param {epiviz.data.Response.<string>} response
      */
@@ -397,7 +397,6 @@ epiviz.data.DataManager.prototype.deleteWorkspace = function(workspace) {
 
   if (!workspaceProvider) { throw Error('Invalid data provider for workspaces (see Config.workspaceDataProvider)'); }
 
-  //workspaceProvider.saveWorkspace(workspace, callback);
   workspaceProvider.getData(epiviz.data.Request.deleteWorkspace(workspace),
     /**
      * @param {epiviz.data.Response.<{success: boolean}>} response
