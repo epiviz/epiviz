@@ -18,7 +18,6 @@ epiviz.ui.charts.decoration.ChartOptionButton = function(visualization, otherDec
 
   /**
    * @type {boolean}
-   * @const
    */
   this.isChartOptionButton = true;
 };
@@ -33,6 +32,8 @@ epiviz.ui.charts.decoration.ChartOptionButton.constructor = epiviz.ui.charts.dec
  */
 epiviz.ui.charts.decoration.ChartOptionButton.prototype.decorate = function() {
   epiviz.ui.charts.decoration.VisualizationDecoration.prototype.decorate.call(this);
+
+  if (!this.isChartOptionButton) { return; }
 
   var buttonIndex = 0;
   for (var decoration = this.otherDecoration(); decoration; decoration = decoration.otherDecoration()) {

@@ -305,6 +305,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
 
     <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
@@ -334,7 +335,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
     <script src="src/epiviz/ui/controls/computed-measurements-dialog.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
-    <script src="src/epiviz/ui/controls/code-edit-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/code-control.js"></script>
+    <script src="src/epiviz/ui/controls/edit-code-control.js"></script>
+    <script src="src/epiviz/ui/controls/code-dialog.js"></script>
 
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
