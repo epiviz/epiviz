@@ -47,7 +47,7 @@ epiviz.ui.controls.CodeDialog = function(title, handlers, controlCreators) {
 
 
   codeTabs.tabs({
-    //activate: function(e, ui) { self._tabActivate(ui); }
+    activate: function(e, ui) { self._tabActivate(codeTabs); }
   });
 
   this._dialog.dialog({
@@ -91,6 +91,17 @@ epiviz.ui.controls.CodeDialog.prototype.show = function() {
 
   this._dialog.dialog('open');
 
-  this._controls.forEach(function(control) { control.initialize(); });
+  this._controls[0].initialize();
+  this._dialog.dialog('option', 'position', 'center');
+};
+
+/**
+ * @param tabs
+ * @private
+ */
+epiviz.ui.controls.CodeDialog.prototype._tabActivate = function(tabs) {
+  var selectedTabIndex = tabs.tabs('option', 'active');
+
+  this._controls[selectedTabIndex].initialize();
   this._dialog.dialog('option', 'position', 'center');
 };

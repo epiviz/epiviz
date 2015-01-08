@@ -128,6 +128,33 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
   }
 
+  // Marker functionality
+  // If data is defined, then the base class sets this._lastData to data.
+  // If it isn't, then we'll use the data from the last draw call
+  data = this._lastData;
+  if (data) {
+    var self = this;
+
+    this._markerValues = new epiviz.measurements.MeasurementHashtable();
+
+    /** @type {Object.<string, *>} */
+    var preMethodsResults = {};
+    this._markers.forEach(function(marker) {
+      preMethodsResults[marker.id()] = marker.preMark()(data);
+    });
+    data.foreach(function(m, series) {
+      var msMap = {};
+      self._markerValues.put(m, msMap);
+      for (var i = 0; i < series.size(); ++i) {
+        var markerMap = {};
+        msMap[i + series.globalStartIndex()] = markerMap;
+        self._markers.forEach(function(marker) {
+          markerMap[marker.id()] = marker.mark()(series.get(i), data, preMethodsResults[marker.id()]);
+        });
+      }
+    });
+  }
+
   return [];
 };
 

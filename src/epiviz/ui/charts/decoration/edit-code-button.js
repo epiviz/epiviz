@@ -30,7 +30,7 @@ epiviz.ui.charts.decoration.EditCodeButton.constructor = epiviz.ui.charts.decora
 epiviz.ui.charts.decoration.EditCodeButton.prototype._controlCreator = function() {
   var self = this;
   return function(container) {
-    return new epiviz.ui.controls.EditCodeControl(container, 'Edit Code', undefined, self.visualization(), 'draw');
+    return new epiviz.ui.controls.EditCodeControl(container, 'Edit Code', null, self.visualization(), 'draw');
   };
 };
 

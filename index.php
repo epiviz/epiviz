@@ -273,6 +273,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/clustering-algorithm-factory.js"></script>
 
+    <script src="src/epiviz/ui/charts/markers/chart-marker.js"></script>
+
     <script src="src/epiviz/ui/charts/margins.js"></script>
     <script src="src/epiviz/ui/charts/color-palette.js"></script>
     <script src="src/epiviz/ui/charts/axis.js"></script>
@@ -307,6 +309,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/filter-code-button.js"></script>
 
     <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
@@ -337,6 +340,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
     <script src="src/epiviz/ui/controls/code-control.js"></script>
     <script src="src/epiviz/ui/controls/edit-code-control.js"></script>
+    <script src="src/epiviz/ui/controls/filter-code-control.js"></script>
     <script src="src/epiviz/ui/controls/code-dialog.js"></script>
 
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>

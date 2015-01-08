@@ -215,6 +215,20 @@ epiviz.workspaces.Workspace.prototype.chartMethodsModified = function(chartId, m
 
 /**
  * @param {string} chartId
+ * @param {Array.<epiviz.ui.charts.markers.ChartMarker>} markers
+ */
+epiviz.workspaces.Workspace.prototype.chartMarkersModified = function(chartId, markers) {
+  if (epiviz.utils.arraysEqual(
+      this._chartsById[chartId].properties.chartMarkers,
+      markers)) { return; }
+
+  this._chartsById[chartId].properties.chartMarkers = markers.slice(0);
+
+  this._setChanged();
+};
+
+/**
+ * @param {string} chartId
  * @param {Object<string, *>} customSettingsValues
  */
 epiviz.workspaces.Workspace.prototype.chartCustomSettingsChanged = function(chartId, customSettingsValues) {
@@ -312,7 +326,7 @@ epiviz.workspaces.Workspace.prototype.copy = function(name, id) {
  *     }>,
  *     charts: Object.<string, Array.<{
  *       type: string,
- *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>|{id: string, name: string, colors: Array.<string>}, modifiedMethods: Object.<string, string>}
+ *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>|{id: string, name: string, colors: Array.<string>}, modifiedMethods: Object.<string, string>, chartMarkers: Array.<epiviz.ui.charts.markers.ChartMarker>}
  *     }>>}}}
  */
 epiviz.workspaces.Workspace.prototype.raw = function(config) {
@@ -383,7 +397,8 @@ epiviz.workspaces.Workspace.prototype.raw = function(config) {
           measurements: ms,
           colors: props.colors.raw(config),
           modifiedMethods: epiviz.utils.mapCopy(props.modifiedMethods),
-          customSettings: props.customSettingsValues || null
+          customSettings: props.customSettingsValues || null,
+          chartMarkers: props.chartMarkers.map(function(marker) { return marker.raw(); })
         }
       });
     }
@@ -463,6 +478,7 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
        *        colors: Array.<string>|{id: string, name: string, colors: Array.<string>},
        *        modifiedMethods: ?Object.<string, string>,
        *        customSettings: Object.<string, *>
+       *        chartMarkers: Array.<{type: string, id: string, name: string, preMark: string, mark: string}>
        *      }}}
        */
       var chartInfo = o.content.charts[t][i];
@@ -485,7 +501,11 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
           epiviz.ui.charts.ColorPalette.fromRawObject(chartInfo.properties.colors, config),
           chartInfo.properties.modifiedMethods,
           chartInfo.properties.customSettings,
-          chartType.customSettingsDefs())
+          chartType.customSettingsDefs(),
+          chartInfo.properties.chartMarkers ?
+            chartInfo.properties.chartMarkers.map(function(rawMarker) { return epiviz.ui.charts.markers.ChartMarker.fromRawObject(rawMarker); }) :
+            []
+        )
       });
     }
   }

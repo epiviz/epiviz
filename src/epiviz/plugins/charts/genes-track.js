@@ -109,7 +109,21 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
   var indices = epiviz.utils.range(series.size());
 
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
-  var dataItems = indices.map(function(i) {
+  var dataItems = indices
+    .filter(function(i) {
+      if (self._markers.length == 0) { return true; }
+      var markerVals = self._markerValues.first().value[i + series.globalStartIndex()];
+      if (!markerVals) { return true; }
+      for (var markerId in markerVals) {
+        if (!markerVals.hasOwnProperty(markerId)) { continue; }
+        var marker = self._markersMap[markerId];
+        if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+        if (!markerVals[markerId]) { return false; }
+      }
+      return true;
+       //return self._markerValues.first().value[i + series.globalStartIndex()][filterId] !== false;
+    })
+    .map(function(i) {
     var cell = series.get(i);
     var item = cell.rowItem;
     var classes = sprintf('item gene-%s', item.metadata('gene'));

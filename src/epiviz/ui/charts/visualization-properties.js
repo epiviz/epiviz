@@ -15,10 +15,11 @@ goog.provide('epiviz.ui.charts.VisualizationProperties');
  * @param {Object.<string, string>} [modifiedMethods]
  * @param {Object<string, *>} [customSettingsValues]
  * @param {Array.<epiviz.ui.charts.CustomSetting>} [customSettingsDefs]
+ * @param {Array.<epiviz.ui.charts.markers.ChartMarker>} [chartMarkers]
  * @constructor
  * @struct
  */
-epiviz.ui.charts.VisualizationProperties = function(width, height, margins, visConfigSelection, colors, modifiedMethods, customSettingsValues, customSettingsDefs) {
+epiviz.ui.charts.VisualizationProperties = function(width, height, margins, visConfigSelection, colors, modifiedMethods, customSettingsValues, customSettingsDefs, chartMarkers) {
   /**
    * @type {number|string}
    */
@@ -58,6 +59,11 @@ epiviz.ui.charts.VisualizationProperties = function(width, height, margins, visC
    * @type {Array.<epiviz.ui.charts.CustomSetting>}
    */
   this.customSettingsDefs = customSettingsDefs || [];
+
+  /**
+   * @type {Array.<epiviz.ui.charts.markers.ChartMarker>}
+   */
+  this.chartMarkers = chartMarkers || [];
 };
 
 /**
@@ -78,6 +84,7 @@ epiviz.ui.charts.VisualizationProperties.prototype.copy = function() {
     this.colors,
     this.modifiedMethods ? epiviz.utils.mapCopy(this.modifiedMethods) : this.modifiedMethods,
     this.customSettingsValues ? epiviz.utils.mapCopy(this.customSettingsValues) : this.customSettingsValues,
-    this.customSettingsDefs ? this.customSettingsDefs.slice(0) : this.customSettingsDefs);
+    this.customSettingsDefs ? this.customSettingsDefs.slice(0) : this.customSettingsDefs,
+    this.chartMarkers.slice(0));
 };
 

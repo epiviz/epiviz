@@ -90,7 +90,13 @@ epiviz.utils.arraysEqual = function(arr1, arr2) {
 
   if (arr1.length != arr2.length) { return false; }
 
-  return !(arr1 < arr2 || arr2 < arr1);
+  if (arr1 < arr2 || arr2 < arr1) { return false; }
+
+  // The previous check doesn't work when the elements of the array are complex objects
+  for (var i = 0; i < arr1.length; ++i) {
+    if (arr1[i] != arr2[i]) { return false; }
+  }
+  return true;
 };
 
 /**

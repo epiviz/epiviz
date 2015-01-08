@@ -101,6 +101,7 @@ epiviz.workspaces.WorkspaceManager = function(config, locationManager, measureme
   this._registerChartRemoved();
   this._registerChartColorsChanged();
   this._registerChartMethodsModified();
+  this._registerChartMarkersModified();
   this._registerChartSizeChanged();
   this._registerChartMarginsChanged();
   this._registerChartCustomSettingsChanged();
@@ -337,6 +338,18 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartMethodsModified = fun
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
     self._activeWorkspace.chartMethodsModified(e.id, e.args);
+  }));
+};
+
+/**
+ * @private
+ */
+epiviz.workspaces.WorkspaceManager.prototype._registerChartMarkersModified = function() {
+  var self = this;
+  this._chartManager.onChartMarkersModified().addListener(new epiviz.events.EventListener(function(e) {
+    if (self._activeWorkspaceChanging) { return; }
+    if (!self._activeWorkspace) { return; }
+    self._activeWorkspace.chartMarkersModified(e.id, e.args);
   }));
 };
 

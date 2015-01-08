@@ -106,6 +106,51 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._lastRange = null;
 
+  /**
+   * @type {Array.<epiviz.ui.charts.markers.ChartMarker>}
+   * @protected
+   */
+  this._markers = properties.chartMarkers;
+
+  /**
+   * @type {Object.<string, epiviz.ui.charts.markers.ChartMarker>}
+   * @protected
+   */
+  this._markersMap = {};
+
+  /**
+   * @type {Object.<string, number>}
+   * @private
+   */
+  this._markersIndices = {};
+
+  /**
+   * TODO: This is not general enough for Visualization, but only to Chart. In the future adapt the types to Visualization too
+   * measurement -> global index -> marker id -> marker value
+   * @type {epiviz.measurements.MeasurementHashtable.<Object.<number, Object.<string, *>>>}
+   * @protected
+   */
+  this._markerValues = null;
+
+  // TODO: Debug
+  /*if (this.id() == 'track-genes-initial') {
+    var filterId = 'filter-smaller-than-300k';
+    var marker = new epiviz.ui.charts.markers.ChartMarker(epiviz.ui.charts.markers.ChartMarker.Type.FILTER, filterId, 'Filter Objects Smaller than 300k Base Pairs',
+      function(data) { return {minSize: 300000}; },
+      function(item, data, preMethodResult) {
+        return (item.rowItem.end() - item.rowItem.start() > preMethodResult.minSize);
+      }
+    );
+    this._markers.push(marker);
+  }*/
+  // TODO: End debug
+
+  var self = this;
+  this._markers.forEach(function(marker, i) {
+    self._markersMap[marker.id()] = marker;
+    self._markersIndices[marker.id()] = i;
+  });
+
   // Events
 
   /**
@@ -156,6 +201,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @private
    */
   this._methodsModified = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.ChartMarker>>>}
+   * @private
+   */
+  this._markersModified = new epiviz.events.Event();
 
   /**
    * Event arg: custom settings values setting -> value
@@ -398,6 +449,8 @@ epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
     .attr('width', this.width())
     .attr('height', this.height());
 
+  // TODO: Once we generalize the types of ChartMarker, add here some initialization code
+
   return [];
 };
 
@@ -503,6 +556,37 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
   this.draw();
 
   this._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, modifiedMethods));
+};
+
+/**
+ * @param {epiviz.ui.charts.markers.ChartMarker} marker
+ */
+epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
+  if (!marker) { return; }
+  var i;
+  if (marker.id() in this._markersMap) {
+    i = this._markersIndices[marker.id()];
+    this._markers[i] = marker;
+    this._markersMap[marker.id()] = marker;
+  } else {
+    i = this._markers.length;
+    this._markers.push(marker);
+    this._markersIndices[marker.id()] = i;
+    this._markersMap[marker.id()] = marker;
+  }
+
+  this.draw();
+
+  this._markersModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._markers));
+};
+
+/**
+ * @param {string} markerId
+ * @returns {epiviz.ui.charts.markers.ChartMarker}
+ */
+epiviz.ui.charts.Visualization.prototype.getMarker = function(markerId) {
+  if (!markerId || !(markerId in this._markersMap)) { return null; }
+  return this._markersMap[markerId];
 };
 
 /**
@@ -654,6 +738,11 @@ epiviz.ui.charts.Visualization.prototype.onColorsChanged = function() { return t
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
  */
 epiviz.ui.charts.Visualization.prototype.onMethodsModified = function() { return this._methodsModified; };
+
+/**
+ * @returns {epiviz.events.Event.<Array.<epiviz.ui.charts.markers.ChartMarker>>}
+ */
+epiviz.ui.charts.Visualization.prototype.onMarkersModified = function() { return this._markersModified; };
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}
