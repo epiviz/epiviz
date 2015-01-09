@@ -42,7 +42,7 @@ epiviz.ui.charts.decoration.FilterCodeButton.prototype._controlCreator = functio
       preFilter = existingFilter.preMark().toString();
       filter = existingFilter.mark().toString();
     }
-    return new epiviz.ui.controls.FilterCodeControl(container, 'Filter Code', null, self.visualization(), preFilter, filter);
+    return new epiviz.ui.controls.FilterCodeControl(container, 'Filter Code', null, self.visualization(), preFilter, filter, existingFilter != undefined);
   };
 };
 
@@ -55,37 +55,42 @@ epiviz.ui.charts.decoration.FilterCodeButton.prototype._saveHandler = function()
   return function(arg) {
     var preMark = null;
     var mark = null;
-    try {
-      preMark = eval('(' + arg.preFilter + ')');
-    } catch (e) {
-      var dialog = new epiviz.ui.controls.MessageDialog(
-        'Error evaluating code',
-        {
-          Ok: function() {}
-        },
-        'Could not evaluate the Pre-Filter code. Error details:<br/>' + e.message,
-        epiviz.ui.controls.MessageDialog.Icon.ERROR);
-      dialog.show();
+
+    if (arg.enabled) {
+      try {
+        preMark = eval('(' + arg.preFilter + ')');
+      } catch (e) {
+        var dialog = new epiviz.ui.controls.MessageDialog(
+          'Error evaluating code',
+          {
+            Ok: function() {}
+          },
+          'Could not evaluate the Pre-Filter code. Error details:<br/>' + e.message,
+          epiviz.ui.controls.MessageDialog.Icon.ERROR);
+        dialog.show();
+      }
+
+      try {
+        mark = eval('(' + arg.filter + ')');
+      } catch (e) {
+        var dialog = new epiviz.ui.controls.MessageDialog(
+          'Error evaluating code',
+          {
+            Ok: function() {}
+          },
+          'Could not evaluate the Filter code. Error details:<br/>' + e.message,
+          epiviz.ui.controls.MessageDialog.Icon.ERROR);
+        dialog.show();
+      }
+
+      if (!preMark || !mark) { return; }
+
+      self.visualization().putMarker(new epiviz.ui.charts.markers.ChartMarker(
+        epiviz.ui.charts.markers.ChartMarker.Type.FILTER,
+        epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID, 'User Filter', preMark, mark));
+    } else {
+      self.visualization().removeMarker(epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID);
     }
-
-    try {
-      mark = eval('(' + arg.filter + ')');
-    } catch (e) {
-      var dialog = new epiviz.ui.controls.MessageDialog(
-        'Error evaluating code',
-        {
-          Ok: function() {}
-        },
-        'Could not evaluate the Filter code. Error details:<br/>' + e.message,
-        epiviz.ui.controls.MessageDialog.Icon.ERROR);
-      dialog.show();
-    }
-
-    if (!preMark || !mark) { return; }
-
-    self.visualization().putMarker(new epiviz.ui.charts.markers.ChartMarker(
-      epiviz.ui.charts.markers.ChartMarker.Type.FILTER,
-      epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID, 'User Filter', preMark, mark));
   };
 };
 

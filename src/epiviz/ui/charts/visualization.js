@@ -33,6 +33,24 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._properties = properties;
 
+  /**
+   * @type {Object.<string, function>}
+   * @private
+   */
+  this._originalMethods = {};
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this._hasModifiedMethods = false;
+
+  /**
+   * @type {string}
+   * @private
+   */
+  this._lastModifiedMethod = 'draw';
+
   if (properties.modifiedMethods) {
     var modifiedMethods = properties.modifiedMethods;
     for (var m in modifiedMethods) {
@@ -40,7 +58,10 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
       if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
 
       try {
+        this._originalMethods[m] = this[m];
         this[m] = eval('(' + modifiedMethods[m] + ')');
+        this._hasModifiedMethods = true;
+        this._lastModifiedMethod = m;
       } catch (e) {
         // Ignore bad modified methods
       }
@@ -147,6 +168,7 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
 
   var self = this;
   this._markers.forEach(function(marker, i) {
+    if (!marker) { return; }
     self._markersMap[marker.id()] = marker;
     self._markersIndices[marker.id()] = i;
   });
@@ -201,6 +223,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @private
    */
   this._methodsModified = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
+   * @private
+   */
+  this._methodsReset = new epiviz.events.Event();
 
   /**
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.ChartMarker>>>}
@@ -540,8 +568,14 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
     if (!modifiedMethods.hasOwnProperty(m)) { continue; }
     if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
 
+    if (!(m in this._originalMethods)) {
+      this._originalMethods[m] = this[m];
+    }
+
     try {
       this[m] = eval('(' + modifiedMethods[m] + ')');
+      this._hasModifiedMethods = true;
+      this._lastModifiedMethod = m;
     } catch (e) {
       var dialog = new epiviz.ui.controls.MessageDialog(
         'Error evaluating code',
@@ -556,6 +590,31 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
   this.draw();
 
   this._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, modifiedMethods));
+};
+
+/**
+ * @returns {boolean}
+ */
+epiviz.ui.charts.Visualization.prototype.hasModifiedMethods = function() { return this._hasModifiedMethods; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.Visualization.prototype.lastModifiedMethod = function() { return this._lastModifiedMethod; };
+
+/**
+ */
+epiviz.ui.charts.Visualization.prototype.resetModifiedMethods = function() {
+  for (var m in this._originalMethods) {
+    if (!this._originalMethods.hasOwnProperty(m)) { continue; }
+    this[m] = this._originalMethods[m];
+  }
+
+  this._hasModifiedMethods = false;
+
+  this.draw();
+
+  this._methodsReset.notify(new epiviz.ui.charts.VisEventArgs(this._id));
 };
 
 /**
@@ -574,6 +633,19 @@ epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
     this._markersIndices[marker.id()] = i;
     this._markersMap[marker.id()] = marker;
   }
+
+  this.draw();
+
+  this._markersModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._markers));
+};
+
+epiviz.ui.charts.Visualization.prototype.removeMarker = function(markerId) {
+  if (!(markerId in this._markersMap)) { return; }
+
+  var i = this._markersIndices[markerId];
+  this._markers[i] = null;
+  delete this._markersMap[markerId];
+  delete this._markersIndices[markerId];
 
   this.draw();
 
@@ -738,6 +810,11 @@ epiviz.ui.charts.Visualization.prototype.onColorsChanged = function() { return t
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
  */
 epiviz.ui.charts.Visualization.prototype.onMethodsModified = function() { return this._methodsModified; };
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
+ */
+epiviz.ui.charts.Visualization.prototype.onMethodsReset = function() { return this._methodsReset; };
 
 /**
  * @returns {epiviz.events.Event.<Array.<epiviz.ui.charts.markers.ChartMarker>>}

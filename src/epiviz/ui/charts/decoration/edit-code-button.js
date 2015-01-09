@@ -30,7 +30,7 @@ epiviz.ui.charts.decoration.EditCodeButton.constructor = epiviz.ui.charts.decora
 epiviz.ui.charts.decoration.EditCodeButton.prototype._controlCreator = function() {
   var self = this;
   return function(container) {
-    return new epiviz.ui.controls.EditCodeControl(container, 'Edit Code', null, self.visualization(), 'draw');
+    return new epiviz.ui.controls.EditCodeControl(container, 'Edit Code', null, self.visualization(), self.visualization().lastModifiedMethod(), self.visualization().hasModifiedMethods());
   };
 };
 
@@ -40,8 +40,12 @@ epiviz.ui.charts.decoration.EditCodeButton.prototype._controlCreator = function(
  */
 epiviz.ui.charts.decoration.EditCodeButton.prototype._saveHandler = function() {
   var self = this;
-  return function(modifiedMethods) {
-    self.visualization().setModifiedMethods(modifiedMethods);
+  return function(result) {
+    if (result.hasModifiedMethods) {
+      self.visualization().setModifiedMethods(result.modifiedMethods);
+    } else {
+      self.visualization().resetModifiedMethods();
+    }
   };
 };
 

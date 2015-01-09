@@ -140,6 +140,7 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     /** @type {Object.<string, *>} */
     var preMethodsResults = {};
     this._markers.forEach(function(marker) {
+      if (!marker) { return; }
       preMethodsResults[marker.id()] = marker.preMark()(data);
     });
     data.foreach(function(m, series) {
@@ -149,6 +150,7 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
         var markerMap = {};
         msMap[i + series.globalStartIndex()] = markerMap;
         self._markers.forEach(function(marker) {
+          if (!marker) { return; }
           markerMap[marker.id()] = marker.mark()(series.get(i), data, preMethodsResults[marker.id()]);
         });
       }

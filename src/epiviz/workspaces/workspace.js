@@ -215,6 +215,17 @@ epiviz.workspaces.Workspace.prototype.chartMethodsModified = function(chartId, m
 
 /**
  * @param {string} chartId
+ */
+epiviz.workspaces.Workspace.prototype.chartMethodsReset = function(chartId) {
+  if (Object.keys(this._chartsById[chartId].properties.modifiedMethods).length == 0) { return; }
+
+  this._chartsById[chartId].properties.modifiedMethods = {};
+
+  this._setChanged();
+};
+
+/**
+ * @param {string} chartId
  * @param {Array.<epiviz.ui.charts.markers.ChartMarker>} markers
  */
 epiviz.workspaces.Workspace.prototype.chartMarkersModified = function(chartId, markers) {
@@ -222,7 +233,7 @@ epiviz.workspaces.Workspace.prototype.chartMarkersModified = function(chartId, m
       this._chartsById[chartId].properties.chartMarkers,
       markers)) { return; }
 
-  this._chartsById[chartId].properties.chartMarkers = markers.slice(0);
+  this._chartsById[chartId].properties.chartMarkers = markers.filter(function(marker) { return marker != null; });
 
   this._setChanged();
 };

@@ -13,10 +13,11 @@ goog.provide('epiviz.ui.controls.FilterCodeControl');
  * @param {Object} [targetObject]
  * @param {string} [preFilterText]
  * @param {string} [filterText]
+ * @param {boolean} [enabled]
  * @constructor
  * @extends {epiviz.ui.controls.CodeControl}
  */
-epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObject, preFilterText, filterText) {
+epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObject, preFilterText, filterText, enabled) {
   // Call superclass constructor
   epiviz.ui.controls.CodeControl.call(this, container, title, id, targetObject);
 
@@ -66,6 +67,12 @@ epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObje
     '  // TODO: Your code here\n' +
     '  return true;\n' +
     '}\n';
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this._enabled = enabled || false;
 };
 
 /**
@@ -78,6 +85,15 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
   if (this._preFilterEditor) { return; }
 
   this._container.append(
+    sprintf(
+      '<div id="%1$s">' +
+      '<label for="%1$s-true">On</label>' +
+      '<input type="radio" id="%1$s-true" name="%1$s" %2$s />' +
+      '<label for="%1$s-false">Off</label>' +
+      '<input type="radio" id="%1$s-false" name="%1$s" %3$s />' +
+      '</div>', this.id() + '-switch', this._enabled ? 'checked="checked"' : '',
+      this._enabled ? '' : 'checked="checked"') +
+    '<br />' +
     '<div><label><b>Pre-Filter Method</b></label></div><br />' +
     '<div style="overflow-y: scroll; max-height: 250px;">' +
       '<textarea autofocus="autofocus" class="pre-filter-code"></textarea>' +
@@ -87,7 +103,18 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
       '<textarea autofocus="autofocus" class="filter-code"></textarea>' +
     '</div>');
 
-  // TODO: Also a check box to choose whether to apply the filter or not, and disable (?) the code editors
+  var onOffSwitch = this._container.find('#' + this.id() + '-switch');
+  onOffSwitch.buttonset();
+  var self = this;
+  var optionChange = function(e) {
+    var optionChecked = $('#' + self.id() + '-switch :radio:checked').attr('id');
+    var newValue = optionChecked.substr(optionChecked.lastIndexOf('-')+1) == 'true';
+    if (self._preFilterEditor) { self._preFilterEditor.setOption('disableInput', !newValue); }
+    if (self._filterEditor) { self._filterEditor.setOption('disableInput', !newValue);}
+    self._enabled = newValue;
+  };
+  onOffSwitch.find('#' + this.id() + '-switch-true').on('change', optionChange);
+  onOffSwitch.find('#' + this.id() + '-switch-false').on('change', optionChange);
 
   var preFilterCodeEditor = this._container.find('.pre-filter-code');
   preFilterCodeEditor.val(this._preFilterText);
@@ -102,6 +129,7 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
     extraKeys: {"Ctrl-Q": "toggleComment"},
     autofocus: true
   });
+  this._preFilterEditor.setOption('disableInput', !this._enabled);
 
   this._filterEditor = CodeMirror.fromTextArea(filterCodeEditor[0], {
     lineNumbers: true,
@@ -110,11 +138,13 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
     extraKeys: {"Ctrl-Q": "toggleComment"},
     autofocus: true
   });
+  this._filterEditor.setOption('disableInput', !this._enabled);
 };
 
 /**
  */
 epiviz.ui.controls.FilterCodeControl.prototype.save = function() {
+  if (!this._preFilterEditor) { return; }
   this._preFilterText = this._preFilterEditor.getValue();
   this._filterText = this._filterEditor.getValue();
 };
@@ -136,8 +166,9 @@ epiviz.ui.controls.FilterCodeControl.prototype.revert = function() {
  */
 epiviz.ui.controls.FilterCodeControl.prototype.result = function() {
   return {
-    preFilter: this._preFilterText,
-    filter: this._filterText
+    enabled: this._enabled,
+    preFilter: this._enabled ? this._preFilterText : null,
+    filter: this._enabled ? this._filterText : null
   }
 };
 

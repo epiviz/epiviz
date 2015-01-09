@@ -12,10 +12,11 @@ goog.provide('epiviz.ui.controls.EditCodeControl');
  * @param {string} [id]
  * @param {Object} [targetObject]
  * @param {string} [defaultMethod]
+ * @param {boolean} [hasModifiedMethods]
  * @constructor
  * @extends {epiviz.ui.controls.CodeControl}
  */
-epiviz.ui.controls.EditCodeControl = function(container, title, id, targetObject, defaultMethod) {
+epiviz.ui.controls.EditCodeControl = function(container, title, id, targetObject, defaultMethod, hasModifiedMethods) {
   // Call superclass constructor
   epiviz.ui.controls.CodeControl.call(this, container, title, id, targetObject);
 
@@ -42,6 +43,12 @@ epiviz.ui.controls.EditCodeControl = function(container, title, id, targetObject
    * @private
    */
   this._selectedMethod = null;
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this._hasModifiedMethods = hasModifiedMethods || false;
 };
 
 /**
@@ -54,12 +61,32 @@ epiviz.ui.controls.EditCodeControl.prototype.initialize = function() {
   if (this._editor) { return; }
 
   this._container.append(
-    '<div><select class="obj-methods" style=""></select></div><br />' +
+    '<div style="float: left; margin-right: 5px;"><select class="obj-methods"></select></div>' +
+    sprintf(
+      '<div id="%1$s">' +
+        '<label for="%1$s-true">On</label>' +
+        '<input type="radio" id="%1$s-true" name="%1$s" %2$s />' +
+        '<label for="%1$s-false">Off</label>' +
+        '<input type="radio" id="%1$s-false" name="%1$s" %3$s />' +
+      '</div>', this.id() + '-switch', this._hasModifiedMethods ? 'checked="checked"' : '',
+      this._hasModifiedMethods ? '' : 'checked="checked"') +
+    '<br />' +
     '<div style="overflow-y: scroll; max-height: 500px;">' +
     '<textarea autofocus="autofocus" class="code-edit"></textarea>' +
     '</div>');
 
   this._methodsSelector = this._container.find('.obj-methods');
+  var onOffSwitch = this._container.find('#' + this.id() + '-switch');
+  onOffSwitch.buttonset();
+  var self = this;
+  var optionChange = function(e) {
+    var optionChecked = $('#' + self.id() + '-switch :radio:checked').attr('id');
+    var newValue = optionChecked.substr(optionChecked.lastIndexOf('-')+1) == 'true';
+    if (self._editor) { self._editor.setOption('disableInput', !newValue); }
+    self._hasModifiedMethods = newValue;
+  };
+  onOffSwitch.find('#' + this.id() + '-switch-true').on('change', optionChange);
+  onOffSwitch.find('#' + this.id() + '-switch-false').on('change', optionChange);
   var codeEditor = this._container.find('.code-edit');
   var methods = [];
   var obj = this._targetObj;
@@ -80,7 +107,6 @@ epiviz.ui.controls.EditCodeControl.prototype.initialize = function() {
     }
   }
 
-  var self = this;
   this._methodsSelector.change(function() {
     self._methodsCode[self._selectedMethod] = self._editor.getValue();
 
@@ -115,6 +141,7 @@ epiviz.ui.controls.EditCodeControl.prototype.initialize = function() {
     extraKeys: {"Ctrl-Q": "toggleComment"},
     autofocus: true
   });
+  this._editor.setOption('disableInput', !this._hasModifiedMethods);
 };
 
 /**
@@ -150,4 +177,9 @@ epiviz.ui.controls.EditCodeControl.prototype.modifiedMethods = function() {
 /**
  * @returns {*}
  */
-epiviz.ui.controls.EditCodeControl.prototype.result = function() { return this.modifiedMethods(); };
+epiviz.ui.controls.EditCodeControl.prototype.result = function() {
+  return {
+    hasModifiedMethods: this._hasModifiedMethods,
+    modifiedMethods: this._hasModifiedMethods ? this.modifiedMethods() : {}
+  };
+};
