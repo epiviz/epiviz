@@ -153,25 +153,13 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._markerValues = null;
 
-  // TODO: Debug
-  /*if (this.id() == 'track-genes-initial') {
-    var filterId = 'filter-smaller-than-300k';
-    var marker = new epiviz.ui.charts.markers.ChartMarker(epiviz.ui.charts.markers.ChartMarker.Type.FILTER, filterId, 'Filter Objects Smaller than 300k Base Pairs',
-      function(data) { return {minSize: 300000}; },
-      function(item, data, preMethodResult) {
-        return (item.rowItem.end() - item.rowItem.start() > preMethodResult.minSize);
-      }
-    );
-    this._markers.push(marker);
-  }*/
-  // TODO: End debug
-
   var self = this;
   this._markers.forEach(function(marker, i) {
     if (!marker) { return; }
     self._markersMap[marker.id()] = marker;
     self._markersIndices[marker.id()] = i;
   });
+
 
   // Events
 

@@ -166,7 +166,10 @@ epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, c
   var computedMs = this._extractComputedMeasurements(chartMeasurementsMap);
   this._updateComputedMeasurementsData(computedMs);
 
-  delete this._measurementPendingRequestsMap.get(measurement)[request.id()];
+  var pendingRequests = this._measurementPendingRequestsMap.get(measurement);
+  if (pendingRequests) {
+    delete pendingRequests[request.id()];
+  }
 
   this._serveAvailableData(chartRequestedRange, chartMeasurementsMap, chartDataReadyCallback);
 };

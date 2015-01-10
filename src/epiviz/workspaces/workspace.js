@@ -217,7 +217,8 @@ epiviz.workspaces.Workspace.prototype.chartMethodsModified = function(chartId, m
  * @param {string} chartId
  */
 epiviz.workspaces.Workspace.prototype.chartMethodsReset = function(chartId) {
-  if (Object.keys(this._chartsById[chartId].properties.modifiedMethods).length == 0) { return; }
+  if (!this._chartsById[chartId].properties.modifiedMethods ||
+    Object.keys(this._chartsById[chartId].properties.modifiedMethods).length == 0) { return; }
 
   this._chartsById[chartId].properties.modifiedMethods = {};
 

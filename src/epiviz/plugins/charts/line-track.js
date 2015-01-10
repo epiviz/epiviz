@@ -169,15 +169,22 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     drawBoundaries.length -= index - drawBoundaries.index;
     drawBoundaries.index = index;
 
-    var indices = null;
-    if (step === null || step <= 1) {
-      indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index);
-    } else {
-      indices = [];
-      for (var j = 0; Math.round(j) < drawBoundaries.length; j += step) {
-        indices.push(drawBoundaries.index + j);
-      }
-    }
+    var indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index)
+      .filter(function(i) {
+        if (self._markers.length == 0) { return true; }
+        var markerVals = self._markerValues.first().value[i + series.globalStartIndex()];
+        if (!markerVals) { return true; }
+        for (var markerId in markerVals) {
+          if (!markerVals.hasOwnProperty(markerId)) { continue; }
+          var marker = self._markersMap[markerId];
+          if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+          if (!markerVals[markerId]) { return false; }
+        }
+        return true;
+      })
+      .filter(function(i) {
+        return !step || step <= 1 || (i - drawBoundaries.index) % step == 0;
+      });
 
     for (var k = 0; k < indices.length; ++k) {
       var cell = series.get(indices[k]);

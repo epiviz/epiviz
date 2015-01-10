@@ -166,7 +166,6 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
 epiviz.ui.charts.Track.prototype._drawTitle = function() {
   var title = '';
   var measurements = this.measurements().toArray();
-  var msMap = epiviz.utils.arrayFlip(measurements);
 
   var self = this;
   this._svg.selectAll('.chart-title').remove();

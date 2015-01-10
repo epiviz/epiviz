@@ -282,7 +282,7 @@ epiviz.measurements.Measurement.prototype.maxValue = function() {
  * @returns {Array.<string>}
  */
 epiviz.measurements.Measurement.prototype.metadata = function() {
-  return this._metadata;
+  return this._metadata || [];
 };
 
 /**

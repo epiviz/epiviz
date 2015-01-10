@@ -53,7 +53,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
 
   var size = this.size();
   if (!size || index >= size || index < 0) {
-    return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(globalIndex, item, value);
+    return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(globalIndex, item, value, this._measurement);
   }
 
   if (firstGlobalIndex != undefined) {
@@ -70,7 +70,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
     globalIndex = firstGlobalIndex + index;
   }
 
-  return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(globalIndex, item, value);
+  return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(globalIndex, item, value, this._measurement);
 };
 
 /**
@@ -136,7 +136,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.size = function() {
  */
 epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getByGlobalIndex = function(globalIndex) {
   var firstGlobalIndex = this.globalStartIndex();
-  if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(null, null, null); }
+  if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(null, null, null, this._measurement); }
 
   return this.get(globalIndex - firstGlobalIndex);
 };
@@ -202,10 +202,11 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.binarySearchStarts = fu
  * @param {number} globalIndex
  * @param {epiviz.datatypes.GenomicRangeArray.Item} rowItem
  * @param {?number} [value]
+ * @param {epiviz.measurements.Measurement} measurement
  * @constructor
  * @struct
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem = function(globalIndex, rowItem, value) {
+epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem = function(globalIndex, rowItem, value, measurement) {
   /**
    * @type {number}
    */
@@ -220,4 +221,9 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem = function(globalIndex,
    * @type {number}
    */
   this.value = (value === 0 || value) ? value : null;
+
+  /**
+   * @type {epiviz.measurements.Measurement}
+   */
+  this.measurement = measurement;
 };

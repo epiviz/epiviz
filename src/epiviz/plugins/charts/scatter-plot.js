@@ -173,7 +173,38 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       (item.start() < range.end() && item.end() > range.start())) {
+
       for (var j = 0; j < nSeries; ++j) {
+
+        // Filter code
+        var filter = true;
+        var markerId, marker;
+
+        var valsMapX = self._markerValues.get(self._measurementsX[j]);
+        var valsMapY = self._markerValues.get(self._measurementsY[j]);
+
+        var markerValsX = valsMapX[index];
+        if (markerValsX) {
+          for (markerId in markerValsX) {
+            if (!markerValsX.hasOwnProperty(markerId)) { continue; }
+            marker = self._markersMap[markerId];
+            if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+            if (!markerValsX[markerId]) { filter = false; break; }
+          }
+        }
+
+        var markerValsY = valsMapY[index];
+        if (markerValsY) {
+          for (markerId in markerValsY) {
+            if (!markerValsY.hasOwnProperty(markerId)) { continue; }
+            marker = self._markersMap[markerId];
+            if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+            if (!markerValsY[markerId]) { filter = false; break; }
+          }
+        }
+
+        if (!filter) { continue; }
+
         indices.push(j * nItems + i);
       }
     }
@@ -185,7 +216,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   for (i = 0; i < indices.length; ++i) {
     index = indices[i] % nItems;
     var globalIndex = index + firstGlobalIndex;
-    var seriesIndex = Math.floor(index / nItems);
+    var seriesIndex = Math.floor(indices[i] / nItems);
     var mX = self._measurementsX[seriesIndex];
     var mY = self._measurementsY[seriesIndex];
     var cellX = data.get(mX).getByGlobalIndex(globalIndex);
@@ -240,7 +271,6 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     selectedGroup.append('g').attr('class', 'hovered');
   }
 
-  //itemsGroup.selectAll('circle').remove();
   var selection = itemsGroup.selectAll('circle').data(items, function(d) { return d.id; });
 
   selection
@@ -330,24 +360,60 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
 
   this._legend.selectAll('text').remove();
 
-  var xWidth = this._xLabel.length * 7;
-  var yWidth = this._yLabel.length * 7;
-  this._legend.append('text')
-    .attr('x', (this.width() - xWidth) * 0.5)
-    .attr('y', (this.height() - this.margins().bottom() + 35))
-    .attr('style', 'font-weight: regular; font-size: 12;')
-    .attr('fill', '#000000')
-    .attr('stroke', 'none')
-    .style('fill-opacity', 1)
-    .text(this._xLabel);
+  var xMeasurements = this._measurementsX;
+  var self = this;
+  this._legend.selectAll('.x-measurement').remove();
 
-  this._legend.append('text')
-    .attr('x', - this.height() + (this.height() - yWidth) * 0.5 + this.margins().top())
-    .attr('y', this.margins().left() - 25)
+  var xEntries = this._legend
+    .selectAll('.x-measurement')
+    .data(xMeasurements)
+    .enter()
+    .append('text')
+    .attr('class', 'x-measurement')
+    .attr('font-weight', 'bold')
+    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('y', (this.height() - this.margins().bottom() + 35))
+    .text(function(m, i) { return m.name(); });
+
+  var xTextLength = 0;
+  var xTitleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .x-measurement')
+    .each(function(i) {
+      xTitleEntriesStartPosition.push(xTextLength);
+      xTextLength += this.getBBox().width + 3;
+    });
+
+  xEntries.attr('x', function(column, i) {
+    return (self.width() - xTextLength) * 0.5 + xTitleEntriesStartPosition[i];
+  });
+
+
+  var yMeasurements = this._measurementsY;
+  this._legend.selectAll('.y-measurement').remove();
+
+  var yEntries = this._legend
+    .selectAll('.y-measurement')
+    .data(yMeasurements)
+    .enter()
+    .append('text')
+    .attr('class', 'y-measurement')
+    .attr('font-weight', 'bold')
+    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('y', (this.margins().left() - 35))
     .attr('transform', 'rotate(-90)')
-    .attr('style', 'font-weight: regular; font-size: 12;')
-    .attr('fill', '#000000')
-    .attr('stroke', 'none')
-    .style('fill-opacity', 1)
-    .text(this._yLabel);
+    .text(function(m, i) { return m.name(); });
+
+  var yTextLength = 0;
+  var yTitleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .y-measurement')
+    .each(function(i) {
+      yTitleEntriesStartPosition.push(yTextLength);
+      yTextLength += this.getBBox().width + 3;
+    });
+
+  yEntries.attr('x', function(column, i) {
+    return - self.height() + (self.height() - yTextLength) * 0.5 + self.margins().top() + yTitleEntriesStartPosition[i];
+  });
 };

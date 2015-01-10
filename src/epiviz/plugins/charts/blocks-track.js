@@ -111,7 +111,24 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
     var series = data.get(m);
     var seriesBlocks = [];
 
+    /** @type {Object.<number, Object.<string, *>>} */
+    var measurementMarkers = self._markerValues.get(m);
+
     for (var j = 0; j < series.size(); ++j) {
+
+      var markerVals;
+      if (measurementMarkers) { markerVals = measurementMarkers[j + series.globalStartIndex()]; }
+      if (markerVals) {
+        var filter = true;
+        for (var markerId in markerVals) {
+          if (!markerVals.hasOwnProperty(markerId)) { continue; }
+          var marker = self._markersMap[markerId];
+          if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+          if (!markerVals[markerId]) { filter = false; break; }
+        }
+        if (!filter) { continue; }
+      }
+
       /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
       var cell = series.get(j);
 
