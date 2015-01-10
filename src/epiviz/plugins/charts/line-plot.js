@@ -188,14 +188,28 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     .interpolate(interpolation);
 
   var valuesForIndex = function(index) {
-    return self.measurements().toArray().map(function(m, i) {
-      return { x: i, y: data.get(m).getByGlobalIndex(index).value };
-    });
+    return self.measurements().toArray()
+      .map(function(m, i) {
+        return { x: i, y: data.get(m).getByGlobalIndex(index).value, measurement: m };
+      })
+      .filter(function(o) {
+        if (self._markers.length == 0) { return true; }
+        var markerVals = self._markerValues.get(o.measurement)[index];
+        if (!markerVals) { return true; }
+        for (var markerId in markerVals) {
+          if (!markerVals.hasOwnProperty(markerId)) { continue; }
+          var marker = self._markersMap[markerId];
+          if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+          if (!markerVals[markerId]) { return false; }
+        }
+        return true;
+      });
   };
 
-  var lineData = function(index) {
+  // TODO: Cleanup and also all usages of lineData
+  /*var lineData = function(index) {
     return lineFunc(valuesForIndex(index));
-  };
+  };*/
 
   var indices = epiviz.utils.range(nEntries, firstGlobalIndex);
 
@@ -278,8 +292,10 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       .enter()
       .append('g').attr('class', 'points')
       .each(function(index) {
-        d3.select(this).selectAll('circle')
-          .data(valuesForIndex(index))
+        var selection = d3.select(this).selectAll('circle')
+          .data(valuesForIndex(index));
+
+        selection
           .enter()
           .append('circle')
           .attr('cx', function(d) { return xScale(d.x); })
@@ -287,6 +303,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .attr('r', pointRadius)
           .attr('fill', 'none')
           .attr('stroke', colors.get(index));
+
+        selection.exit().remove();
       })
       .style('opacity', '0');
 

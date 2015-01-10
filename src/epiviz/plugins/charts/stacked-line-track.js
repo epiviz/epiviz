@@ -130,7 +130,21 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     var series = data.get(m);
 
     var indices = epiviz.utils.range((lastGlobalIndex - firstGlobalIndex) / step)
-      .map(function(i) { return i * step + firstGlobalIndex; });
+      .map(function(i) { return i * step + firstGlobalIndex; })
+      .filter(function(i) {
+        if (self._markers.length == 0) { return true; }
+
+        // TODO: Check both measurements and if any has filter set to false, then filter out that index for all
+        var markerVals = self._markerValues.first().value[i];
+        if (!markerVals) { return true; }
+        for (var markerId in markerVals) {
+          if (!markerVals.hasOwnProperty(markerId)) { continue; }
+          var marker = self._markersMap[markerId];
+          if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+          if (!markerVals[markerId]) { return false; }
+        }
+        return true;
+      });
 
     for (var k = 0; k < indices.length; ++k) {
       var cell = series.getByGlobalIndex(indices[k]);
@@ -170,6 +184,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   var firstSeries = data.first().value;
 
   this._drawAxes(xScale, undefined, 10);
+  // TODO: Add option for labels on tracks
   /* this._drawAxes(
     xScale, undefined, // scales
     labels.length, undefined, // ticks
