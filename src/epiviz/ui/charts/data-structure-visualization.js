@@ -80,18 +80,6 @@ epiviz.ui.charts.DataStructureVisualization.constructor = epiviz.ui.charts.DataS
  */
 epiviz.ui.charts.DataStructureVisualization.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE; };
 
-
-// TODO Cleanup
-/**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
- */
-//epiviz.ui.charts.DataStructureVisualization.prototype.onPropagateHierarchySelection = function() { return this._propagateHierarchySelection; };
-
-/**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, number>>>}
- */
-//epiviz.ui.charts.DataStructureVisualization.prototype.onPropagateHierarchyOrder = function() { return this._propagateHierarchyOrder; };
-
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
  */

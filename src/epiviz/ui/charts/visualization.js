@@ -128,13 +128,13 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
   this._lastRange = null;
 
   /**
-   * @type {Array.<epiviz.ui.charts.markers.ChartMarker>}
+   * @type {Array.<epiviz.ui.charts.markers.VisualizationMarker>}
    * @protected
    */
   this._markers = properties.chartMarkers;
 
   /**
-   * @type {Object.<string, epiviz.ui.charts.markers.ChartMarker>}
+   * @type {Object.<string, epiviz.ui.charts.markers.VisualizationMarker>}
    * @protected
    */
   this._markersMap = {};
@@ -159,7 +159,6 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
     self._markersMap[marker.id()] = marker;
     self._markersIndices[marker.id()] = i;
   });
-
 
   // Events
 
@@ -219,7 +218,7 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
   this._methodsReset = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.ChartMarker>>>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>>}
    * @private
    */
   this._markersModified = new epiviz.events.Event();
@@ -465,7 +464,7 @@ epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
     .attr('width', this.width())
     .attr('height', this.height());
 
-  // TODO: Once we generalize the types of ChartMarker, add here some initialization code
+  // TODO: Once we generalize the types of VisualizationMarker, add here some initialization code
 
   return [];
 };
@@ -606,7 +605,7 @@ epiviz.ui.charts.Visualization.prototype.resetModifiedMethods = function() {
 };
 
 /**
- * @param {epiviz.ui.charts.markers.ChartMarker} marker
+ * @param {epiviz.ui.charts.markers.VisualizationMarker} marker
  */
 epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
   if (!marker) { return; }
@@ -642,7 +641,7 @@ epiviz.ui.charts.Visualization.prototype.removeMarker = function(markerId) {
 
 /**
  * @param {string} markerId
- * @returns {epiviz.ui.charts.markers.ChartMarker}
+ * @returns {epiviz.ui.charts.markers.VisualizationMarker}
  */
 epiviz.ui.charts.Visualization.prototype.getMarker = function(markerId) {
   if (!markerId || !(markerId in this._markersMap)) { return null; }
@@ -805,7 +804,7 @@ epiviz.ui.charts.Visualization.prototype.onMethodsModified = function() { return
 epiviz.ui.charts.Visualization.prototype.onMethodsReset = function() { return this._methodsReset; };
 
 /**
- * @returns {epiviz.events.Event.<Array.<epiviz.ui.charts.markers.ChartMarker>>}
+ * @returns {epiviz.events.Event.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>}
  */
 epiviz.ui.charts.Visualization.prototype.onMarkersModified = function() { return this._markersModified; };
 

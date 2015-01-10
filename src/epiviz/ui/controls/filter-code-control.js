@@ -37,36 +37,13 @@ epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObje
    * @type {string}
    * @private
    */
-  this._preFilterText = preFilterText ||
-    '/**\n' +
-    ' * This method is called once before every draw, for all data available to the visualization,\n' +
-    ' * for initialization. Its result can be used inside the filter method.\n' +
-    ' * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]\n' +
-    ' * @returns {T}\n' +
-    ' * @template T\n' +
-    ' */\n' +
-    'function(data) {\n' +
-    '  // TODO: Your code here\n' +
-    '  return null;\n' +
-    '}\n';
+  this._preFilterText = preFilterText;
 
   /**
    * @type {string}
    * @private
    */
-  this._filterText = filterText ||
-    '/**\n' +
-    ' * This method is called for every data object. If it returns false, the object will not be drawn.\n' +
-    ' * @param {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} [item]\n' +
-    ' * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]\n' +
-    ' * @param {T} [preMarkResult]\n' +
-    ' * @returns {boolean}\n' +
-    ' * @template T\n' +
-    ' */\n' +
-    'function(item, data, preMarkResult) {\n' +
-    '  // TODO: Your code here\n' +
-    '  return true;\n' +
-    '}\n';
+  this._filterText = filterText;
 
   /**
    * @type {boolean}

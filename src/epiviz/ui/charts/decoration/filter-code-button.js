@@ -42,6 +42,10 @@ epiviz.ui.charts.decoration.FilterCodeButton.prototype._controlCreator = functio
       preFilter = existingFilter.preMark().toString();
       filter = existingFilter.mark().toString();
     }
+
+    preFilter = preFilter || self.preFilterTemplate();
+    filter = filter || self.filterTemplate();
+
     return new epiviz.ui.controls.FilterCodeControl(container, 'Filter Code', null, self.visualization(), preFilter, filter, existingFilter != undefined);
   };
 };
@@ -85,11 +89,16 @@ epiviz.ui.charts.decoration.FilterCodeButton.prototype._saveHandler = function()
 
       if (!preMark || !mark) { return; }
 
-      self.visualization().putMarker(new epiviz.ui.charts.markers.ChartMarker(
+      self.visualization().putMarker(self.createMarker(preMark, mark));
+
+      // TODO cleanup
+      /*self.visualization().putMarker(new epiviz.ui.charts.markers.ChartMarker(
         epiviz.ui.charts.markers.ChartMarker.Type.FILTER,
-        epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID, 'User Filter', preMark, mark));
+        epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID, 'User Filter', preMark, mark));*/
     } else {
-      self.visualization().removeMarker(epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID);
+      // TODO Cleanup
+      //self.visualization().removeMarker(epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID);
+      self.visualization().removeMarker(self.markerId());
     }
   };
 };
@@ -100,3 +109,31 @@ epiviz.ui.charts.decoration.FilterCodeButton.prototype._saveHandler = function()
  */
 epiviz.ui.charts.decoration.FilterCodeButton.prototype._cancelHandler = function() { return function() {}; };
 
+/**
+ * @param {function(Data): InitialVars} [preMark]
+ * @param {function(Item, Data, InitialVars): MarkResult} [mark]
+ * @template Data, InitialVars, Item, MarkResult
+ */
+epiviz.ui.charts.decoration.FilterCodeButton.prototype.createMarker = function(preMark, mark) {
+  return new epiviz.ui.charts.markers.VisualizationMarker(
+    epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER,
+    this.markerId(),
+    'User Filter',
+    preMark,
+    mark);
+};
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.decoration.FilterCodeButton.prototype.markerId = function() { return epiviz.ui.charts.decoration.FilterCodeButton.FILTER_ID; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.decoration.FilterCodeButton.prototype.preFilterTemplate = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.decoration.FilterCodeButton.prototype.filterTemplate = function() { throw Error('unimplemented abstract method'); };

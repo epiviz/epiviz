@@ -199,7 +199,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
         for (var markerId in markerVals) {
           if (!markerVals.hasOwnProperty(markerId)) { continue; }
           var marker = self._markersMap[markerId];
-          if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+          if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
           if (!markerVals[markerId]) { return false; }
         }
         return true;

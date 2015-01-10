@@ -188,7 +188,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
           for (markerId in markerValsX) {
             if (!markerValsX.hasOwnProperty(markerId)) { continue; }
             marker = self._markersMap[markerId];
-            if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+            if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
             if (!markerValsX[markerId]) { filter = false; break; }
           }
         }
@@ -198,7 +198,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
           for (markerId in markerValsY) {
             if (!markerValsY.hasOwnProperty(markerId)) { continue; }
             marker = self._markersMap[markerId];
-            if (marker.type() != epiviz.ui.charts.markers.ChartMarker.Type.FILTER) { continue; }
+            if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
             if (!markerValsY[markerId]) { filter = false; break; }
           }
         }

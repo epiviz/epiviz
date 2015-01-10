@@ -227,7 +227,7 @@ epiviz.workspaces.Workspace.prototype.chartMethodsReset = function(chartId) {
 
 /**
  * @param {string} chartId
- * @param {Array.<epiviz.ui.charts.markers.ChartMarker>} markers
+ * @param {Array.<epiviz.ui.charts.markers.VisualizationMarker>} markers
  */
 epiviz.workspaces.Workspace.prototype.chartMarkersModified = function(chartId, markers) {
   if (epiviz.utils.arraysEqual(
@@ -338,7 +338,7 @@ epiviz.workspaces.Workspace.prototype.copy = function(name, id) {
  *     }>,
  *     charts: Object.<string, Array.<{
  *       type: string,
- *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>|{id: string, name: string, colors: Array.<string>}, modifiedMethods: Object.<string, string>, chartMarkers: Array.<epiviz.ui.charts.markers.ChartMarker>}
+ *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>|{id: string, name: string, colors: Array.<string>}, modifiedMethods: Object.<string, string>, chartMarkers: Array.<epiviz.ui.charts.markers.VisualizationMarker>}
  *     }>>}}}
  */
 epiviz.workspaces.Workspace.prototype.raw = function(config) {
@@ -515,7 +515,7 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
           chartInfo.properties.customSettings,
           chartType.customSettingsDefs(),
           chartInfo.properties.chartMarkers ?
-            chartInfo.properties.chartMarkers.map(function(rawMarker) { return epiviz.ui.charts.markers.ChartMarker.fromRawObject(rawMarker); }) :
+            chartInfo.properties.chartMarkers.map(function(rawMarker) { return epiviz.ui.charts.markers.VisualizationMarker.fromRawObject(rawMarker); }) :
             []
         )
       });

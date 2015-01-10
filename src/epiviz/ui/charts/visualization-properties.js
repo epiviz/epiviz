@@ -15,7 +15,7 @@ goog.provide('epiviz.ui.charts.VisualizationProperties');
  * @param {Object.<string, string>} [modifiedMethods]
  * @param {Object<string, *>} [customSettingsValues]
  * @param {Array.<epiviz.ui.charts.CustomSetting>} [customSettingsDefs]
- * @param {Array.<epiviz.ui.charts.markers.ChartMarker>} [chartMarkers]
+ * @param {Array.<epiviz.ui.charts.markers.VisualizationMarker>} [chartMarkers]
  * @constructor
  * @struct
  */
@@ -61,7 +61,7 @@ epiviz.ui.charts.VisualizationProperties = function(width, height, margins, visC
   this.customSettingsDefs = customSettingsDefs || [];
 
   /**
-   * @type {Array.<epiviz.ui.charts.markers.ChartMarker>}
+   * @type {Array.<epiviz.ui.charts.markers.VisualizationMarker>}
    */
   this.chartMarkers = chartMarkers || [];
 };

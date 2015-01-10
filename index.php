@@ -273,7 +273,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/clustering-algorithm-factory.js"></script>
 
-    <script src="src/epiviz/ui/charts/markers/chart-marker.js"></script>
+    <script src="src/epiviz/ui/charts/markers/visualization-marker.js"></script>
 
     <script src="src/epiviz/ui/charts/margins.js"></script>
     <script src="src/epiviz/ui/charts/color-palette.js"></script>
@@ -310,6 +310,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/decoration/code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/filter-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-filter-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/hierarchy-filter-code-button.js"></script>
 
     <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>

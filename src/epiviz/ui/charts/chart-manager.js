@@ -82,7 +82,7 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._chartMethodsReset = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.ChartMarker>>>}
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>>}
    * @private
    */
   this._chartMarkersModified = new epiviz.events.Event();
@@ -340,7 +340,7 @@ epiviz.ui.charts.ChartManager.prototype.onChartMethodsModified = function() { re
 epiviz.ui.charts.ChartManager.prototype.onChartMethodsReset = function() { return this._chartMethodsReset; };
 
 /**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.ChartMarker>>>}
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartMarkersModified = function() { return this._chartMarkersModified; };
 
