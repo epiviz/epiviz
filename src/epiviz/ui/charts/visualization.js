@@ -161,14 +161,10 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
   });
 
   /**
-   * TODO Cleanup
    * @type {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number}
    * @protected
    */
-  this._measurementsOrder = properties.measurementsOrder/*function(m1, m2) {
-    return m1.name() == m2.name() ? 0 :
-      (m1.name() < m2.name() ? 1 : -1);
-  };*/
+  this._measurementsOrder = properties.measurementsOrder;
 
   // Events
 

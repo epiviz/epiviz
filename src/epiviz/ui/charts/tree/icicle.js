@@ -4,7 +4,7 @@
  * Time: 7:18 PM
  */
 
-goog.provide('epiviz.ui.charts.tree.Facetzoom');
+goog.provide('epiviz.ui.charts.tree.Icicle');
 
 /**
  * @param {string} id
@@ -13,7 +13,7 @@ goog.provide('epiviz.ui.charts.tree.Facetzoom');
  * @constructor
  * @extends {epiviz.ui.charts.tree.HierarchyVisualization}
  */
-epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
+epiviz.ui.charts.tree.Icicle = function(id, container, properties) {
 
   epiviz.ui.charts.tree.HierarchyVisualization.call(this, id, container, properties);
 
@@ -53,7 +53,7 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
   this._nodeBorder = 1;
 
   /**
-   * Size of icons on nodes. This should be the same as the font size of ".facetzoom .icon" in svg.css
+   * Size of icons on nodes. This should be the same as the font size of ".icicle .icon" in svg.css
    * @type {number}
    * @private
    */
@@ -77,17 +77,17 @@ epiviz.ui.charts.tree.Facetzoom = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.tree.Facetzoom.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.tree.HierarchyVisualization.prototype);
-epiviz.ui.charts.tree.Facetzoom.constructor = epiviz.ui.charts.tree.Facetzoom;
+epiviz.ui.charts.tree.Icicle.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.tree.HierarchyVisualization.prototype);
+epiviz.ui.charts.tree.Icicle.constructor = epiviz.ui.charts.tree.Icicle;
 
 /**
  * Initializes the chart and draws the initial SVG in the container
  * @protected
  */
-epiviz.ui.charts.tree.Facetzoom.prototype._initialize = function() {
+epiviz.ui.charts.tree.Icicle.prototype._initialize = function() {
   epiviz.ui.charts.tree.HierarchyVisualization.prototype._initialize.call(this);
 
-  this._svg.classed('facetzoom', true);
+  this._svg.classed('icicle', true);
 };
 
 
@@ -96,7 +96,7 @@ epiviz.ui.charts.tree.Facetzoom.prototype._initialize = function() {
  * @param {epiviz.ui.charts.tree.Node} [root]
  * @returns {Array.<epiviz.ui.charts.VisObject>}
  */
-epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
+epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var uiData = epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw.call(this, range, root);
 
   var self = this;
@@ -280,7 +280,15 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
     .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
     .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.5; });
 
-  var newIcons = newItems.append("svg:foreignObject")
+  var newIconsBg = newItems.append('circle')
+    .attr('class', 'icon-bg')
+    .attr('cx', function(d) { return calcOldX(d) + self._nodeMargin + self._iconSize * 0.5; })
+    .attr('cy', function(d) { return calcOldY(d) + calcOldHeight(d) - self._nodeMargin - self._iconSize * 0.5; })
+    .attr('r', self._iconSize * 0.5 + 2)
+    .style('fill', '#ffffff')
+    .style('opacity', 0);
+
+  var newIcons = newItems.append('svg:foreignObject')
     .attr('class', 'icon-container')
     .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
     .attr('width', this._iconSize)
@@ -288,7 +296,22 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
     .attr('x', function(d) { return calcOldX(d) + self._nodeMargin; })
     .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) - self._nodeMargin - self._iconSize; })
     .append('xhtml:span')
-    .attr('class', 'unselectable-text icon');
+    .attr('class', 'unselectable-text icon')
+    .on('mouseover', function(d) {
+      d3.select(d3.select(this).node().parentNode.parentNode).select('.icon-bg')
+        .style('opacity', 0.3);
+    })
+    .on('mouseout', function(d) {
+      d3.select(d3.select(this).node().parentNode.parentNode).select('.icon-bg')
+        .style('opacity', 0);
+    })
+    .on('click', function(d) {
+      var selectionType = d.selectionType || 0;
+      selectionType = (selectionType + 1) % 3;
+      d.selectionType = selectionType;
+      self.selectNode(d, selectionType);
+      d3.event.stopPropagation();
+    });
 
 
   defs.selectAll('rect')
@@ -321,6 +344,11 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
       };
     });
 
+  itemsGroup.selectAll('.item').selectAll('.icon-bg')
+    .transition().duration(this._animationDelay)
+    .attr('cx', function(d) { return calcNewX(d) + self._nodeMargin + self._iconSize * 0.5; })
+    .attr('cy', function(d) { return calcNewY(d) + calcNewHeight(d) - self._nodeMargin - self._iconSize * 0.5; });
+
   itemsGroup.selectAll('.item').selectAll('.icon-container')
     .transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + self._nodeMargin; })
@@ -336,3 +364,40 @@ epiviz.ui.charts.tree.Facetzoom.prototype.draw = function(range, root) {
 
   return uiData;
 };
+
+/**
+ * @param {epiviz.ui.charts.VisObject} selectedObject
+ */
+epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
+ var itemsGroup = this._svg.select('.items');
+ itemsGroup.classed('unhovered', true);
+ var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+ return selectedObject.overlapsWith(d);
+ });
+ selectItems.classed('hovered', true);
+ itemsGroup.selectAll('.item').sort(function(d1, d2) { return selectedObject.overlapsWith(d1) ? 1 : -1; });
+ };
+
+/**
+ */
+epiviz.ui.charts.tree.Icicle.prototype.doUnhover = function() {
+ this._svg.select('.items').classed('unhovered', false);
+ this._svg.select('.items').selectAll('.item').classed('hovered', false);
+ };
+
+/**
+ * @param {epiviz.ui.charts.ChartObject} selectedObject
+ */
+epiviz.ui.charts.tree.Icicle.prototype.doSelect = function(selectedObject) {
+ var itemsGroup = this._svg.select('.items');
+ var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+ return selectedObject.overlapsWith(d);
+ });
+ selectItems.classed('selected', true);
+ };
+
+/**
+ */
+epiviz.ui.charts.tree.Icicle.prototype.doDeselect = function() {
+ this._svg.select('.items').selectAll('.selected').classed('selected', false);
+ };

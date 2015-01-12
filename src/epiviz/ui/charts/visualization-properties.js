@@ -79,6 +79,7 @@ epiviz.ui.charts.VisualizationProperties.prototype.copy = function() {
   var visConfigSelection = new epiviz.ui.controls.VisConfigSelection(
     this.visConfigSelection.measurements ? new epiviz.measurements.MeasurementSet(this.visConfigSelection.measurements) : undefined,
     this.visConfigSelection.datasource,
+    this.visConfigSelection.datasourceGroup,
     this.visConfigSelection.dataprovider,
     epiviz.utils.mapCopy(this.visConfigSelection.annotation),
     this.visConfigSelection.defaultChartType,

@@ -105,11 +105,11 @@ text {
 .stacked-line-plot .selected .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1!important; }
 .stacked-line-plot .hovered .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2px!important; stroke-opacity: 1.0; opacity: 1!important; }
 
-/* Facetzoom */
+/* icicle */
 
-.facetzoom .item rect { stroke: #fff; stroke-width: 0; fill-rule: evenodd; }
+.icicle .item rect { stroke: #fff; stroke-width: 0; fill-rule: evenodd; }
 
-.facetzoom .icon {
+.icicle .icon {
     font-family: 'epiviz-icons';
     speak: none;
     font-style: normal;
@@ -129,46 +129,46 @@ text {
     color: #000000;
 }
 
-.facetzoom .none-select .icon::before {
+.icicle .none-select .icon::before {
     content: "\f379";
 }
 
-.facetzoom .node-select .icon::before {
+.icicle .node-select .icon::before {
     content: "\f3b2";
 }
 
-.facetzoom .leaves-select .icon::before {
+.icicle .leaves-select .icon::before {
     content: "\f3b1";
 }
 
-.facetzoom .custom-select .icon::before {
+.icicle .custom-select .icon::before {
     content: "\f3b3";
 }
 
-.facetzoom .none-select rect {
+.icicle .none-select rect {
     opacity: 0.5;
 }
 
-.facetzoom .node-select rect {
+.icicle .node-select rect {
     opacity: 0.7;
 }
 
-.facetzoom .custom-select rect {
+.icicle .custom-select rect {
     opacity: 0.9;
 }
 
-.facetzoom .leaves-select rect {
+.icicle .leaves-select rect {
     opacity: 1;
 }
 
-.facetzoom .selected rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
+.icicle .selected rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
 
-.facetzoom .hovered rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
+.icicle .hovered rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
 
-.facetzoom .unhovered rect { fill-opacity: 0.4; }
+.icicle .unhovered rect { fill-opacity: 0.4; }
 
-.facetzoom .unselected rect { fill-opacity: 0.4; }
+.icicle .unselected rect { fill-opacity: 0.4; }
 
-.facetzoom .dragstart rect { fill-opacity: 0.4; }
+.icicle .dragstart rect { fill-opacity: 0.4; }
 
-.facetzoom .selected { cursor: w-resize; }
+.icicle .selected { cursor: w-resize; }
