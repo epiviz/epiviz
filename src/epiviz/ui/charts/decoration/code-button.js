@@ -29,12 +29,15 @@ epiviz.ui.charts.decoration.CodeButton = function(visualization, otherDecoration
   this._controlCreators = [];
 
   var isChartOptionButton = true;
+  var lastCodeButtonDecoration;
   for (var decoration = this.otherDecoration(); decoration; decoration = decoration.otherDecoration()) {
     if (decoration.isCodeButton) {
       isChartOptionButton = false;
-      decoration._addControlCreator(this._controlCreator(), this._saveHandler(), this._cancelHandler());
-      break;
+      lastCodeButtonDecoration = decoration;
     }
+  }
+  if (lastCodeButtonDecoration) {
+    lastCodeButtonDecoration._addControlCreator(this._controlCreator(), this._saveHandler(), this._cancelHandler());
   }
   this.isChartOptionButton = isChartOptionButton;
   if (isChartOptionButton) {

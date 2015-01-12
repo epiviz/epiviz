@@ -281,6 +281,18 @@ epiviz.measurements.MeasurementSet.prototype.toArray = function() {
 };
 
 /**
+ * @param {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number} comparer
+ * @returns {epiviz.measurements.MeasurementSet}
+ */
+epiviz.measurements.MeasurementSet.prototype.sorted = function(comparer) {
+  /** @type {Array.<epiviz.measurements.Measurement>} */
+  var msArr = this.toArray().sort(comparer);
+  var ret = new epiviz.measurements.MeasurementSet();
+  msArr.forEach(function(m) { ret.add(m); });
+  return ret;
+};
+
+/**
  * @returns {Array.<{id: string, name: string, type: epiviz.measurements.Measurement.Type, datasourceId: string, datasourceGroup: string, dataprovider: string, formula: null, defaultChartType: ?string, annotation: ?Object.<string, string>, minValue: ?number, maxValue: ?number, metadata: ?Array.<string>}>}
  */
 epiviz.measurements.MeasurementSet.prototype.raw = function() {

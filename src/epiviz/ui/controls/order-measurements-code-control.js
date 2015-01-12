@@ -1,23 +1,22 @@
 /**
  * Created by Florin Chelaru ( florinc [at] umd [dot] edu )
- * Date: 1/7/2015
- * Time: 2:01 PM
+ * Date: 1/11/2015
+ * Time: 10:09 PM
  */
 
-goog.provide('epiviz.ui.controls.FilterCodeControl');
+goog.provide('epiviz.ui.controls.OrderMeasurementsCodeControl');
 
 /**
  * @param {jQuery} container
  * @param {string} [title]
  * @param {string} [id]
  * @param {Object} [targetObject]
- * @param {string} [preFilterText]
- * @param {string} [filterText]
+ * @param {string} [orderMethodText]
  * @param {boolean} [enabled]
  * @constructor
  * @extends {epiviz.ui.controls.CodeControl}
  */
-epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObject, preFilterText, filterText, enabled) {
+epiviz.ui.controls.OrderMeasurementsCodeControl = function(container, title, id, targetObject, orderMethodText, enabled) {
   // Call superclass constructor
   epiviz.ui.controls.CodeControl.call(this, container, title, id, targetObject);
 
@@ -28,22 +27,19 @@ epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObje
   this._editor = null;
 
   /**
-   * @type {CodeMirror}
-   * @private
-   */
-  this._filterEditor = null;
-
-  /**
    * @type {string}
    * @private
    */
-  this._editorText = preFilterText;
-
-  /**
-   * @type {string}
-   * @private
-   */
-  this._filterText = filterText;
+  this._editorText = orderMethodText ||
+    '/**\n' +
+    ' * @param {epiviz.measurements.Measurement} m1\n' +
+    ' * @param {epiviz.measurements.Measurement} m2\n' +
+    ' * @returns {number}\n' +
+    ' */\n' +
+    'function(m1, m2) {\n' +
+    '  // TODO: Your code here\n' +
+    '  return 0;\n' +
+    '}\n';
 
   /**
    * @type {boolean}
@@ -55,10 +51,10 @@ epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObje
 /**
  * Copy methods from upper class
  */
-epiviz.ui.controls.FilterCodeControl.prototype = epiviz.utils.mapCopy(epiviz.ui.controls.CodeControl.prototype);
-epiviz.ui.controls.FilterCodeControl.constructor = epiviz.ui.controls.FilterCodeControl;
+epiviz.ui.controls.OrderMeasurementsCodeControl.prototype = epiviz.utils.mapCopy(epiviz.ui.controls.CodeControl.prototype);
+epiviz.ui.controls.OrderMeasurementsCodeControl.constructor = epiviz.ui.controls.OrderMeasurementsCodeControl;
 
-epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
+epiviz.ui.controls.OrderMeasurementsCodeControl.prototype.initialize = function() {
   if (this._editor) { return; }
 
   this._container.append(
@@ -71,13 +67,9 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
       '</div>', this.id() + '-switch', this._enabled ? 'checked="checked"' : '',
       this._enabled ? '' : 'checked="checked"') +
     '<br />' +
-    '<div><label><b>Pre-Filter Method</b></label></div><br />' +
-    '<div style="overflow-y: scroll; max-height: 250px;">' +
-      '<textarea autofocus="autofocus" class="pre-filter-code"></textarea>' +
-    '</div><br/>' +
-    '<div><label><b>Filter Method</b></label></div><br/>' +
-    '<div style="overflow-y: scroll; max-height: 250px;">' +
-      '<textarea autofocus="autofocus" class="filter-code"></textarea>' +
+    '<div><label><b>Order Measurements Method</b></label></div><br />' +
+    '<div style="overflow-y: scroll; max-height: 500px;">' +
+    '<textarea autofocus="autofocus" class="editor-code"></textarea>' +
     '</div>');
 
   var onOffSwitch = this._container.find('#' + this.id() + '-switch');
@@ -93,13 +85,10 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
   onOffSwitch.find('#' + this.id() + '-switch-true').on('change', optionChange);
   onOffSwitch.find('#' + this.id() + '-switch-false').on('change', optionChange);
 
-  var preFilterCodeEditor = this._container.find('.pre-filter-code');
-  preFilterCodeEditor.val(this._editorText);
+  var editor = this._container.find('.editor-code');
+  editor.val(this._editorText);
 
-  var filterCodeEditor = this._container.find('.filter-code');
-  filterCodeEditor.val(this._filterText);
-
-  this._editor = CodeMirror.fromTextArea(preFilterCodeEditor[0], {
+  this._editor = CodeMirror.fromTextArea(editor[0], {
     lineNumbers: true,
     matchBrackets: true,
     continueComments: "Enter",
@@ -107,45 +96,29 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
     autofocus: true
   });
   this._editor.setOption('disableInput', !this._enabled);
-
-  this._filterEditor = CodeMirror.fromTextArea(filterCodeEditor[0], {
-    lineNumbers: true,
-    matchBrackets: true,
-    continueComments: "Enter",
-    extraKeys: {"Ctrl-Q": "toggleComment"},
-    autofocus: true
-  });
-  this._filterEditor.setOption('disableInput', !this._enabled);
 };
 
 /**
  */
-epiviz.ui.controls.FilterCodeControl.prototype.save = function() {
+epiviz.ui.controls.OrderMeasurementsCodeControl.prototype.save = function() {
   if (!this._editor) { return; }
   this._editorText = this._editor.getValue();
-  this._filterText = this._filterEditor.getValue();
 };
 
 /**
  */
-epiviz.ui.controls.FilterCodeControl.prototype.revert = function() {
+epiviz.ui.controls.OrderMeasurementsCodeControl.prototype.revert = function() {
   if (this._editor) {
     this._editor.setOption('value', this._editorText);
-  }
-
-  if (this._filterEditor) {
-    this._filterEditor.setOption('value', this._filterText);
   }
 };
 
 /**
  * @returns {{preFilter: string, filter: string}}
  */
-epiviz.ui.controls.FilterCodeControl.prototype.result = function() {
+epiviz.ui.controls.OrderMeasurementsCodeControl.prototype.result = function() {
   return {
     enabled: this._enabled,
-    preFilter: this._enabled ? this._editorText : null,
-    filter: this._enabled ? this._filterText : null
+    orderMethodText: this._enabled ? this._editorText : null
   }
 };
-

@@ -312,6 +312,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/decoration/filter-code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-filter-code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/hierarchy-filter-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/order-measurements-code-button.js"></script>
 
     <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
@@ -343,6 +344,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/controls/code-control.js"></script>
     <script src="src/epiviz/ui/controls/edit-code-control.js"></script>
     <script src="src/epiviz/ui/controls/filter-code-control.js"></script>
+    <script src="src/epiviz/ui/controls/order-measurements-code-control.js"></script>
     <script src="src/epiviz/ui/controls/code-dialog.js"></script>
 
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>

@@ -160,6 +160,16 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
     self._markersIndices[marker.id()] = i;
   });
 
+  /**
+   * TODO Cleanup
+   * @type {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number}
+   * @protected
+   */
+  this._measurementsOrder = properties.measurementsOrder/*function(m1, m2) {
+    return m1.name() == m2.name() ? 0 :
+      (m1.name() < m2.name() ? 1 : -1);
+  };*/
+
   // Events
 
   /**
@@ -222,6 +232,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @private
    */
   this._markersModified = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number>>}
+   * @private
+   */
+  this._measurementsOrderModified = new epiviz.events.Event();
 
   /**
    * Event arg: custom settings values setting -> value
@@ -525,6 +541,12 @@ epiviz.ui.charts.Visualization.prototype.setColors = function(colors) {
   this._colorsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.colors));
 };
 
+/**
+ * @returns {epiviz.measurements.MeasurementSet}
+ */
+epiviz.ui.charts.Visualization.prototype.measurements = function() {
+  return this.properties().visConfigSelection.measurements;
+};
 
 /**
  * @returns {Object.<string, *>}
@@ -646,6 +668,22 @@ epiviz.ui.charts.Visualization.prototype.removeMarker = function(markerId) {
 epiviz.ui.charts.Visualization.prototype.getMarker = function(markerId) {
   if (!markerId || !(markerId in this._markersMap)) { return null; }
   return this._markersMap[markerId];
+};
+
+/**
+ * @returns {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number}
+ */
+epiviz.ui.charts.Visualization.prototype.measurementsOrder = function() { return this._measurementsOrder; };
+
+/**
+ * @param {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number} measurementsOrder
+ */
+epiviz.ui.charts.Visualization.prototype.setMeasurementsOrder = function(measurementsOrder) {
+  this._measurementsOrder = measurementsOrder;
+
+  this.draw();
+
+  this._measurementsOrderModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, measurementsOrder));
 };
 
 /**
@@ -807,6 +845,11 @@ epiviz.ui.charts.Visualization.prototype.onMethodsReset = function() { return th
  * @returns {epiviz.events.Event.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>}
  */
 epiviz.ui.charts.Visualization.prototype.onMarkersModified = function() { return this._markersModified; };
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number>>}
+ */
+epiviz.ui.charts.Visualization.prototype.onMeasurementsOrderModified = function() { return this._measurementsOrderModified; };
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}

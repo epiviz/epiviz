@@ -88,6 +88,12 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._chartMarkersModified = new epiviz.events.Event();
 
   /**
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number>>}
+   * @private
+   */
+  this._chartMeasurementsOrderModified = new epiviz.events.Event();
+
+  /**
    * Event arg: custom settings values setting -> value
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}
    * @private
@@ -171,7 +177,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     null, // modified methods
     chartType.customSettingsValues(),
     chartType.customSettingsDefs(),
-    []
+    [],
+    null
   );
 
   var chart = chartType.createNew(id, container, chartProperties);
@@ -185,6 +192,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartMethodsModified(chart);
   this._registerChartMethodsReset(chart);
   this._registerChartMarkersModified(chart);
+  this._registerChartMeasurementsOrderModified(chart);
   this._registerChartCustomSettingsChanged(chart);
   this._registerChartSizeChanged(chart);
   this._registerChartMarginsChanged(chart);
@@ -343,6 +351,11 @@ epiviz.ui.charts.ChartManager.prototype.onChartMethodsReset = function() { retur
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartMarkersModified = function() { return this._chartMarkersModified; };
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number>>}
+ */
+epiviz.ui.charts.ChartManager.prototype.onChartMeasurementsOrderModified = function() { return this._chartMeasurementsOrderModified; };
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}
@@ -517,6 +530,17 @@ epiviz.ui.charts.ChartManager.prototype._registerChartMarkersModified = function
   var self = this;
   chart.onMarkersModified().addListener(new epiviz.events.EventListener(function(e) {
     self._chartMarkersModified.notify(e);
+  }));
+};
+
+/**
+ * @param {epiviz.ui.charts.Chart} chart
+ * @private
+ */
+epiviz.ui.charts.ChartManager.prototype._registerChartMeasurementsOrderModified = function(chart) {
+  var self = this;
+  chart.onMeasurementsOrderModified().addListener(new epiviz.events.EventListener(function(e) {
+    self._chartMeasurementsOrderModified.notify(e);
   }));
 };
 

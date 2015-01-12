@@ -128,6 +128,11 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
   }
 
+  // Ordering functionality
+  if (this._measurementsOrder) {
+    this._lastData = this._lastData.sorted(this._measurementsOrder);
+  }
+
   // Marker functionality
   // If data is defined, then the base class sets this._lastData to data.
   // If it isn't, then we'll use the data from the last draw call
@@ -165,13 +170,6 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
  */
 epiviz.ui.charts.Chart.prototype.properties = function() {
   return /** @type {epiviz.ui.charts.VisualizationProperties} */ epiviz.ui.charts.Visualization.prototype.properties.call(this);
-};
-
-/**
- * @returns {epiviz.measurements.MeasurementSet}
- */
-epiviz.ui.charts.Chart.prototype.measurements = function() {
-  return this.properties().visConfigSelection.measurements;
 };
 
 /**

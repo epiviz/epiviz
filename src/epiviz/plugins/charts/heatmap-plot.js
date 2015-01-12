@@ -148,8 +148,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var firstGlobalIndex = data.first().value.globalStartIndex();
   var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
-  var rownames = [];
-  var rowIds = [];
+  var rows = [];
 
   // TODO: This might not be needed anymore
   // TODO: Search for all usages of this method
@@ -162,8 +161,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
 
-    rownames.push(measurement.name());
-    rowIds.push(measurement.id());
+    rows.push(measurement);
   });
 
   var nEntries = lastGlobalIndex - firstGlobalIndex;
@@ -359,7 +357,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   // Row names
 
   var rowSelection = itemsGroup.selectAll('.row-text')
-    .data(rownames, function(d, i) { return rowIds[i]; });
+    .data(rows, function(m) { return m.id(); });
 
   rowSelection
     .enter()
@@ -370,7 +368,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     .attr('transform', function(d, i){
       return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
     })
-    .text(function(d){ return d; });
+    .text(function(d){ return d.name(); });
 
   rowSelection
     .transition()
