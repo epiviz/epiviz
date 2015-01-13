@@ -73,8 +73,19 @@ epiviz.ui.controls.DatasourceGroupWizardStep.prototype.next = function() {
 
   this._data.datasourceGroup = selectedRows[0];
 
+  var copy = new epiviz.ui.controls.VisConfigSelection(
+    this._data.measurements.subset(function(m) { return m.datasourceGroup() == selectedRows[0]; }),
+    this._data.datasource,
+    this._data.datasourceGroup,
+    this._data.dataprovider,
+    this._data.annotation ? epiviz.utils.mapCopy(this._data.annotation) : this._data.annotation,
+    this._data.defaultChartType,
+    this._data.minSelectedMeasurements,
+    this._data.customData
+  );
+
   return {
-    data: this._data
+    data: copy
   };
 };
 

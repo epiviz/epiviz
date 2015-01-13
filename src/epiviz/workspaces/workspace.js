@@ -348,7 +348,12 @@ epiviz.workspaces.Workspace.prototype.copy = function(name, id) {
  *     }>,
  *     charts: Object.<string, Array.<{
  *       type: string,
- *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>|{id: string, name: string, colors: Array.<string>}, modifiedMethods: Object.<string, string>, chartMarkers: Array.<epiviz.ui.charts.markers.VisualizationMarker>, measurementsOrder: function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number}
+ *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number},
+ *         visConfigSelection: { measurements: Array.<number>, datasource: string, datasourceGroup: string, dataprovider: string,
+ *           annotation: Object.<string, string>, defaultChartType: string, minSelectedMeasurements: number, customData: * },
+  *        colors: Array.<string>|{id: string, name: string, colors: Array.<string>}, modifiedMethods: Object.<string, string>,
+  *        chartMarkers: Array.<epiviz.ui.charts.markers.VisualizationMarker>,
+  *        measurementsOrder: function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number}
  *     }>>}}}
  */
 epiviz.workspaces.Workspace.prototype.raw = function(config) {
@@ -416,7 +421,16 @@ epiviz.workspaces.Workspace.prototype.raw = function(config) {
           width: props.width,
           height: props.height,
           margins: props.margins.raw(),
-          measurements: ms,
+          visConfigSelection: {
+            measurements: ms,
+            datasource: props.visConfigSelection.datasource,
+            datasourceGroup: props.visConfigSelection.datasourceGroup,
+            dataprovider: props.visConfigSelection.dataprovider,
+            annotation: props.visConfigSelection.annotation,
+            defaultChartType: props.visConfigSelection.defaultChartType,
+            minSelectedMeasurements: props.visConfigSelection.minSelectedMeasurements,
+            customData: props.visConfigSelection.customData
+          },
           colors: props.colors.raw(config),
           modifiedMethods: epiviz.utils.mapCopy(props.modifiedMethods),
           customSettings: props.customSettingsValues || null,
@@ -457,7 +471,16 @@ epiviz.workspaces.Workspace.prototype.raw = function(config) {
  *        width: number|string,
  *        height: number|string,
  *        margins: {top: number, left: number, bottom: number, right: number},
- *        measurements: Array.<number>,
+ *        visConfigSelection: {
+ *          measurements: Array.<number>,
+ *          datasource: string,
+ *          datasourceGroup: string,
+ *          dataprovider: string,
+ *          annotation: Object.<string, string>,
+ *          defaultChartType: string,
+ *          minSelectedMeasurements: number,
+ *          customData: *
+ *        },
  *        colors: Array.<string>|{id: string, name: string, colors: Array.<string>},
  *        modifiedMethods: ?Object<string, string>,
  *        customSettings: Object.<string, *>
@@ -497,7 +520,16 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
        *        width: number|string,
        *        height: number|string,
        *        margins: {top: number, left: number, bottom: number, right: number},
-       *        measurements: Array.<number>,
+       *        visConfigSelection: {
+       *          measurements: Array.<number>,
+       *          datasource: string,
+       *          datasourceGroup: string,
+       *          dataprovider: string,
+       *          annotation: Object.<string, string>,
+       *          defaultChartType: string,
+       *          minSelectedMeasurements: number,
+       *          customData: *
+       *        },
        *        colors: Array.<string>|{id: string, name: string, colors: Array.<string>},
        *        modifiedMethods: ?Object.<string, string>,
        *        customSettings: Object.<string, *>,
@@ -506,10 +538,22 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
        *      }}}
        */
       var chartInfo = o.content.charts[t][i];
-      var chartMs = new epiviz.measurements.MeasurementSet();
-      for (var j = 0; j < chartInfo.properties.measurements.length; ++j) {
-        chartMs.add(ms[chartInfo.properties.measurements[j]]);
+      var chartMs;
+
+      var rawVisConfigSelection = chartInfo.properties.visConfigSelection;
+      var rawMs = rawVisConfigSelection ? rawVisConfigSelection.measurements : chartInfo.properties.measurements;
+
+      if (rawMs) {
+        chartMs = new epiviz.measurements.MeasurementSet();
+        for (var j = 0; j < rawMs.length; ++j) {
+          chartMs.add(ms[rawMs[j]]);
+        }
       }
+      var visConfigSelection = rawVisConfigSelection ?
+        new epiviz.ui.controls.VisConfigSelection(chartMs, rawVisConfigSelection.datasource,
+          rawVisConfigSelection.datasourceGroup, rawVisConfigSelection.dataprovider, rawVisConfigSelection.annotation,
+          rawVisConfigSelection.defaultChartType, rawVisConfigSelection.minSelectedMeasurements, rawVisConfigSelection.customData) :
+        new epiviz.ui.controls.VisConfigSelection(chartMs);
       var chartType = chartFactory.get(chartInfo.type);
 
       if (!chartType) { continue; }
@@ -521,7 +565,7 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
           chartInfo.properties.width,
           chartInfo.properties.height,
           epiviz.ui.charts.Margins.fromRawObject(chartInfo.properties.margins),
-          new epiviz.ui.controls.VisConfigSelection(chartMs),
+          visConfigSelection,
           epiviz.ui.charts.ColorPalette.fromRawObject(chartInfo.properties.colors, config),
           chartInfo.properties.modifiedMethods,
           chartInfo.properties.customSettings,

@@ -18,6 +18,7 @@ epiviz.ui.charts.DataStructureVisualization = function(id, container, properties
   // Call superclass constructor
   epiviz.ui.charts.Visualization.call(this, id, container, properties);
 
+
   /**
    * @type {string}
    * @private
@@ -34,23 +35,18 @@ epiviz.ui.charts.DataStructureVisualization = function(id, container, properties
     var self = this;
     properties.visConfigSelection.measurements.foreach(function(m) {
       if (m.dataprovider()) { self._dataprovider = m.dataprovider(); return true; }
-    })
+    });
   }
 
+  // Discard all measurements but one.
+
+  var ms = new epiviz.measurements.MeasurementSet();
+  properties.visConfigSelection.measurements.foreach(function(m) {
+    if (m.dataprovider()) { ms.add(m); return true; }
+  });
+  properties.visConfigSelection.measurements = ms;
+
   // Events
-
-  // TODO: Cleanup
-  /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
-   * @private
-   */
-  //this._propagateHierarchySelection = new epiviz.events.Event();
-
-  /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, number>>>}}
-   * @private
-   */
-  //this._propagateHierarchyOrder = new epiviz.events.Event();
 
   /**
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{
