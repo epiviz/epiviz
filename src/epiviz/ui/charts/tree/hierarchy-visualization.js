@@ -253,6 +253,10 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
   this._selectedNodes[node.id] = selectionType;
 
   this._changeNodeSelection(node, selectionType);
+
+  if (this.autoPropagateChanges()) {
+    this.firePropagateHierarchyChanges();
+  }
 };
 
 /**
@@ -292,4 +296,12 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.firePropagateHierarchyCha
     this.id(),
     new epiviz.ui.controls.VisConfigSelection(undefined, undefined, this.datasourceGroup(), this.dataprovider(), undefined, undefined, undefined,
       {selection: selectedNodes, order: nodesOrder})));
+};
+
+/**
+ * @param {boolean} val
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.setAutoPropagateChanges = function(val) {
+  epiviz.ui.charts.Visualization.prototype.setAutoPropagateChanges.call(this, val);
+  if (val) { this.firePropagateHierarchyChanges(); }
 };

@@ -77,6 +77,16 @@ epiviz.ui.charts.DataStructureVisualization.constructor = epiviz.ui.charts.DataS
 epiviz.ui.charts.DataStructureVisualization.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE; };
 
 /**
+ * @returns {string}
+ */
+epiviz.ui.charts.DataStructureVisualization.prototype.datasourceGroup = function() { return this._datasourceGroup; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.DataStructureVisualization.prototype.dataprovider = function() { return this._dataprovider; };
+
+/**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
  */
 epiviz.ui.charts.DataStructureVisualization.prototype.onPropagateHierarchyChanges = function() { return this._propagateHierarchyChanges; };
@@ -94,13 +104,3 @@ epiviz.ui.charts.DataStructureVisualization.prototype.firePropagateHierarchyChan
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<T>>>}
  */
 epiviz.ui.charts.DataStructureVisualization.prototype.onRequestHierarchy = function() { return this._requestHierarchy; };
-
-/**
- * @returns {string}
- */
-epiviz.ui.charts.DataStructureVisualization.prototype.datasourceGroup = function() { return this._datasourceGroup; };
-
-/**
- * @returns {string}
- */
-epiviz.ui.charts.DataStructureVisualization.prototype.dataprovider = function() { return this._dataprovider; };

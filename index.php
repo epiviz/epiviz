@@ -371,7 +371,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
 
-    <script src="src/epiviz/ui/charts/tree/decoration/propagate-selection-button.js"></script>
+    <script src="src/epiviz/ui/charts/tree/decoration/toggle-propagate-selection-button.js"></script>
 
     <script src="src/epiviz/main.js"></script>
     

@@ -166,6 +166,11 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._measurementsOrder = properties.measurementsOrder;
 
+  /**
+   * @type {boolean}
+   */
+  this._autoPropagateChanges = true;
+
   // Events
 
   /**
@@ -686,6 +691,16 @@ epiviz.ui.charts.Visualization.prototype.setMeasurementsOrder = function(measure
  * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
 epiviz.ui.charts.Visualization.prototype.displayType = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {boolean}
+ */
+epiviz.ui.charts.Visualization.prototype.autoPropagateChanges = function() { return this._autoPropagateChanges; };
+
+/**
+ * @param {boolean} val
+ */
+epiviz.ui.charts.Visualization.prototype.setAutoPropagateChanges = function(val) { this._autoPropagateChanges = val; };
 
 /* Events */
 
