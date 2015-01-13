@@ -138,7 +138,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.INTERPOLATION];
 
-  var label = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.LABEL];
+  var colLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL];
 
   var self = this;
 
@@ -343,7 +343,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     .attr('font-weight', 'bold')
     .attr('fill', function(index, i) { return colors.get(index); })
     .attr('y', self.margins().top() - 5)
-    .text(function(index) { return data.first().value.getByGlobalIndex(index).rowItem.metadata(label); });
+    .text(function(index) { return data.first().value.getByGlobalIndex(index).rowItem.metadata(colLabel); });
 
   var textLength = 0;
   var titleEntriesStartPosition = [];

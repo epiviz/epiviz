@@ -75,10 +75,16 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
 
   return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.Visualization.CustomSettings.LABEL,
+      epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
-      'label',
+      'colLabel',
       'Columns labels'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
+      'name',
+      'Row labels'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS,

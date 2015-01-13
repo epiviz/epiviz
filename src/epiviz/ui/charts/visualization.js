@@ -97,6 +97,19 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
         this._customSettingsValues[setting.id] = (val in possibleValues) ?
           val : ((setting.possibleValues.length) ? setting.possibleValues[0] : '');
         break;
+      case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION:
+        var possibleValues = {name: 'name'};
+        properties.visConfigSelection.measurements.foreach(function(m) {
+          var anno = m.annotation();
+          if (!anno) { return; }
+          Object.keys(anno).forEach(function(key) { possibleValues[key] = key; });
+        });
+        setting.possibleValues = Object.keys(possibleValues);
+        setting.possibleValues.sort();
+        val = val || setting.defaultValue;
+        this._customSettingsValues[setting.id] = (val in possibleValues) ?
+          val : ((setting.possibleValues.length) ? setting.possibleValues[0] : '');
+        break;
       default:
         this._customSettingsValues[setting.id] = val || setting.defaultValue;
         break;
@@ -899,5 +912,6 @@ epiviz.ui.charts.Visualization.CustomSettings = {
   X_MAX: 'xMax',
   Y_MIN: 'yMin',
   Y_MAX: 'yMax',
-  LABEL: 'label'
+  COL_LABEL: 'colLabel',
+  ROW_LABEL: 'rowLabel'
 };

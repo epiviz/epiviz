@@ -103,7 +103,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
 
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION];
 
-  var label = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.LABEL];
+  var colLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL];
 
   /** @type {string} */
   var offset = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.OFFSET];
@@ -255,7 +255,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .attr('font-weight', 'bold')
     .attr('fill', function(index, i) { return colors.get(index); })
     .attr('y', self.margins().top() - 5)
-    .text(function(index) { return data.first().value.getByGlobalIndex(index).rowItem.metadata(label); });
+    .text(function(index) { return data.first().value.getByGlobalIndex(index).rowItem.metadata(colLabel); });
 
   var textLength = 0;
   var titleEntriesStartPosition = [];

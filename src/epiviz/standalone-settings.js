@@ -97,7 +97,7 @@ epiviz.EpiViz.SETTINGS = {
       circleRadiusRatio: 0.01
     },
     'epiviz.plugins.charts.HeatmapPlot': {
-      label: 'probe',
+      colLabel: 'probe',
       maxColumns: 40
     }
   },

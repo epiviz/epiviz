@@ -48,7 +48,8 @@ epiviz.ui.charts.CustomSetting.Type = {
   ARRAY: 'array',
   BOOLEAN: 'boolean',
   CATEGORICAL: 'categorical',
-  MEASUREMENTS_METADATA: 'measurementsMetadata'
+  MEASUREMENTS_METADATA: 'measurementsMetadata',
+  MEASUREMENTS_ANNOTATION: 'measurementsAnnotation'
 };
 
 /**

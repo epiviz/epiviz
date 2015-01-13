@@ -166,7 +166,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var nEntries = lastGlobalIndex - firstGlobalIndex;
 
-  var label = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.LABEL];
+  var colLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL];
+  var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
 
   var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
   var width = this.width() * (1 - dendrogramRatio);
@@ -181,9 +182,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       item.start() < range.end() && item.end() >= range.start()) {
-      var colLabel = item.metadata(label) || '' + item.id();
+      var label = item.metadata(colLabel) || '' + item.id();
       columnMap[colnames.length] = globalIndex;
-      colnames.push(colLabel);
+      colnames.push(label);
     }
   }
 
@@ -367,8 +368,15 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     .attr('y', 0)
     .attr('transform', function(d, i){
       return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
-    })
-    .text(function(d){ return d.name(); });
+    });
+
+  rowSelection
+    .text(function(m){
+      if (rowLabel == 'name') { return m.name(); }
+      var anno = m.annotation();
+      if (!anno || !(rowLabel in anno)) { return '<NA>'; }
+      return anno[rowLabel];
+    });
 
   rowSelection
     .transition()

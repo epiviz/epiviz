@@ -145,8 +145,8 @@ epiviz.data.MetagenomicsDataProvider = function () {
    */
   this._cols = ['100365', '100403', '100476', '100489', '100618', '100636', '100704', '100716', '100722', '100749', '100759', '100782', '100798', '100855', '100857', '100889', '102020', '102025', '102027', '102037', '102105', '102106', '102132', '102133', '102158', '102174', '102184', '102209', '102421', '200069', '200079', '200108', '200127', '200134', '200140', '200154', '200158', '200160', '200161', '200165', '200167', '200169', '200170', '200172', '200196', '200235', '200244', '200314', '200327', '200328', '200330', '200331', '200347', '200365', '200367', '200381', '200392', '400555', '401017', '401201', '401593', '401596', '401600', '401601', '401605', '401609', '401704', '401705', '401727', '401728', '401732', '401736', '401739', '401740', '401754', '401757', '401760', '401764', '401796', '401856', '401869', '401884', '600620', '600627', '600646', '600654', '600683', '600710', '600761', '600763', '600765', '600776', '600782', '600789', '600803', '600807', '600813', '600819', '600901', '600909', '600917', '600967', '600970', '600984', '601007', '601017', '601021', '601036', '601045', '601046', '601053', '601160', '601186', '601208', '602054'];
 
-  //this._colNames = ['Control','Control','Case','Control','Control','Case','Case','Case','Control','Case','Case','Control','Control','Case','Control','Case','Control','Control','Case','Control','Case','Case','Control','Control','Case','Case','Case','Control','Control','Case','Case','Case','Control','Case','Case','Case','Control','Control','Control','Control','Control','Control','Control','Control','Case','Control','Case','Case','Case','Case','Case','Case','Case','Case','Case','Case','Case','Control','Control','Control','Control','Case','Control','Case','Case','Case','Case','Case','Case','Control','Control','Control','Case','Case','Case','Case','Case','Control','Control','Case','Case','Case','Case','Control','Case','Control','Case','Case','Case','Control','Control','Case','Case','Control','Case','Case','Case','Case','Control','Control','Control','Control','Case','Case','Control','Control','Control','Case','Case','Case','Case','Case','Control','Case','Case'];
-  this._colNames = ["[12,18)","[12,18)","[6,12)", "[18,24)","[12,18)","[24,60)","[12,18)","[18,24)","[18,24)","[12,18)","[24,60)","[24,60)","[24,60)","[18,24)","[24,60)","[6,12)", "[12,18)","[6,12)", "[6,12)", "[18,24)","[0,6)",  "[6,12)", "[6,12)", "[0,6)",  "[18,24)","[6,12)", "[0,6)",  "[0,6)",  "[18,24)","[24,60)","[24,60)","[6,12)", "[24,60)","[24,60)","[12,18)","[6,12)", "[12,18)","[12,18)","[12,18)","[18,24)","[24,60)","[6,12)", "[24,60)","[12,18)","[6,12)", "[24,60)","[6,12)", "[6,12)", "[6,12)", "[6,12)", "[0,6)",  "[6,12)", "[6,12)", "[6,12)", "[6,12)", "[0,6)",  "[0,6)",  "[24,60)","[24,60)","[6,12)", "[24,60)","[6,12)", "[6,12)", "[24,60)","[24,60)","[24,60)","[0,6)",  "[24,60)","[0,6)",  "[24,60)","[18,24)","[24,60)","[6,12)", "[6,12)", "[24,60)","[24,60)","[6,12)", "[6,12)", "[24,60)","[12,18)","[18,24)","[0,6)",  "[24,60)","[24,60)","[24,60)","[24,60)","[6,12)", "[24,60)","[24,60)","[24,60)","[24,60)","[18,24)","[6,12)", "[24,60)","[0,6)",  "[6,12)", "[12,18)","[18,24)","[18,24)","[18,24)","[6,12)", "[6,12)", "[12,18)","[24,60)","[24,60)","[12,18)","[18,24)","[24,60)","[6,12)", "[12,18)","[12,18)","[24,60)","[24,60)","[24,60)","[18,24)"];
+  this._observationType = ['Control','Control','Case','Control','Control','Case','Case','Case','Control','Case','Case','Control','Control','Case','Control','Case','Control','Control','Case','Control','Case','Case','Control','Control','Case','Case','Case','Control','Control','Case','Case','Case','Control','Case','Case','Case','Control','Control','Control','Control','Control','Control','Control','Control','Case','Control','Case','Case','Case','Case','Case','Case','Case','Case','Case','Case','Case','Control','Control','Control','Control','Case','Control','Case','Case','Case','Case','Case','Case','Control','Control','Control','Case','Case','Case','Case','Case','Control','Control','Case','Case','Case','Case','Control','Case','Control','Case','Case','Case','Control','Control','Case','Case','Control','Case','Case','Case','Case','Control','Control','Control','Control','Case','Case','Control','Control','Control','Case','Case','Case','Case','Case','Control','Case','Case'];
+  this._ageRange = ["[12,18)","[12,18)","[6,12)", "[18,24)","[12,18)","[24,60)","[12,18)","[18,24)","[18,24)","[12,18)","[24,60)","[24,60)","[24,60)","[18,24)","[24,60)","[6,12)", "[12,18)","[6,12)", "[6,12)", "[18,24)","[0,6)",  "[6,12)", "[6,12)", "[0,6)",  "[18,24)","[6,12)", "[0,6)",  "[0,6)",  "[18,24)","[24,60)","[24,60)","[6,12)", "[24,60)","[24,60)","[12,18)","[6,12)", "[12,18)","[12,18)","[12,18)","[18,24)","[24,60)","[6,12)", "[24,60)","[12,18)","[6,12)", "[24,60)","[6,12)", "[6,12)", "[6,12)", "[6,12)", "[0,6)",  "[6,12)", "[6,12)", "[6,12)", "[6,12)", "[0,6)",  "[0,6)",  "[24,60)","[24,60)","[6,12)", "[24,60)","[6,12)", "[6,12)", "[24,60)","[24,60)","[24,60)","[0,6)",  "[24,60)","[0,6)",  "[24,60)","[18,24)","[24,60)","[6,12)", "[6,12)", "[24,60)","[24,60)","[6,12)", "[6,12)", "[24,60)","[12,18)","[18,24)","[0,6)",  "[24,60)","[24,60)","[24,60)","[24,60)","[6,12)", "[24,60)","[24,60)","[24,60)","[24,60)","[18,24)","[6,12)", "[24,60)","[0,6)",  "[6,12)", "[12,18)","[18,24)","[18,24)","[18,24)","[6,12)", "[6,12)", "[12,18)","[24,60)","[24,60)","[12,18)","[18,24)","[24,60)","[6,12)", "[12,18)","[12,18)","[24,60)","[24,60)","[24,60)","[18,24)"];
 
   /**
    * @type {Array.<string>}
@@ -172,16 +172,16 @@ epiviz.data.MetagenomicsDataProvider = function () {
   this._cols.forEach(function(col, i) {
     var m = new epiviz.measurements.Measurement(
       col, // id
-      self._colNames[i], // name
+      self._cols[i], // name
       epiviz.measurements.Measurement.Type.FEATURE,
       'metagenomics', // datasource
       'metagenomics', // datasource group
       self.id(), // data provider
       null, // formula
       'heatmap',
-      null, // annotation
+      {observationType: self._observationType[i], ageRange: self._ageRange[i]}, // annotation
       0, 15,
-      ['label', 'bacteria', 'ancestors', 'hierarchy-path']);
+      ['colLabel', 'bacteria', 'ancestors', 'hierarchy-path']);
     measurements.push(m);
   });
 
@@ -321,7 +321,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
             globalStartIndex: null,
             values: {
               id: [], start: [], end: [],
-              metadata: { label: [], bacteria: [], ancestors: [], 'hierarchy-path': [] } } },
+              metadata: { colLabel: [], bacteria: [], ancestors: [], 'hierarchy-path': [] } } },
           requestId: requestId
         }));
         return;
@@ -335,7 +335,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
             start: self._selectedRowsRanges.map(function(range) { return range[0]; }).slice(startIndex, endIndex + 1),
             end: self._selectedRowsRanges.map(function(range) { return range[0] + range[1] - 1; }).slice(startIndex, endIndex + 1),
             metadata: {
-              label: this._selectedRows.slice(startIndex, endIndex + 1),
+              colLabel: this._selectedRows.slice(startIndex, endIndex + 1),
               bacteria: this._selectedRows.slice(startIndex, endIndex + 1),
               ancestors: this._selectedAncestry.slice(startIndex, endIndex + 1),
               'hierarchy-path': this._selectedPaths.slice(startIndex, endIndex + 1)
@@ -372,7 +372,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
         requestId: request.id(),
         data: {
           id: this._cols,
-          name: this._colNames,
+          name: this._cols,
           type: this._measurements.map(function(m) { return m.type(); }),
           datasourceId: this._measurements.map(function(m) { return m.datasourceId(); }),
           datasourceGroup: this._measurements.map(function(m) { return m.datasourceGroup(); }),
