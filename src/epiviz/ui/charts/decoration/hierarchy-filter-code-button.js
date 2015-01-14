@@ -14,19 +14,34 @@ goog.provide('epiviz.ui.charts.decoration.HierarchyFilterCodeButton');
  * @constructor
  */
 epiviz.ui.charts.decoration.HierarchyFilterCodeButton = function(visualization, otherDecoration, config) {
-  epiviz.ui.charts.decoration.FilterCodeButton.call(this, visualization, otherDecoration, config);
+  epiviz.ui.charts.decoration.MarkerCodeButton.call(this, visualization, otherDecoration, config);
 };
 
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.FilterCodeButton.prototype);
+epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.MarkerCodeButton.prototype);
 epiviz.ui.charts.decoration.HierarchyFilterCodeButton.constructor = epiviz.ui.charts.decoration.HierarchyFilterCodeButton;
+
+/**
+ * @returns {epiviz.ui.charts.markers.VisualizationMarker.Type}
+ */
+epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.markerType = function() { return epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER; };
 
 /**
  * @returns {string}
  */
-epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.preFilterTemplate = function() {
+epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.markerLabel = function() { return 'User Filter' };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.markerId = function() { return 'user-filter'; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.preMarkTemplate = function() {
   return '/**\n' +
   ' * This method is called once before every draw, for all data available to the visualization,\n' +
   ' * for initialization. Its result can be used inside the filter method.\n' +
@@ -43,7 +58,7 @@ epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.preFilterTemplat
 /**
  * @returns {string}
  */
-epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.filterTemplate = function() {
+epiviz.ui.charts.decoration.HierarchyFilterCodeButton.prototype.markTemplate = function() {
   return '/**\n' +
   ' * This method is called for every data object. If it returns false, the object will not be drawn.\n' +
   ' * @param {epiviz.ui.charts.tree.Node} [node]\n' +

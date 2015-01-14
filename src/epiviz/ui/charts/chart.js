@@ -136,13 +136,12 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
   // Marker functionality
   // If data is defined, then the base class sets this._lastData to data.
   // If it isn't, then we'll use the data from the last draw call
-  data = this._lastData;
+  /*data = this._lastData;
   if (data) {
     var self = this;
 
     this._markerValues = new epiviz.measurements.MeasurementHashtable();
 
-    /** @type {Object.<string, *>} */
     var preMethodsResults = {};
     this._markers.forEach(function(marker) {
       if (!marker) { return; }
@@ -160,7 +159,7 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
         });
       }
     });
-  }
+  }*/
 
   return [];
 };

@@ -187,13 +187,48 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     })
     .interpolate(interpolation);
 
+  var filters = this._markers.filter(function(marker) { return marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER; });
+  var preFilterResults = {};
+  filters.forEach(function(filter) {
+    preFilterResults[filter.id()] = filter.preMark()(data);
+  });
+  var filter = function(item) {
+    var ret = true;
+    filters.every(function(filter) {
+      ret = filter.mark()(item, data, preFilterResults[filter.id()]);
+      return ret;
+    });
+    return ret;
+  };
+
+  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
+  var colorMarker;
+  this._markers.every(function(marker) {
+    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY) {
+      colorMarker = marker;
+      return false;
+    }
+    return true;
+  });
+  var preColorBy = colorMarker ? colorMarker.preMark()(data) : undefined;
+
+  /**
+   * @param {epiviz.datatypes.GenomicRangeArray.Item} row
+   * @returns {string|number}
+   */
+  var colorBy = function(row) {
+    return colorMarker ? colorMarker.mark()(row, data, preColorBy) : row.globalIndex();
+  };
+
+
   var valuesForIndex = function(index) {
     return self.measurements().toArray()
       .map(function(m, i) {
         return { x: i, y: data.get(m).getByGlobalIndex(index).value, measurement: m };
       })
       .filter(function(o) {
-        if (self._markers.length == 0) { return true; }
+        return filter(data.get(o.measurement).getByGlobalIndex(index));
+        /*if (self._markers.length == 0) { return true; }
         var markerVals = self._markerValues.get(o.measurement)[index];
         if (!markerVals) { return true; }
         for (var markerId in markerVals) {
@@ -202,7 +237,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
           if (!markerVals[markerId]) { return false; }
         }
-        return true;
+        return true;*/
       });
   };
 
@@ -263,6 +298,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       .duration(500)
       .style('opacity', '0.7')
       .each(function(d) {
+        var color = colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(d.seriesIndex)));
         d3.select(this)
           .selectAll('.bg-line')
           //.attr('d', lineData(index));
@@ -270,7 +306,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
         d3.select(this).selectAll('.main-line')
           //.attr('d', lineData(index))
           .attr('d', lineFunc(d.values))
-          .style('stroke', colors.get(d.seriesIndex))
+          .style('stroke', color)
           .style('stroke-width', lineThickness);
       });
 
@@ -302,7 +338,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .attr('cy', function(d) { return yScale(d.y); })
           .attr('r', pointRadius)
           .attr('fill', 'none')
-          .attr('stroke', colors.get(index));
+          .attr('stroke', colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(index))));
 
         selection.exit().remove();
       })
@@ -317,7 +353,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .attr('cy', function(d) { return yScale(d.y); })
           .attr('r', pointRadius)
           .style('stroke-width', 2)
-          .attr('stroke', colors.get(index));
+          .attr('stroke', colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(index))));
       })
       .transition()
       .duration(500)
@@ -333,17 +369,28 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   // Draw legend
   var title = '';
 
+  var labels = {};
+  indices.forEach(function(index) {
+    var label = colorBy(data.first().value.getRowByGlobalIndex(index));
+    labels[label] = label;
+  });
+
   this._svg.selectAll('.chart-title').remove();
   var titleEntries = this._svg
     .selectAll('.chart-title')
-    .data(indices)
+    //.data(indices);
+    .data(Object.keys(labels));
+  titleEntries
     .enter()
     .append('text')
     .attr('class', 'chart-title')
     .attr('font-weight', 'bold')
-    .attr('fill', function(index, i) { return colors.get(index); })
-    .attr('y', self.margins().top() - 5)
-    .text(function(index) { return data.first().value.getByGlobalIndex(index).rowItem.metadata(colLabel); });
+    .attr('y', self.margins().top() - 5);
+  titleEntries
+    //.attr('fill', function(index, i) { return colors.get(index); })
+    //.text(function(index) { return colorBy(data.first().value.getRowByGlobalIndex(index)); });
+    .attr('fill', function(label) { return colors.getByKey(label); })
+    .text(function(label) { return label; });
 
   var textLength = 0;
   var titleEntriesStartPosition = [];

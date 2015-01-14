@@ -4,7 +4,7 @@
  * Time: 2:01 PM
  */
 
-goog.provide('epiviz.ui.controls.FilterCodeControl');
+goog.provide('epiviz.ui.controls.MarkerCodeControl');
 
 /**
  * @param {jQuery} container
@@ -17,7 +17,7 @@ goog.provide('epiviz.ui.controls.FilterCodeControl');
  * @constructor
  * @extends {epiviz.ui.controls.CodeControl}
  */
-epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObject, preFilterText, filterText, enabled) {
+epiviz.ui.controls.MarkerCodeControl = function(container, title, id, targetObject, preFilterText, filterText, enabled) {
   // Call superclass constructor
   epiviz.ui.controls.CodeControl.call(this, container, title, id, targetObject);
 
@@ -31,7 +31,7 @@ epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObje
    * @type {CodeMirror}
    * @private
    */
-  this._filterEditor = null;
+  this._markEditor = null;
 
   /**
    * @type {string}
@@ -43,7 +43,7 @@ epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObje
    * @type {string}
    * @private
    */
-  this._filterText = filterText;
+  this._markText = filterText;
 
   /**
    * @type {boolean}
@@ -55,10 +55,10 @@ epiviz.ui.controls.FilterCodeControl = function(container, title, id, targetObje
 /**
  * Copy methods from upper class
  */
-epiviz.ui.controls.FilterCodeControl.prototype = epiviz.utils.mapCopy(epiviz.ui.controls.CodeControl.prototype);
-epiviz.ui.controls.FilterCodeControl.constructor = epiviz.ui.controls.FilterCodeControl;
+epiviz.ui.controls.MarkerCodeControl.prototype = epiviz.utils.mapCopy(epiviz.ui.controls.CodeControl.prototype);
+epiviz.ui.controls.MarkerCodeControl.constructor = epiviz.ui.controls.MarkerCodeControl;
 
-epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
+epiviz.ui.controls.MarkerCodeControl.prototype.initialize = function() {
   if (this._editor) { return; }
 
   this._container.append(
@@ -71,11 +71,11 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
       '</div>', this.id() + '-switch', this._enabled ? 'checked="checked"' : '',
       this._enabled ? '' : 'checked="checked"') +
     '<br />' +
-    '<div><label><b>Pre-Filter Method</b></label></div><br />' +
+    '<div><label><b>Pre-mark Method</b></label></div><br />' +
     '<div style="overflow-y: scroll; max-height: 250px;">' +
       '<textarea autofocus="autofocus" class="pre-filter-code"></textarea>' +
     '</div><br/>' +
-    '<div><label><b>Filter Method</b></label></div><br/>' +
+    '<div><label><b>Mark Method</b></label></div><br/>' +
     '<div style="overflow-y: scroll; max-height: 250px;">' +
       '<textarea autofocus="autofocus" class="filter-code"></textarea>' +
     '</div>');
@@ -87,7 +87,7 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
     var optionChecked = $('#' + self.id() + '-switch :radio:checked').attr('id');
     var newValue = optionChecked.substr(optionChecked.lastIndexOf('-')+1) == 'true';
     if (self._editor) { self._editor.setOption('disableInput', !newValue); }
-    if (self._filterEditor) { self._filterEditor.setOption('disableInput', !newValue);}
+    if (self._markEditor) { self._markEditor.setOption('disableInput', !newValue);}
     self._enabled = newValue;
   };
   onOffSwitch.find('#' + this.id() + '-switch-true').on('change', optionChange);
@@ -97,7 +97,7 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
   preFilterCodeEditor.val(this._editorText);
 
   var filterCodeEditor = this._container.find('.filter-code');
-  filterCodeEditor.val(this._filterText);
+  filterCodeEditor.val(this._markText);
 
   this._editor = CodeMirror.fromTextArea(preFilterCodeEditor[0], {
     lineNumbers: true,
@@ -108,44 +108,44 @@ epiviz.ui.controls.FilterCodeControl.prototype.initialize = function() {
   });
   this._editor.setOption('disableInput', !this._enabled);
 
-  this._filterEditor = CodeMirror.fromTextArea(filterCodeEditor[0], {
+  this._markEditor = CodeMirror.fromTextArea(filterCodeEditor[0], {
     lineNumbers: true,
     matchBrackets: true,
     continueComments: "Enter",
     extraKeys: {"Ctrl-Q": "toggleComment"},
     autofocus: true
   });
-  this._filterEditor.setOption('disableInput', !this._enabled);
+  this._markEditor.setOption('disableInput', !this._enabled);
 };
 
 /**
  */
-epiviz.ui.controls.FilterCodeControl.prototype.save = function() {
+epiviz.ui.controls.MarkerCodeControl.prototype.save = function() {
   if (!this._editor) { return; }
   this._editorText = this._editor.getValue();
-  this._filterText = this._filterEditor.getValue();
+  this._markText = this._markEditor.getValue();
 };
 
 /**
  */
-epiviz.ui.controls.FilterCodeControl.prototype.revert = function() {
+epiviz.ui.controls.MarkerCodeControl.prototype.revert = function() {
   if (this._editor) {
     this._editor.setOption('value', this._editorText);
   }
 
-  if (this._filterEditor) {
-    this._filterEditor.setOption('value', this._filterText);
+  if (this._markEditor) {
+    this._markEditor.setOption('value', this._markText);
   }
 };
 
 /**
- * @returns {{preFilter: string, filter: string}}
+ * @returns {{enabled: boolean, preMark: string, mark: string}}
  */
-epiviz.ui.controls.FilterCodeControl.prototype.result = function() {
+epiviz.ui.controls.MarkerCodeControl.prototype.result = function() {
   return {
     enabled: this._enabled,
-    preFilter: this._enabled ? this._editorText : null,
-    filter: this._enabled ? this._filterText : null
+    preMark: this._enabled ? this._editorText : null,
+    mark: this._enabled ? this._markText : null
   }
 };
 

@@ -25,7 +25,7 @@ epiviz.ui.charts.decoration.ToggleTooltipButton = function(visualization, otherD
    * @type {boolean}
    * @private
    */
-  this._checked = true;
+  this._checked = false;
 };
 
 /*

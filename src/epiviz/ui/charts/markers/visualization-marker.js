@@ -77,7 +77,8 @@ epiviz.ui.charts.markers.VisualizationMarker.prototype.mark = function() { retur
  * @enum {string}
  */
 epiviz.ui.charts.markers.VisualizationMarker.Type = {
-  FILTER: 'filter'
+  FILTER: 'filter',
+  COLOR_BY: 'colorBy'
 };
 
 /**

@@ -74,6 +74,29 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
 };
 
 /**
+ * @param {number} index
+ * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ */
+epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getRow = function(index) {
+  var rows = this._container.rowData();
+  var firstGlobalIndex = this.globalStartIndex();
+
+  var item = null;
+
+  var size = this.size();
+  if (!size || index >= size || index < 0) {
+    return item;
+  }
+
+  if (firstGlobalIndex != undefined) {
+    var rowIndex = firstGlobalIndex - rows.globalStartIndex() + index;
+    item = rows.get(rowIndex);
+  }
+
+  return item;
+};
+
+/**
  * @returns {epiviz.measurements.Measurement}
  */
 epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.measurement = function() {
@@ -139,6 +162,17 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getByGlobalIndex = func
   if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(null, null, null, this._measurement); }
 
   return this.get(globalIndex - firstGlobalIndex);
+};
+
+/**
+ * @param {number} globalIndex
+ * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ */
+epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getRowByGlobalIndex = function(globalIndex) {
+  var firstGlobalIndex = this.globalStartIndex();
+  if (firstGlobalIndex == undefined) { return null; }
+
+  return this.getRow(globalIndex - firstGlobalIndex);
 };
 
 /**

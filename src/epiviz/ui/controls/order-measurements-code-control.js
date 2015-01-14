@@ -79,7 +79,7 @@ epiviz.ui.controls.OrderMeasurementsCodeControl.prototype.initialize = function(
     var optionChecked = $('#' + self.id() + '-switch :radio:checked').attr('id');
     var newValue = optionChecked.substr(optionChecked.lastIndexOf('-')+1) == 'true';
     if (self._editor) { self._editor.setOption('disableInput', !newValue); }
-    if (self._filterEditor) { self._filterEditor.setOption('disableInput', !newValue);}
+    if (self._markEditor) { self._markEditor.setOption('disableInput', !newValue);}
     self._enabled = newValue;
   };
   onOffSwitch.find('#' + this.id() + '-switch-true').on('change', optionChange);
@@ -114,7 +114,7 @@ epiviz.ui.controls.OrderMeasurementsCodeControl.prototype.revert = function() {
 };
 
 /**
- * @returns {{preFilter: string, filter: string}}
+ * @returns {{enabled: boolean, orderMethodText: string}}
  */
 epiviz.ui.controls.OrderMeasurementsCodeControl.prototype.result = function() {
   return {
