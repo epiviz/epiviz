@@ -129,10 +129,25 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
   }
 
   // Ordering functionality
-  if (this._measurementsOrder) {
-    this._lastData = this._lastData.sorted(this._measurementsOrder);
+  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
+  var orderMarker;
+  this._markers.every(function(marker) {
+    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS) {
+      orderMarker = marker;
+      return false;
+    }
+    return true;
+  });
+  if (orderMarker) {
+    var preMarkVars = orderMarker.preMark()(data);
+    this._lastData = this._lastData.sorted(function(m1, m2) {
+      var v1 = orderMarker.mark()(m1, data, preMarkVars);
+      var v2 = orderMarker.mark()(m2, data, preMarkVars);
+      return v1 == v2 ? 0 : (v1 < v2 ? -1 : 1);
+    });
   }
 
+  // TODO Cleanup
   // Marker functionality
   // If data is defined, then the base class sets this._lastData to data.
   // If it isn't, then we'll use the data from the last draw call

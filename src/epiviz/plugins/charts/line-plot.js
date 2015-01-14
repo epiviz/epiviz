@@ -204,7 +204,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
   var colorMarker;
   this._markers.every(function(marker) {
-    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY) {
+    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_ROW) {
       colorMarker = marker;
       return false;
     }
@@ -228,23 +228,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       })
       .filter(function(o) {
         return filter(data.get(o.measurement).getByGlobalIndex(index));
-        /*if (self._markers.length == 0) { return true; }
-        var markerVals = self._markerValues.get(o.measurement)[index];
-        if (!markerVals) { return true; }
-        for (var markerId in markerVals) {
-          if (!markerVals.hasOwnProperty(markerId)) { continue; }
-          var marker = self._markersMap[markerId];
-          if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
-          if (!markerVals[markerId]) { return false; }
-        }
-        return true;*/
       });
   };
-
-  // TODO: Cleanup and also all usages of lineData
-  /*var lineData = function(index) {
-    return lineFunc(valuesForIndex(index));
-  };*/
 
   var indices = epiviz.utils.range(nEntries, firstGlobalIndex);
 
@@ -288,7 +273,6 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .style('stroke-opacity', '0.1');
         d3.select(this)
           .append('path').attr('class', 'main-line')
-          //.attr('d', lineData(index))
           .attr('d', lineFunc(d.values))
           .style('shape-rendering', 'auto');
       });
@@ -301,10 +285,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
         var color = colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(d.seriesIndex)));
         d3.select(this)
           .selectAll('.bg-line')
-          //.attr('d', lineData(index));
           .attr('d', lineFunc(d.values));
         d3.select(this).selectAll('.main-line')
-          //.attr('d', lineData(index))
           .attr('d', lineFunc(d.values))
           .style('stroke', color)
           .style('stroke-width', lineThickness);
@@ -378,7 +360,6 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   this._svg.selectAll('.chart-title').remove();
   var titleEntries = this._svg
     .selectAll('.chart-title')
-    //.data(indices);
     .data(Object.keys(labels));
   titleEntries
     .enter()
@@ -387,8 +368,6 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     .attr('font-weight', 'bold')
     .attr('y', self.margins().top() - 5);
   titleEntries
-    //.attr('fill', function(index, i) { return colors.get(index); })
-    //.text(function(index) { return colorBy(data.first().value.getRowByGlobalIndex(index)); });
     .attr('fill', function(label) { return colors.getByKey(label); })
     .text(function(label) { return label; });
 

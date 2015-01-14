@@ -166,7 +166,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     if (drawBoundaries.length == 0) { return; }
 
     var index = Math.ceil(drawBoundaries.index / step) * step;
-    drawBoundaries.length -= index - drawBoundaries.index;
+    drawBoundaries.length = Math.max(0, drawBoundaries.length - index + drawBoundaries.index);
     drawBoundaries.index = index;
 
     var indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index)

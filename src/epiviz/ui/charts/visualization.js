@@ -158,26 +158,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._markersIndices = {};
 
-  /**
-   * TODO: This is not general enough for Visualization, but only to Chart. In the future adapt the types to Visualization too
-   * measurement -> global index -> marker id -> marker value
-   * @type {epiviz.measurements.MeasurementHashtable.<Object.<number, Object.<string, *>>>}
-   * @protected
-   */
-  this._markerValues = null;
-
   var self = this;
   this._markers.forEach(function(marker, i) {
     if (!marker) { return; }
     self._markersMap[marker.id()] = marker;
     self._markersIndices[marker.id()] = i;
   });
-
-  /**
-   * @type {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number}
-   * @protected
-   */
-  this._measurementsOrder = properties.measurementsOrder;
 
   /**
    * @type {boolean}
@@ -246,12 +232,6 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @private
    */
   this._markersModified = new epiviz.events.Event();
-
-  /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number>>}
-   * @private
-   */
-  this._measurementsOrderModified = new epiviz.events.Event();
 
   /**
    * Event arg: custom settings values setting -> value
@@ -685,22 +665,6 @@ epiviz.ui.charts.Visualization.prototype.getMarker = function(markerId) {
 };
 
 /**
- * @returns {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number}
- */
-epiviz.ui.charts.Visualization.prototype.measurementsOrder = function() { return this._measurementsOrder; };
-
-/**
- * @param {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number} measurementsOrder
- */
-epiviz.ui.charts.Visualization.prototype.setMeasurementsOrder = function(measurementsOrder) {
-  this._measurementsOrder = measurementsOrder;
-
-  this.draw();
-
-  this._measurementsOrderModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, measurementsOrder));
-};
-
-/**
  * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
 epiviz.ui.charts.Visualization.prototype.displayType = function() { throw Error('unimplemented abstract method'); };
@@ -869,11 +833,6 @@ epiviz.ui.charts.Visualization.prototype.onMethodsReset = function() { return th
  * @returns {epiviz.events.Event.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>}
  */
 epiviz.ui.charts.Visualization.prototype.onMarkersModified = function() { return this._markersModified; };
-
-/**
- * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number>>}
- */
-epiviz.ui.charts.Visualization.prototype.onMeasurementsOrderModified = function() { return this._measurementsOrderModified; };
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}

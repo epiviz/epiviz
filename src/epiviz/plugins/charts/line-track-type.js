@@ -68,7 +68,7 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LineTrackType.CustomSettings.STEP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      1,
+      50,
       'Step'),
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS,
