@@ -61,6 +61,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
+  var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
+
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION];
   var xBound = interpolation.indexOf('step') == 0 ? this.measurements().size() : this.measurements().size() - 1;
 
@@ -72,7 +74,12 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   this._clearAxes();
   this._drawAxes(xScale, undefined, this.measurements().size(), 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
-    this.measurements().toArray().map(function(m) { return m.name(); }), undefined, interpolation.indexOf('step') == 0);
+    data.keys().map(function(m) {
+      if (rowLabel == 'name') { return m.name(); }
+      var anno = m.annotation();
+      if (!anno || !(rowLabel in anno)) { return '<NA>'; }
+      return anno[rowLabel];
+    }), undefined, interpolation.indexOf('step') == 0);
 
   var linesGroup = this._svg.selectAll('.lines');
 
@@ -163,35 +170,73 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     });
   }
 
+  var filters = this._markers.filter(function(marker) { return marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER; });
+  var preFilterResults = {};
+  filters.forEach(function(filter) {
+    preFilterResults[filter.id()] = filter.preMark()(data);
+  });
+  var filter = function(item) {
+    var ret = true;
+    filters.every(function(filter) {
+      ret = filter.mark()(item, data, preFilterResults[filter.id()]);
+      return ret;
+    });
+    return ret;
+  };
+
+  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
+  var colorMarker;
+  this._markers.every(function(marker) {
+    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_ROW) {
+      colorMarker = marker;
+      return false;
+    }
+    return true;
+  });
+  var preColorBy = colorMarker ? colorMarker.preMark()(data) : undefined;
+
+  /**
+   * @param {epiviz.datatypes.GenomicRangeArray.Item} row
+   * @returns {string|number}
+   */
+  var colorBy = function(row) {
+    return colorMarker ? colorMarker.mark()(row, data, preColorBy) : row.globalIndex();
+  };
+
   var valuesForIndex = function(index) {
     var ret = [];
     if (interpolation == 'step-before') {
       ret.push({ x: 0, y: 0 })
     }
-    ret = ret.concat(self.measurements().toArray().map(function(m, i) {
+    var msArr = data.keys();
+    ret = ret.concat(msArr.map(function(m, i) {
       var div = scaleToPercent ? msSums.get(m) : 1;
       div = div || 1; // Prevent division by 0
-      return { x: ret.length + i, y: data.get(m).getByGlobalIndex(index).value / div };
+      return { x: ret.length + i, y: data.get(m).getByGlobalIndex(index).value / div, measurement: m };
     }));
 
     if (interpolation == 'step-after') {
       ret.push({ x: ret.length, y: 0 });
     }
-    return ret;
+    return ret.filter(function(o) {
+      if (!o.measurement) { return true; }
+      return filter(data.get(o.measurement).getByGlobalIndex(index));
+    });
   };
 
   var lineItems;
 
   lineItems = indices.map(function(index) {
     var rowItem = data.first().value.getByGlobalIndex(index).rowItem;
+    var measurements = data.keys();
     return new epiviz.ui.charts.ChartObject(
       sprintf('line-series-%s', index),
       rowItem.start(),
       rowItem.end(),
       valuesForIndex(index),
       index,
-      self.measurements().toArray().map(function(m, i) { return [data.get(m).getByGlobalIndex(index)]; }), // valueItems one for each measurement
-      self.measurements().toArray(), // measurements
+      measurements.map(function(m, i) { return [data.get(m).getByGlobalIndex(index)]; }), // valueItems one for each measurement
+      measurements, // measurements
       '');
   });
 
@@ -220,7 +265,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .attr('d', function(d, i) { return area(layers[i]); })
     .style('opacity', '0')
     .style('shape-rendering', 'auto')
-    .style('fill', function(d, i) { return colors.get(d.seriesIndex); })
+    .style('fill', function(d, i) { return colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(d.seriesIndex))); })
     .on('mouseover', function(d, i) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
     })
@@ -233,7 +278,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .duration(500)
     .style('opacity', '0.7')
     .attr('d', function(d, i) { return area(layers[i]); })
-    .style('fill', function(d, i) { return colors.get(d.seriesIndex); });
+    .style('fill', function(d, i) { return colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(d.seriesIndex))); });
 
   lines
     .exit()
@@ -245,18 +290,25 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   // Draw legend
   var title = '';
 
+  var labels = {};
+  indices.forEach(function(index) {
+    var label = colorBy(data.first().value.getRowByGlobalIndex(index));
+    labels[label] = label;
+  });
+
   this._svg.selectAll('.chart-title').remove();
   var titleEntries = this._svg
     .selectAll('.chart-title')
-    .data(indices)
+    .data(Object.keys(labels));
+  titleEntries
     .enter()
     .append('text')
     .attr('class', 'chart-title')
     .attr('font-weight', 'bold')
-    .attr('fill', function(index, i) { return colors.get(index); })
-    .attr('y', self.margins().top() - 5)
-    .text(function(index) { return data.first().value.getByGlobalIndex(index).rowItem.metadata(colLabel); });
-
+    .attr('y', self.margins().top() - 5);
+  titleEntries
+    .attr('fill', function(label) { return colors.getByKey(label); })
+    .text(function(label) { return label; });
   var textLength = 0;
   var titleEntriesStartPosition = [];
 

@@ -65,6 +65,8 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
   var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
   var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
 
+  var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
+
   if (minY == CustomSetting.DEFAULT) {
     minY = null;
     this.measurements().foreach(function(m) {
@@ -96,7 +98,12 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
   this._clearAxes();
   this._drawAxes(xScale, yScale, this.measurements().size(), 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
-    this.measurements().toArray().map(function(m) { return m.name(); }));
+    this.measurements().toArray().map(function(m) {
+      if (rowLabel == 'name') { return m.name(); }
+      var anno = m.annotation();
+      if (!anno || !(rowLabel in anno)) { return '<NA>'; }
+      return anno[rowLabel];
+    }));
 
   var linesGroup = this._svg.selectAll('.lines');
 
@@ -320,7 +327,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .attr('cy', function(d) { return yScale(d.y); })
           .attr('r', pointRadius)
           .attr('fill', 'none')
-          .attr('stroke', colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(index))));
+          .attr('stroke', function(index) { return colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(index))); });
 
         selection.exit().remove();
       })

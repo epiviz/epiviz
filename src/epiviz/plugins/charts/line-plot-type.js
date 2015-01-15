@@ -77,6 +77,13 @@ epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
       'colLabel',
       'Columns labels'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
+      'name',
+      'Row labels'),
+
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_POINTS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,

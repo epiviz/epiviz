@@ -181,6 +181,17 @@ epiviz.measurements.MeasurementHashtable.prototype.sorted = function(comparer) {
 };
 
 /**
+ * @returns {Array.<epiviz.measurements.Measurement>}
+ */
+epiviz.measurements.MeasurementHashtable.prototype.keys = function() {
+  var ret = [];
+  this._order.forEach(function(o) {
+    if (o.contained) { ret.push(o.key); }
+  });
+  return ret;
+};
+
+/**
  * @returns {epiviz.utils.Iterator.<{key: epiviz.measurements.Measurement, value: T}>}
  */
 epiviz.measurements.MeasurementHashtable.prototype.iterator = function() {

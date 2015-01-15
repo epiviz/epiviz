@@ -79,6 +79,12 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
       'Columns labels'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
+      'name',
+      'Row labels'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.StackedLinePlotType.CustomSettings.OFFSET,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       'zero',
