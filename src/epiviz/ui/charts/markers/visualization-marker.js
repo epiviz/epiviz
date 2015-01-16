@@ -80,7 +80,8 @@ epiviz.ui.charts.markers.VisualizationMarker.Type = {
   FILTER: 'filter',
   COLOR_BY_ROW: 'colorByRow',
   ORDER_BY_MEASUREMENTS: 'orderByMeasurements',
-  COLOR_BY_MEASUREMENTS: 'colorByMeasurements'
+  COLOR_BY_MEASUREMENTS: 'colorByMeasurements',
+  AGGREGATE_BY_MEASUREMENTS: 'aggregateByMeasurements'
 };
 
 /**

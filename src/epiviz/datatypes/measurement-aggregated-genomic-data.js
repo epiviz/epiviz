@@ -151,10 +151,10 @@ epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize = functi
       if (!indexItems.length) { continue; }
       var values = indexItems
         .map(function(item) { return item.value; });
+      var aggregation = this._aggregator(label, ms, values);
       var row = indexItems[0].rowItem;
       var aggRow = new epiviz.datatypes.RowItemImpl(row.id(), row.seqName(), row.start(), row.end(), row.globalIndex(), row.strand(),
         epiviz.utils.mapCombine(row.rowMetadata() || {}, {errMinus:aggregation.errMinus, errPlus:aggregation.errPlus}));
-      var aggregation = this._aggregator(label, ms, values);
       var item = new epiviz.datatypes.GenomicData.ValueItem(globalIndex, aggRow, aggregation.value, m);
       items.push(item);
       itemsByGlobalIndex[globalIndex] = item;

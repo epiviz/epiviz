@@ -57,7 +57,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
 
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION];
-  var xBound = interpolation.indexOf('step') == 0 ? this.measurements().size() : this.measurements().size() - 1;
+  var xBound = interpolation.indexOf('step') == 0 ? data.measurements().length : data.measurements().length - 1;
 
   var Axis = epiviz.ui.charts.Axis;
   var xScale = d3.scale.linear()
@@ -65,7 +65,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
 
   this._clearAxes();
-  this._drawAxes(xScale, undefined, this.measurements().size(), 5,
+  this._drawAxes(xScale, undefined, data.measurements().length, 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
     data.measurements().map(function(m) {
       if (rowLabel == 'name') { return m.name(); }

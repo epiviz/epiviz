@@ -250,7 +250,10 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var nCols = Math.min(colnames.length, maxColumns);
   var cellWidth = nCols ? (width - this.margins().sumAxis(Axis.X)) / nCols : 0;
-  var cellHeight = (this.height() - this.margins().sumAxis(Axis.Y)) / this.measurements().size();
+  var cellHeight = (this.height() - this.margins().sumAxis(Axis.Y)) / data.measurements().length;
+
+  this._min = data.measurements()[0].minValue();
+  this._max = data.measurements()[0].maxValue();
   this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, this.colors().get(0), this.colors().get(1));
 
   var itemsGroup = this._chartContent.select('.items');

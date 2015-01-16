@@ -128,6 +128,23 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
   }
 
+  this._lastData = this._unalteredData;
+
+  var isFeatureChart = false;
+  this._lastData.measurements().every(function(m) { isFeatureChart = m.type() !== epiviz.measurements.Measurement.Type.RANGE; return !isFeatureChart });
+
+  if (isFeatureChart) {
+    var aggregator;
+    this._markers.every(function(marker) {
+      if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.AGGREGATE_BY_MEASUREMENTS) {
+        aggregator = marker;
+      }
+      return !aggregator;
+    });
+    if (aggregator) { this._lastData = new epiviz.datatypes.MeasurementAggregatedGenomicData(this._lastData, aggregator); }
+  }
+
+
   var filter;
   this._markers.every(function(marker) {
     if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) {
@@ -135,9 +152,7 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     }
     return !filter;
   });
-
-  this._lastData = filter ?
-    new epiviz.datatypes.ItemFilteredGenomicData(this._unalteredData, filter) : this._unalteredData;
+  if (filter) { this._lastData = new epiviz.datatypes.ItemFilteredGenomicData(this._unalteredData, filter); }
 
   var order;
   this._markers.every(function(marker) {
@@ -147,9 +162,7 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     return !order;
   });
 
-  if (order) {
-    this._lastData = new epiviz.datatypes.MeasurementOrderedGenomicData(this._lastData, order);
-  }
+  if (order) { this._lastData = new epiviz.datatypes.MeasurementOrderedGenomicData(this._lastData, order); }
 
   return [];
 };
