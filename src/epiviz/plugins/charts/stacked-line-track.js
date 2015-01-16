@@ -37,7 +37,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {?epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -68,7 +68,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype.draw = function(range, data, sl
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {number} delta
  * @param {number} zoom
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -107,12 +107,12 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
 
   var seriesAreas = [];
 
-  var firstGlobalIndex = data.first().value.globalStartIndex();
-  var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
+  var firstGlobalIndex = data.firstSeries().globalStartIndex();
+  var lastGlobalIndex = data.firstSeries().globalEndIndex();
 
   data.foreach(function(measurement, series) {
     var firstIndex = series.globalStartIndex();
-    var lastIndex = series.size() + firstIndex;
+    var lastIndex = series.globalEndIndex();
 
     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
@@ -125,25 +125,11 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   /** @type {Array.<string>} */
   var labels;
 
-  this.measurements().foreach(function(m, i) {
-    /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
-    var series = data.get(m);
-
+  data.foreach(function(m, series, i) {
     var indices = epiviz.utils.range((lastGlobalIndex - firstGlobalIndex) / step)
       .map(function(i) { return i * step + firstGlobalIndex; })
-      .filter(function(i) {
-        if (self._markers.length == 0) { return true; }
-
-        // TODO: Check both measurements and if any has filter set to false, then filter out that index for all
-        var markerVals = self._markerValues.first().value[i];
-        if (!markerVals) { return true; }
-        for (var markerId in markerVals) {
-          if (!markerVals.hasOwnProperty(markerId)) { continue; }
-          var marker = self._markersMap[markerId];
-          if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
-          if (!markerVals[markerId]) { return false; }
-        }
-        return true;
+      .filter(function(globalIndex) {
+        return series.getByGlobalIndex(globalIndex);
       });
 
     for (var k = 0; k < indices.length; ++k) {
@@ -152,13 +138,13 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     }
 
     var x = function(j) {
-      /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.getByGlobalIndex(j);
       return cell.rowItem.start();
     };
 
     var y = function(j) {
-      /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.getByGlobalIndex(j);
       return cell.value;
     };
@@ -169,7 +155,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     if (!labels) {
       labels = [];
       indices.forEach(function(j) {
-        /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+        /** @type {epiviz.datatypes.GenomicData.ValueItem} */
         var cell = series.getByGlobalIndex(j);
         labels.push(cell.rowItem.metadata('bacteria')); // TODO: Change to something more generic
       });
@@ -181,7 +167,6 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
 
   this._clearAxes();
-  var firstSeries = data.first().value;
 
   this._drawAxes(xScale, undefined, 10);
   // TODO: Add option for labels on tracks

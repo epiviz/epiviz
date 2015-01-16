@@ -94,7 +94,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {?epiviz.datatypes.GenomicData} [data]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
@@ -114,7 +114,7 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
@@ -125,12 +125,12 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   var gridSquareSize = Math.max(Math.floor(circleRadius), 1);
   var nSeries = Math.min(this._measurementsX.length, this._measurementsY.length);
 
-  var firstGlobalIndex = data.first().value.globalStartIndex();
-  var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
+  var firstGlobalIndex = data.firstSeries().globalStartIndex();
+  var lastGlobalIndex = data.firstSeries().globalEndIndex();
   data.foreach(function(measurement, series) {
 
     var firstIndex = series.globalStartIndex();
-    var lastIndex = series.size() + firstIndex;
+    var lastIndex = series.globalEndIndex();
 
     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
@@ -169,42 +169,13 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   var indices = []; //epiviz.utils.range(nSeries * nItems);
   for (i = 0; i < nItems; ++i) {
     index = i + firstGlobalIndex;
-    var item = data.get(this._measurementsX[0]).getByGlobalIndex(index).rowItem;
+    var item = data.getSeries(this._measurementsX[0]).getRowByGlobalIndex(index);
+    if (!item) { continue; }
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       (item.start() < range.end() && item.end() > range.start())) {
 
       for (var j = 0; j < nSeries; ++j) {
-
-        // Filter code
-        var filter = true;
-        var markerId, marker;
-
-        var valsMapX = self._markerValues.get(self._measurementsX[j]);
-        var valsMapY = self._markerValues.get(self._measurementsY[j]);
-
-        var markerValsX = valsMapX[index];
-        if (markerValsX) {
-          for (markerId in markerValsX) {
-            if (!markerValsX.hasOwnProperty(markerId)) { continue; }
-            marker = self._markersMap[markerId];
-            if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
-            if (!markerValsX[markerId]) { filter = false; break; }
-          }
-        }
-
-        var markerValsY = valsMapY[index];
-        if (markerValsY) {
-          for (markerId in markerValsY) {
-            if (!markerValsY.hasOwnProperty(markerId)) { continue; }
-            marker = self._markersMap[markerId];
-            if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
-            if (!markerValsY[markerId]) { filter = false; break; }
-          }
-        }
-
-        if (!filter) { continue; }
-
         indices.push(j * nItems + i);
       }
     }
@@ -219,8 +190,11 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     var seriesIndex = Math.floor(indices[i] / nItems);
     var mX = self._measurementsX[seriesIndex];
     var mY = self._measurementsY[seriesIndex];
-    var cellX = data.get(mX).getByGlobalIndex(globalIndex);
-    var cellY = data.get(mY).getByGlobalIndex(globalIndex);
+    var cellX = data.getSeries(mX).getByGlobalIndex(globalIndex);
+    var cellY = data.getSeries(mY).getByGlobalIndex(globalIndex);
+
+    if (!cellX || !cellY) { continue; }
+
     var classes = sprintf('item data-series-%s', seriesIndex);
 
     var x = xScale(cellX.value);

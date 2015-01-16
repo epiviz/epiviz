@@ -4,7 +4,7 @@
  * Time: 8:03 AM
  */
 
-goog.provide('epiviz.datatypes.GenomicRanges');
+goog.provide('epiviz.datatypes.deprecated.GenomicRanges');
 
 goog.require('goog.structs.IntervalTree');
 
@@ -19,10 +19,10 @@ goog.require('goog.structs.IntervalTree');
  * @param {Object.<string, Array>} [values]
  * @param {Array.<string>} [levels]
  * @constructor
- * @implements {epiviz.datatypes.GenomicData}
+ * @implements {epiviz.datatypes.deprecated.GenomicData}
  * @deprecated
  */
-epiviz.datatypes.GenomicRanges = function(id, seqindex, start, end, strand, values, levels) {
+epiviz.datatypes.deprecated.GenomicRanges = function(id, seqindex, start, end, strand, values, levels) {
   /**
    * @type {Array.<string>}
    * @private
@@ -76,7 +76,7 @@ epiviz.datatypes.GenomicRanges = function(id, seqindex, start, end, strand, valu
  * A constant denoting the type name
  * @type {string}
  */
-epiviz.datatypes.GenomicRanges.TYPE = 'epiviz.datatypes.GenomicRanges';
+epiviz.datatypes.deprecated.GenomicRanges.TYPE = 'epiviz.datatypes.deprecated.GenomicRanges';
 
 /**
  *
@@ -95,33 +95,33 @@ epiviz.datatypes.GenomicRanges.TYPE = 'epiviz.datatypes.GenomicRanges';
  *   levels: an array of names for all chromosomes in the instance; the numbers in seqindex correspond to indices
  *     in this array
  *
- * @returns {epiviz.datatypes.GenomicRanges}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.fromRawObject = function(o) {
-  return new epiviz.datatypes.GenomicRanges(o.id, o.seqindex, o.start, o.end, o.strand, o.values, o.levels);
+epiviz.datatypes.deprecated.GenomicRanges.fromRawObject = function(o) {
+  return new epiviz.datatypes.deprecated.GenomicRanges(o.id, o.seqindex, o.start, o.end, o.strand, o.values, o.levels);
 };
 
 /**
  *
- * @param {epiviz.datatypes.SeqInfo} seqinfo
+ * @param {epiviz.datatypes.deprecated.SeqInfo} seqinfo
  * @param {number} start
  * @param {number} end
- * @returns {epiviz.datatypes.GenomicRanges}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.createQuery = function(seqinfo, start, end) {
-  return new epiviz.datatypes.GenomicRanges([null], seqinfo.index(), [start], [end], null, null, seqinfo.levels());
+epiviz.datatypes.deprecated.GenomicRanges.createQuery = function(seqinfo, start, end) {
+  return new epiviz.datatypes.deprecated.GenomicRanges([null], seqinfo.index(), [start], [end], null, null, seqinfo.levels());
 };
 
 /**
  * @protected
  */
-epiviz.datatypes.GenomicRanges.prototype._initializeIntervalForest = function() {
+epiviz.datatypes.deprecated.GenomicRanges.prototype._initializeIntervalForest = function() {
   if (this._intervalForest) { return; }
 
   /** @type {Array.<goog.structs.IntervalTree>} */
   var intervalForest = new Array(this._levels.length);
   this.foreach(
-    /** @param {epiviz.datatypes.GenomicRanges.Row} row */
+    /** @param {epiviz.datatypes.deprecated.GenomicRanges.Row} row */
     function(row) {
       var seqindex = row.seqinfo().index();
       if (!intervalForest[seqindex]) {
@@ -137,30 +137,30 @@ epiviz.datatypes.GenomicRanges.prototype._initializeIntervalForest = function() 
 /**
  * @returns {string}
  */
-epiviz.datatypes.GenomicRanges.prototype.dataType = function() {
-  return epiviz.datatypes.GenomicRanges.TYPE;
+epiviz.datatypes.deprecated.GenomicRanges.prototype.dataType = function() {
+  return epiviz.datatypes.deprecated.GenomicRanges.TYPE;
 };
 
 /**
- * @returns {epiviz.datatypes.GenomicRanges}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.prototype.ranges = function() { return this; };
+epiviz.datatypes.deprecated.GenomicRanges.prototype.ranges = function() { return this; };
 
 /**
  * @param {number} i a numeric index of the row
- * @returns {epiviz.datatypes.GenomicRanges.Row}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges.Row}
  */
-epiviz.datatypes.GenomicRanges.prototype.get = function(i) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.get = function(i) {
   if (i < 0 || i >= this.size()) { return null; }
 
-  return new epiviz.datatypes.GenomicRanges.Row(this, i);
+  return new epiviz.datatypes.deprecated.GenomicRanges.Row(this, i);
 };
 
 /**
  * Iterates through all genomic ranges until fun returns something that evaluates to true
- * @param {function(epiviz.datatypes.GenomicRanges.Row)} fun
+ * @param {function(epiviz.datatypes.deprecated.GenomicRanges.Row)} fun
  */
-epiviz.datatypes.GenomicRanges.prototype.foreach = function(fun) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.foreach = function(fun) {
   var size = this.size();
   for (var i = 0; i < size; ++i) {
     if (fun(this.get(i))) {
@@ -172,15 +172,15 @@ epiviz.datatypes.GenomicRanges.prototype.foreach = function(fun) {
 /**
  * @returns {number} the total number of rows in the structure
  */
-epiviz.datatypes.GenomicRanges.prototype.size = function() {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.size = function() {
   return this._id ? this._id.length : 0;
 };
 
 /**
- * @param {epiviz.datatypes.GenomicRanges} query
- * @returns {epiviz.datatypes.GenomicRanges.Hits}
+ * @param {epiviz.datatypes.deprecated.GenomicRanges} query
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges.Hits}
  */
-epiviz.datatypes.GenomicRanges.prototype.findOverlaps = function(query) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.findOverlaps = function(query) {
 
   this._initializeIntervalForest();
 
@@ -205,14 +205,14 @@ epiviz.datatypes.GenomicRanges.prototype.findOverlaps = function(query) {
 
   query.foreach(
     /**
-     * @param {epiviz.datatypes.GenomicRanges.Row} row
+     * @param {epiviz.datatypes.deprecated.GenomicRanges.Row} row
      * @returns {boolean}
      */
     function(row) {
       var seqindex = convertQueryLevels(row.seqinfo().index());
 
       // The current query row belongs to a chromosome not present in this
-      // epiviz.datatypes.GenomicRanges instance
+      // epiviz.datatypes.deprecated.GenomicRanges instance
       if (seqindex < 0) { return false; }
 
       var tree = self._intervalForest[seqindex];
@@ -229,33 +229,33 @@ epiviz.datatypes.GenomicRanges.prototype.findOverlaps = function(query) {
       return false;
     });
 
-  return new epiviz.datatypes.GenomicRanges.Hits(queryHits, subjectHits);
+  return new epiviz.datatypes.deprecated.GenomicRanges.Hits(queryHits, subjectHits);
 };
 
 /**
  *
  * @param query
- * @returns {epiviz.datatypes.GenomicRanges}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.prototype.subsetByOverlaps = function(query) {
-  return new epiviz.datatypes.GenomicRanges.Subset(this, this.findOverlaps(query).subject());
+epiviz.datatypes.deprecated.GenomicRanges.prototype.subsetByOverlaps = function(query) {
+  return new epiviz.datatypes.deprecated.GenomicRanges.Subset(this, this.findOverlaps(query).subject());
 };
 
 /**
  * Merges two genomic ranges instances together by location, eliminating common rows (where ids match)
  * TODO: Consider creating a wrapper class for the result of this function, which simply maps indices,
  * without performing a hard copy
- * @param {epiviz.datatypes.GenomicRanges} gr1
- * @param {epiviz.datatypes.GenomicRanges} gr2
- * @returns {epiviz.datatypes.GenomicRanges}
+ * @param {epiviz.datatypes.deprecated.GenomicRanges} gr1
+ * @param {epiviz.datatypes.deprecated.GenomicRanges} gr2
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.merge = function(gr1, gr2) {
+epiviz.datatypes.deprecated.GenomicRanges.merge = function(gr1, gr2) {
 
-  // Create a mapping between the chromosomes in the two epiviz.datatypes.GenomicRanges instances
+  // Create a mapping between the chromosomes in the two epiviz.datatypes.deprecated.GenomicRanges instances
   // and the resulted one.
   var levels = null;
 
-  /** @type {function(number, epiviz.datatypes.GenomicRanges=):number} */
+  /** @type {function(number, epiviz.datatypes.deprecated.GenomicRanges=):number} */
   var levelsMapper = null;
 
   if (gr1.levels() == gr2.levels()) {
@@ -279,7 +279,7 @@ epiviz.datatypes.GenomicRanges.merge = function(gr1, gr2) {
 
     /**
      * @param {number} seqindex
-     * @param {epiviz.datatypes.GenomicRanges=} gr
+     * @param {epiviz.datatypes.deprecated.GenomicRanges=} gr
      * @returns {number}
      */
     levelsMapper = function(seqindex, gr) {  return levelsMap[gr.levels()[seqindex]]; }
@@ -297,7 +297,7 @@ epiviz.datatypes.GenomicRanges.merge = function(gr1, gr2) {
   var rangeIds = {};
   var iterator =
     /**
-     * @param {epiviz.datatypes.GenomicRanges.Row} row
+     * @param {epiviz.datatypes.deprecated.GenomicRanges.Row} row
      * @returns {boolean}
      */
     function(row) {
@@ -319,13 +319,13 @@ epiviz.datatypes.GenomicRanges.merge = function(gr1, gr2) {
   gr1.foreach(iterator);
   gr2.foreach(iterator);
 
-  return new epiviz.datatypes.GenomicRanges(id, seqindex, start, end, strand, values, levels);
+  return new epiviz.datatypes.deprecated.GenomicRanges(id, seqindex, start, end, strand, values, levels);
 };
 
 /**
- * @returns {Array.<string>} the names of the value columns associated with the epiviz.datatypes.GenomicRanges instance
+ * @returns {Array.<string>} the names of the value columns associated with the epiviz.datatypes.deprecated.GenomicRanges instance
  */
-epiviz.datatypes.GenomicRanges.prototype.valueColumns = function() {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.valueColumns = function() {
   if (this._values) {
     return Object.keys(this._values);
   }
@@ -337,26 +337,26 @@ epiviz.datatypes.GenomicRanges.prototype.valueColumns = function() {
  * @param {number} index
  * @returns {string}
  */
-epiviz.datatypes.GenomicRanges.prototype.id = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.id = function(index) {
   return this._id[index];
 };
 
 /**
  *
  * @param {number} index
- * @returns {epiviz.datatypes.SeqInfo}
+ * @returns {epiviz.datatypes.deprecated.SeqInfo}
  */
-epiviz.datatypes.GenomicRanges.prototype.seqinfo = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.seqinfo = function(index) {
   var result = Array.isArray(this._seqindex) ? this._seqindex[index] : this._seqindex;
 
-  return new epiviz.datatypes.SeqInfo(this._levels, result);
+  return new epiviz.datatypes.deprecated.SeqInfo(this._levels, result);
 };
 
 /**
  * @param {number} index
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.prototype.start = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.start = function(index) {
   return this._start[index];
 };
 
@@ -364,7 +364,7 @@ epiviz.datatypes.GenomicRanges.prototype.start = function(index) {
  * @param {number} index
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.prototype.end = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.end = function(index) {
   return this._end[index];
 };
 
@@ -372,7 +372,7 @@ epiviz.datatypes.GenomicRanges.prototype.end = function(index) {
  * @param {number} index
  * @returns {string}
  */
-epiviz.datatypes.GenomicRanges.prototype.strand = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.strand = function(index) {
   return Array.isArray(this._strand) ? this._strand[index] : this._strand;
 };
 
@@ -381,7 +381,7 @@ epiviz.datatypes.GenomicRanges.prototype.strand = function(index) {
  * @param {number} index
  * @returns {*}
  */
-epiviz.datatypes.GenomicRanges.prototype.value = function(column, index) {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.value = function(column, index) {
   if (!this._values || !this._values[column]) { return null; }
   return this._values[column][index];
 };
@@ -389,28 +389,28 @@ epiviz.datatypes.GenomicRanges.prototype.value = function(column, index) {
 /**
  * @returns {Array.<string>}
  */
-epiviz.datatypes.GenomicRanges.prototype.levels = function() {
+epiviz.datatypes.deprecated.GenomicRanges.prototype.levels = function() {
   return this._levels;
 };
 
 
-goog.provide('epiviz.datatypes.GenomicRanges.Subset');
+goog.provide('epiviz.datatypes.deprecated.GenomicRanges.Subset');
 
 /**
  *
- * @param {epiviz.datatypes.GenomicRanges} parent
+ * @param {epiviz.datatypes.deprecated.GenomicRanges} parent
  * @param {Array.<number>} indices A set of unique indices pointing to the data in parent (uniqueness is
  *   enforced in the Subset class, so if duplicate indices exist, only the first of them is considered)
  * @constructor
- * @extends {epiviz.datatypes.GenomicRanges}
+ * @extends {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.Subset = function(parent, indices) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset = function(parent, indices) {
 
   // Call superclass constructor
-  epiviz.datatypes.GenomicRanges.call(this);
+  epiviz.datatypes.deprecated.GenomicRanges.call(this);
 
   /**
-   * @type {epiviz.datatypes.GenomicRanges}
+   * @type {epiviz.datatypes.deprecated.GenomicRanges}
    * @private
    */
   this._innerGenomicRanges = parent;
@@ -436,19 +436,19 @@ epiviz.datatypes.GenomicRanges.Subset = function(parent, indices) {
 /**
  * Copy methods from upper class
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype = epiviz.utils.mapCopy(epiviz.datatypes.GenomicRanges.prototype);
-epiviz.datatypes.GenomicRanges.Subset.constructor = epiviz.datatypes.GenomicRanges.Subset;
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype = epiviz.utils.mapCopy(epiviz.datatypes.deprecated.GenomicRanges.prototype);
+epiviz.datatypes.deprecated.GenomicRanges.Subset.constructor = epiviz.datatypes.deprecated.GenomicRanges.Subset;
 
 
-epiviz.datatypes.GenomicRanges.Subset.prototype._initializeIntervalForest = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype._initializeIntervalForest = function() {
   this._innerGenomicRanges._initializeIntervalForest();
 };
 
 /**
  * @param {number|string} i either a numeric index of the row, or an id of the sought id
- * @returns {epiviz.datatypes.GenomicRanges.Row}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges.Row}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.get = function(i) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.get = function(i) {
   if (i < 0 || i >= this.size()) { return null; }
 
   return this._innerGenomicRanges.get(this._indices[i]);
@@ -457,16 +457,16 @@ epiviz.datatypes.GenomicRanges.Subset.prototype.get = function(i) {
 /**
  * @returns {number} the total number of rows in the structure
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.size = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.size = function() {
   return this._indices.length;
 };
 
 /**
- * @param {epiviz.datatypes.GenomicRanges} query
- * @returns {epiviz.datatypes.GenomicRanges.Hits}
+ * @param {epiviz.datatypes.deprecated.GenomicRanges} query
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges.Hits}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.findOverlaps = function(query) {
-  /** @type {epiviz.datatypes.GenomicRanges.Hits} */
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.findOverlaps = function(query) {
+  /** @type {epiviz.datatypes.deprecated.GenomicRanges.Hits} */
   var hits = this._innerGenomicRanges.findOverlaps(query);
 
   // Filter indices not present in the current structure
@@ -481,22 +481,22 @@ epiviz.datatypes.GenomicRanges.Subset.prototype.findOverlaps = function(query) {
     }
   }
 
-  return new epiviz.datatypes.GenomicRanges.Hits(queryHits, subjectHits);
+  return new epiviz.datatypes.deprecated.GenomicRanges.Hits(queryHits, subjectHits);
 };
 
 /**
  *
  * @param query
- * @returns {epiviz.datatypes.GenomicRanges}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.subsetByOverlaps = function(query) {
-  return new epiviz.datatypes.GenomicRanges.Subset(this, this.findOverlaps(query).subject());
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.subsetByOverlaps = function(query) {
+  return new epiviz.datatypes.deprecated.GenomicRanges.Subset(this, this.findOverlaps(query).subject());
 };
 
 /**
  * @returns {Array.<string>} the names of the value columns associated with the GenomicRanges instance
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.valueColumns = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.valueColumns = function() {
   return this._innerGenomicRanges.valueColumns();
 };
 
@@ -504,16 +504,16 @@ epiviz.datatypes.GenomicRanges.Subset.prototype.valueColumns = function() {
  * @param {number} index
  * @returns {string}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.id = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.id = function(index) {
   return this._innerGenomicRanges.id(this._indices[index]);
 };
 
 /**
  *
  * @param {number} index
- * @returns {epiviz.datatypes.SeqInfo}
+ * @returns {epiviz.datatypes.deprecated.SeqInfo}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.seqinfo = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.seqinfo = function(index) {
   return this._innerGenomicRanges.seqinfo(this._indices[index]);
 };
 
@@ -521,7 +521,7 @@ epiviz.datatypes.GenomicRanges.Subset.prototype.seqinfo = function(index) {
  * @param {number} index
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.start = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.start = function(index) {
   return this._innerGenomicRanges.start(this._indices[index]);
 };
 
@@ -529,7 +529,7 @@ epiviz.datatypes.GenomicRanges.Subset.prototype.start = function(index) {
  * @param {number} index
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.end = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.end = function(index) {
   return this._innerGenomicRanges.end(this._indices[index]);
 };
 
@@ -537,7 +537,7 @@ epiviz.datatypes.GenomicRanges.Subset.prototype.end = function(index) {
  * @param {number} index
  * @returns {string}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.strand = function(index) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.strand = function(index) {
   return this._innerGenomicRanges.strand(this._indices[index]);
 };
 
@@ -546,30 +546,30 @@ epiviz.datatypes.GenomicRanges.Subset.prototype.strand = function(index) {
  * @param {number} index
  * @returns {*}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.value = function(column, index) {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.value = function(column, index) {
   return this._innerGenomicRanges.value(column, this._indices[index]);
 };
 
 /**
  * @returns {Array.<string>}
  */
-epiviz.datatypes.GenomicRanges.Subset.prototype.levels = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Subset.prototype.levels = function() {
   return this._innerGenomicRanges.levels();
 };
 
 
 
-goog.provide('epiviz.datatypes.GenomicRanges.Row');
+goog.provide('epiviz.datatypes.deprecated.GenomicRanges.Row');
 
 /**
  *
- * @param {epiviz.datatypes.GenomicRanges} parent
+ * @param {epiviz.datatypes.deprecated.GenomicRanges} parent
  * @param {number} index
  *
  * @constructor
  * @extends {goog.structs.IntervalTree.Interval}
  */
-epiviz.datatypes.GenomicRanges.Row = function(parent, index) {
+epiviz.datatypes.deprecated.GenomicRanges.Row = function(parent, index) {
 
   // Call superclass constructor
   goog.structs.IntervalTree.Interval.call(this);
@@ -581,7 +581,7 @@ epiviz.datatypes.GenomicRanges.Row = function(parent, index) {
   this._index = index;
 
   /**
-   * @type {epiviz.datatypes.GenomicRanges}
+   * @type {epiviz.datatypes.deprecated.GenomicRanges}
    * @private
    */
   this._parent = parent;
@@ -590,50 +590,50 @@ epiviz.datatypes.GenomicRanges.Row = function(parent, index) {
 /**
  * Copy methods from upper class
  */
-epiviz.datatypes.GenomicRanges.Row.prototype = epiviz.utils.mapCopy(goog.structs.IntervalTree.Interval.prototype);
-epiviz.datatypes.GenomicRanges.Row.constructor = epiviz.datatypes.GenomicRanges.Row;
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype = epiviz.utils.mapCopy(goog.structs.IntervalTree.Interval.prototype);
+epiviz.datatypes.deprecated.GenomicRanges.Row.constructor = epiviz.datatypes.deprecated.GenomicRanges.Row;
 
 
 /**
- * @returns {epiviz.datatypes.GenomicRanges}
+ * @returns {epiviz.datatypes.deprecated.GenomicRanges}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.parent = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.parent = function() {
   return this._parent;
 };
 
 /**
  * @returns {string}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.id = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.id = function() {
   return this._parent.id(this._index);
 };
 
 /**
- * @returns {epiviz.datatypes.SeqInfo}
+ * @returns {epiviz.datatypes.deprecated.SeqInfo}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.seqinfo = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.seqinfo = function() {
   return this._parent.seqinfo(this._index);
 };
 
 /**
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.start = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.start = function() {
   return this._parent.start(this._index);
 };
 
 /**
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.end = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.end = function() {
   return this._parent.end(this._index);
 };
 
 /**
- * @param {epiviz.datatypes.GenomicRanges.Row} other
+ * @param {epiviz.datatypes.deprecated.GenomicRanges.Row} other
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.compareTo = function(other) {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.compareTo = function(other) {
   var result = goog.structs.IntervalTree.Interval.prototype.compareTo.call(this, other);
   if (result != 0) { return result; }
 
@@ -653,7 +653,7 @@ epiviz.datatypes.GenomicRanges.Row.prototype.compareTo = function(other) {
 /**
  * @returns {string}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.strand = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.strand = function() {
   return this._parent.strand(this._index);
 };
 
@@ -661,20 +661,20 @@ epiviz.datatypes.GenomicRanges.Row.prototype.strand = function() {
  * @param {string} column
  * @returns {*} a key-value map of column names and values
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.value = function(column) {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.value = function(column) {
   return this._parent.value(column, this._index);
 };
 
 /**
  * @returns {number}
  */
-epiviz.datatypes.GenomicRanges.Row.prototype.index = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Row.prototype.index = function() {
   return this._index;
 };
 
 
 
-goog.provide('epiviz.datatypes.GenomicRanges.Hits');
+goog.provide('epiviz.datatypes.deprecated.GenomicRanges.Hits');
 
 /**
  * Overlap hits resulted from a findOverlaps operation over two GenomicRanges instances
@@ -682,7 +682,7 @@ goog.provide('epiviz.datatypes.GenomicRanges.Hits');
  * @param {Array.<number>} subject The hit indices in the subject GenomicRanges
  * @constructor
  */
-epiviz.datatypes.GenomicRanges.Hits = function(query, subject) {
+epiviz.datatypes.deprecated.GenomicRanges.Hits = function(query, subject) {
   /**
    * @type {Array.<number>}
    * @private
@@ -700,7 +700,7 @@ epiviz.datatypes.GenomicRanges.Hits = function(query, subject) {
  * The hit indices in the query GenomicRanges
  * @returns {Array.<number>}
  */
-epiviz.datatypes.GenomicRanges.Hits.prototype.query = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Hits.prototype.query = function() {
   return this._query;
 };
 
@@ -708,13 +708,13 @@ epiviz.datatypes.GenomicRanges.Hits.prototype.query = function() {
  * The hit indices in the subject GenomicRanges
  * @returns {Array.<number>}
  */
-epiviz.datatypes.GenomicRanges.Hits.prototype.subject = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Hits.prototype.subject = function() {
   return this._subject;
 };
 
 /**
  * @returns {Number}
  */
-epiviz.datatypes.GenomicRanges.Hits.prototype.size = function() {
+epiviz.datatypes.deprecated.GenomicRanges.Hits.prototype.size = function() {
   return this._subject.length;
 };

@@ -4,15 +4,15 @@
  * Time: 12:45 PM
  */
 
-goog.provide('epiviz.datatypes.GenomicDataMeasurementWrapper');
-goog.provide('epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem');
+goog.provide('epiviz.datatypes.MeasurementGenomicDataWrapper');
 
 /**
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.PartialSummarizedExperiment} container
  * @constructor
+ * @implements {epiviz.datatypes.MeasurementGenomicData}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper = function(measurement, container) {
+epiviz.datatypes.MeasurementGenomicDataWrapper = function(measurement, container) {
   /**
    * @type {epiviz.measurements.Measurement}
    * @private
@@ -40,9 +40,9 @@ epiviz.datatypes.GenomicDataMeasurementWrapper = function(measurement, container
 
 /**
  * @param {number} index
- * @returns {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem}
+ * @returns {epiviz.datatypes.GenomicData.ValueItem}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.get = function(index) {
   var rows = this._container.rowData();
   var values = null;
   var firstGlobalIndex = this.globalStartIndex();
@@ -53,7 +53,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
 
   var size = this.size();
   if (!size || index >= size || index < 0) {
-    return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(globalIndex, item, value, this._measurement);
+    return new epiviz.datatypes.GenomicData.ValueItem(globalIndex, item, value, this._measurement);
   }
 
   if (firstGlobalIndex != undefined) {
@@ -70,14 +70,14 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.get = function(index) {
     globalIndex = firstGlobalIndex + index;
   }
 
-  return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(globalIndex, item, value, this._measurement);
+  return new epiviz.datatypes.GenomicData.ValueItem(globalIndex, item, value, this._measurement);
 };
 
 /**
  * @param {number} index
  * @returns {epiviz.datatypes.GenomicRangeArray.Item}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getRow = function(index) {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.getRow = function(index) {
   var rows = this._container.rowData();
   var firstGlobalIndex = this.globalStartIndex();
 
@@ -99,14 +99,14 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getRow = function(index
 /**
  * @returns {epiviz.measurements.Measurement}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.measurement = function() {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.measurement = function() {
   return this._measurement;
 };
 
 /**
  * @returns {number}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.globalStartIndex = function() {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.globalStartIndex = function() {
   if (this._globalStartIndex !== null) { return this._globalStartIndex; }
 
   /**
@@ -132,7 +132,16 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.globalStartIndex = func
 /**
  * @returns {number}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.size = function() {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.globalEndIndex = function() {
+  var startIndex = this.globalStartIndex();
+  if (startIndex == null) { return null; }
+  return startIndex + this.size();
+};
+
+/**
+ * @returns {number}
+ */
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.size = function() {
   if (this._size !== null) { return this._size; }
 
   var firstGlobalIndex = this.globalStartIndex();
@@ -155,11 +164,11 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.size = function() {
 
 /**
  * @param {number} globalIndex
- * @returns {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem}
+ * @returns {epiviz.datatypes.GenomicData.ValueItem}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getByGlobalIndex = function(globalIndex) {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.getByGlobalIndex = function(globalIndex) {
   var firstGlobalIndex = this.globalStartIndex();
-  if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem(null, null, null, this._measurement); }
+  if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicData.ValueItem(null, null, null, this._measurement); }
 
   return this.get(globalIndex - firstGlobalIndex);
 };
@@ -168,7 +177,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getByGlobalIndex = func
  * @param {number} globalIndex
  * @returns {epiviz.datatypes.GenomicRangeArray.Item}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getRowByGlobalIndex = function(globalIndex) {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.getRowByGlobalIndex = function(globalIndex) {
   var firstGlobalIndex = this.globalStartIndex();
   if (firstGlobalIndex == undefined) { return null; }
 
@@ -180,7 +189,7 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.getRowByGlobalIndex = f
  * @param {epiviz.datatypes.GenomicRange} range
  * @returns {{index: ?number, length: number}}
  */
-epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.binarySearchStarts = function(range) {
+epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.binarySearchStarts = function(range) {
 
   /** @type {?epiviz.datatypes.GenomicRangeArray} */
   var rows = this._container.rowData();
@@ -230,34 +239,4 @@ epiviz.datatypes.GenomicDataMeasurementWrapper.prototype.binarySearchStarts = fu
     index: globalStartIndex - this.globalStartIndex(),
     length: globalEndIndex - globalStartIndex + 1
   };
-};
-
-/**
- * @param {number} globalIndex
- * @param {epiviz.datatypes.GenomicRangeArray.Item} rowItem
- * @param {?number} [value]
- * @param {epiviz.measurements.Measurement} measurement
- * @constructor
- * @struct
- */
-epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem = function(globalIndex, rowItem, value, measurement) {
-  /**
-   * @type {number}
-   */
-  this.globalIndex = globalIndex;
-
-  /**
-   * @type {epiviz.datatypes.GenomicRangeArray.Item}
-   */
-  this.rowItem = rowItem;
-
-  /**
-   * @type {number}
-   */
-  this.value = (value === 0 || value) ? value : null;
-
-  /**
-   * @type {epiviz.measurements.Measurement}
-   */
-  this.measurement = measurement;
 };

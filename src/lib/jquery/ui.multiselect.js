@@ -155,7 +155,7 @@ $.widget("ui.multiselect", {
 		
 		// update count
 		this._updateCount();
-		that._filter.apply(this.availableContainer.find('input.search'), [that.availableList]);
+		that._order.apply(this.availableContainer.find('input.search'), [that.availableList]);
   },
 	_updateCount: function() {
 		this.element.trigger('change');
@@ -233,7 +233,7 @@ $.widget("ui.multiselect", {
 		this._registerHoverEvents(item);
 	},
 	// taken from John Resig's liveUpdate script
-	_filter: function(list) {
+	_order: function(list) {
 		var input = $(this);
 		var rows = list.children('li'),
 			cache = rows.map(function(){
@@ -325,7 +325,7 @@ $.widget("ui.multiselect", {
 				return false;
 		})
 		.keyup(function() {
-			that._filter.apply(this, [that.availableList]);
+			that._order.apply(this, [that.availableList]);
 		});
 	},
   selectedValues: function() {

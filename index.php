@@ -255,7 +255,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/datatypes/genomic-range-array.js"></script>
     <script src="src/epiviz/datatypes/feature-value-array.js"></script>
     <script src="src/epiviz/datatypes/partial-summarized-experiment.js"></script>
-    <script src="src/epiviz/datatypes/genomic-data-measurement-wrapper.js"></script>
+    <script src="src/epiviz/datatypes/measurement-genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/measurement-genomic-data-wrapper.js"></script>
+    <script src="src/epiviz/datatypes/measurement-genomic-data-array-wrapper.js"></script>
+    <script src="src/epiviz/datatypes/genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/map-genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/item-filtered-genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/measurement-ordered-genomic-data.js"></script>
 
     <script src="src/epiviz/ui/controls/control.js"></script>
     <script src="src/epiviz/ui/controls/dialog.js"></script>

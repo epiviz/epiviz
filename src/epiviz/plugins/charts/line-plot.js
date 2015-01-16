@@ -38,7 +38,7 @@ epiviz.plugins.charts.LinePlot.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {?epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -98,7 +98,7 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
   this._clearAxes();
   this._drawAxes(xScale, yScale, this.measurements().size(), 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
-    this.measurements().toArray().map(function(m) {
+    data.measurements().map(function(m) {
       if (rowLabel == 'name') { return m.name(); }
       var anno = m.annotation();
       if (!anno || !(rowLabel in anno)) { return '<NA>'; }
@@ -121,7 +121,7 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {function} xScale D3 linear scale
  * @param {function} yScale D3 linear scale
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -151,12 +151,12 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   var graph = this._svg.select('.lines');
 
-  var firstGlobalIndex = data.first().value.globalStartIndex();
-  var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
+  var firstGlobalIndex = data.firstSeries().globalStartIndex();
+  var lastGlobalIndex = data.firstSeries().globalEndIndex();
 
   data.foreach(function(measurement, series) {
     var firstIndex = series.globalStartIndex();
-    var lastIndex = series.size() + firstIndex;
+    var lastIndex = series.globalEndIndex();
 
     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
@@ -170,7 +170,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   var firstIndex, lastIndex;
   for (var i = 0; i < nEntries; ++i) {
     var globalIndex = i + firstGlobalIndex;
-    var item = data.get(this.measurements().first()).getByGlobalIndex(globalIndex).rowItem;
+    var item = data.firstSeries().getRowByGlobalIndex(globalIndex);
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       item.start() < range.end() && item.end() >= range.start()) {
@@ -194,20 +194,6 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     })
     .interpolate(interpolation);
 
-  var filters = this._markers.filter(function(marker) { return marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER; });
-  var preFilterResults = {};
-  filters.forEach(function(filter) {
-    preFilterResults[filter.id()] = filter.preMark()(data);
-  });
-  var filter = function(item) {
-    var ret = true;
-    filters.every(function(filter) {
-      ret = filter.mark()(item, data, preFilterResults[filter.id()]);
-      return ret;
-    });
-    return ret;
-  };
-
   /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
   var colorMarker;
   this._markers.every(function(marker) {
@@ -224,17 +210,18 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
    * @returns {string|number}
    */
   var colorBy = function(row) {
-    return colorMarker ? colorMarker.mark()(row, data, preColorBy) : row.globalIndex();
+    return colorMarker ? colorMarker.mark()(row, data, preColorBy) : row.metadata(colLabel);
   };
 
 
   var valuesForIndex = function(index) {
     return self.measurements().toArray()
       .map(function(m, i) {
-        return { x: i, y: data.get(m).getByGlobalIndex(index).value, measurement: m };
+        var item = data.getByGlobalIndex(m, index);
+        return { x: i, y: item ? item.value : null };
       })
       .filter(function(o) {
-        return filter(data.get(o.measurement).getByGlobalIndex(index));
+        return o.y !== null;
       });
   };
 
@@ -245,14 +232,14 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     graph.selectAll('.line-series').remove();
   } else {
     lineItems = indices.map(function(index) {
-      var rowItem = data.first().value.getByGlobalIndex(index).rowItem;
+      var rowItem = data.firstSeries().getRowByGlobalIndex(index);
       return new epiviz.ui.charts.ChartObject(
         sprintf('line-series-%s', index),
         rowItem.start(),
         rowItem.end(),
         valuesForIndex(index),
         index,
-        self.measurements().toArray().map(function(m, i) { return [data.get(m).getByGlobalIndex(index)]; }), // valueItems one for each measurement
+        self.measurements().toArray().map(function(m, i) { return [data.getByGlobalIndex(m, index)]; }), // valueItems one for each measurement
         self.measurements().toArray(), // measurements
         '');
     });
@@ -289,7 +276,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       .duration(500)
       .style('opacity', '0.7')
       .each(function(d) {
-        var color = colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(d.seriesIndex)));
+        var color = colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex)));
         d3.select(this)
           .selectAll('.bg-line')
           .attr('d', lineFunc(d.values));
@@ -327,7 +314,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .attr('cy', function(d) { return yScale(d.y); })
           .attr('r', pointRadius)
           .attr('fill', 'none')
-          .attr('stroke', function(index) { return colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(index))); });
+          .attr('stroke', function(index) { return colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(index))); });
 
         selection.exit().remove();
       })
@@ -342,7 +329,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .attr('cy', function(d) { return yScale(d.y); })
           .attr('r', pointRadius)
           .style('stroke-width', 2)
-          .attr('stroke', colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(index))));
+          .attr('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(index))));
       })
       .transition()
       .duration(500)
@@ -360,7 +347,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   var labels = {};
   indices.forEach(function(index) {
-    var label = colorBy(data.first().value.getRowByGlobalIndex(index));
+    var label = colorBy(data.firstSeries().getRowByGlobalIndex(index));
     labels[label] = label;
   });
 

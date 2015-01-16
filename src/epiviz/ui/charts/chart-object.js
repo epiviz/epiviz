@@ -13,7 +13,7 @@ goog.provide('epiviz.ui.charts.ChartObject');
  * @param {number} end
  * @param {?Array.<number>} [values] One for each measurement
  * @param {number} [seriesIndex]
- * @param {Array.<Array.<epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem>>} [valueItems] For each measurement, an array of value items
+ * @param {Array.<Array.<epiviz.datatypes.GenomicData.ValueItem>>} [valueItems] For each measurement, an array of value items
  * @param {Array.<epiviz.measurements.Measurement>} [measurements]
  * @param {string} [cssClasses]
  * @constructor
@@ -50,7 +50,7 @@ epiviz.ui.charts.ChartObject = function(id, start, end, values, seriesIndex, val
 
   /**
    * For each measurement, an array of value items
-   * @type {Array.<Array.<epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem>>}
+   * @type {Array.<Array.<epiviz.datatypes.GenomicData.ValueItem>>}
    */
   this.valueItems = valueItems;
 

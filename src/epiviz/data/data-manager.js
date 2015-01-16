@@ -270,7 +270,7 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
- * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} dataReadyCallback
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
 epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
   this._cache.getData(range, chartMeasurementsMap, dataReadyCallback);

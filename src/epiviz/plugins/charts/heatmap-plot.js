@@ -63,7 +63,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {epiviz.datatypes.GenomicData} [data]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
@@ -78,6 +78,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
+  /** @type {epiviz.datatypes.GenomicData} */
   var orderedData = this._applyClustering(range, data);
 
   return this._drawCells(range, orderedData);
@@ -85,11 +86,13 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
- * @returns {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>}
+ * @param {epiviz.datatypes.GenomicData} data
+ * @returns {epiviz.datatypes.GenomicData}
  * @private
  */
 epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, data) {
+  // TODO: This might not be needed anymore
+  // TODO: Search for all usages of this method
   var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
 
   // Apply clustering
@@ -126,17 +129,17 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
 
   var orderedData = new epiviz.measurements.MeasurementHashtable();
   for (i = 0; i < orderedMs.length; ++i) {
-    orderedData.put(orderedMs[i], data.get(orderedMs[i]));
+    orderedData.put(orderedMs[i], data.getSeries(orderedMs[i]));
   }
 
   this._drawDendrogram(dendrogram);
 
-  return orderedData;
+  return new epiviz.datatypes.MapGenomicData(orderedData);
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
@@ -146,8 +149,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var maxColumns = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS];
 
-  var firstGlobalIndex = data.first().value.globalStartIndex();
-  var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
+  var firstGlobalIndex = data.firstSeries().globalStartIndex();
+  var lastGlobalIndex = data.firstSeries().size() + firstGlobalIndex;
   var rows = [];
 
   // TODO: This might not be needed anymore
@@ -156,7 +159,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   data.foreach(function(measurement, series) {
     var firstIndex = series.globalStartIndex();
-    var lastIndex = series.size() + firstIndex;
+    var lastIndex = series.globalEndIndex();
 
     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
@@ -178,7 +181,16 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   for (i = 0; i < nEntries; ++i) {
     globalIndex = i + firstGlobalIndex;
-    var item = data.get(this.measurements().first()).getByGlobalIndex(globalIndex).rowItem;
+
+    // Find a defined row item for the data
+    var item;
+    data.foreach(function(m, series) {
+      item = series.getRowByGlobalIndex(globalIndex);
+      return item; // break if item is defined
+    });
+
+    if (!item) { continue; }
+
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       item.start() < range.end() && item.end() >= range.start()) {
@@ -198,6 +210,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
       globalIndex = columnMap[i];
 
       var cell = series.getByGlobalIndex(globalIndex);
+      if (!cell) { continue; }
       var uiObj = null;
       if (cellsPerCol == 0) {
         var classes = sprintf('item data-series-%s', seriesIndex);

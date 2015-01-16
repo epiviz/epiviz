@@ -36,7 +36,7 @@ epiviz.plugins.charts.LineTrack.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {?epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -102,7 +102,7 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
     var graph = this._svg.append('g')
       .attr('class', 'lines')
       .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
-    this.measurements().foreach(function(m, i) {
+    data.measurements().forEach(function(m, i) {
       graph.append('g').attr('class', 'line-series-index-' + i);
       graph.append('g').attr('class', 'point-series-index-' + i);
     });
@@ -112,7 +112,7 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {number} delta
  * @param {number} zoom
  * @param {function} xScale D3 linear scale
@@ -157,33 +157,21 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
 
-  this.measurements().foreach(function(m, i) {
-    /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
-    var series = data.get(m);
-
+  data.foreach(function(m, series, i) {
     /** @type {{index: ?number, length: number}} */
     var drawBoundaries = series.binarySearchStarts(extendedRange);
     if (drawBoundaries.length == 0) { return; }
 
+    // TODO: In the future, use global index to align steps:
+    //var globalIndex = series.get(drawBoundaries.index).globalIndex;
+    //globalIndex = Math.ceil(globalIndex / step) * step;
     var index = Math.ceil(drawBoundaries.index / step) * step;
     drawBoundaries.length = Math.max(0, drawBoundaries.length - index + drawBoundaries.index);
     drawBoundaries.index = index;
 
     var indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index)
       .filter(function(i) {
-        if (self._markers.length == 0) { return true; }
-        var markerVals = self._markerValues.first().value[i + series.globalStartIndex()];
-        if (!markerVals) { return true; }
-        for (var markerId in markerVals) {
-          if (!markerVals.hasOwnProperty(markerId)) { continue; }
-          var marker = self._markersMap[markerId];
-          if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
-          if (!markerVals[markerId]) { return false; }
-        }
-        return true;
-      })
-      .filter(function(i) {
-        return !step || step <= 1 || (i - drawBoundaries.index) % step == 0;
+        return !step || step <= 1 || ((i - drawBoundaries.index) % step == 0);
       });
 
     for (var k = 0; k < indices.length; ++k) {
@@ -192,13 +180,13 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     }
 
     var x = function(j) {
-      /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       return xScale(cell.rowItem.start());
     };
 
     var y = function(j) {
-      /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       return yScale(cell.value);
     };

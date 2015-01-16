@@ -38,25 +38,18 @@ epiviz.plugins.charts.StackedLinePlot.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {?epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, slide, zoom) {
-
-  var lastRange = this._lastRange;
-
   epiviz.ui.charts.Plot.prototype.draw.call(this, range, data, slide, zoom);
 
   // If data is defined, then the base class sets this._lastData to data.
   // If it isn't, then we'll use the data from the last draw call
   data = this._lastData;
   range = this._lastRange;
-
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
-    slide = range.start() - lastRange.start();
-  }
 
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
@@ -74,7 +67,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   this._clearAxes();
   this._drawAxes(xScale, undefined, this.measurements().size(), 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
-    data.keys().map(function(m) {
+    data.measurements().map(function(m) {
       if (rowLabel == 'name') { return m.name(); }
       var anno = m.annotation();
       if (!anno || !(rowLabel in anno)) { return '<NA>'; }
@@ -97,7 +90,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {function} xScale D3 linear scale
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
@@ -122,12 +115,12 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
 
   var graph = this._svg.select('.lines');
 
-  var firstGlobalIndex = data.first().value.globalStartIndex();
-  var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
+  var firstGlobalIndex = data.firstSeries().globalStartIndex();
+  var lastGlobalIndex = data.firstSeries().globalEndIndex();
 
   data.foreach(function(measurement, series) {
     var firstIndex = series.globalStartIndex();
-    var lastIndex = series.size() + firstIndex;
+    var lastIndex = series.globalEndIndex();
 
     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
@@ -141,7 +134,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   var firstIndex, lastIndex;
   for (var i = 0; i < nEntries; ++i) {
     var globalIndex = i + firstGlobalIndex;
-    var item = data.get(this.measurements().first()).getByGlobalIndex(globalIndex).rowItem;
+    var item = data.firstSeries().getRowByGlobalIndex(globalIndex);
+    if (!item) { continue; }
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       item.start() < range.end() && item.end() >= range.start()) {
@@ -157,32 +151,21 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
 
   if (indices.length == 0) { return []; }
 
-  /** @type {epiviz.measurements.MeasurementHashtable} */
+  /** @type {epiviz.measurements.MeasurementHashtable.<number>} */
   var msSums = null;
   if (scaleToPercent) {
     msSums = new epiviz.measurements.MeasurementHashtable();
 
-    this.measurements().foreach(function(m) {
+    data.measurements().forEach(function(m) {
       var sum = indices
-        .map(function(i) { return data.get(m).getByGlobalIndex(i).value; })
+        .filter(function(i) {
+          return data.getByGlobalIndex(m, i); // filter out undefined items
+        })
+        .map(function(i) { return data.getByGlobalIndex(m, i).value; })
         .reduce(function(v1, v2) { return v1 + v2; });
       msSums.put(m, sum);
     });
   }
-
-  var filters = this._markers.filter(function(marker) { return marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER; });
-  var preFilterResults = {};
-  filters.forEach(function(filter) {
-    preFilterResults[filter.id()] = filter.preMark()(data);
-  });
-  var filter = function(item) {
-    var ret = true;
-    filters.every(function(filter) {
-      ret = filter.mark()(item, data, preFilterResults[filter.id()]);
-      return ret;
-    });
-    return ret;
-  };
 
   /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
   var colorMarker;
@@ -200,7 +183,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
    * @returns {string|number}
    */
   var colorBy = function(row) {
-    return colorMarker ? colorMarker.mark()(row, data, preColorBy) : row.globalIndex();
+    return colorMarker ? colorMarker.mark()(row, data, preColorBy) : row.metadata(colLabel);
   };
 
   var valuesForIndex = function(index) {
@@ -208,34 +191,36 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     if (interpolation == 'step-before') {
       ret.push({ x: 0, y: 0 })
     }
-    var msArr = data.keys();
-    ret = ret.concat(msArr.map(function(m, i) {
+    var ms = data.measurements();
+    ret = ret.concat(ms.map(function(m, i) {
       var div = scaleToPercent ? msSums.get(m) : 1;
       div = div || 1; // Prevent division by 0
-      return { x: ret.length + i, y: data.get(m).getByGlobalIndex(index).value / div, measurement: m };
+      var item = data.getByGlobalIndex(m, index);
+      return { x: ret.length + i, y: item ? item.value / div : null };
     }));
 
     if (interpolation == 'step-after') {
       ret.push({ x: ret.length, y: 0 });
     }
     return ret.filter(function(o) {
-      if (!o.measurement) { return true; }
-      return filter(data.get(o.measurement).getByGlobalIndex(index));
+      return o.y !== null;
     });
   };
 
   var lineItems;
 
-  lineItems = indices.map(function(index) {
-    var rowItem = data.first().value.getByGlobalIndex(index).rowItem;
-    var measurements = data.keys();
+  lineItems = indices
+    .filter(function(index) { return data.firstSeries().getRowByGlobalIndex(index); })
+    .map(function(index) {
+    var rowItem = data.firstSeries().getRowByGlobalIndex(index);
+    var measurements = data.measurements();
     return new epiviz.ui.charts.ChartObject(
       sprintf('line-series-%s', index),
       rowItem.start(),
       rowItem.end(),
       valuesForIndex(index),
       index,
-      measurements.map(function(m, i) { return [data.get(m).getByGlobalIndex(index)]; }), // valueItems one for each measurement
+      measurements.map(function(m, i) { return [data.getByGlobalIndex(m, index)]; }), // valueItems one for each measurement
       measurements, // measurements
       '');
   });
@@ -265,7 +250,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .attr('d', function(d, i) { return area(layers[i]); })
     .style('opacity', '0')
     .style('shape-rendering', 'auto')
-    .style('fill', function(d, i) { return colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(d.seriesIndex))); })
+    .style('fill', function(d, i) { return colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))); })
     .on('mouseover', function(d, i) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
     })
@@ -278,7 +263,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .duration(500)
     .style('opacity', '0.7')
     .attr('d', function(d, i) { return area(layers[i]); })
-    .style('fill', function(d, i) { return colors.getByKey(colorBy(data.first().value.getRowByGlobalIndex(d.seriesIndex))); });
+    .style('fill', function(d, i) { return colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))); });
 
   lines
     .exit()
@@ -292,7 +277,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
 
   var labels = {};
   indices.forEach(function(index) {
-    var label = colorBy(data.first().value.getRowByGlobalIndex(index));
+    if (!data.firstSeries().getByGlobalIndex(index)) { return; }
+    var label = colorBy(data.firstSeries().getRowByGlobalIndex(index));
     labels[label] = label;
   });
 

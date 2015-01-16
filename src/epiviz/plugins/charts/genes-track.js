@@ -38,7 +38,7 @@ epiviz.plugins.charts.GenesTrack.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -70,7 +70,7 @@ epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, z
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {number} slide
  * @param {number} zoom
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -103,26 +103,13 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
   this._drawAxes(xScale, null, 10, 5);
 
   var self = this;
-  /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
-  var series = data.first().value;
+  /** @type {epiviz.datatypes.MeasurementGenomicData} */
+  var series = data.firstSeries();
 
   var indices = epiviz.utils.range(series.size());
 
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var dataItems = indices
-    .filter(function(i) {
-      if (self._markers.length == 0) { return true; }
-      var markerVals = self._markerValues.first().value[i + series.globalStartIndex()];
-      if (!markerVals) { return true; }
-      for (var markerId in markerVals) {
-        if (!markerVals.hasOwnProperty(markerId)) { continue; }
-        var marker = self._markersMap[markerId];
-        if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
-        if (!markerVals[markerId]) { return false; }
-      }
-      return true;
-       //return self._markerValues.first().value[i + series.globalStartIndex()][filterId] !== false;
-    })
     .map(function(i) {
     var cell = series.get(i);
     var item = cell.rowItem;

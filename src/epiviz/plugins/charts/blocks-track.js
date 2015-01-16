@@ -38,7 +38,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -60,7 +60,7 @@ epiviz.plugins.charts.BlocksTrack.prototype.draw = function(range, data, slide, 
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {number} slide
  * @param {number} zoom
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
@@ -106,30 +106,11 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
 
   var i = 0;
 
-  measurements.foreach(function(m) {
-    /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
-    var series = data.get(m);
+  data.foreach(function(m, series, seriesIndex) {
     var seriesBlocks = [];
 
-    /** @type {Object.<number, Object.<string, *>>} */
-    var measurementMarkers = self._markerValues.get(m);
-
     for (var j = 0; j < series.size(); ++j) {
-
-      var markerVals;
-      if (measurementMarkers) { markerVals = measurementMarkers[j + series.globalStartIndex()]; }
-      if (markerVals) {
-        var filter = true;
-        for (var markerId in markerVals) {
-          if (!markerVals.hasOwnProperty(markerId)) { continue; }
-          var marker = self._markersMap[markerId];
-          if (marker.type() != epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) { continue; }
-          if (!markerVals[markerId]) { filter = false; break; }
-        }
-        if (!filter) { continue; }
-      }
-
-      /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
 
       if (cell.rowItem.start() > range.end() || cell.rowItem.end() < range.start()) { continue; }

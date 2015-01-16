@@ -262,7 +262,7 @@ epiviz.ui.charts.ChartManager.prototype.chartsMeasurements = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {Array.<string>} [chartIds]
  */
 epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, chartIds) {

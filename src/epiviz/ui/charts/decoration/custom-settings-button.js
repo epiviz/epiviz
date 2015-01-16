@@ -34,7 +34,6 @@ epiviz.ui.charts.decoration.CustomSettingsButton.prototype._click = function() {
       'Edit custom settings', {
         ok: function(settingsValues) {
           self.visualization().setCustomSettingsValues(settingsValues);
-          self.visualization().draw();
         },
         cancel: function() {}
       },

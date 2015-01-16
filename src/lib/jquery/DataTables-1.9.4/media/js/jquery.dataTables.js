@@ -2083,7 +2083,7 @@
 			nFilter.innerHTML = '<label>'+sSearchStr+'</label>';
 			if ( !oSettings.aanFeatures.f )
 			{
-				nFilter.id = oSettings.sTableId+'_filter';
+				nFilter.id = oSettings.sTableId+'_order';
 			}
 			
 			var jqFilter = $('input[type="text"]', nFilter);

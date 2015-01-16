@@ -132,6 +132,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @type {?T}
    * @protected
    */
+  this._unalteredData = null;
+
+  /**
+   * @type {?T}
+   * @protected
+   */
   this._lastData = null;
 
   /**
@@ -467,6 +473,7 @@ epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
   }
   if (data != undefined) {
     this._lastData = data;
+    this._unalteredData = data;
     this._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(this._id));
   }
 
@@ -530,6 +537,7 @@ epiviz.ui.charts.Visualization.prototype.colors = function() {
  * @param {epiviz.ui.charts.ColorPalette} colors
  */
 epiviz.ui.charts.Visualization.prototype.setColors = function(colors) {
+  if (!colors || colors.equals(this._properties.colors)) { return; }
   this._properties.colors = colors;
   this.draw();
   this._colorsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.colors));
@@ -551,8 +559,13 @@ epiviz.ui.charts.Visualization.prototype.customSettingsValues = function() { ret
  * @param {Object.<string, *>} settingsValues
  */
 epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(settingsValues) {
+  if (this._customSettingsValues == settingsValues || !settingsValues || epiviz.utils.mapEquals(this._customSettingsValues, settingsValues)) {
+    return;
+  }
   var CustomSettings = epiviz.ui.charts.Visualization.CustomSettings;
   this._customSettingsValues = settingsValues;
+
+  this.draw();
 
   if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
     this._properties.margins = new epiviz.ui.charts.Margins(settingsValues[CustomSettings.MARGIN_TOP], settingsValues[CustomSettings.MARGIN_LEFT], settingsValues[CustomSettings.MARGIN_BOTTOM], settingsValues[CustomSettings.MARGIN_RIGHT]);
@@ -566,10 +579,12 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
  * @param {Object.<string, string>} modifiedMethods
  */
 epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedMethods) {
+  var methodsModified = false;
   if (!modifiedMethods) { return; }
   for (var m in modifiedMethods) {
     if (!modifiedMethods.hasOwnProperty(m)) { continue; }
     if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
+    if (this[m].toString() == modifiedMethods[m]) { continue; }
 
     if (!(m in this._originalMethods)) {
       this._originalMethods[m] = this[m];
@@ -578,6 +593,7 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
     try {
       this[m] = eval('(' + modifiedMethods[m] + ')');
       this._hasModifiedMethods = true;
+      methodsModified = true;
       this._lastModifiedMethod = m;
     } catch (e) {
       var dialog = new epiviz.ui.controls.MessageDialog(
@@ -590,9 +606,12 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
       dialog.show();
     }
   }
-  this.draw();
 
-  this._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, modifiedMethods));
+  if (methodsModified) {
+    this.draw();
+
+    this._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, modifiedMethods));
+  }
 };
 
 /**
@@ -608,6 +627,7 @@ epiviz.ui.charts.Visualization.prototype.lastModifiedMethod = function() { retur
 /**
  */
 epiviz.ui.charts.Visualization.prototype.resetModifiedMethods = function() {
+  if (!this._hasModifiedMethods) { return; }
   for (var m in this._originalMethods) {
     if (!this._originalMethods.hasOwnProperty(m)) { continue; }
     this[m] = this._originalMethods[m];
@@ -628,6 +648,14 @@ epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
   var i;
   if (marker.id() in this._markersMap) {
     i = this._markersIndices[marker.id()];
+    var oldMarker = this._markers[i];
+    if (oldMarker == marker ||
+        (oldMarker.type() == marker.type() &&
+         oldMarker.preMark().toString() == marker.preMark().toString() &&
+         oldMarker.mark().toString() == marker.mark().toString())) {
+      // Marker not modified
+      return;
+    }
     this._markers[i] = marker;
     this._markersMap[marker.id()] = marker;
   } else {

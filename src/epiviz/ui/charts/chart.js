@@ -119,7 +119,7 @@ epiviz.ui.charts.Chart.prototype._addFilters = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {epiviz.datatypes.GenomicData} [data]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
@@ -128,53 +128,28 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
   }
 
-  // Ordering functionality
-  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
-  var orderMarker;
+  var filter;
+  this._markers.every(function(marker) {
+    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) {
+      filter = marker;
+    }
+    return !filter;
+  });
+
+  this._lastData = filter ?
+    new epiviz.datatypes.ItemFilteredGenomicData(this._unalteredData, filter) : this._unalteredData;
+
+  var order;
   this._markers.every(function(marker) {
     if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS) {
-      orderMarker = marker;
-      return false;
+      order = marker;
     }
-    return true;
+    return !order;
   });
-  if (orderMarker) {
-    var preMarkVars = orderMarker.preMark()(data);
-    this._lastData = this._lastData.sorted(function(m1, m2) {
-      var v1 = orderMarker.mark()(m1, data, preMarkVars);
-      var v2 = orderMarker.mark()(m2, data, preMarkVars);
-      return v1 == v2 ? 0 : (v1 < v2 ? -1 : 1);
-    });
+
+  if (order) {
+    this._lastData = new epiviz.datatypes.MeasurementOrderedGenomicData(this._lastData, order);
   }
-
-  // TODO Cleanup
-  // Marker functionality
-  // If data is defined, then the base class sets this._lastData to data.
-  // If it isn't, then we'll use the data from the last draw call
-  /*data = this._lastData;
-  if (data) {
-    var self = this;
-
-    this._markerValues = new epiviz.measurements.MeasurementHashtable();
-
-    var preMethodsResults = {};
-    this._markers.forEach(function(marker) {
-      if (!marker) { return; }
-      preMethodsResults[marker.id()] = marker.preMark()(data);
-    });
-    data.foreach(function(m, series) {
-      var msMap = {};
-      self._markerValues.put(m, msMap);
-      for (var i = 0; i < series.size(); ++i) {
-        var markerMap = {};
-        msMap[i + series.globalStartIndex()] = markerMap;
-        self._markers.forEach(function(marker) {
-          if (!marker) { return; }
-          markerMap[marker.id()] = marker.mark()(series.get(i), data, preMethodsResults[marker.id()]);
-        });
-      }
-    });
-  }*/
 
   return [];
 };

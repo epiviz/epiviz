@@ -45,7 +45,7 @@ epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton.prototype.preMark
   return '/**\n' +
   ' * This method is called once before every draw, for all data available to the visualization,\n' +
   ' * for initialization. Its result can be used inside the filter method.\n' +
-  ' * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]\n' +
+  ' * @param {epiviz.datatypes.GenomicData} [data]\n' +
   ' * @returns {InitialVars}\n' +
   ' * @template InitialVars\n' +
   ' */\n' +
@@ -61,7 +61,7 @@ epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton.prototype.preMark
 epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton.prototype.markTemplate = function() {
   return '/**\n' +
   ' * @param {epiviz.measurements.Measurement} m\n' +
-  ' * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]\n' +
+  ' * @param {epiviz.datatypes.GenomicData} [data]\n' +
   ' * @param {InitialVars} [preMarkResult]\n' +
   ' * @returns {string|number}\n' +
   ' * @template InitialVars\n' +

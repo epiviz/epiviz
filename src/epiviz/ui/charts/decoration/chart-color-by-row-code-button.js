@@ -45,7 +45,7 @@ epiviz.ui.charts.decoration.ChartColorByRowCodeButton.prototype.preMarkTemplate 
   return '/**\n' +
   ' * This method is called once before every draw, for all data available to the visualization,\n' +
   ' * for initialization. Its result can be used inside the filter method.\n' +
-  ' * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]\n' +
+  ' * @param {epiviz.datatypes.GenomicData} [data]\n' +
   ' * @returns {InitialVars}\n' +
   ' * @template InitialVars\n' +
   ' */\n' +
@@ -62,7 +62,7 @@ epiviz.ui.charts.decoration.ChartColorByRowCodeButton.prototype.markTemplate = f
   return '/**\n' +
   ' * This method is called for every data object. If it returns false, the object will not be drawn.\n' +
   ' * @param {epiviz.datatypes.GenomicRangeArray.Item} [row]\n' +
-  ' * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]\n' +
+  ' * @param {epiviz.datatypes.GenomicData} [data]\n' +
   ' * @param {InitialVars} [preMarkResult]\n' +
   ' * @returns {string}\n' +
   ' * @template InitialVars\n' +
