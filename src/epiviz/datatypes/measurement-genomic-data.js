@@ -19,7 +19,7 @@ epiviz.datatypes.MeasurementGenomicData.prototype.get = function(index) { throw 
 
 /**
  * @param {number} index
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MeasurementGenomicData.prototype.getRow = function(index) { throw Error('unimplemented abstract method'); };
 
@@ -52,7 +52,7 @@ epiviz.datatypes.MeasurementGenomicData.prototype.getByGlobalIndex = function(gl
 
 /**
  * @param {number} globalIndex
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MeasurementGenomicData.prototype.getRowByGlobalIndex = function(globalIndex) { throw Error('unimplemented abstract method'); };
 

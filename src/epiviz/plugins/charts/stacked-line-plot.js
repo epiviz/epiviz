@@ -179,7 +179,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   var preColorBy = colorMarker ? colorMarker.preMark()(data) : undefined;
 
   /**
-   * @param {epiviz.datatypes.GenomicRangeArray.Item} row
+   * @param {epiviz.datatypes.GenomicData.RowItem} row
    * @returns {string|number}
    */
   var colorBy = function(row) {

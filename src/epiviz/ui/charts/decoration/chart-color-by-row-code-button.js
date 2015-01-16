@@ -61,7 +61,7 @@ epiviz.ui.charts.decoration.ChartColorByRowCodeButton.prototype.preMarkTemplate 
 epiviz.ui.charts.decoration.ChartColorByRowCodeButton.prototype.markTemplate = function() {
   return '/**\n' +
   ' * This method is called for every data object. If it returns false, the object will not be drawn.\n' +
-  ' * @param {epiviz.datatypes.GenomicRangeArray.Item} [row]\n' +
+  ' * @param {epiviz.datatypes.GenomicData.RowItem} [row]\n' +
   ' * @param {epiviz.datatypes.GenomicData} [data]\n' +
   ' * @param {InitialVars} [preMarkResult]\n' +
   ' * @returns {string}\n' +

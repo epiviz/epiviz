@@ -32,7 +32,7 @@ epiviz.datatypes.GenomicData.prototype.get = function(m, i) { throw Error('unimp
 /**
  * @param {epiviz.measurements.Measurement} m
  * @param {number} i
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.GenomicData.prototype.getRow = function(m, i) { throw Error('unimplemented abstract method'); };
 
@@ -51,6 +51,12 @@ epiviz.datatypes.GenomicData.prototype.globalStartIndex = function(m) { throw Er
  * @param {epiviz.measurements.Measurement} m
  * @returns {number}
  */
+epiviz.datatypes.GenomicData.prototype.globalEndIndex = function(m) { throw Error('unimplemented abstract method'); };
+
+/**
+ * @param {epiviz.measurements.Measurement} m
+ * @returns {number}
+ */
 epiviz.datatypes.GenomicData.prototype.size = function(m) { throw Error('unimplemented abstract method'); };
 
 /**
@@ -63,7 +69,7 @@ epiviz.datatypes.GenomicData.prototype.getByGlobalIndex = function(m, globalInde
 /**
  * @param {epiviz.measurements.Measurement} m
  * @param {number} globalIndex
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.GenomicData.prototype.getRowByGlobalIndex = function(m, globalIndex) { throw Error('unimplemented abstract method'); };
 
@@ -84,7 +90,7 @@ epiviz.datatypes.GenomicData.prototype.foreach = function(callback) { throw Erro
 
 /**
  * @param {number} globalIndex
- * @param {epiviz.datatypes.GenomicRangeArray.Item} rowItem
+ * @param {epiviz.datatypes.GenomicData.RowItem} rowItem
  * @param {?number} [value]
  * @param {epiviz.measurements.Measurement} measurement
  * @constructor
@@ -97,7 +103,7 @@ epiviz.datatypes.GenomicData.ValueItem = function(globalIndex, rowItem, value, m
   this.globalIndex = globalIndex;
 
   /**
-   * @type {epiviz.datatypes.GenomicRangeArray.Item}
+   * @type {epiviz.datatypes.GenomicData.RowItem}
    */
   this.rowItem = rowItem;
 
@@ -112,4 +118,48 @@ epiviz.datatypes.GenomicData.ValueItem = function(globalIndex, rowItem, value, m
   this.measurement = measurement;
 };
 
+/**
+ * @interface
+ */
+epiviz.datatypes.GenomicData.RowItem = function() {};
 
+/**
+ * @returns {string}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.id = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {string}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.seqName = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {number}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.start = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {number}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.end = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {number}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.globalIndex = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {string}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.strand = function() { throw Error('unimplemented abstract method'); };
+
+/**
+ * @param {string} column
+ * @returns {*}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.metadata = function(column) { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {Object.<string, *>}
+ */
+epiviz.datatypes.GenomicData.RowItem.prototype.rowMetadata = function() { throw Error('unimplemented abstract method'); };

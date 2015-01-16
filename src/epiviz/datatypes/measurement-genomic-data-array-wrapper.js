@@ -43,7 +43,7 @@ epiviz.datatypes.MeasurementGenomicDataArrayWrapper.prototype.get = function(ind
 
 /**
  * @param {number} index
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MeasurementGenomicDataArrayWrapper.prototype.getRow = function(index) {
   return (this._items && index >= 0 && index < this._items.length) ? this._items[index].rowItem : null;
@@ -87,7 +87,7 @@ epiviz.datatypes.MeasurementGenomicDataArrayWrapper.prototype.getByGlobalIndex =
 
 /**
  * @param {number} globalIndex
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MeasurementGenomicDataArrayWrapper.prototype.getRowByGlobalIndex = function(globalIndex) {
   return (this._itemsByGlobalIndex && (globalIndex in this._itemsByGlobalIndex)) ? this._itemsByGlobalIndex[globalIndex].rowItem : null;

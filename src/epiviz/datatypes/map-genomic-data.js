@@ -65,7 +65,7 @@ epiviz.datatypes.MapGenomicData.prototype.get = function(m, i) {
 /**
  * @param {epiviz.measurements.Measurement} m
  * @param {number} i
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MapGenomicData.prototype.getRow = function(m, i) {
   var mItems = this._map.get(m);
@@ -94,6 +94,16 @@ epiviz.datatypes.MapGenomicData.prototype.globalStartIndex = function(m) {
  * @param {epiviz.measurements.Measurement} m
  * @returns {number}
  */
+epiviz.datatypes.MapGenomicData.prototype.globalEndIndex = function(m) {
+  var mItems = this._map.get(m);
+  if (!mItems) { return null; }
+  return mItems.globalEndIndex();
+};
+
+/**
+ * @param {epiviz.measurements.Measurement} m
+ * @returns {number}
+ */
 epiviz.datatypes.MapGenomicData.prototype.size = function(m) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
@@ -114,7 +124,7 @@ epiviz.datatypes.MapGenomicData.prototype.getByGlobalIndex = function(m, globalI
 /**
  * @param {epiviz.measurements.Measurement} m
  * @param {number} globalIndex
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MapGenomicData.prototype.getRowByGlobalIndex = function(m, globalIndex) {
   var mItems = this._map.get(m);

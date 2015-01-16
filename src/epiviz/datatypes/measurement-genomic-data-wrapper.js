@@ -75,7 +75,7 @@ epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.get = function(index) {
 
 /**
  * @param {number} index
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.getRow = function(index) {
   var rows = this._container.rowData();
@@ -175,7 +175,7 @@ epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.getByGlobalIndex = func
 
 /**
  * @param {number} globalIndex
- * @returns {epiviz.datatypes.GenomicRangeArray.Item}
+ * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
 epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.getRowByGlobalIndex = function(globalIndex) {
   var firstGlobalIndex = this.globalStartIndex();

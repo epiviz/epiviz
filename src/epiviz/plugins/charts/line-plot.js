@@ -206,7 +206,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   var preColorBy = colorMarker ? colorMarker.preMark()(data) : undefined;
 
   /**
-   * @param {epiviz.datatypes.GenomicRangeArray.Item} row
+   * @param {epiviz.datatypes.GenomicData.RowItem} row
    * @returns {string|number}
    */
   var colorBy = function(row) {
