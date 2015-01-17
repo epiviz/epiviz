@@ -173,7 +173,22 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
 
+  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
+  var colorByMarker;
+  this._markers.every(function(marker) {
+    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_MEASUREMENTS) {
+      colorByMarker = marker;
+    }
+    return !colorByMarker;
+  });
+  var preColorVars;
+  if (colorByMarker) {
+    preColorVars = colorByMarker.preMark()(data);
+  }
+
   data.foreach(function(m, series, i) {
+    var color = colorByMarker ? colors.getByKey(colorByMarker.mark()(m, data, preColorVars)) : colors.get(i);
+
     /** @type {{index: ?number, length: number}} */
     var drawBoundaries = series.binarySearchStarts(extendedRange);
     if (drawBoundaries.length == 0) { return; }
@@ -241,7 +256,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
       lines
         .attr('d', line)
-        .style('stroke', colors.get(i))
+        .style('stroke', color)
         .style('stroke-width', lineThickness)
         .attr('transform', 'translate(' + (+delta) + ')')
         .transition()
@@ -267,7 +282,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
         .attr('cx', x)
         .attr('cy', y)
         .attr('fill', 'none')
-        .attr('stroke', colors.get(i))
+        .attr('stroke', color)
         .attr('transform', 'translate(' + (+delta) + ')')
         .transition()
         .duration(500)
@@ -296,13 +311,13 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
             if (m == null || p == null) { return; }
             d3.select(this).append('line')
               .attr('x1', x(j)).attr('x2', x(j)).attr('y1', m).attr('y2', p)
-              .style('stroke', colors.get(i));
+              .style('stroke', color);
             d3.select(this).append('line')
               .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', m).attr('y2', m)
-              .style('stroke', colors.get(i));
+              .style('stroke', color);
             d3.select(this).append('line')
               .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', p).attr('y2', p)
-              .style('stroke', colors.get(i));
+              .style('stroke', color);
           })
           .attr('transform', 'translate(' + (+delta) + ')')
           .transition()

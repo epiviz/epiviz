@@ -169,6 +169,19 @@ epiviz.ui.charts.Track.prototype._drawTitle = function() {
 
   if (!this._lastData) { return; }
 
+  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
+  var colorByMarker;
+  this._markers.every(function(marker) {
+    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_MEASUREMENTS) {
+      colorByMarker = marker;
+    }
+    return !colorByMarker;
+  });
+  var preColorVars;
+  if (colorByMarker) {
+    preColorVars = colorByMarker.preMark()(this._lastData);
+  }
+
   var title = '';
   var measurements = this._lastData.measurements();
 
@@ -179,7 +192,10 @@ epiviz.ui.charts.Track.prototype._drawTitle = function() {
     .append('text')
     .attr('class', 'chart-title')
     .attr('font-weight', 'bold')
-    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('fill', function(m, i) {
+      if (!colorByMarker) { return self.colors().get(i); }
+      return self.colors().getByKey(colorByMarker.mark()(m, self._lastData, preColorVars));
+    })
     .attr('y', self.margins().top() - 5)
     .text(function(m, i) { return m.name(); });
 
