@@ -152,25 +152,6 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._markers = properties.chartMarkers;
 
-  // TODO: Debug
-  this._markers = this._markers || [];
-  this._markers.push(new epiviz.ui.charts.markers.VisualizationMarker(
-    epiviz.ui.charts.markers.VisualizationMarker.Type.AGGREGATE_BY_MEASUREMENTS,
-    'user-aggregate',
-    'Aggregate Measurements',
-    function(data) { return null; },
-    /**
-     * @param {epiviz.measurements.Measurement} m
-     * @param data
-     * @param vars
-     */
-    function(m, data, vars) {
-      var anno = m.annotation();
-      if (!anno || !anno['ageRange']) { return m.id(); }
-      return anno['ageRange'];
-    }
-  ));
-
   /**
    * @type {Object.<string, epiviz.ui.charts.markers.VisualizationMarker>}
    * @protected

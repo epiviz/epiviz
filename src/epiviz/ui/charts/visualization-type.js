@@ -121,6 +121,16 @@ epiviz.ui.charts.VisualizationType.prototype.measurementsFilter = function() { r
 epiviz.ui.charts.VisualizationType.prototype.isRestrictedToSameDatasourceGroup = function() { return false; };
 
 /**
+ * @returns {boolean}
+ */
+epiviz.ui.charts.VisualizationType.prototype.isRestrictedToRangeMeasurements = function() { return false; };
+
+/**
+ * @returns {boolean}
+ */
+epiviz.ui.charts.VisualizationType.prototype.isRestrictedToFeatureMeasurements = function() { return !this.isRestrictedToRangeMeasurements(); };
+
+/**
  * Gets the minimum number of measurements that must be selected for the chart to be displayed
  * @returns {number}
  */

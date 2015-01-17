@@ -69,7 +69,7 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
 
   if (minY == CustomSetting.DEFAULT) {
     minY = null;
-    this.measurements().foreach(function(m) {
+    data.measurements().forEach(function(m) {
       if (m === null) { return; }
       if (minY === null || m.minValue() < minY) { minY = m.minValue(); }
     });
@@ -77,7 +77,7 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
 
   if (maxY == CustomSetting.DEFAULT) {
     maxY = null;
-    this.measurements().foreach(function(m) {
+    data.measurements().forEach(function(m) {
       if (m === null) { return; }
       if (maxY === null || m.maxValue() > maxY) { maxY = m.maxValue(); }
     });
@@ -89,14 +89,14 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoo
 
   var Axis = epiviz.ui.charts.Axis;
   var xScale = d3.scale.linear()
-    .domain([0, this.measurements().size() - 1])
+    .domain([0, data.measurements().length - 1])
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
   var yScale = d3.scale.linear()
     .domain([minY, maxY])
     .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);
 
   this._clearAxes();
-  this._drawAxes(xScale, yScale, this.measurements().size(), 5,
+  this._drawAxes(xScale, yScale, data.measurements().length, 5,
     undefined, undefined, undefined, undefined, undefined, undefined,
     data.measurements().map(function(m) {
       if (rowLabel == 'name') { return m.name(); }
@@ -166,7 +166,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   // TODO: This might not be needed anymore
   // TODO: Search for all usages of this method
-  var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
+  var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(data.measurements()[0].type());
   var firstIndex, lastIndex;
   for (var i = 0; i < nEntries; ++i) {
     var globalIndex = i + firstGlobalIndex;
@@ -215,7 +215,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
 
   var valuesForIndex = function(index) {
-    return self.measurements().toArray()
+    return data.measurements()
       .map(function(m, i) {
         var item = data.getByGlobalIndex(m, index);
         return { x: i, y: item ? item.value : null };
@@ -239,8 +239,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
         rowItem.end(),
         valuesForIndex(index),
         index,
-        self.measurements().toArray().map(function(m, i) { return [data.getByGlobalIndex(m, index)]; }), // valueItems one for each measurement
-        self.measurements().toArray(), // measurements
+        data.measurements().map(function(m, i) { return [data.getByGlobalIndex(m, index)]; }), // valueItems one for each measurement
+        data.measurements(), // measurements
         '');
     });
     var lines = graph.selectAll('.line-series')
@@ -314,7 +314,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
           .attr('cy', function(d) { return yScale(d.y); })
           .attr('r', pointRadius)
           .attr('fill', 'none')
-          .attr('stroke', function(index) { return colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(index))); });
+          .attr('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(index))));
 
         selection.exit().remove();
       })

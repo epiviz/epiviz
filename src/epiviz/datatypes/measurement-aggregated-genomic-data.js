@@ -9,10 +9,11 @@ goog.provide('epiviz.datatypes.MeasurementAggregatedGenomicData');
 /**
  * @param {epiviz.datatypes.GenomicData} data
  * @param {epiviz.ui.charts.markers.VisualizationMarker.<epiviz.datatypes.GenomicData, *, epiviz.measurements.Measurement, string>} groupByMarker
+ * @param {epiviz.ui.charts.markers.MeasurementAggregator} aggregator
  * @constructor
  * @extends {epiviz.datatypes.MapGenomicData}
  */
-epiviz.datatypes.MeasurementAggregatedGenomicData = function(data, groupByMarker) {
+epiviz.datatypes.MeasurementAggregatedGenomicData = function(data, groupByMarker, aggregator) {
   epiviz.datatypes.MapGenomicData.call(this);
 
   /**
@@ -28,23 +29,10 @@ epiviz.datatypes.MeasurementAggregatedGenomicData = function(data, groupByMarker
   this._groupByMarker = groupByMarker;
 
   /**
-   * TODO: Temporary mean and std aggregator, later make this customizable
-   * @type {function(string, Array.<epiviz.measurements.Measurement>, Array.<number>): {value: number, errMinus: number=, errPlus: number=}}
+   * @type {epiviz.ui.charts.markers.MeasurementAggregator}
    * @private
    */
-  this._aggregator = function(label, measurements, values) {
-    if (!values || values.length == 0) { return null; }
-    var mean = values.reduce(function(v1, v2) { return v1 + v2; }) / values.length;
-    var variance = values
-      .map(function(v) { return (v - mean) * (v - mean); })
-      .reduce(function(v1, v2) { return v1 + v2; }) / values.length;
-    var stdev = Math.sqrt(variance);
-    return {
-      value: mean,
-      errMinus: mean - stdev,
-      errPlus: mean + stdev
-    };
-  };
+  this._aggregator = aggregator;
 
   this._initialize();
 };
@@ -99,7 +87,7 @@ epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize = functi
       datasourceGroup = ms[0].datasourceGroup(),
       dataprovider = ms[0].dataprovider(),
       defaultChartType = ms[0].defaultChartType(),
-      annotation = ms[0].annotation(),
+      annotation = epiviz.utils.mapCopy(ms[0].annotation()),
       minValue = ms[0].minValue(),
       maxValue = ms[0].maxValue(),
       metadata = ['errMinus', 'errPlus'].concat(ms[0].metadata());
@@ -151,7 +139,7 @@ epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize = functi
       if (!indexItems.length) { continue; }
       var values = indexItems
         .map(function(item) { return item.value; });
-      var aggregation = this._aggregator(label, ms, values);
+      var aggregation = this._aggregator.aggregate(label, ms, values);
       var row = indexItems[0].rowItem;
       var aggRow = new epiviz.datatypes.RowItemImpl(row.id(), row.seqName(), row.start(), row.end(), row.globalIndex(), row.strand(),
         epiviz.utils.mapCombine(row.rowMetadata() || {}, {errMinus:aggregation.errMinus, errPlus:aggregation.errPlus}));

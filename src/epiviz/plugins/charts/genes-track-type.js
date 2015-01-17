@@ -63,6 +63,11 @@ epiviz.plugins.charts.GenesTrackType.prototype.chartHtmlAttributeName = function
 };*/
 
 /**
+ * @returns {boolean}
+ */
+epiviz.plugins.charts.GenesTrackType.prototype.isRestrictedToRangeMeasurements = function() { return true; };
+
+/**
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
 epiviz.plugins.charts.GenesTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.RANGE; }; };

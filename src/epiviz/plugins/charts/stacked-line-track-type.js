@@ -57,13 +57,6 @@ epiviz.plugins.charts.StackedLineTrackType.prototype.chartHtmlAttributeName = fu
 };
 
 /**
- * @returns {epiviz.measurements.Measurement.Type}
- */
-/*epiviz.plugins.charts.StackedLineTrackType.prototype.chartContentType = function() {
- return epiviz.measurements.Measurement.Type.FEATURE;
- };*/
-
-/**
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
 epiviz.plugins.charts.StackedLineTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.FEATURE; }; };

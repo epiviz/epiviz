@@ -63,6 +63,11 @@ epiviz.plugins.charts.BlocksTrackType.prototype.chartHtmlAttributeName = functio
 };*/
 
 /**
+ * @returns {boolean}
+ */
+epiviz.plugins.charts.BlocksTrackType.prototype.isRestrictedToRangeMeasurements = function() { return true; };
+
+/**
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
 epiviz.plugins.charts.BlocksTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.RANGE; }; };
