@@ -137,6 +137,9 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   /** @type {boolean} */
   var showLines = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_LINES];
 
+  /** @type {boolean} */
+  var showErrorBars = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_ERROR_BARS];
+
   /** @type {number} */
   var pointRadius = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.POINT_RADIUS];
 
@@ -218,7 +221,12 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     return data.measurements()
       .map(function(m, i) {
         var item = data.getByGlobalIndex(m, index);
-        return { x: i, y: item ? item.value : null };
+        return {
+          x: i,
+          y: item ? item.value : null,
+          errMinus: item ? item.rowItem.metadata('errMinus') : null,
+          errPlus: item ? item.rowItem.metadata('errPlus') : null
+        };
       })
       .filter(function(o) {
         return o.y !== null;
@@ -259,7 +267,6 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       .each(function(d) {
         d3.select(this)
           .append('path').attr('class', 'bg-line')
-          //.attr('d', lineData(index))
           .attr('d', lineFunc(d.values))
           .style('shape-rendering', 'auto')
           .style('stroke-width', 10)
@@ -298,38 +305,48 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     graph.selectAll('.points').remove();
   } else {
     var points = graph.selectAll('.points')
-      .data(indices, String);
+      .data(lineItems, function(d) { return d.id; });
 
     points
       .enter()
       .append('g').attr('class', 'points')
-      .each(function(index) {
-        var selection = d3.select(this).selectAll('circle')
-          .data(valuesForIndex(index));
-
-        selection
-          .enter()
-          .append('circle')
-          .attr('cx', function(d) { return xScale(d.x); })
-          .attr('cy', function(d) { return yScale(d.y); })
-          .attr('r', pointRadius)
-          .attr('fill', 'none')
-          .attr('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(index))));
-
-        selection.exit().remove();
-      })
       .style('opacity', '0');
 
     points
-      .each(function(index) {
-        d3.select(this).selectAll('circle')
-          .transition()
-          .duration(500)
-          .attr('cx', function(d) { return xScale(d.x); })
-          .attr('cy', function(d) { return yScale(d.y); })
-          .attr('r', pointRadius)
-          .style('stroke-width', 2)
-          .attr('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(index))));
+      .each(function(d) {
+        d3.select(this).selectAll('.data-point').remove();
+        var selection = d3.select(this).selectAll('.data-point').data(d.values);
+        selection.enter().append('g').attr('class', 'data-point')
+          .each(function(dataPoint) {
+            d3.select(this).append('circle')
+              .attr('cx', function(d) { return xScale(d.x); })
+              .attr('cy', function(d) { return yScale(d.y); })
+              .attr('r', pointRadius)
+              .style('stroke-width', 2)
+              .attr('fill', 'none')
+              .attr('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))));
+            d3.select(this).selectAll('.error-bar').remove();
+            if (showErrorBars && dataPoint.errMinus != undefined && dataPoint.errPlus != undefined) {
+              d3.select(this)
+                .append('line').attr('x1', xScale(dataPoint.x)).attr('x2', xScale(dataPoint.x)).attr('y1', yScale(dataPoint.errMinus)).attr('y2', yScale(dataPoint.errPlus))
+                .style('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))))
+                .style('stroke-width', 2)
+                .attr('class', 'error-bar');
+
+              d3.select(this)
+                .append('line').attr('x1', xScale(dataPoint.x) - 4).attr('x2', xScale(dataPoint.x) + 4).attr('y1', yScale(dataPoint.errMinus)).attr('y2', yScale(dataPoint.errMinus))
+                .style('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))))
+                .style('stroke-width', 2)
+                .attr('class', 'error-bar');
+
+              d3.select(this)
+                .append('line').attr('x1', xScale(dataPoint.x) - 4).attr('x2', xScale(dataPoint.x) + 4).attr('y1', yScale(dataPoint.errPlus)).attr('y2', yScale(dataPoint.errPlus))
+                .style('stroke', colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))))
+                .style('stroke-width', 2)
+                .attr('class', 'error-bar');
+            }
+          });
+        selection.exit().remove();
       })
       .transition()
       .duration(500)
@@ -339,7 +356,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       .exit()
       .transition()
       .duration(500)
-      .style('opacity', '0');
+      .style('opacity', '0')
+      .remove();
   }
 
   // Draw legend

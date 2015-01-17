@@ -56,7 +56,7 @@ epiviz.ui.charts.markers.MeasurementAggregators = {
 
   'quartiles': new epiviz.ui.charts.markers.MeasurementAggregator('quartiles', function(label, measurements, values) {
     if (!values || values.length == 0) { return null; }
-    values = values.slice(0).sort();
+    values = values.slice(0).sort(function(v1, v2) { return v1 - v2; });
     var n = values.length;
     var m1 = Math.floor(n * 0.5);
     var m2 = Math.ceil(n * 0.5);
