@@ -99,14 +99,27 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   var linesGroup = this._svg.selectAll('.lines');
 
   if (linesGroup.empty()) {
-    var graph = this._svg.append('g')
+    linesGroup = this._svg.append('g')
       .attr('class', 'lines')
       .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
-    data.measurements().forEach(function(m, i) {
-      graph.append('g').attr('class', 'line-series-index-' + i);
-      graph.append('g').attr('class', 'point-series-index-' + i);
-    });
   }
+
+  data.measurements().forEach(function(m, i) {
+    var lineSeries = linesGroup.selectAll('.line-series-index-' + i);
+    var pointSeries = linesGroup.selectAll('.point-series-index-' + i);
+
+    if (lineSeries.empty()) { linesGroup.append('g').attr('class', 'line-series-index-' + i); }
+    if (pointSeries.empty()) { linesGroup.append('g').attr('class', 'point-series-index-' + i); }
+  });
+
+  for (var i = data.measurements().length;; ++i) {
+    var lineSeries = linesGroup.selectAll('.line-series-index-' + i);
+    var pointSeries = linesGroup.selectAll('.point-series-index-' + i);
+    if (lineSeries.empty()) { break; }
+    lineSeries.remove();
+    pointSeries.remove();
+  }
+
   return this._drawLines(range, data, delta, zoom || 1, xScale, yScale);
 };
 
@@ -132,6 +145,9 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
   /** @type {boolean} */
   var showLines = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES];
+
+  /** @type {boolean} */
+  var showErrorBars = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS];
 
   /** @type {number} */
   var pointRadius = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS];
@@ -191,6 +207,20 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
       return yScale(cell.value);
     };
 
+    var errMinus = function(j) {
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+      var cell = series.get(j);
+      var v = cell.rowItem.metadata('errMinus');
+      return v != undefined ? yScale(v) : null;
+    };
+
+    var errPlus = function(j) {
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+      var cell = series.get(j);
+      var v = cell.rowItem.metadata('errPlus');
+      return v != undefined ? yScale(v) : null;
+    };
+
     if (showLines) {
       var line = d3.svg.line()
         .x(x).y(y)
@@ -224,6 +254,8 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
     graph.select('.point-series-index-' + i)
       .selectAll('circle').remove();
+    graph.select('.point-series-index-' + i)
+      .selectAll('.error-bar').remove();
     if (showPoints) {
       var points = graph.select('.point-series-index-' + i)
         .selectAll('circle')
@@ -251,6 +283,43 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
         .duration(500)
         .style('opacity', 0)
         .remove();
+
+      if (showErrorBars) {
+        var errorBars = graph.select('.point-series-index-' + i)
+          .selectAll('.error-bar')
+          .data(indices);
+        errorBars.enter()
+          .append('g')
+          .attr('class', 'error-bar')
+          .each(function(j) {
+            var m = errMinus(j), p = errPlus(j);
+            if (m == null || p == null) { return; }
+            d3.select(this).append('line')
+              .attr('x1', x(j)).attr('x2', x(j)).attr('y1', m).attr('y2', p)
+              .style('stroke', colors.get(i));
+            d3.select(this).append('line')
+              .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', m).attr('y2', m)
+              .style('stroke', colors.get(i));
+            d3.select(this).append('line')
+              .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', p).attr('y2', p)
+              .style('stroke', colors.get(i));
+          })
+          .attr('transform', 'translate(' + (+delta) + ')')
+          .transition()
+          .duration(500)
+          .attr('transform', 'translate(' + (0) + ')');
+
+        errorBars
+          .on('mouseover', function() { self._captureMouseHover(); })
+          .on('mousemove', function() { self._captureMouseHover(); })
+          .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
+
+        errorBars.exit()
+          .transition()
+          .duration(500)
+          .style('opacity', 0)
+          .remove();
+      }
     }
   });
 

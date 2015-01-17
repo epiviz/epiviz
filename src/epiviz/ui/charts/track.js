@@ -164,11 +164,13 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
  * @private
  */
 epiviz.ui.charts.Track.prototype._drawTitle = function() {
-  var title = '';
-  var measurements = this.measurements().toArray();
-
   var self = this;
   this._svg.selectAll('.chart-title').remove();
+
+  if (!this._lastData) { return; }
+
+  var title = '';
+  var measurements = this._lastData.measurements();
 
   var titleEntries = this._svg
     .selectAll('.chart-title')

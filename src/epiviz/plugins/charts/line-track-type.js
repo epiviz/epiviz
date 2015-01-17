@@ -80,6 +80,13 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
       'Show lines'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Show error bars'),
+
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
@@ -118,6 +125,7 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
 epiviz.plugins.charts.LineTrackType.CustomSettings = {
   STEP: 'step',
   SHOW_POINTS: 'showPoints',
+  SHOW_ERROR_BARS: 'showErrorBars',
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',
   LINE_THICKNESS: 'lineThickness',
