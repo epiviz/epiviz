@@ -283,6 +283,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   });
 
   this._svg.selectAll('.chart-title').remove();
+  this._svg.selectAll('.chart-title-color ').remove();
   var titleEntries = this._svg
     .selectAll('.chart-title')
     .data(Object.keys(labels));
@@ -301,12 +302,25 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   $('#' + this.id() + ' .chart-title')
     .each(function(i) {
       titleEntriesStartPosition.push(textLength);
-      textLength += this.getBBox().width + 3;
+      textLength += this.getBBox().width + 15;
     });
 
   titleEntries.attr('x', function(column, i) {
-    return self.margins().left() + 3 + titleEntriesStartPosition[i];
+    return self.margins().left() + 10 + titleEntriesStartPosition[i];
   });
+
+  var colorEntries = this._svg
+    .selectAll('.chart-title-color')
+    .data(Object.keys(labels))
+    .enter()
+    .append('circle')
+    .attr('class', 'chart-title-color')
+    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
+    .attr('cy', self.margins().top() - 9)
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .attr('fill', function(label) { return colors.getByKey(label); });
 
   return lineItems;
 };

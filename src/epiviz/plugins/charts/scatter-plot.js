@@ -337,6 +337,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
   var xMeasurements = this._measurementsX;
   var self = this;
   this._legend.selectAll('.x-measurement').remove();
+  this._legend.selectAll('.x-measurement-color').remove();
 
   var xEntries = this._legend
     .selectAll('.x-measurement')
@@ -355,16 +356,30 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
   $('#' + this.id() + ' .x-measurement')
     .each(function(i) {
       xTitleEntriesStartPosition.push(xTextLength);
-      xTextLength += this.getBBox().width + 3;
+      xTextLength += this.getBBox().width + 15;
     });
 
   xEntries.attr('x', function(column, i) {
-    return (self.width() - xTextLength) * 0.5 + xTitleEntriesStartPosition[i];
+    return (self.width() - xTextLength) * 0.5 + 7 + xTitleEntriesStartPosition[i];
   });
+
+  var xColorEntries = this._legend
+    .selectAll('.x-measurement-color')
+    .data(xMeasurements)
+    .enter()
+    .append('circle')
+    .attr('class', 'x-measurement-color')
+    .attr('cx', function(column, i) { return (self.width() - xTextLength) * 0.5 + 1 + xTitleEntriesStartPosition[i]; })
+    .attr('cy', (this.height() - this.margins().bottom() + 31))
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .style('fill', function(m, i) { return self.colors().get(i); });
 
 
   var yMeasurements = this._measurementsY;
   this._legend.selectAll('.y-measurement').remove();
+  this._legend.selectAll('.y-measurement-color').remove();
 
   var yEntries = this._legend
     .selectAll('.y-measurement')
@@ -384,10 +399,24 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
   $('#' + this.id() + ' .y-measurement')
     .each(function(i) {
       yTitleEntriesStartPosition.push(yTextLength);
-      yTextLength += this.getBBox().width + 3;
+      yTextLength += this.getBBox().width + 15;
     });
 
   yEntries.attr('x', function(column, i) {
-    return - self.height() + (self.height() - yTextLength) * 0.5 + self.margins().top() + yTitleEntriesStartPosition[i];
+    return - self.height() + (self.height() - yTextLength) * 0.5 + 12 + self.margins().top() + yTitleEntriesStartPosition[i];
   });
+
+  var yColorEntries = this._legend
+    .selectAll('.y-measurement-color')
+    .data(xMeasurements)
+    .enter()
+    .append('circle')
+    .attr('class', 'y-measurement-color')
+    .attr('cx', function(column, i) { return - self.height() + (self.height() - yTextLength) * 0.5 + 6 + self.margins().top() + yTitleEntriesStartPosition[i]; })
+    .attr('cy', (this.margins().left() - 39))
+    .attr('transform', 'rotate(-90)')
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .style('fill', function(m, i) { return self.colors().get(i); });
 };
