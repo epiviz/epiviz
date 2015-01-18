@@ -160,7 +160,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <link href="css/DataTables-1.9.4/media/css/demo_table_jui.css" rel="stylesheet" />
     <link href="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" rel="stylesheet" />
     <link href="css/dropdown-check-list-1.4/css/ui.dropdownchecklist.standalone.css" rel="stylesheet" />
-    <link href="css/qtip/jquery.qtip.min.css" rel="stylesheet" />
+    <!-- Future tooltip: <link href="css/qtip/jquery.qtip.min.css" rel="stylesheet" />-->
 
     <!-- Code editor -->
     <link rel="stylesheet" href="css/codemirror-4.5/lib/codemirror.css">
@@ -187,7 +187,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/TableTools.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/extras/ColumnFilter/media/js/jquery.dataTables.columnFilter.js"></script>
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
-    <script src="src/lib/qtip/jquery.qtip.min.js"></script>
+    <!-- Future tooltip: <script src="src/lib/qtip/jquery.qtip.min.js"></script>-->
 
     <!-- Google Analytics -->
     <script src="src/lib/google-analytics/google-analytics.js"></script>
