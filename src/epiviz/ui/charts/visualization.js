@@ -465,7 +465,7 @@ epiviz.ui.charts.Visualization.prototype._drawTitle = function() {
 
   svgTitle
     .attr('x', this.width() * 0.5)
-    .attr('y', this.margins().top() - 25)
+    .attr('y', 25)
     .text(title);
 };
 
