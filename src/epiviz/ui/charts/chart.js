@@ -177,21 +177,3 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
 epiviz.ui.charts.Chart.prototype.properties = function() {
   return /** @type {epiviz.ui.charts.VisualizationProperties} */ epiviz.ui.charts.Visualization.prototype.properties.call(this);
 };
-
-/**
- * @returns {Array.<string>}
- */
-epiviz.ui.charts.Chart.prototype.colorLabels = function() {
-  var self = this;
-  var colors = new Array(this.measurements().size());
-  this.measurements().foreach(
-    /**
-     * @param {epiviz.measurements.Measurement} m
-     * @param {number} i
-     */
-    function(m, i) {
-      colors[i] = m.name();
-    });
-
-  return colors;
-};

@@ -265,7 +265,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .attr('height', function(d) { return Math.max(0, calcOldHeight(d) - 2 * self._nodeMargin); });
 
   var newRects = newItems.append('rect')
-    .style('fill', function(d) { return self.colors().getByKey((d.nchildren ? d : d.parent).id); })
     .attr('x', calcOldX)
     .attr('y', calcOldY)
     .attr('width', calcOldWidth)
@@ -328,6 +327,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   itemsGroup.selectAll('.item').selectAll('rect')
     .transition().duration(this._animationDelay)
+    //.style('fill', function(d) { return self.colors().getByKey((d.nchildren ? d : d.parent).id); })
+    .style('fill', function(d) { return self.colors().get(d.depth); })
     .attr('x', calcNewX)
     .attr('y', calcNewY)
     .attr('width', calcNewWidth)

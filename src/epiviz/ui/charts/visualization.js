@@ -544,6 +544,24 @@ epiviz.ui.charts.Visualization.prototype.setColors = function(colors) {
 };
 
 /**
+ * @returns {Array.<string>}
+ */
+epiviz.ui.charts.Visualization.prototype.colorLabels = function() {
+  var self = this;
+  var colors = new Array(this.measurements().size());
+  this.measurements().foreach(
+    /**
+     * @param {epiviz.measurements.Measurement} m
+     * @param {number} i
+     */
+      function(m, i) {
+      colors[i] = m.name();
+    });
+
+  return colors;
+};
+
+/**
  * @returns {epiviz.measurements.MeasurementSet}
  */
 epiviz.ui.charts.Visualization.prototype.measurements = function() {

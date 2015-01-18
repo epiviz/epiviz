@@ -87,6 +87,17 @@ epiviz.ui.charts.DataStructureVisualization.prototype.datasourceGroup = function
 epiviz.ui.charts.DataStructureVisualization.prototype.dataprovider = function() { return this._dataprovider; };
 
 /**
+ * @returns {Array.<{name: string, color: string}>}
+ */
+epiviz.ui.charts.DataStructureVisualization.prototype.colorLabels = function() {
+  var labels = [];
+  for (var i = 0; i < this.colors().size() && i < 20; ++i) {
+    labels.push('Color ' + (i + 1));
+  }
+  return labels;
+};
+
+/**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
  */
 epiviz.ui.charts.DataStructureVisualization.prototype.onPropagateHierarchyChanges = function() { return this._propagateHierarchyChanges; };
