@@ -454,3 +454,11 @@ epiviz.utils.colorizeBinary = function(min, max, colorMin, colorMax){
     .domain([min, max])
     .range([colorMin, colorMax]);
 };
+
+// Math
+
+/**
+ * @param {number} val
+ * @returns {number}
+ */
+epiviz.utils.sign = function(val) { return val < 0 ? -1 : (val == 0 ? 0 : 1); };

@@ -452,30 +452,20 @@ epiviz.ui.charts.Visualization.prototype._drawTitle = function() {
   var title = settingsVals[Settings.TITLE];
   if (!title || title.trim() == '') {
     if (!svgTitle.empty()) {
-      settingsVals[Settings.MARGIN_TOP] -= 30;
-      this._properties.margins = new epiviz.ui.charts.Margins(
-        settingsVals[Settings.MARGIN_TOP], settingsVals[Settings.MARGIN_LEFT], settingsVals[Settings.MARGIN_BOTTOM], settingsVals[Settings.MARGIN_RIGHT]);
-      this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
-      this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsVals));
       svgTitle.remove();
     }
     return;
   }
 
   if (svgTitle.empty()) {
-    settingsVals[Settings.MARGIN_TOP] += 30;
-    this._properties.margins = new epiviz.ui.charts.Margins(
-      settingsVals[Settings.MARGIN_TOP], settingsVals[Settings.MARGIN_LEFT], settingsVals[Settings.MARGIN_BOTTOM], settingsVals[Settings.MARGIN_RIGHT]);
-    this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
-    this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsVals));
     svgTitle = this._svg.append('text')
       .attr('class', 'visualization-title')
-      .attr('text-anchor', 'middle')
-      .attr('x', this.width() * 0.5)
-      .attr('y', this.margins().top() - 20);
+      .attr('text-anchor', 'middle');
   }
 
   svgTitle
+    .attr('x', this.width() * 0.5)
+    .attr('y', this.margins().top() - 25)
     .text(title);
 };
 
@@ -620,6 +610,26 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
     return;
   }
   var CustomSettings = epiviz.ui.charts.Visualization.CustomSettings;
+
+  var currentTitle = this._customSettingsValues[CustomSettings.TITLE] || '';
+  var newTitle = settingsValues[CustomSettings.TITLE] || '';
+
+  var currentLen = currentTitle.trim().length;
+  var newLen = newTitle.trim().length;
+
+  // Check if either both titles are undefined or both are defined
+  if (!(currentLen * newLen) && (currentLen + newLen)) {
+    var marginDelta = epiviz.utils.sign(newLen - currentLen) * 20;
+    var top = settingsValues[CustomSettings.MARGIN_TOP] || this._properties.margins.top();
+    var left = settingsValues[CustomSettings.MARGIN_LEFT] || this._properties.margins.left();
+    var right = settingsValues[CustomSettings.MARGIN_RIGHT] || this._properties.margins.right();
+    var bottom = settingsValues[CustomSettings.MARGIN_BOTTOM] || this._properties.margins.bottom();
+    settingsValues[CustomSettings.MARGIN_TOP] = top + marginDelta;
+    settingsValues[CustomSettings.MARGIN_LEFT] = left;
+    settingsValues[CustomSettings.MARGIN_RIGHT] = right;
+    settingsValues[CustomSettings.MARGIN_BOTTOM] = bottom;
+  }
+
   this._customSettingsValues = settingsValues;
 
   if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
