@@ -441,6 +441,45 @@ epiviz.ui.charts.Visualization.prototype._drawAxes = function (xScale, yScale, x
 };
 
 /**
+ * @private
+ */
+epiviz.ui.charts.Visualization.prototype._drawTitle = function() {
+  var svgTitle = this._svg.selectAll('.visualization-title');
+
+  var Settings = epiviz.ui.charts.Visualization.CustomSettings;
+  var settingsVals = this.customSettingsValues();
+
+  var title = settingsVals[Settings.TITLE];
+  if (!title || title.trim() == '') {
+    if (!svgTitle.empty()) {
+      settingsVals[Settings.MARGIN_TOP] -= 30;
+      this._properties.margins = new epiviz.ui.charts.Margins(
+        settingsVals[Settings.MARGIN_TOP], settingsVals[Settings.MARGIN_LEFT], settingsVals[Settings.MARGIN_BOTTOM], settingsVals[Settings.MARGIN_RIGHT]);
+      this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
+      this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsVals));
+      svgTitle.remove();
+    }
+    return;
+  }
+
+  if (svgTitle.empty()) {
+    settingsVals[Settings.MARGIN_TOP] += 30;
+    this._properties.margins = new epiviz.ui.charts.Margins(
+      settingsVals[Settings.MARGIN_TOP], settingsVals[Settings.MARGIN_LEFT], settingsVals[Settings.MARGIN_BOTTOM], settingsVals[Settings.MARGIN_RIGHT]);
+    this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
+    this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsVals));
+    svgTitle = this._svg.append('text')
+      .attr('class', 'visualization-title')
+      .attr('text-anchor', 'middle')
+      .attr('x', this.width() * 0.5)
+      .attr('y', this.margins().top() - 20);
+  }
+
+  svgTitle
+    .text(title);
+};
+
+/**
  * @param {number} width
  * @param {number} height
  */
@@ -481,7 +520,7 @@ epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
     .attr('width', this.width())
     .attr('height', this.height());
 
-  // TODO: Once we generalize the types of VisualizationMarker, add here some initialization code
+  this._drawTitle();
 
   return [];
 };
@@ -583,12 +622,12 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
   var CustomSettings = epiviz.ui.charts.Visualization.CustomSettings;
   this._customSettingsValues = settingsValues;
 
-  this.draw();
-
   if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
     this._properties.margins = new epiviz.ui.charts.Margins(settingsValues[CustomSettings.MARGIN_TOP], settingsValues[CustomSettings.MARGIN_LEFT], settingsValues[CustomSettings.MARGIN_BOTTOM], settingsValues[CustomSettings.MARGIN_RIGHT]);
     this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
   }
+
+  this.draw();
 
   this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsValues));
 };
@@ -909,6 +948,7 @@ epiviz.ui.charts.Visualization.prototype.onDataWaitEnd = function() { return thi
  * @enum {string}
  */
 epiviz.ui.charts.Visualization.CustomSettings = {
+  TITLE: 'title',
   MARGIN_LEFT: 'marginLeft',
   MARGIN_RIGHT: 'marginRight',
   MARGIN_TOP: 'marginTop',

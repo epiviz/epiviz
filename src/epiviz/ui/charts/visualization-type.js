@@ -184,6 +184,12 @@ epiviz.ui.charts.VisualizationType.prototype.customSettingsValues = function() {
 epiviz.ui.charts.VisualizationType.prototype.customSettingsDefs = function() {
   return [
     new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.TITLE,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      '',
+      'Title'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.ui.charts.Visualization.CustomSettings.MARGIN_TOP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       this._defaultMargins.top(),

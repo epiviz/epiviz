@@ -80,7 +80,7 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
 epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
   var result = epiviz.ui.charts.Chart.prototype.draw.call(this, range, data);
 
-  this._drawTitle();
+  this._drawLegend();
 
   return result;
 };
@@ -163,7 +163,7 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
 /**
  * @private
  */
-epiviz.ui.charts.Track.prototype._drawTitle = function() {
+epiviz.ui.charts.Track.prototype._drawLegend = function() {
   var self = this;
   this._svg.selectAll('.chart-title').remove();
   this._svg.selectAll('.chart-title-color ').remove();

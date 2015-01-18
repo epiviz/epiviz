@@ -6,6 +6,12 @@
     background-color: #ffffff;
 }
 
+.visualization .visualization-title {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 text {
     font-family: Arial;
     font-size: 9pt;
