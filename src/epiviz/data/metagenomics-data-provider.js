@@ -443,6 +443,9 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
         }
       }
 
+      this._updateOrder();
+      this._updateSelection();
+
       var originalNode = this._nodeMap[this._lastRootId];
       var parent = originalNode.parentId ? this._nodeMap[originalNode.parentId] : originalNode;
       var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
@@ -450,8 +453,6 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
           return (node.depth != originalNode.depth || node == originalNode) &&
           node.depth - parent.depth < self._maxDepth;
         });
-      this._updateOrder();
-      this._updateSelection();
 
       setTimeout(function(){
         self.onRequestClearDatasourceGroupCache().notify({

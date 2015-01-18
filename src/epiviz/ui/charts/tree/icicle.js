@@ -374,35 +374,37 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
  * @param {epiviz.ui.charts.VisObject} selectedObject
  */
 epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
- var itemsGroup = this._svg.select('.items');
- itemsGroup.classed('unhovered', true);
- var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
- return selectedObject.overlapsWith(d);
- });
- selectItems.classed('hovered', true);
- itemsGroup.selectAll('.item').sort(function(d1, d2) { return selectedObject.overlapsWith(d1) ? 1 : -1; });
- };
+  if (this._dragging) { return; }
+  var itemsGroup = this._svg.select('.items');
+  itemsGroup.classed('unhovered', true);
+  var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+    return selectedObject.overlapsWith(d);
+  });
+  selectItems.classed('hovered', true);
+  itemsGroup.selectAll('.item').sort(function(d1, d2) { return selectedObject.overlapsWith(d1) ? 1 : -1; });
+};
 
 /**
  */
 epiviz.ui.charts.tree.Icicle.prototype.doUnhover = function() {
- this._svg.select('.items').classed('unhovered', false);
- this._svg.select('.items').selectAll('.item').classed('hovered', false);
- };
+  if (this._dragging) { return; }
+  this._svg.select('.items').classed('unhovered', false);
+  this._svg.select('.items').selectAll('.item').classed('hovered', false);
+};
 
 /**
  * @param {epiviz.ui.charts.ChartObject} selectedObject
  */
 epiviz.ui.charts.tree.Icicle.prototype.doSelect = function(selectedObject) {
- var itemsGroup = this._svg.select('.items');
- var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
- return selectedObject.overlapsWith(d);
- });
- selectItems.classed('selected', true);
- };
+  var itemsGroup = this._svg.select('.items');
+  var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+    return selectedObject.overlapsWith(d);
+  });
+  selectItems.classed('selected', true);
+};
 
 /**
  */
 epiviz.ui.charts.tree.Icicle.prototype.doDeselect = function() {
- this._svg.select('.items').selectAll('.selected').classed('selected', false);
- };
+  this._svg.select('.items').selectAll('.selected').classed('selected', false);
+};

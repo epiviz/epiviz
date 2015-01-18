@@ -117,9 +117,8 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
  */
 epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES = {
   0: 'none-select',
-  1: 'node-select',
-  2: 'leaves-select',
-  3: 'custom-select'
+  1: 'leaves-select',
+  2: 'node-select'
 };
 
 /*
@@ -147,6 +146,11 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
       new epiviz.ui.charts.tree.UiNode(uiSelected.id, uiSelected.name, uiSelected.children, uiSelected.parentId, uiSelected.size,
         uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
 
+    this._oldSubtreeDepth = this._subtreeDepth;
+    this._subtreeDepth = 0;
+    this._oldUiDataMap = this._uiDataMap;
+    this._uiDataMap = {};
+
     var uiData = this._partition.nodes(root);
     this._uiData = [];
     var rootCopy = null;
@@ -159,10 +163,6 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     });
     epiviz.ui.charts.tree.Node.dfs(rootCopy, function(node) { self._uiData.push(node); });
 
-    this._oldSubtreeDepth = this._subtreeDepth;
-    this._subtreeDepth = 0;
-    this._oldUiDataMap = this._uiDataMap;
-    this._uiDataMap = {};
     this._uiData.forEach(function(node) {
       self._uiDataMap[node.id] = node;
       if ((!self._referenceNode || self._referenceNode.x == undefined || self._referenceNode.depth < node.depth) && (node.id in self._oldUiDataMap)) {
