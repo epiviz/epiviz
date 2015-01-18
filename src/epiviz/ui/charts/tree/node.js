@@ -121,6 +121,25 @@ epiviz.ui.charts.tree.Node.dfs = function(node, callback) {
 };
 
 /**
+ * @param {epiviz.ui.charts.tree.Node} node
+ * @param {function(epiviz.ui.charts.tree.Node): boolean} callback A function called
+ *   for each node in the traversal. If it returns something that evaluates to true, the
+ *   traversal is halted.
+ */
+epiviz.ui.charts.tree.Node.bfs = function(node, callback) {
+  if (!node) { return; }
+
+  var q = [];
+  q.push(node);
+  for (var i = 0; i < q.length; ++i) {
+    if (callback(q[i])) { return; }
+    if (q[i].nchildren) {
+      q[i].children.forEach(function(child) { q.push(child); });
+    }
+  }
+};
+
+/**
  * Creates a copy of the tree filtering out nodes specified by the filter callback
  * @param {epiviz.ui.charts.tree.Node} node
  * @param {function(epiviz.ui.charts.tree.Node): boolean} filter

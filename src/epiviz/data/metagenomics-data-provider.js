@@ -244,6 +244,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
 
   this._nodeMap = {};
   this._nodeNameMap = {};
+  this._nodeRangeMap = {};
   this._maxDepth = 5;
   this._lastRootId = null;
   d3.json("tree.json",
@@ -491,6 +492,16 @@ epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
   var root = this._hierarchy;
 
   var selection = this._getNodeSelection(root);
+
+  var self = this;
+  this._nodeRangeMap = {};
+  var depthLastEnd = {};
+  epiviz.ui.charts.tree.Node.bfs(root, function(node) {
+    var lastEnd = depthLastEnd[node.depth] || 0;
+    depthLastEnd[node.depth] = lastEnd + node.nleaves;
+    self._nodeRangeMap[node.name] = lastEnd;
+  });
+
   this._selectedRows = selection.rows;
   this._selectedValues = selection.values;
 
@@ -498,11 +509,11 @@ epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
   this._selectedAncestry = [];
   this._selectedRowsRanges = [];
   var lastEnd = 0;
-  var self = this;
   this._selectedRows.forEach(function(nodeName) {
     self._selectedPaths.push(self._hierarchyPathsMap[nodeName]);
     self._selectedAncestry.push(self._ancestryMap[nodeName]);
-    self._selectedRowsRanges.push([lastEnd, self._nodeNameMap[nodeName].nleaves]);
+    //self._selectedRowsRanges.push([lastEnd, self._nodeNameMap[nodeName].nleaves]);
+    self._selectedRowsRanges.push([self._nodeRangeMap[nodeName], self._nodeNameMap[nodeName].nleaves]);
     lastEnd += self._nodeNameMap[nodeName].nleaves;
   });
 };

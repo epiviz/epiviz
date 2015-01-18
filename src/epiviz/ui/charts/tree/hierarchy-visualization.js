@@ -187,6 +187,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
  */
 epiviz.ui.charts.tree.HierarchyVisualization.prototype._calcNodeOrder = function(node) {
   if (node.id in this._nodesOrder) { return this._nodesOrder[node.id]; }
+  if (node.id in this._uiDataMap) { return this._uiDataMap[node.id].order; }
   return node.order;
 };
 

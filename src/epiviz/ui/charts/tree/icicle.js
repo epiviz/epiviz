@@ -153,6 +153,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         ret = uiNode;
       }
     });
+    console.log(x + ' ' + y + ' ' + depth + ' - ' + (ret ? (ret.id + '[' + ret.name + ']') : 'null'));
     return ret;
   };
 
@@ -210,9 +211,13 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
       self.nodesOrder()[d.id] = order;
 
-      setTimeout(function() {
-        self.draw(range, root);
-      }, 0);
+      if (self.autoPropagateChanges()) {
+        self.firePropagateHierarchyChanges();
+      } else {
+        setTimeout(function() {
+          self.draw(range, root);
+        }, 0);
+      }
     });
 
   var items = itemsGroup.selectAll('.item')
