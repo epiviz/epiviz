@@ -256,6 +256,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
       self._hierarchy = root;
       epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; self._nodeNameMap[node.name] = node; });
       epiviz.ui.charts.tree.Node.dfs(root, function(node) {
+        node.depth = node.globalDepth;
         if (!node.parentId) { self._hierarchyPathsMap[node.name] = node.id; self._ancestryMap[node.name] = ''; return; } // TODO: Should use id. In the future, rows should store node id and that will fix everything
         var parent = self._nodeMap[node.parentId];
         var path = node.id;//parent.id;
@@ -402,8 +403,8 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       var parent = originalNode.parentId ? this._nodeMap[originalNode.parentId] : originalNode;
       var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
         function(node) {
-          return (node.depth != originalNode.depth || node == originalNode) &&
-          node.depth - parent.depth < self._maxDepth;
+          return (node.globalDepth != originalNode.globalDepth || node == originalNode) &&
+          node.globalDepth - parent.globalDepth < self._maxDepth;
         });
 
       callback(epiviz.data.Response.fromRawObject({
@@ -450,8 +451,8 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
       var parent = originalNode.parentId ? this._nodeMap[originalNode.parentId] : originalNode;
       var newRoot = epiviz.ui.charts.tree.Node.filter(parent,
         function(node) {
-          return (node.depth != originalNode.depth || node == originalNode) &&
-          node.depth - parent.depth < self._maxDepth;
+          return (node.globalDepth != originalNode.globalDepth || node == originalNode) &&
+          node.globalDepth - parent.globalDepth < self._maxDepth;
         });
 
       setTimeout(function(){
@@ -498,8 +499,8 @@ epiviz.data.MetagenomicsDataProvider.prototype._updateSelection = function() {
   this._nodeRangeMap = {};
   var depthLastEnd = {};
   epiviz.ui.charts.tree.Node.bfs(root, function(node) {
-    var lastEnd = depthLastEnd[node.depth] || 0;
-    depthLastEnd[node.depth] = lastEnd + node.nleaves;
+    var lastEnd = depthLastEnd[node.globalDepth] || 0;
+    depthLastEnd[node.globalDepth] = lastEnd + node.nleaves;
     self._nodeRangeMap[node.name] = lastEnd;
   });
 

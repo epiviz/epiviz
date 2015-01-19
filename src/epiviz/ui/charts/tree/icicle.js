@@ -139,7 +139,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var calcNewHeight = function(d) { var node = self._getNewNode(d); return Math.max(0, self._yScale(node.y + node.dy) - self._yScale(node.y) - 2 * self._nodeBorder); };
   var calcNewX = function(d) { return self._xScale(self._getNewNode(d).x) + self._nodeBorder; };
   var calcNewY = function(d) { return self._yScale(self._getNewNode(d).y) + self._nodeBorder; };
-  var getOverlappingNode = function(x, y, depth) {
+  var getOverlappingNode = function(x, y, globalDepth) {
     var ret = null;
     uiData.forEach(function(uiNode) {
       var nodeRect = {
@@ -148,12 +148,12 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         width: calcNewWidth(uiNode),
         height: calcNewHeight(uiNode)
       };
-      if (nodeRect.x <= x && x < nodeRect.x + nodeRect.width && uiNode.depth == depth) {
+      if (nodeRect.x <= x && x < nodeRect.x + nodeRect.width && uiNode.globalDepth == globalDepth) {
         //&& nodeRect.y <= y && y < nodeRect.y + nodeRect.height) {
         ret = uiNode;
       }
     });
-    console.log(x + ' ' + y + ' ' + depth + ' - ' + (ret ? (ret.id + '[' + ret.name + ']') : 'null'));
+    console.log(x + ' ' + y + ' ' + globalDepth + ' - ' + (ret ? (ret.id + '[' + ret.name + ']') : 'null'));
     return ret;
   };
 
@@ -168,7 +168,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       d3.select(this)
         .attr('transform', 'translate(' + d3.event.x + ',' + d3.event.y + ')');
       var mouseCoordinates = d3.mouse(self._svg[0][0]);
-      var uiNodeHovered = getOverlappingNode(mouseCoordinates[0], mouseCoordinates[1], d.depth);
+      var uiNodeHovered = getOverlappingNode(mouseCoordinates[0], mouseCoordinates[1], d.globalDepth);
       if (uiNodeHovered && uiNodeHovered.parentId == d.parentId) {
         lastUiNodeHovered = uiNodeHovered;
         self._svg.selectAll('.item').classed('selected', false).classed('dragstart', true);
@@ -328,7 +328,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   itemsGroup.selectAll('.item').selectAll('rect')
     .transition().duration(this._animationDelay)
     //.style('fill', function(d) { return self.colors().getByKey((d.nchildren ? d : d.parent).id); })
-    .style('fill', function(d) { return self.colors().get(d.depth); })
+    .style('fill', function(d) { return self.colors().get(d.globalDepth); })
     .attr('x', calcNewX)
     .attr('y', calcNewY)
     .attr('width', calcNewWidth)

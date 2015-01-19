@@ -144,7 +144,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     var uiSelected = root.children && root.children.length ? this._uiDataMap[root.children[0].id] : null;
     this._selectedNode = uiSelected ?
       new epiviz.ui.charts.tree.UiNode(uiSelected.id, uiSelected.name, uiSelected.children, uiSelected.parentId, uiSelected.size,
-        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
+        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.globalDepth, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
 
     this._oldSubtreeDepth = this._subtreeDepth;
     this._subtreeDepth = 0;
@@ -206,7 +206,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getOldNode = function(no
   var isExtremity = oldDepth < 0 || oldDepth >= this._subtreeDepth;
   var oldY = isRoot ? 0 : Math.min(1, oldDepth / this._oldSubtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order, node.globalDepth,
 
     isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1), // x
     isExtremity ? newNode.dx : 0, // dx
@@ -229,7 +229,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getNewNode = function(no
   var isExtremity = newDepth < 0 || newDepth >= this._subtreeDepth;
   var newY = isRoot ? 0 : Math.min(1, newDepth / this._subtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order, node.globalDepth,
     isExtremity ? oldNode.x : (oldNode.x <= this._selectedNode.x ? 0 : 1), // x
     isExtremity ? oldNode.dx : 0, // dx
     newY, // y
