@@ -23,9 +23,10 @@ goog.require('epiviz.data.DataProvider');
  * @param {epiviz.workspaces.WorkspaceManager} workspaceManager
  * @param {epiviz.workspaces.UserManager} userManager
  * @param {epiviz.ui.WebArgsManager} webArgsManager
+ * @param {epiviz.localstorage.LocalStorageManager} [cookieManager]
  * @constructor
  */
-epiviz.EpiViz = function(config, locationManager, measurementsManager, controlManager, dataManager, chartFactory, chartManager, workspaceManager, userManager, webArgsManager) {
+epiviz.EpiViz = function(config, locationManager, measurementsManager, controlManager, dataManager, chartFactory, chartManager, workspaceManager, userManager, webArgsManager, cookieManager) {
   /**
    * @type {epiviz.Config}
    * @private
@@ -86,6 +87,12 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
    */
   this._webArgsManager = webArgsManager;
 
+  /**
+   * @type {epiviz.localstorage.LocalStorageManager}
+   * @private
+   */
+  this._cookieManager = cookieManager;
+
   // Register for UI events
 
   this._registerRequestSeqInfos();
@@ -94,6 +101,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerUiAddChart();
   this._registerUiSaveWorkspace();
   this._registerUiDeleteActiveWorkspace();
+  this._registerUiRevertActiveWorkspace();
   this._registerUiLoginLinkClicked();
   this._registerUiSearchWorkspaces();
   this._registerUiActiveWorkspaceChanged();
@@ -119,6 +127,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerRequestWorkspaces();
   this._registerWorkspacesLoaded();
   this._registerActiveWorkspaceChanged();
+  this._registerActiveWorkspaceContentChanged();
   this._registerLocationChanged();
 
   /*
@@ -146,6 +155,8 @@ epiviz.EpiViz.SETTINGS = {};
 epiviz.EpiViz.VERSION = '2';
 
 epiviz.EpiViz.prototype.start = function() {
+  this._cookieManager.initialize();
+
   this._controlManager.initialize();
 
   this._workspaceManager.initialize();
@@ -239,9 +250,11 @@ epiviz.EpiViz.prototype._registerRequestWorkspaces = function() {
      * @param {{activeWorkspaceId: string}} e
      */
     function(e) {
+      var cookieWorkspace = self._cookieManager.getWorkspace(self._chartFactory, self._config);
       self._dataManager.getWorkspaces(function(rawWorkspaces) {
         var ws = [];
         var activeWorkspace = null;
+        var unchangedActiveWorkspace = null;
         for (var i = 0; i < rawWorkspaces.length; ++i) {
            var w = epiviz.workspaces.Workspace.fromRawObject(rawWorkspaces[i], self._chartFactory, self._config);
 
@@ -253,14 +266,27 @@ epiviz.EpiViz.prototype._registerRequestWorkspaces = function() {
           }
 
           if (w.id() == e.activeWorkspaceId) {
+            if (cookieWorkspace && cookieWorkspace.id() == e.activeWorkspaceId) {
+              unchangedActiveWorkspace = w;
+              w = cookieWorkspace;
+            }
             activeWorkspace = w;
           }
 
           ws.push(w);
         }
 
-        self._workspaceManager.updateWorkspaces(ws, activeWorkspace, e.activeWorkspaceId);
-        self._workspaceManager.activeWorkspace().resetChanged();
+        if (!activeWorkspace && cookieWorkspace) {
+          unchangedActiveWorkspace = self._workspaceManager.get(cookieWorkspace.id());
+          if (!unchangedActiveWorkspace) {
+            cookieWorkspace = cookieWorkspace.copy(cookieWorkspace.name());
+            unchangedActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(self._config.defaultWorkspaceSettings, self._chartFactory, self._config);
+          }
+          activeWorkspace = cookieWorkspace;
+        }
+
+        self._workspaceManager.updateWorkspaces(ws, activeWorkspace, e.activeWorkspaceId, unchangedActiveWorkspace);
+        if (!cookieWorkspace) { self._workspaceManager.activeWorkspace().resetChanged(); }
        }, '', e.activeWorkspaceId);
     }));
 };
@@ -323,6 +349,18 @@ epiviz.EpiViz.prototype._registerUiDeleteActiveWorkspace = function() {
 /**
  * @private
  */
+epiviz.EpiViz.prototype._registerUiRevertActiveWorkspace = function() {
+  var self = this;
+  this._controlManager.onRevertActiveWorkspace().addListener(new epiviz.events.EventListener(
+    function() {
+      self._workspaceManager.revertActiveWorkspace();
+    }
+  ));
+};
+
+/**
+ * @private
+ */
 epiviz.EpiViz.prototype._registerUiLoginLinkClicked = function() {
   var self = this;
   this._controlManager.onLoginLinkClicked().addListener(new epiviz.events.EventListener(function() {
@@ -359,7 +397,7 @@ epiviz.EpiViz.prototype._registerUiActiveWorkspaceChanged = function() {
     function(e) {
 
       var doChangeActiveWorkspace = function() {
-        if (!self._workspaceManager.get(e.newValue.id)) {
+        if (e.newValue.id && !self._workspaceManager.get(e.newValue.id)) {
           // The requested workspace id belongs to another user, so it has to be retrieved
           self._dataManager.getWorkspaces(function(rawWorkspaces) {
             var result = null;
@@ -682,6 +720,21 @@ epiviz.EpiViz.prototype._registerActiveWorkspaceChanged = function() {
       }
 
       self._workspaceManager.endChangingActiveWorkspace();
+    }
+  ));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerActiveWorkspaceContentChanged = function() {
+  var self = this;
+  this._workspaceManager.onActiveWorkspaceContentChanged().addListener(new epiviz.events.EventListener(
+    /**
+     * @param {epiviz.workspaces.Workspace} w
+     */
+    function(w) {
+      self._cookieManager.saveWorkspace(w, self._config);
     }
   ));
 };

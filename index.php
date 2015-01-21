@@ -336,6 +336,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/workspaces/workspace.js"></script>
     <script src="src/epiviz/workspaces/workspace-manager.js"></script>
 
+    <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
+
     <script src="src/epiviz/datatypes/genomic-range.js"></script>
     <script src="src/epiviz/ui/location-manager.js"></script>
     <script src="src/epiviz/ui/control-manager.js"></script>
@@ -550,6 +552,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         <label for="save-workspace-text"></label>
         <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
         <button id="save-workspace-button">Save Workspace</button>
+        <button id="revert-workspace-button">Revert Workspace Changes</button>
         <button id="delete-workspace-button">Delete Active Workspace</button>
 
         <span class="separator">|</span>

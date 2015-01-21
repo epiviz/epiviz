@@ -77,6 +77,12 @@ epiviz.workspaces.Workspace = function(id, name, content) {
    * @private
    */
   this._changed = false;
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.workspaces.Workspace>}
+   * @private
+   */
+  this._contentChanged = new epiviz.events.Event();
 };
 
 epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME = 'Default Workspace';
@@ -299,6 +305,7 @@ epiviz.workspaces.Workspace.prototype.resetChanged = function() {
  */
 epiviz.workspaces.Workspace.prototype._setChanged = function() {
   this._changed = true;
+  this._contentChanged.notify(this);
 };
 
 /**
@@ -571,3 +578,9 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
     charts: charts
   });
 };
+
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.workspaces.Workspace>}
+ */
+epiviz.workspaces.Workspace.prototype.onContentChanged = function() { return this._contentChanged; };

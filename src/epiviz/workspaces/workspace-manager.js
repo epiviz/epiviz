@@ -54,6 +54,12 @@ epiviz.workspaces.WorkspaceManager = function(config, locationManager, measureme
   this._activeWorkspace = null;
 
   /**
+   * @type {?epiviz.workspaces.Workspace}
+   * @private
+   */
+  this._unchangedActiveWorkspace = null;
+
+  /**
    * Workspaces by id
    *
    * @type {Object.<string, epiviz.workspaces.Workspace>}
@@ -91,6 +97,22 @@ epiviz.workspaces.WorkspaceManager = function(config, locationManager, measureme
    * @private
    */
   this._requestWorkspaces = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.workspaces.Workspace>}
+   * @private
+   */
+  this._activeWorkspaceContentChanged = new epiviz.events.Event();
+
+  var self = this;
+
+  /**
+   * @type {epiviz.events.EventListener}
+   * @private
+   */
+  this._activeWorkspaceContentChangedListener = new epiviz.events.EventListener(function(workspace) {
+    self._activeWorkspaceContentChanged.notify(workspace);
+  });
 
   // Register for events
 
@@ -143,8 +165,9 @@ epiviz.workspaces.WorkspaceManager.prototype.initialize = function() {
  * @param {Array.<epiviz.workspaces.Workspace>} workspaces
  * @param {?epiviz.workspaces.Workspace} [activeWorkspace]
  * @param {?string} [activeWorkspaceId]
+ * @param {?epiviz.workspaces.Workspace} [unchangedActiveWorkspace]
  */
-epiviz.workspaces.WorkspaceManager.prototype.updateWorkspaces = function(workspaces, activeWorkspace, activeWorkspaceId) {
+epiviz.workspaces.WorkspaceManager.prototype.updateWorkspaces = function(workspaces, activeWorkspace, activeWorkspaceId, unchangedActiveWorkspace) {
   if (workspaces) {
     this._workspaces = {};
     this._workspacesByName = {};
@@ -163,6 +186,19 @@ epiviz.workspaces.WorkspaceManager.prototype.updateWorkspaces = function(workspa
 
   var oldActiveWorkspace = this._activeWorkspace;
   this._activeWorkspace = activeWorkspace;
+  if (unchangedActiveWorkspace) {
+    this._unchangedActiveWorkspace = unchangedActiveWorkspace;
+  } else {
+    this._unchangedActiveWorkspace = activeWorkspace ? activeWorkspace.copy(activeWorkspace.name(), activeWorkspace.id()) : null;
+  }
+
+  if (oldActiveWorkspace) {
+    oldActiveWorkspace.onContentChanged().removeListener(this._activeWorkspaceContentChangedListener);
+  }
+
+  if (this._activeWorkspace) {
+    this._activeWorkspace.onContentChanged().addListener(this._activeWorkspaceContentChangedListener);
+  }
 
   var webArgs = epiviz.ui.WebArgsManager.WEB_ARGS;
 
@@ -214,6 +250,7 @@ epiviz.workspaces.WorkspaceManager.prototype.deleteActiveWorkspace = function() 
   }
 
   this._activeWorkspace = newActiveWorkspace;
+  this._unchangedActiveWorkspace = newActiveWorkspace ? newActiveWorkspace.copy(newActiveWorkspace.name(), newActiveWorkspace.id()) : null;
 
   var seqName = activeWorkspace.range().seqName();
   var start = activeWorkspace.range().start();
@@ -223,6 +260,27 @@ epiviz.workspaces.WorkspaceManager.prototype.deleteActiveWorkspace = function() 
 
   this._activeWorkspaceChanged.notify({
     oldValue: activeWorkspace,
+    newValue: this._activeWorkspace,
+    workspaceId: this._activeWorkspace.id()
+  });
+};
+
+/**
+ */
+epiviz.workspaces.WorkspaceManager.prototype.revertActiveWorkspace = function() {
+  if (!this._unchangedActiveWorkspace) { return; }
+  var oldActiveWorkspace = this._activeWorkspace;
+
+  var seqName = oldActiveWorkspace.range().seqName();
+  var start = oldActiveWorkspace.range().start();
+  var end = oldActiveWorkspace.range().end();
+
+  this._activeWorkspace = this._unchangedActiveWorkspace.copy(this._unchangedActiveWorkspace.name(), this._unchangedActiveWorkspace.id());
+
+  this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end));
+
+  this._activeWorkspaceChanged.notify({
+    oldValue: null,
     newValue: this._activeWorkspace,
     workspaceId: this._activeWorkspace.id()
   });
@@ -257,6 +315,11 @@ epiviz.workspaces.WorkspaceManager.prototype.activeWorkspaceChanging = function(
 epiviz.workspaces.WorkspaceManager.prototype.onRequestWorkspaces = function() { return this._requestWorkspaces; };
 
 /**
+ * @returns {epiviz.events.Event.<epiviz.workspaces.Workspace>}
+ */
+epiviz.workspaces.WorkspaceManager.prototype.onActiveWorkspaceContentChanged = function() { return this._activeWorkspaceContentChanged; };
+
+/**
  * @param {?string} id The id of the new active workspace
  * @param {epiviz.workspaces.Workspace} [workspace] A workspace that doesn't belong to the current user,
  *   to replace the active workspace
@@ -267,6 +330,7 @@ epiviz.workspaces.WorkspaceManager.prototype.changeActiveWorkspace = function(id
 
   var oldValue = this._activeWorkspace;
   this._activeWorkspace = workspace;
+  this._unchangedActiveWorkspace = this._activeWorkspace ? this._activeWorkspace.copy(this._activeWorkspace.name(), this._activeWorkspace.id()) : null;
   this._activeWorkspaceChanged.notify({oldValue: oldValue, newValue: this._activeWorkspace, workspaceId: id});
 };
 

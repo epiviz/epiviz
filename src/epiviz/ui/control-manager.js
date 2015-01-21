@@ -84,6 +84,12 @@ epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurem
    * @type {epiviz.events.Event}
    * @private
    */
+  this._revertActiveWorkspace = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event}
+   * @private
+   */
   this._loginLinkClicked = new epiviz.events.Event();
 
   /**
@@ -205,6 +211,11 @@ epiviz.ui.ControlManager.prototype.onSaveWorkspace = function() { return this._s
  * @returns {epiviz.events.Event}
  */
 epiviz.ui.ControlManager.prototype.onDeleteActiveWorkspace = function() { return this._deleteActiveWorkspace; };
+
+/**
+ * @returns {epiviz.events.Event}
+ */
+epiviz.ui.ControlManager.prototype.onRevertActiveWorkspace = function() { return this._revertActiveWorkspace; };
 
 /**
  * @returns {epiviz.events.Event}
@@ -644,6 +655,7 @@ epiviz.ui.ControlManager.prototype._initializeWorkspaceSaving = function() {
 
   var saveTextBox = $('#save-workspace-text');
   var saveWorkspaceButton = $('#save-workspace-button');
+  var revertWorkspaceButton = $('#revert-workspace-button');
   var deleteWorkspaceButton = $('#delete-workspace-button');
 
   saveWorkspaceButton.button({
@@ -716,7 +728,24 @@ epiviz.ui.ControlManager.prototype._initializeWorkspaceSaving = function() {
       'Are you sure you want to delete the active workspace?',
       epiviz.ui.controls.MessageDialog.Icon.QUESTION);
     dialog.show();
-    });
+  });
+
+  revertWorkspaceButton.button({
+    text: false,
+    icons: {
+      primary: 'ui-icon-arrowreturnthick-1-w'
+    }
+  }).click(function(e) {
+    var dialog = new epiviz.ui.controls.MessageDialog(
+      'Delete active workspace',
+      {
+        Yes: function() { self._revertActiveWorkspace.notify(); },
+        No: function() {}
+      },
+      'Are you sure you want to revert the changes on the active workspace?',
+      epiviz.ui.controls.MessageDialog.Icon.QUESTION);
+    dialog.show();
+  });
 
   saveTextBox.watermark('Save Workspace Name');
 
