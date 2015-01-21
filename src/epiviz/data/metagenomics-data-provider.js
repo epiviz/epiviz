@@ -319,7 +319,7 @@ epiviz.data.MetagenomicsDataProvider.constructor = epiviz.data.MetagenomicsDataP
 /**
  * @type {Array.<string>}
  */
-epiviz.data.MetagenomicsDataProvider.LEVEL_NAMES = ['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species'];
+epiviz.data.MetagenomicsDataProvider.LEVEL_NAMES = ['Kingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species', 'OTU'];
 
 /**
  * @param {epiviz.data.Request} request
