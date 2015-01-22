@@ -274,6 +274,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
       epiviz.ui.charts.tree.Node.dfs(root, function(node) { self._nodeMap[node.id] = node; self._nodeNameMap[node.name] = node; });
       epiviz.ui.charts.tree.Node.dfs(root, function(node) {
         node.depth = node.globalDepth;
+        node.taxonomy = levelNames[node.globalDepth];
         if (!node.parentId) { self._hierarchyPathsMap[node.name] = node.id; self._ancestryMap[node.name] = ''; return; } // TODO: Should use id. In the future, rows should store node id and that will fix everything
         var parent = self._nodeMap[node.parentId];
         var path = node.id;//parent.id;

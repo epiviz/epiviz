@@ -174,6 +174,7 @@ epiviz.workspaces.Workspace.prototype.chartRemoved = function(id, chartsOrder) {
  * @param {number|string} height
  */
 epiviz.workspaces.Workspace.prototype.chartSizeChanged = function(chartId, width, height) {
+  if (!this._chartsById[chartId]) { return; }
   if (this._chartsById[chartId].properties.width == width && this._chartsById[chartId].properties.height == height) { return; }
   this._chartsById[chartId].properties.width = width;
   this._chartsById[chartId].properties.height = height;

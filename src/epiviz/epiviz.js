@@ -134,12 +134,13 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
    * Prevent closing if workspace has changed
    */
   var self = this;
-  window.onbeforeunload = function() {
+  // TODO: Cleanup
+  /*window.onbeforeunload = function() {
     if (epiviz.workspaces.UserManager.USER_STATUS.loggedIn && self._workspaceManager.activeWorkspace().changed()) {
-      return 'There are unsaved changes in the current workspace. Do you wish to discard them?';
+      return 'There are unsaved changes in the current workspace.';
     }
     return undefined;
-   };
+   };*/
 };
 
 /**

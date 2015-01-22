@@ -18,11 +18,12 @@ goog.provide('epiviz.ui.charts.tree.Node');
  * @param {epiviz.ui.charts.tree.NodeSelectionType} [selectionType]
  * @param {number} [order]
  * @param {number} [globalDepth]
+ * @param {string} [taxonomy]
  * @constructor
  * @struct
  * @extends {epiviz.ui.charts.VisObject}
  */
-epiviz.ui.charts.tree.Node = function(id, name, children, parentId, size, depth, nchildren, nleaves, selectionType, order, globalDepth) {
+epiviz.ui.charts.tree.Node = function(id, name, children, parentId, size, depth, nchildren, nleaves, selectionType, order, globalDepth, taxonomy) {
   epiviz.ui.charts.VisObject.call(this);
 
   /**
@@ -79,6 +80,11 @@ epiviz.ui.charts.tree.Node = function(id, name, children, parentId, size, depth,
    * @type {number}
    */
   this.globalDepth = globalDepth;
+
+  /**
+   * @type {string}
+   */
+  this.taxonomy = taxonomy;
 };
 
 /*

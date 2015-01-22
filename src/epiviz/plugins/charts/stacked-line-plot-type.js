@@ -45,7 +45,7 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.typeName = function() {
  * @returns {string}
  */
 epiviz.plugins.charts.StackedLinePlotType.prototype.chartName = function() {
-  return 'Stacked Line Plot';
+  return 'Stacked Plot';
 };
 
 /**

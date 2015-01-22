@@ -109,6 +109,12 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
    * @private
    */
   this._selectedNode = null;
+
+  /**
+   * @type {Array.<string>}
+   * @private
+   */
+  this._levelsTaxonomy = null;
 };
 
 /**
@@ -144,7 +150,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     var uiSelected = root.children && root.children.length ? this._uiDataMap[root.children[0].id] : null;
     this._selectedNode = uiSelected ?
       new epiviz.ui.charts.tree.UiNode(uiSelected.id, uiSelected.name, uiSelected.children, uiSelected.parentId, uiSelected.size,
-        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.globalDepth, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
+        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.globalDepth, uiSelected.taxonomy, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
 
     this._oldSubtreeDepth = this._subtreeDepth;
     this._subtreeDepth = 0;
@@ -161,7 +167,12 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
       }
       return true;
     });
-    epiviz.ui.charts.tree.Node.dfs(rootCopy, function(node) { self._uiData.push(node); });
+    var levelsTaxonomy = {};
+    epiviz.ui.charts.tree.Node.dfs(rootCopy, function(node) {
+      self._uiData.push(node);
+      if (!(node.taxonomy in levelsTaxonomy)) { levelsTaxonomy[node.taxonomy] = node.taxonomy; }
+    });
+    this._levelsTaxonomy = Object.keys(levelsTaxonomy);
 
     this._uiData.forEach(function(node) {
       self._uiDataMap[node.id] = node;
@@ -177,6 +188,8 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     if (this._oldSubtreeDepth == null) { this._oldSubtreeDepth = this._subtreeDepth; }
     if (this._oldRootDepth == null) { this._oldRootDepth = this._rootDepth; }
   }
+
+  this._drawLegend();
 
   return this._uiData;
 };
@@ -206,7 +219,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getOldNode = function(no
   var isExtremity = oldDepth < 0 || oldDepth >= this._subtreeDepth;
   var oldY = isRoot ? 0 : Math.min(1, oldDepth / this._oldSubtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order, node.globalDepth,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order, node.globalDepth, node.taxonomy,
 
     isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1), // x
     isExtremity ? newNode.dx : 0, // dx
@@ -229,11 +242,59 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getNewNode = function(no
   var isExtremity = newDepth < 0 || newDepth >= this._subtreeDepth;
   var newY = isRoot ? 0 : Math.min(1, newDepth / this._subtreeDepth);
   return new epiviz.ui.charts.tree.UiNode(
-    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order, node.globalDepth,
+    node.id, node.name, node.children, node.parentId, node.size, node.depth, node.nchildren, node.nleaves, node.selectionType, node.order, node.globalDepth, node.taxonomy,
     isExtremity ? oldNode.x : (oldNode.x <= this._selectedNode.x ? 0 : 1), // x
     isExtremity ? oldNode.dx : 0, // dx
     newY, // y
     isExtremity ? 0 : oldNode.y + oldNode.dy - newY); // dy
+};
+
+/**
+ * @private
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype._drawLegend = function() {
+  this._svg.selectAll('.chart-title').remove();
+  this._svg.selectAll('.chart-title-color').remove();
+  if (!this._levelsTaxonomy) { return; }
+  var self = this;
+  var titleEntries = this._svg
+    .selectAll('.chart-title')
+    .data(this._levelsTaxonomy);
+  titleEntries
+    .enter()
+    .append('text')
+    .attr('class', 'chart-title')
+    .attr('font-weight', 'bold')
+    .attr('y', this.margins().top() - 5);
+  titleEntries
+    .attr('fill', function(label) { return self.colors().getByKey(label); })
+    .text(function(label) { return label; });
+
+  var textLength = 0;
+  var titleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .chart-title')
+    .each(function(i) {
+      titleEntriesStartPosition.push(textLength);
+      textLength += this.getBBox().width + 15;
+    });
+
+  titleEntries.attr('x', function(column, i) {
+    return self.margins().left() + 10 + titleEntriesStartPosition[i];
+  });
+
+  var colorEntries = this._svg
+    .selectAll('.chart-title-color')
+    .data(this._levelsTaxonomy)
+    .enter()
+    .append('circle')
+    .attr('class', 'chart-title-color')
+    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
+    .attr('cy', self.margins().top() - 9)
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .style('fill', function(label) { return self.colors().getByKey(label); });
 };
 
 /**

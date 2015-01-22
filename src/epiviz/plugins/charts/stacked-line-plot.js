@@ -77,14 +77,15 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   var linesGroup = this._svg.selectAll('.lines');
 
   if (linesGroup.empty()) {
-    var graph = this._svg.append('g')
-      .attr('class', 'lines items')
-      .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
+    linesGroup = this._svg.append('g')
+      .attr('class', 'lines items');
 
-    var selectedGroup = graph.append('g').attr('class', 'selected');
-    graph.append('g').attr('class', 'hovered');
+    var selectedGroup = linesGroup.append('g').attr('class', 'selected');
+    linesGroup.append('g').attr('class', 'hovered');
     selectedGroup.append('g').attr('class', 'hovered');
   }
+  linesGroup
+    .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
   return this._drawLines(range, data, xScale);
 };
 

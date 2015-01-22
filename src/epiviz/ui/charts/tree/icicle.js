@@ -116,8 +116,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var defs = this._svg.select('.defs');
   if (itemsGroup.empty()) {
     itemsGroup = this._svg.append('g')
-      .attr('class', 'items')
-      .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
+      .attr('class', 'items');
 
     var selectedGroup = itemsGroup.append('g').attr('class', 'selected');
     itemsGroup.append('g').attr('class', 'hovered');
@@ -125,9 +124,12 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   }
   if (defs.empty()) {
     defs = this._svg.select('defs').append('g')
-      .attr('class', 'defs')
-      .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
+      .attr('class', 'defs');
   }
+  itemsGroup
+    .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
+  defs
+    .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
 
   if (!root) { return []; }
 
@@ -327,8 +329,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   itemsGroup.selectAll('.item').selectAll('rect')
     .transition().duration(this._animationDelay)
-    //.style('fill', function(d) { return self.colors().getByKey((d.nchildren ? d : d.parent).id); })
-    .style('fill', function(d) { return self.colors().get(d.globalDepth); })
+    .style('fill', function(d) { return self.colors().getByKey(d.taxonomy); })
     .attr('x', calcNewX)
     .attr('y', calcNewY)
     .attr('width', calcNewWidth)
