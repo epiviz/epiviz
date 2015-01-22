@@ -130,7 +130,8 @@ epiviz.EpiViz.SETTINGS = {
       margins: new epiviz.ui.charts.Margins(80, 120, 40, 40),
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
-        'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton'
+        'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton',
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
       ],
       colors: 'heatmap-default'
     },
@@ -262,7 +263,7 @@ epiviz.EpiViz.SETTINGS = {
       ['#f9a65a', '#599ad3', '#79c36a', '#f1595f', '#727272', '#cd7058', '#d77fb3'],
       'Genes Default', 'genes-default'),
     new epiviz.ui.charts.ColorPalette(
-      ['#ffffff', '#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
+      ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
       'Heatmap Default', 'heatmap-default')
   ]
 };
