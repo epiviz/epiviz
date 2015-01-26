@@ -168,20 +168,7 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
   this._svg.selectAll('.chart-title').remove();
   this._svg.selectAll('.chart-title-color ').remove();
 
-  if (!this._lastData) { return; }
-
-  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
-  var colorByMarker;
-  this._markers.every(function(marker) {
-    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_MEASUREMENTS) {
-      colorByMarker = marker;
-    }
-    return !colorByMarker;
-  });
-  var preColorVars;
-  if (colorByMarker) {
-    preColorVars = colorByMarker.preMark()(this._lastData);
-  }
+  if (!this._lastData || !this._lastData.isReady()) { return; }
 
   var title = '';
   var measurements = this._lastData.measurements();
@@ -194,8 +181,8 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
     .attr('class', 'chart-title')
     .attr('font-weight', 'bold')
     .attr('fill', function(m, i) {
-      if (!colorByMarker) { return self.colors().get(i); }
-      return self.colors().getByKey(colorByMarker.mark()(m, self._lastData, preColorVars));
+      if (!self._measurementColorLabels) { return self.colors().get(i); }
+      return self.colors().getByKey(self._measurementColorLabels.get(m));
     })
     .attr('y', self.margins().top() - 5)
     .text(function(m, i) { return m.name(); });
@@ -225,7 +212,7 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
     .style('shape-rendering', 'auto')
     .style('stroke-width', '0')
     .style('fill', function(m, i) {
-      if (!colorByMarker) { return self.colors().get(i); }
-      return self.colors().getByKey(colorByMarker.mark()(m, self._lastData, preColorVars));
+      if (!self._measurementColorLabels) { return self.colors().get(i); }
+      return self.colors().getByKey(self._measurementColorLabels.get(m));
     });
 };

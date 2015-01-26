@@ -11,7 +11,7 @@ goog.provide('epiviz.ui.charts.Chart');
  * @param {jQuery} container The div where the chart will be drawn
  * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @constructor
- * @extends {epiviz.ui.charts.Visualization}
+ * @extends {epiviz.ui.charts.Visualization.<epiviz.datatypes.GenomicData>}
  */
 epiviz.ui.charts.Chart = function(id, container, properties) {
   // Call superclass constructor
@@ -30,6 +30,18 @@ epiviz.ui.charts.Chart = function(id, container, properties) {
    * @protected
    */
   this._binSize = null;
+
+  /**
+   * @type {epiviz.measurements.MeasurementHashtable.<string>}
+   * @protected
+   */
+  this._measurementColorLabels = null;
+
+  /**
+   * @type {Object.<number, string>}
+   * @protected
+   */
+  this._globalIndexColorLabels = null;
 };
 
 /*
@@ -128,47 +140,142 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
   }
 
-  this._lastData = this._unalteredData;
-
-  var isFeatureChart = false;
-  this._lastData.measurements().every(function(m) { isFeatureChart = m.type() !== epiviz.measurements.Measurement.Type.RANGE; return !isFeatureChart });
-
-  if (isFeatureChart) {
-    var groupByMarker;
-    this._markers.every(function(marker) {
-      if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS) {
-        groupByMarker = marker;
-      }
-      return !groupByMarker;
-    });
-    if (groupByMarker) {
-      var aggregator = epiviz.ui.charts.markers.MeasurementAggregators[
-        this.customSettingsValues()[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR]];
-      this._lastData = new epiviz.datatypes.MeasurementAggregatedGenomicData(this._lastData, groupByMarker, aggregator);
-    }
-  }
-
-
-  var filter;
-  this._markers.every(function(marker) {
-    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) {
-      filter = marker;
-    }
-    return !filter;
-  });
-  if (filter) { this._lastData = new epiviz.datatypes.ItemFilteredGenomicData(this._lastData, filter); }
-
-  var order;
-  this._markers.every(function(marker) {
-    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS) {
-      order = marker;
-    }
-    return !order;
-  });
-
-  if (order) { this._lastData = new epiviz.datatypes.MeasurementOrderedGenomicData(this._lastData, order); }
-
   return [];
+};
+
+/**
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {epiviz.datatypes.GenomicData} data
+ * @returns {epiviz.deferred.Deferred}
+ */
+epiviz.ui.charts.Chart.prototype.transformData = function(range, data) {
+  var deferred = new epiviz.deferred.Deferred();
+  var self = this;
+  epiviz.ui.charts.Visualization.prototype.transformData.call(this, range, data)
+    .done(function() {
+      if (!self._lastData) { deferred.resolve(); return; }
+      self._lastData.ready(function() {
+        var isFeatureChart = false;
+        self._lastData.measurements().every(function(m) { isFeatureChart = m.type() !== epiviz.measurements.Measurement.Type.RANGE; return !isFeatureChart });
+
+        if (isFeatureChart) {
+          var groupByMarker;
+          self._markers.every(function(marker) {
+            if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS) {
+              groupByMarker = marker;
+            }
+            return !groupByMarker;
+          });
+          if (groupByMarker) {
+            var aggregator = epiviz.ui.charts.markers.MeasurementAggregators[
+              self.customSettingsValues()[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR]];
+            self._lastData = new epiviz.datatypes.MeasurementAggregatedGenomicData(self._lastData, groupByMarker, aggregator);
+          }
+        }
+
+        var filter;
+        self._markers.every(function(marker) {
+          if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.FILTER) {
+            filter = marker;
+          }
+          return !filter;
+        });
+        if (filter) { self._lastData = new epiviz.datatypes.ItemFilteredGenomicData(self._lastData, filter); }
+
+        var order;
+        self._markers.every(function(marker) {
+          if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS) {
+            order = marker;
+          }
+          return !order;
+        });
+
+        if (order) { self._lastData = new epiviz.datatypes.MeasurementOrderedGenomicData(self._lastData, order); }
+
+        self._lastData.ready(function() {
+          // self._lastData might have changed since we started to wait for it
+          // so check the last version of it
+          var data = self._lastData;
+          if (data.isReady()) {
+            // Also reassign color labels for both measurements and global indices
+            var deferredColorByMeasurements = new epiviz.deferred.Deferred();
+            var colorByMeasurements;
+            self._markers.every(function(marker) {
+              if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_MEASUREMENTS) {
+                colorByMeasurements = marker;
+              }
+              return !colorByMeasurements;
+            });
+
+            self._measurementColorLabels = null;
+            if (colorByMeasurements) {
+              var measurementColorLabels = new epiviz.measurements.MeasurementHashtable();
+              colorByMeasurements.preMark()(data).done(function(preColorVars) {
+                var measurements = data.measurements();
+                epiviz.utils.deferredFor(measurements.length, function(j) {
+                  var mDeferredIteration = new epiviz.deferred.Deferred();
+                  colorByMeasurements.mark()(measurements[j], data, preColorVars).done(function(label) {
+                    measurementColorLabels.put(measurements[j], label);
+                    mDeferredIteration.resolve();
+                  });
+                  return mDeferredIteration;
+                }).done(function() {
+                  self._measurementColorLabels = measurementColorLabels;
+                  deferredColorByMeasurements.resolve();
+                });
+              });
+            } else {
+              deferredColorByMeasurements.resolve();
+            }
+
+            var deferredColorByGlobalIndices = new epiviz.deferred.Deferred();
+            var colorByGlobalIndices;
+            self._markers.every(function(marker) {
+              if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_ROW) {
+                colorByGlobalIndices = marker;
+              }
+              return !colorByGlobalIndices;
+            });
+
+            self._globalIndexColorLabels = null;
+            if (colorByGlobalIndices) {
+              var globalIndexColorLabels = {};
+              colorByGlobalIndices.preMark()(data).done(function(preColorVars) {
+                var firstSeries = data.firstSeries();
+                epiviz.utils.deferredFor(firstSeries.size(), function(j) {
+                  var seriesDeferredIteration = new epiviz.deferred.Deferred();
+                  colorByGlobalIndices.mark()(firstSeries.getRow(j), data, preColorVars).done(function(label) {
+                    globalIndexColorLabels[j + firstSeries.globalStartIndex()] = label;
+                    seriesDeferredIteration.resolve();
+                  });
+                  return seriesDeferredIteration;
+                }).done(function() {
+                  self._globalIndexColorLabels = globalIndexColorLabels;
+                  deferredColorByGlobalIndices.resolve();
+                });
+              });
+            } else {
+              deferredColorByGlobalIndices.resolve();
+            }
+
+            deferredColorByMeasurements.done(function() {
+              if (deferredColorByGlobalIndices.state() == epiviz.deferred.Deferred.State.RESOLVED) {
+                self._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+                deferred.resolve();
+              }
+            });
+
+            deferredColorByGlobalIndices.done(function() {
+              if (deferredColorByMeasurements.state() == epiviz.deferred.Deferred.State.RESOLVED) {
+                self._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+                deferred.resolve();
+              }
+            });
+          }
+        });
+      });
+    });
+  return deferred;
 };
 
 /**

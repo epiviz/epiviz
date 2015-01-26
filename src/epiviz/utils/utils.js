@@ -205,6 +205,61 @@ epiviz.utils.arrayIntersection = function(arr1, arr2) {
   return ret;
 };
 
+/**
+ * @param {number} n
+ * @param {function(number, function(boolean))} iterationCallback The callback parameter will be true if should break
+ * @param {function} finishedCallback
+ */
+epiviz.utils.asyncFor = function(n, iterationCallback, finishedCallback) {
+  if (!n) {
+    if (finishedCallback) { finishedCallback(); }
+    return;
+  }
+
+  var iteration = function(i) {
+    if (i >= n) {
+      if (finishedCallback) { finishedCallback(); }
+      return;
+    }
+
+    iterationCallback(i, function(result) {
+      if (result) {
+        if (finishedCallback) { finishedCallback(); }
+      }
+      else {
+        iteration(i + 1);
+      }
+    });
+  };
+
+  iteration(0);
+};
+
+/**
+ * @param {number} n
+ * @param deferredIteration The callback parameter will be true if should break
+ */
+epiviz.utils.deferredFor = function(n, deferredIteration) {
+  // TODO: Add a timeout in iteration every N number of iterations, so we don't run out of stack
+  var iterate = function(i, deferredIteration) {
+    var d = new epiviz.deferred.Deferred();
+    if (i >= n) { d.resolve(); }
+    else {
+      deferredIteration(i).then(
+        // Done (continue)
+        function() {
+          iterate(i + 1, deferredIteration)
+            .done(function() { d.resolve(); });
+        },
+        // Fail (break)
+        function() { d.resolve(); });
+    }
+    return d;
+  };
+
+  return iterate(0, deferredIteration);
+};
+
 // Object (Hashtable)
 
 /**

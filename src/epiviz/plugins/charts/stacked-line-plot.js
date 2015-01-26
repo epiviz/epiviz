@@ -168,23 +168,12 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     });
   }
 
-  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
-  var colorMarker;
-  this._markers.every(function(marker) {
-    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_ROW) {
-      colorMarker = marker;
-      return false;
-    }
-    return true;
-  });
-  var preColorBy = colorMarker ? colorMarker.preMark()(data) : undefined;
-
   /**
    * @param {epiviz.datatypes.GenomicData.RowItem} row
    * @returns {string|number}
    */
   var colorBy = function(row) {
-    return colorMarker ? colorMarker.mark()(row, data, preColorBy) : row.metadata(colLabel);
+    return self._globalIndexColorLabels ? self._globalIndexColorLabels[row.globalIndex()] : row.metadata(colLabel);
   };
 
   var valuesForIndex = function(index) {

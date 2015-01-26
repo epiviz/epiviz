@@ -12,6 +12,16 @@ goog.provide('epiviz.datatypes.GenomicData');
 epiviz.datatypes.GenomicData = function() {};
 
 /**
+ * @param {function} callback Called when data is fully initialized and ready to be manipulated
+ */
+epiviz.datatypes.GenomicData.prototype.ready = function(callback) { throw Error('unimplemented abstract method'); };
+
+/**
+ * @returns {boolean}
+ */
+epiviz.datatypes.GenomicData.prototype.isReady = function() { throw Error('unimplemented abstract method'); };
+
+/**
  * @returns {epiviz.datatypes.MeasurementGenomicData}
  */
 epiviz.datatypes.GenomicData.prototype.firstSeries = function() { throw Error('unimplemented abstract method'); };

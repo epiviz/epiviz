@@ -27,6 +27,12 @@ epiviz.datatypes.MeasurementOrderedGenomicData = function(data, order) {
    */
   this._order = order;
 
+  /**
+   * @type {epiviz.deferred.Deferred}
+   * @private
+   */
+  this._deferredInit = null;
+
   this._initialize();
 };
 
@@ -37,31 +43,54 @@ epiviz.datatypes.MeasurementOrderedGenomicData.prototype = epiviz.utils.mapCopy(
 epiviz.datatypes.MeasurementOrderedGenomicData.constructor = epiviz.datatypes.MeasurementOrderedGenomicData;
 
 /**
+ * @returns {epiviz.deferred.Deferred}
  * @private
  */
 epiviz.datatypes.MeasurementOrderedGenomicData.prototype._initialize = function() {
 
-  /** @type {*} */
-  var preOrderVars = this._order.preMark()(this._data);
+  if (this._deferredInit) { return this._deferredInit; }
 
-  /** @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>} */
-  var map = new epiviz.measurements.MeasurementHashtable();
+  this._deferredInit = new epiviz.deferred.Deferred();
 
-  /** @type {epiviz.ui.charts.markers.VisualizationMarker.<epiviz.datatypes.GenomicData, *, epiviz.datatypes.GenomicData.ValueItem, boolean>} */
-  var order = this._order;
+  var self = this;
 
   /** @type {epiviz.datatypes.GenomicData} */
   var data = this._data;
 
-  var measurements = this._data.measurements().sort(function(m1, m2) {
-    var v1 = order.mark()(m1, data, preOrderVars);
-    var v2 = order.mark()(m2, data, preOrderVars);
-    return (v1 == v2) ? 0 : (v1 < v2 ? -1 : 1);
+  /** @type {epiviz.ui.charts.markers.VisualizationMarker.<epiviz.datatypes.GenomicData, *, epiviz.datatypes.GenomicData.ValueItem, boolean>} */
+  var order = this._order;
+
+  data.ready(function() {
+    order.preMark()(data).done(function(preOrderVars) {
+      /** @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>} */
+      var map = new epiviz.measurements.MeasurementHashtable();
+
+      var measurements = data.measurements();
+      var measurementLabels = new epiviz.measurements.MeasurementHashtable();
+      epiviz.utils.deferredFor(measurements.length, function(j) {
+        var mDeferredIteration = new epiviz.deferred.Deferred();
+        var m = measurements[j];
+        order.mark()(m, data, preOrderVars).done(function(label) {
+          measurementLabels.put(m, label);
+          mDeferredIteration.resolve();
+        });
+        return mDeferredIteration;
+      }).done(function() {
+        measurements.sort(function(m1, m2) {
+          var v1 = measurementLabels.get(m1);
+          var v2 = measurementLabels.get(m2);
+          return (v1 == v2) ? 0 : (v1 < v2 ? -1 : 1);
+        });
+
+        measurements.forEach(function(m) {
+          map.put(m, data.getSeries(m));
+        });
+
+        self._setMap(map);
+        self._deferredInit.resolve();
+      });
+    });
   });
 
-  measurements.forEach(function(m) {
-    map.put(m, data.getSeries(m));
-  });
-
-  this._setMap(map);
+  return this._deferredInit;
 };

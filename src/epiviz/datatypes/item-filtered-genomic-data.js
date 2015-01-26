@@ -27,6 +27,12 @@ epiviz.datatypes.ItemFilteredGenomicData = function(data, filter) {
    */
   this._filter = filter;
 
+  /**
+   * @type {epiviz.deferred.Deferred}
+   * @private
+   */
+  this._deferredInit = null;
+
   this._initialize();
 };
 
@@ -37,34 +43,59 @@ epiviz.datatypes.ItemFilteredGenomicData.prototype = epiviz.utils.mapCopy(epiviz
 epiviz.datatypes.ItemFilteredGenomicData.constructor = epiviz.datatypes.ItemFilteredGenomicData;
 
 /**
+ * @returns {epiviz.deferred.Deferred}
  * @private
  */
 epiviz.datatypes.ItemFilteredGenomicData.prototype._initialize = function() {
 
-  /** @type {*} */
-  var preFilterVars = this._filter.preMark()(this._data);
+  if (this._deferredInit) { return this._deferredInit; }
 
-  /** @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>} */
-  var map = new epiviz.measurements.MeasurementHashtable();
+  this._deferredInit = new epiviz.deferred.Deferred();
+
+  var self = this;
 
   /** @type {epiviz.ui.charts.markers.VisualizationMarker.<epiviz.datatypes.GenomicData, *, epiviz.datatypes.GenomicData.ValueItem, boolean>} */
   var filter = this._filter;
 
   /** @type {epiviz.datatypes.GenomicData} */
   var data = this._data;
-  data.measurements().forEach(function(m) {
-    var mItems = [];
-    var mItemsByGlobalIndex = {};
-    for (var i = 0; i < data.size(m); ++i) {
-      var item = data.get(m, i);
-      if (filter.mark()(item, data, preFilterVars)) {
-        mItems.push(item);
-        mItemsByGlobalIndex[item.globalIndex] = item;
-      }
-    }
 
-    map.put(m, new epiviz.datatypes.MeasurementGenomicDataArrayWrapper(m, mItems, mItemsByGlobalIndex));
+  data.ready(function() {
+    filter.preMark()(data).done(function(preFilterVars) {
+      /** @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>} */
+      var map = new epiviz.measurements.MeasurementHashtable();
+
+      var measurements = data.measurements();
+
+      epiviz.utils.deferredFor(measurements.length, function(j) {
+        var mDeferredIteration = new epiviz.deferred.Deferred();
+        var m = measurements[j];
+        var mItems = [];
+        var mItemsByGlobalIndex = {};
+
+        epiviz.utils.deferredFor(data.size(m), function(i) {
+          var dataDeferredIteration = new epiviz.deferred.Deferred();
+          var item = data.get(m, i);
+          filter.mark()(item, data, preFilterVars).done(function(markResult) {
+            if (markResult) {
+              mItems.push(item);
+              mItemsByGlobalIndex[item.globalIndex] = item;
+            }
+            dataDeferredIteration.resolve();
+          });
+          return dataDeferredIteration;
+        }).done(function() {
+          map.put(m, new epiviz.datatypes.MeasurementGenomicDataArrayWrapper(m, mItems, mItemsByGlobalIndex));
+          mDeferredIteration.resolve();
+        });
+
+        return mDeferredIteration;
+      }).done(function() {
+        self._setMap(map);
+        self._deferredInit.resolve();
+      });
+    });
   });
 
-  this._setMap(map);
+  return this._deferredInit;
 };

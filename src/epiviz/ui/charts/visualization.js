@@ -266,7 +266,7 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
 
   /**
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
-   * @private
+   * @protected
    */
   this._dataWaitEnd = new epiviz.events.Event();
 };
@@ -630,6 +630,10 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
     settingsValues[CustomSettings.MARGIN_BOTTOM] = bottom;
   }
 
+  // FIXME: This is a property specific to Chart and not Visualization; move this portion of the code in Chart
+  var currentMeasurementAggregator = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR];
+  var newMeasurementAggregator = settingsValues[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR];
+
   this._customSettingsValues = settingsValues;
 
   if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
@@ -637,7 +641,14 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
     this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
   }
 
-  this.draw();
+  if (currentMeasurementAggregator != newMeasurementAggregator) {
+    var self = this;
+    this.transformData(this._lastRange, this._unalteredData).done(function() {
+      self.draw();
+    });
+  } else {
+    this.draw();
+  }
 
   this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsValues));
 };
@@ -718,8 +729,8 @@ epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
     var oldMarker = this._markers[i];
     if (oldMarker == marker ||
         (oldMarker.type() == marker.type() &&
-         oldMarker.preMark().toString() == marker.preMark().toString() &&
-         oldMarker.mark().toString() == marker.mark().toString())) {
+         oldMarker.preMarkStr() == marker.preMarkStr() &&
+         oldMarker.markStr() == marker.markStr())) {
       // Marker not modified
       return;
     }
@@ -732,7 +743,10 @@ epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
     this._markersMap[marker.id()] = marker;
   }
 
-  this.draw();
+  var self = this;
+  this.transformData(this._lastRange, this._unalteredData).done(function() {
+    self.draw();
+  });
 
   this._markersModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._markers));
 };
@@ -745,7 +759,10 @@ epiviz.ui.charts.Visualization.prototype.removeMarker = function(markerId) {
   delete this._markersMap[markerId];
   delete this._markersIndices[markerId];
 
-  this.draw();
+  var self = this;
+  this.transformData(this._lastRange, this._unalteredData).done(function() {
+    self.draw();
+  });
 
   this._markersModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._markers));
 };
@@ -773,6 +790,24 @@ epiviz.ui.charts.Visualization.prototype.autoPropagateChanges = function() { ret
  * @param {boolean} val
  */
 epiviz.ui.charts.Visualization.prototype.setAutoPropagateChanges = function(val) { this._autoPropagateChanges = val; };
+
+/**
+ * @param {epiviz.datatypes.Range} range
+ * @param {T} data
+ * @returns {epiviz.deferred.Deferred}
+ */
+epiviz.ui.charts.Visualization.prototype.transformData = function(range, data) {
+  if (range != undefined) {
+    this._lastRange = range;
+  }
+  if (data != undefined) {
+    this._lastData = data;
+    this._unalteredData = data;
+  }
+  var deferred = new epiviz.deferred.Deferred();
+  deferred.resolve();
+  return deferred;
+};
 
 /* Events */
 

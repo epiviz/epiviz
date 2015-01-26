@@ -53,7 +53,7 @@ epiviz.plugins.charts.BlocksTrack.prototype.draw = function(range, data, slide, 
   range = this._lastRange;
 
   // If data is not defined, there is nothing to draw
-  if (!data || !range) { return []; }
+  if (!data || !range || !data.isReady()) { return []; }
 
   return this._drawBlocks(range, data, slide || 0, zoom || 1);
 };

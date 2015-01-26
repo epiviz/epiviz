@@ -173,21 +173,8 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
 
-  /** @type {epiviz.ui.charts.markers.VisualizationMarker} */
-  var colorByMarker;
-  this._markers.every(function(marker) {
-    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_MEASUREMENTS) {
-      colorByMarker = marker;
-    }
-    return !colorByMarker;
-  });
-  var preColorVars;
-  if (colorByMarker) {
-    preColorVars = colorByMarker.preMark()(data);
-  }
-
   data.foreach(function(m, series, i) {
-    var color = colorByMarker ? colors.getByKey(colorByMarker.mark()(m, data, preColorVars)) : colors.get(i);
+    var color = self._measurementColorLabels ? colors.getByKey(self._measurementColorLabels.get(m)) : colors.get(i);
 
     /** @type {{index: ?number, length: number}} */
     var drawBoundaries = series.binarySearchStarts(extendedRange);

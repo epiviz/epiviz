@@ -271,7 +271,13 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
     if (!this._charts.hasOwnProperty(chartIds[i])) { continue; }
     var chart = this._charts[chartIds[i]];
     if (!chart) { continue; }
-    chart.draw(range, data);
+
+    (function(chart) {
+      chart.transformData(range, data).done(function() {
+        // No need to call with arguments, since transformData will set the lastRange and lastData values
+        chart.draw();
+      });
+    })(chart);
   }
 };
 

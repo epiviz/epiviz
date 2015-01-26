@@ -33,8 +33,8 @@ epiviz.ui.charts.decoration.MarkerCodeButton.prototype._controlCreator = functio
     var existingMark = self.visualization().getMarker(self.markerId());
     var preMark, mark;
     if (existingMark) {
-      preMark = existingMark.preMark().toString();
-      mark = existingMark.mark().toString();
+      preMark = existingMark.preMarkStr();
+      mark = existingMark.markStr();
     }
 
     preMark = preMark || self.preMarkTemplate();
@@ -51,39 +51,8 @@ epiviz.ui.charts.decoration.MarkerCodeButton.prototype._controlCreator = functio
 epiviz.ui.charts.decoration.MarkerCodeButton.prototype._saveHandler = function() {
   var self = this;
   return function(arg) {
-    var preMark = null;
-    var mark = null;
-
     if (arg.enabled) {
-      try {
-        preMark = eval('(' + arg.preMark + ')');
-      } catch (e) {
-        var dialog = new epiviz.ui.controls.MessageDialog(
-          'Error evaluating code',
-          {
-            Ok: function() {}
-          },
-          'Could not evaluate the pre-mark code. Error details:<br/>' + e.message,
-          epiviz.ui.controls.MessageDialog.Icon.ERROR);
-        dialog.show();
-      }
-
-      try {
-        mark = eval('(' + arg.mark + ')');
-      } catch (e) {
-        var dialog = new epiviz.ui.controls.MessageDialog(
-          'Error evaluating code',
-          {
-            Ok: function() {}
-          },
-          'Could not evaluate the mark code. Error details:<br/>' + e.message,
-          epiviz.ui.controls.MessageDialog.Icon.ERROR);
-        dialog.show();
-      }
-
-      if (!preMark || !mark) { return; }
-
-      self.visualization().putMarker(self.createMarker(preMark, mark));
+      self.visualization().putMarker(self.createMarker(arg.preMark, arg.mark));
     } else {
       self.visualization().removeMarker(self.markerId());
     }
@@ -97,9 +66,8 @@ epiviz.ui.charts.decoration.MarkerCodeButton.prototype._saveHandler = function()
 epiviz.ui.charts.decoration.MarkerCodeButton.prototype._cancelHandler = function() { return function() {}; };
 
 /**
- * @param {function(Data): InitialVars} [preMark]
- * @param {function(Item, Data, InitialVars): MarkResult} [mark]
- * @template Data, InitialVars, Item, MarkResult
+ * @param {string} [preMark]
+ * @param {string} [mark]
  */
 epiviz.ui.charts.decoration.MarkerCodeButton.prototype.createMarker = function(preMark, mark) {
   return new epiviz.ui.charts.markers.VisualizationMarker(

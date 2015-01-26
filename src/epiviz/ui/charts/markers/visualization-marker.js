@@ -10,8 +10,8 @@ goog.provide('epiviz.ui.charts.markers.VisualizationMarker');
  * @param {epiviz.ui.charts.markers.VisualizationMarker.Type} type
  * @param {string} [id]
  * @param {string} [name]
- * @param {function(Data): InitialVars} [preMark]
- * @param {function(Item, Data, InitialVars): MarkResult} [mark]
+ * @param {string} [preMark]
+ * @param {string} [mark]
  * @constructor
  * @template Data, InitialVars, Item, MarkResult
  */
@@ -36,16 +36,76 @@ epiviz.ui.charts.markers.VisualizationMarker = function(type, id, name, preMark,
   this._name = name || 'Custom Marker ' + this._id;
 
   /**
-   * @type {function(Data): InitialVars}
-   * @protected
-   */
-  this._preMark = preMark || function() {};
-
-  /**
-   * @type {function(Item, Data, InitialVars): MarkResult}
+   * @type {string}
    * @private
    */
-  this._mark = mark || function() {};
+  this._preMarkStr = preMark || '';
+
+  /**
+   * @type {string}
+   * @private
+   */
+  this._markStr = mark || '';
+
+  var self = this;
+
+  var deferredPreMark = new epiviz.deferred.Deferred();
+  var cajoledPreMark = null;
+  caja.load(
+    undefined,  // no DOM access
+    undefined,  // no network access
+    function(frame) {
+      cajoledPreMark = frame.code(
+        undefined,
+        'application/javascript',
+        'return (' + self._preMarkStr + ')(data);');  // input source code
+      deferredPreMark.resolve();
+    });
+
+  /**
+   * @type {function(Data): epiviz.deferred.Deferred.<InitialVars>}
+   * @private
+   */
+  this._preMark = function(data) {
+    var d = new epiviz.deferred.Deferred();
+    deferredPreMark.done(function(){
+      cajoledPreMark
+        .api({ data: data })
+        .run(function(initialVars) {
+          d.resolve(initialVars);
+        });
+    });
+    return d;
+  };
+
+  var deferredMark = new epiviz.deferred.Deferred();
+  var cajoledMark = null;
+  caja.load(
+    undefined,  // no DOM access
+    undefined,  // no network access
+    function(frame) {
+      frame.code(
+        undefined,
+        'application/javascript',
+        'return (' + self._markStr + ');')
+        .run(function(markFunc) {
+          cajoledMark = markFunc;
+          deferredMark.resolve();
+        });
+    });
+
+  /**
+   * @type {function(Item, Data, InitialVars): epiviz.deferred.Deferred.<MarkResult>}
+   * @private
+   */
+  this._mark = function(item, data, preMarkResult) {
+    var d = new epiviz.deferred.Deferred();
+    deferredMark.done(function() {
+      var markResult = cajoledMark(item, data, preMarkResult);
+      d.resolve(markResult);
+    });
+    return d;
+  };
 };
 
 /**
@@ -64,14 +124,24 @@ epiviz.ui.charts.markers.VisualizationMarker.prototype.id = function() { return 
 epiviz.ui.charts.markers.VisualizationMarker.prototype.name = function() { return this._name; };
 
 /**
- * @returns {function(Data): InitialVars}
+ * @returns {function(Data, function(InitialVars))}
  */
 epiviz.ui.charts.markers.VisualizationMarker.prototype.preMark = function() { return this._preMark; };
 
 /**
- * @returns {function(Item, Data, InitialVars): MarkResult}
+ * @returns {function(Item, Data, InitialVars, function(MarkResult))}
  */
 epiviz.ui.charts.markers.VisualizationMarker.prototype.mark = function() { return this._mark; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.markers.VisualizationMarker.prototype.preMarkStr = function() { return this._preMarkStr; };
+
+/**
+ * @returns {string}
+ */
+epiviz.ui.charts.markers.VisualizationMarker.prototype.markStr = function() { return this._markStr; };
 
 /**
  * @enum {string}
@@ -92,8 +162,8 @@ epiviz.ui.charts.markers.VisualizationMarker.prototype.raw = function() {
     type: this._type,
     id: this._id,
     name: this._name,
-    preMark: this._preMark.toString(),
-    mark: this._mark.toString()
+    preMark: this._preMarkStr,
+    mark: this._markStr
   };
 };
 
@@ -102,10 +172,5 @@ epiviz.ui.charts.markers.VisualizationMarker.prototype.raw = function() {
  * @returns {epiviz.ui.charts.markers.VisualizationMarker}
  */
 epiviz.ui.charts.markers.VisualizationMarker.fromRawObject = function(o) {
-  return new epiviz.ui.charts.markers.VisualizationMarker(
-    o.type,
-    o.id,
-    o.name,
-    eval('(' + o.preMark + ')'),
-    eval('(' + o.mark + ')'));
+  return new epiviz.ui.charts.markers.VisualizationMarker(o.type, o.id, o.name, o.preMark, o.mark);
 };

@@ -580,22 +580,3 @@ epiviz.data.Cache.prototype.clearDatasourceGroupCache = function(datasourceGroup
     this._measurementPendingRequestsMap.put(msToClear[i], {});
   }
 };
-
-/**
- * TODO: Cleanup
- * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
- * @returns {epiviz.measurements.MeasurementSet}
- * @private
- */
-/*epiviz.data.Cache.prototype._extractUnorderedMeasurements = function(chartMeasurementsMap) {
-  var ret = new epiviz.measurements.MeasurementSet();
-  for (var chartId in chartMeasurementsMap) {
-    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }
-    chartMeasurementsMap[chartId].foreach(function(m) {
-      if (m.type() == epiviz.measurements.Measurement.Type.UNORDERED) {
-        ret.add(m);
-      }
-    });
-  }
-  return ret;
-};*/

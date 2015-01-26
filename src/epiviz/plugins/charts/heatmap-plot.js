@@ -254,29 +254,14 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     }
   });
 
-  var colorBy;
-  this._markers.every(function(marker) {
-    if (marker && marker.type() == epiviz.ui.charts.markers.VisualizationMarker.Type.COLOR_BY_ROW) {
-      colorBy = marker;
-    }
-    return !colorBy;
-  });
-
-  var colorLabels;
   var colorLabelsMap;
   var colorScales;
   this._min = data.measurements()[0].minValue();
   this._max = data.measurements()[0].maxValue();
-  if (colorBy) {
-    colorLabels = {};
+  if (this._globalIndexColorLabels) {
     colorLabelsMap = {};
-    var initialVars = colorBy.preMark()(data);
-    var firstSeries = data.firstSeries();
     for (var j = firstGlobalIndex; j < lastGlobalIndex; ++j) {
-      var row = firstSeries.getRowByGlobalIndex(j);
-      var colorLabel = colorBy.mark()(row, data, initialVars);
-      colorLabels[j] = colorLabel;
-      colorLabelsMap[colorLabel] = colorLabel;
+      colorLabelsMap[this._globalIndexColorLabels[j]] = this._globalIndexColorLabels[j];
     }
     this._colorLabels = Object.keys(colorLabelsMap);
     colorScales = {};
@@ -323,8 +308,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     .attr('width', cellWidth)
     .attr('height', cellHeight)
     .style('fill', function(d, i) {
-      if (!colorBy) { return self._colorScale(d.values[0]); }
-      return colorScales[colorLabels[d.valueItems[0][0].globalIndex]](d.values[0]);
+      if (!self._globalIndexColorLabels) { return self._colorScale(d.values[0]); }
+      return colorScales[self._globalIndexColorLabels[d.valueItems[0][0].globalIndex]](d.values[0]);
     });
 
   selection
@@ -339,8 +324,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     .attr('width', cellWidth)
     .attr('height', cellHeight)
     .style('fill', function(d) {
-      if (!colorBy) { return self._colorScale(d.values[0]); }
-      return colorScales[colorLabels[d.valueItems[0][0].globalIndex]](d.values[0]);
+      if (!self._globalIndexColorLabels) { return self._colorScale(d.values[0]); }
+      return colorScales[self._globalIndexColorLabels[d.valueItems[0][0].globalIndex]](d.values[0]);
     });
 
   selection
@@ -409,8 +394,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
       .style('opacity', null)
       .attr('fill', function(colName, i) {
         var globalIndex = i + firstGlobalIndex;
-        if (!colorBy) { return '#000000'; }
-        return self.colors().getByKey(colorLabels[globalIndex]);
+        if (!self._globalIndexColorLabels) { return '#000000'; }
+        return self.colors().getByKey(self._globalIndexColorLabels[globalIndex]);
       });
 
     colSelection
@@ -479,7 +464,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   titleEntries
     .attr('fill', function(label, i) {
       if (i == 0) { return '#000000'; }
-      if (!colorBy) { return self.colors().get(0); }
+      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
       return self.colors().getByKey(label);
     })
     .text(function(label) { return label; });
@@ -509,7 +494,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     .style('stroke-width', '0')
     .attr('fill', function(label, i) {
       if (i == 0) { return '#ffffff'; }
-      if (!colorBy) { return self.colors().get(0); }
+      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
       return self.colors().getByKey(label);
     })
     .style('stroke-width', function(label, i) { return i ? 0 : 1; })

@@ -23,6 +23,28 @@ epiviz.datatypes.MapGenomicData = function(map) {
    * @private
    */
   this._measurements = map ? map.keys() : null;
+
+  /**
+   * @type {epiviz.deferred.Deferred}
+   * @private
+   */
+  this._mapLoaded = new epiviz.deferred.Deferred();
+
+  if (this._map) { this._mapLoaded.resolve(); }
+};
+
+/**
+ * @param {function} callback
+ */
+epiviz.datatypes.MapGenomicData.prototype.ready = function(callback) {
+  this._mapLoaded.done(callback);
+};
+
+/**
+ * @returns {boolean}
+ */
+epiviz.datatypes.MapGenomicData.prototype.isReady = function() {
+  return this._mapLoaded.state() == epiviz.deferred.Deferred.State.RESOLVED;
 };
 
 /**
@@ -32,7 +54,9 @@ epiviz.datatypes.MapGenomicData = function(map) {
 epiviz.datatypes.MapGenomicData.prototype._setMap = function(map) {
   if (this._map) { throw Error('MapGenomicData is immutable'); }
   this._map = map;
-  this._measurements = map ? map.keys() : null;
+  if (!map) { return; }
+  this._measurements = map.keys();
+  this._mapLoaded.resolve();
 };
 
 /**

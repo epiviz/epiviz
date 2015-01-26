@@ -1,5 +1,6 @@
 <!--<?php
 
+ini_set( 'session.cookie_httponly', 1 );
 session_start();
 
 const SETTINGS_EXPIRATION_TIME = 2592000; // One month in seconds
@@ -189,6 +190,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
     <!-- Future tooltip: <script src="src/lib/qtip/jquery.qtip.min.js"></script>-->
 
+    <script type="text/javascript" src="//caja.appspot.com/caja.js"></script>
+
     <!-- Google Analytics -->
     <script src="src/lib/google-analytics/google-analytics.js"></script>
 
@@ -219,6 +222,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/closure/goog/structs/collection.js"></script>
 
     <!-- EpiViz framework -->
+    <script src="src/epiviz/deferred/deferred.js"></script>
+    <script src="src/epiviz/deferred/promise.js"></script>
     <script src="src/epiviz/utils/utils.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
@@ -498,7 +503,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       }
     }
 ?>
-
     <script>
       // Run main once the page has loaded
       $(epiviz.main);
