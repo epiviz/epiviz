@@ -174,6 +174,22 @@ epiviz.Config = function(settingsMap) {
 };
 
 /**
+ * A map of settings that are used as input for the EpiViz configuration
+ * @type {*}
+ */
+epiviz.Config.SETTINGS = {};
+
+/**
+ * @const {string}
+ */
+epiviz.Config.DEFAULT_DATA_PROVIDER_ID = 'umd';
+
+/**
+ * @const {string}
+ */
+epiviz.Config.DEFAULT_WORKSPACE_NAME = 'Default Workspace';
+
+/**
  * @type {Array.<string>}
  * @const
  */

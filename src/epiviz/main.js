@@ -17,9 +17,7 @@ goog.require('epiviz.EpiViz');
  * Main entry point
  */
 epiviz.main = function() {
-  caja.initialize({ cajaServer: 'https://caja.appspot.com/', debug: false });
-
-  var config = new epiviz.Config(epiviz.EpiViz.SETTINGS);
+  var config = new epiviz.Config(epiviz.Config.SETTINGS);
 
   /** @type {epiviz.ui.LocationManager} */
   var locationManager = new epiviz.ui.LocationManager(config);

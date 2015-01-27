@@ -7,7 +7,7 @@
 /**
  * Overrides the default configuration settings for EpiViz
  */
-epiviz.EpiViz.SETTINGS = {
+epiviz.Config.SETTINGS = {
 
   // PHP/MySQL Data
 

@@ -85,7 +85,10 @@ epiviz.workspaces.Workspace = function(id, name, content) {
   this._contentChanged = new epiviz.events.Event();
 };
 
-epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME = 'Default Workspace';
+/**
+ * @const {string}
+ */
+epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME = epiviz.Config.DEFAULT_WORKSPACE_NAME;
 
 /**
  * @returns {string}

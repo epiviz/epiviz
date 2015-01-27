@@ -7,7 +7,7 @@
 /**
  * Overrides the default configuration settings for EpiViz
  */
-epiviz.EpiViz.SETTINGS = {
+epiviz.Config.SETTINGS = {
 
   // PHP/MySQL Data
 
@@ -183,7 +183,7 @@ epiviz.EpiViz.SETTINGS = {
   },
 
   defaultWorkspaceSettings: {
-    name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
+    name: epiviz.Config.DEFAULT_WORKSPACE_NAME,
     content: {
       range: {
         seqName: 'chr11',
@@ -197,7 +197,7 @@ epiviz.EpiViz.SETTINGS = {
           type: 'range',
           datasourceId: 'genes',
           datasourceGroup: 'genes',
-          dataprovider: epiviz.data.WebServerDataProvider.DEFAULT_ID,
+          dataprovider: epiviz.Config.DEFAULT_DATA_PROVIDER_ID,
           formula: null,
           defaultChartType: 'Genes Track',
           annotation: null,

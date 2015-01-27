@@ -144,12 +144,6 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
 };
 
 /**
- * A map of settings that are used as input for the EpiViz configuration
- * @type {*}
- */
-epiviz.EpiViz.SETTINGS = {};
-
-/**
  * @type {string}
  * @const
  */

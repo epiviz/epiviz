@@ -30,6 +30,43 @@ epiviz.caja.cajole = function(funcStr, args) {
 };
 
 /**
+ * @param {string} scriptUrl
+ * @param {Object.<string, *>} [args]
+ * @returns {epiviz.deferred.Deferred}
+ */
+epiviz.caja.run = function(scriptUrl, args) {
+  var deferred = new epiviz.deferred.Deferred();
+  caja.load(
+    undefined,  // no DOM access
+    undefined,  // no network access
+    function(frame) {
+      frame.code(
+        scriptUrl,
+        'application/javascript',
+        undefined)
+        .api(args ? args : {})
+        .run(function() {
+          deferred.resolve();
+        });
+    });
+  return deferred;
+};
+
+/**
+ * @param {Array.<string>} scriptUrls
+ * @param {Array.<Object.<string, *>>|Object.<string, *>} [args]
+ * @returns {epiviz.deferred.Deferred}
+ */
+epiviz.caja.chain = function(scriptUrls, args) {
+  if (!$.isArray(args)) {
+    args = epiviz.utils.fillArray(scriptUrls.length, args);
+  }
+  return epiviz.utils.deferredFor(scriptUrls.length, function(j) {
+    return epiviz.caja.run(scriptUrls[j], args[j]);
+  });
+};
+
+/**
  * @returns {Object.<string, *>}
  */
 epiviz.caja.buildChartMethodContext = function() {
@@ -48,6 +85,8 @@ epiviz.caja.buildChartMethodContext = function() {
       Config: epiviz.Config
     },
     d3: d3,
-    $: $
+    $: $,
+    sprintf: sprintf,
+    goog: goog
   };
 };

@@ -393,30 +393,31 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/tree/decoration/toggle-propagate-selection-button.js"></script>
 
     <script src="src/epiviz/main.js"></script>
-    
+
     <!-- Dynamic initializations -->
-    <script src="<?php echo $settings_file; ?>"></script>
 
     <script>
+      caja.initialize({ cajaServer: 'https://caja.appspot.com/', debug: true });
+      epiviz.caja.run(<?php echo json_encode($settings_file); ?>, epiviz.caja.buildChartMethodContext()).done(function() {
 
-      var items;
+        var items;
 <?php
     foreach ($settings as $setting => $val) {
       if (!is_array($val)) {
 ?>
-      epiviz.EpiViz.SETTINGS['<?php echo $setting; ?>'] = '<?php echo $val; ?>';
+        epiviz.Config.SETTINGS['<?php echo $setting; ?>'] = <?php echo json_encode($val); ?>;
 <?php
       } else {
 ?>
-      items = [];
+        items = [];
 <?php
         foreach ($val as $item) {
 ?>
-      items.push('<?php echo $item; ?>');
+        items.push(<?php echo json_encode($item); ?>);
 <?php
         }
 ?>
-      epiviz.EpiViz.SETTINGS['<?php echo $setting; ?>'] = items;
+        epiviz.Config.SETTINGS['<?php echo $setting; ?>'] = items;
 <?php
       }
     }
@@ -425,42 +426,40 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 <?php
     if ($user === null) {
 ?>
-      epiviz.workspaces.UserManager.USER_STATUS = {
-        loggedIn: false,
-        oauthProvider: null,
-        userData: null
-      };
+        epiviz.workspaces.UserManager.USER_STATUS = {
+          loggedIn: false,
+          oauthProvider: null,
+          userData: null
+        };
 <?php
     } else {
 ?>
-      epiviz.workspaces.UserManager.USER_STATUS = {
-        loggedIn: true,
-        oauthProvider: '<?php echo $user['oauth_provider']; ?>',
-        userData: <?php echo json_encode($user) . "\n"; ?>
-      };
+        epiviz.workspaces.UserManager.USER_STATUS = {
+          loggedIn: true,
+          oauthProvider: '<?php echo $user['oauth_provider']; ?>',
+          userData: <?php echo json_encode($user) . "\n"; ?>
+        };
 <?php
     }
-?>
 
-<?php
     foreach ($_GET as $key => $val) {
       // We'll deal with this later
       if ($key == 'script' || $key == 'settings') { continue; }
       if (is_array($val)) {
 ?>
-      items = [];
+        items = [];
 <?php
         foreach ($val as $item) {
 ?>
-      items.push('<?php echo $item; ?>');
+        items.push(<?php echo json_encode($item); ?>);
 <?php
         }
 ?>
-      epiviz.ui.WebArgsManager.WEB_ARGS['<?php echo $key; ?>'] = items;
+        epiviz.ui.WebArgsManager.WEB_ARGS[<?php echo json_encode($key); ?>] = items;
 <?php
       } else {
 ?>
-      epiviz.ui.WebArgsManager.WEB_ARGS['<?php echo $key; ?>'] = '<?php echo $val; ?>';
+        epiviz.ui.WebArgsManager.WEB_ARGS[<?php echo json_encode($key); ?>] = <?php echo json_encode($val); ?>;
 <?php
       }
     }
@@ -469,46 +468,41 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     if ($settings_gist != null) {
 ?>
-      epiviz.ui.WebArgsManager.WEB_ARGS['settingsGist'] = '<?php echo $settings_gist; ?>';
+        epiviz.ui.WebArgsManager.WEB_ARGS['settingsGist'] = <?php json_encode($settings_gist); ?>;
 <?php
     } else {
 ?>
-      epiviz.ui.WebArgsManager.WEB_ARGS['settings'] = '<?php echo $settings_arg; ?>';
+        epiviz.ui.WebArgsManager.WEB_ARGS['settings'] = <?php echo json_encode($settings_arg); ?>;
 <?php
     }
     if (is_array($scripts) && count($scripts) == 0) { $scripts = DEFAULT_SETTINGS_ARG; }
     if ($scripts != DEFAULT_SETTINGS_ARG) {
 ?>
-      items = [];
+        items = [];
 <?php
       foreach ($scripts as $item) {
         if (strpos($item, 'raw.php') === 0 && array_key_exists($item, $gists_map)) { continue; }
 ?>
-      items.push('<?php echo $item; ?>');
+        items.push(<?php echo json_encode($item); ?>);
 <?php
       }
 ?>
-      epiviz.ui.WebArgsManager.WEB_ARGS['script'] = items;
-<?php
-    }
+        epiviz.ui.WebArgsManager.WEB_ARGS['script'] = items;
 
-?>
-    </script>
-    
+        epiviz.caja.chain(items, epiviz.caja.buildChartMethodContext()).done(function() {
+          // Run main once the page has loaded
+          $(epiviz.main);
+        });
 <?php
-    if (is_array($scripts)) {
-      foreach ($scripts as $script) {
+    } else {
 ?>
-    <script src="<?php echo $script; ?>"></script>
+        // Run main once the page has loaded
+        $(epiviz.main);
 <?php
-      }
     }
-?>
-    <script>
-      // Run main once the page has loaded
-      $(epiviz.main);
+ ?>
+      });
     </script>
-    
   </head>
   <body>
     <div class="ui-layout-north">

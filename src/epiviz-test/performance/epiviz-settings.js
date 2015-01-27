@@ -9,7 +9,7 @@
  *
  * Settings specific to measuring performance
  */
-epiviz.EpiViz.SETTINGS = {
+epiviz.Config.SETTINGS = {
 
   // PHP/MySQL Data
 

@@ -277,7 +277,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       foreach ($settings as $setting => $val) {
         if (!is_array($val)) {
 ?>
-      epiviz.EpiViz.SETTINGS['<?php echo $setting; ?>'] = '<?php echo $val; ?>';
+      epiviz.Config.SETTINGS['<?php echo $setting; ?>'] = '<?php echo $val; ?>';
 <?php
         } else {
 ?>
@@ -289,7 +289,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 <?php
           }
 ?>
-      epiviz.EpiViz.SETTINGS['<?php echo $setting; ?>'] = items;
+      epiviz.Config.SETTINGS['<?php echo $setting; ?>'] = items;
 <?php
         }
       }
