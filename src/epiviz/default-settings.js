@@ -21,7 +21,7 @@ epiviz.EpiViz.SETTINGS = {
   zoomoutRatio: 1.2,
   navigationStepRatio: 0.2,
 
-  navigationDelay: 100,
+  navigationDelay: 0,
 
   // Plug-ins
 
@@ -85,7 +85,6 @@ epiviz.EpiViz.SETTINGS = {
       height: 90,
       margins: new epiviz.ui.charts.Margins(25, 20, 23, 10),
       decorations: [
-        'epiviz.ui.charts.decoration.ChartColorsButton',
         'epiviz.ui.charts.decoration.ToggleTooltipButton',
 
         'epiviz.ui.charts.decoration.ChartTooltip',
@@ -169,7 +168,7 @@ epiviz.EpiViz.SETTINGS = {
 
     },
     'epiviz.plugins.charts.LineTrack': {
-      maxPoints: 100,
+      step: 150,
       showPoints: true,
       showLines: true,
       pointRadius: 3,
