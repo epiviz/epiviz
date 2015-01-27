@@ -47,20 +47,12 @@ epiviz.ui.charts.markers.VisualizationMarker = function(type, id, name, preMark,
    */
   this._markStr = mark || '';
 
-  var self = this;
-
   var deferredPreMark = new epiviz.deferred.Deferred();
   var cajoledPreMark = null;
-  caja.load(
-    undefined,  // no DOM access
-    undefined,  // no network access
-    function(frame) {
-      cajoledPreMark = frame.code(
-        undefined,
-        'application/javascript',
-        'return (' + self._preMarkStr + ')(data);');  // input source code
-      deferredPreMark.resolve();
-    });
+  epiviz.caja.cajole(this._preMarkStr).done(function(preMarkFunc) {
+    cajoledPreMark = preMarkFunc;
+    deferredPreMark.resolve();
+  });
 
   /**
    * @type {function(Data): epiviz.deferred.Deferred.<InitialVars>}
@@ -69,30 +61,18 @@ epiviz.ui.charts.markers.VisualizationMarker = function(type, id, name, preMark,
   this._preMark = function(data) {
     var d = new epiviz.deferred.Deferred();
     deferredPreMark.done(function(){
-      cajoledPreMark
-        .api({ data: data })
-        .run(function(initialVars) {
-          d.resolve(initialVars);
-        });
+      var initialVars = cajoledPreMark(data);
+      d.resolve(initialVars);
     });
     return d;
   };
 
   var deferredMark = new epiviz.deferred.Deferred();
   var cajoledMark = null;
-  caja.load(
-    undefined,  // no DOM access
-    undefined,  // no network access
-    function(frame) {
-      frame.code(
-        undefined,
-        'application/javascript',
-        'return (' + self._markStr + ');')
-        .run(function(markFunc) {
-          cajoledMark = markFunc;
-          deferredMark.resolve();
-        });
-    });
+  epiviz.caja.cajole(this._markStr).done(function(markFunc) {
+    cajoledMark = markFunc;
+    deferredMark.resolve();
+  });
 
   /**
    * @type {function(Item, Data, InitialVars): epiviz.deferred.Deferred.<MarkResult>}

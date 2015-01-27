@@ -51,21 +51,37 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._lastModifiedMethod = 'draw';
 
+  var self = this;
   if (properties.modifiedMethods) {
+    var methodsUpdated = new epiviz.deferred.Deferred();
     var modifiedMethods = properties.modifiedMethods;
+    var modifiedMethodNames = Object.keys(modifiedMethods);
+    var cajoledMethods = {};
+    var nMethodsUpdated = 0;
     for (var m in modifiedMethods) {
       if (!modifiedMethods.hasOwnProperty(m)) { continue; }
       if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
-
-      try {
-        this._originalMethods[m] = this[m];
-        this[m] = eval('(' + modifiedMethods[m] + ')');
-        this._hasModifiedMethods = true;
-        this._lastModifiedMethod = m;
-      } catch (e) {
-        // Ignore bad modified methods
-      }
+      (function(m) {
+        epiviz.caja.cajole(modifiedMethods[m], epiviz.caja.buildChartMethodContext()).done(function(method) {
+          if (!method) { return; }
+          cajoledMethods[m] = method;
+          nMethodsUpdated += 1;
+          if (nMethodsUpdated >= modifiedMethodNames.length) {
+            methodsUpdated.resolve();
+          }
+        });
+      })(m);
     }
+    methodsUpdated.done(function() {
+      for (var m in cajoledMethods) {
+        if (!cajoledMethods.hasOwnProperty(m)) { continue; }
+        self._originalMethods[m] = self[m];
+        self[m] = cajoledMethods[m];
+        self._lastModifiedMethod = m;
+      }
+      self._hasModifiedMethods = true;
+      self.draw();
+    });
   }
 
   /**
@@ -164,7 +180,6 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    */
   this._markersIndices = {};
 
-  var self = this;
   this._markers.forEach(function(marker, i) {
     if (!marker) { return; }
     self._markersMap[marker.id()] = marker;
@@ -657,8 +672,13 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
  * @param {Object.<string, string>} modifiedMethods
  */
 epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedMethods) {
+  var self = this;
   var methodsModified = false;
   if (!modifiedMethods) { return; }
+  var modifiedMethodNames = Object.keys(modifiedMethods);
+  var methodsUpdated = new epiviz.deferred.Deferred();
+  var nMethodsUpdated = 0;
+  var cajoledMethods = {};
   for (var m in modifiedMethods) {
     if (!modifiedMethods.hasOwnProperty(m)) { continue; }
     if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
@@ -668,28 +688,33 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
       this._originalMethods[m] = this[m];
     }
 
-    try {
-      this[m] = eval('(' + modifiedMethods[m] + ')');
-      this._hasModifiedMethods = true;
-      methodsModified = true;
-      this._lastModifiedMethod = m;
-    } catch (e) {
-      var dialog = new epiviz.ui.controls.MessageDialog(
-        'Error evaluating code',
-        {
-          Ok: function() {}
-        },
-        'Could not evaluate the code for method ' + m + '. Error details:<br/>' + e.message,
-        epiviz.ui.controls.MessageDialog.Icon.ERROR);
-      dialog.show();
+    (function(m) {
+      epiviz.caja.cajole(modifiedMethods[m], epiviz.caja.buildChartMethodContext()).done(function(method) {
+        if (method) {
+          cajoledMethods[m] = method;
+          methodsModified = true;
+
+          nMethodsUpdated += 1;
+          if (nMethodsUpdated >= modifiedMethodNames.length) {
+            methodsUpdated.resolve();
+          }
+        }
+      });
+    })(m);
+  }
+
+  methodsUpdated.done(function() {
+    if (methodsModified) {
+      for (var m in cajoledMethods) {
+        if (!cajoledMethods.hasOwnProperty(m)) { continue; }
+        self[m] = cajoledMethods[m];
+        self._lastModifiedMethod = m;
+      }
+      self._hasModifiedMethods = true;
+      self.draw();
+      self._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(self._id, modifiedMethods));
     }
-  }
-
-  if (methodsModified) {
-    this.draw();
-
-    this._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, modifiedMethods));
-  }
+  });
 };
 
 /**
