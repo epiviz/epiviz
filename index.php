@@ -479,8 +479,12 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     if ($scripts != DEFAULT_SETTINGS_ARG) {
 ?>
         items = [];
+        var allScripts = [];
 <?php
       foreach ($scripts as $item) {
+?>
+        allScripts.push(<?php echo json_encode($item); ?>);
+<?php
         if (strpos($item, 'raw.php') === 0 && array_key_exists($item, $gists_map)) { continue; }
 ?>
         items.push(<?php echo json_encode($item); ?>);
@@ -489,7 +493,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 ?>
         epiviz.ui.WebArgsManager.WEB_ARGS['script'] = items;
 
-        epiviz.caja.chain(items, epiviz.caja.buildChartMethodContext()).done(function() {
+        epiviz.caja.chain(allScripts, epiviz.caja.buildChartMethodContext()).done(function() {
           // Run main once the page has loaded
           $(epiviz.main);
         });
