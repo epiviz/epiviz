@@ -397,7 +397,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- Dynamic initializations -->
 
     <script>
-      caja.initialize({ cajaServer: 'https://caja.appspot.com/', debug: true });
+      caja.initialize({ cajaServer: 'https://caja.appspot.com/', debug: false });
       epiviz.caja.run(<?php echo json_encode($settings_file); ?>, epiviz.caja.buildChartMethodContext()).done(function() {
 
         var items;
