@@ -143,6 +143,10 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
 
   var self = this;
 
+  // If data is defined, then the base class sets this._lastData to data.
+  // If it isn't, then we'll use the data from the last draw call
+  root = this._lastData;
+  range = this._lastRange;
   if (root) {
     this._oldRootDepth = this._rootDepth;
     this._rootDepth = root.depth;
