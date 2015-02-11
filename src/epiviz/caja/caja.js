@@ -82,6 +82,16 @@ epiviz.caja.buildChartMethodContext = function() {
       events: epiviz.events,
       deferred: epiviz.deferred,
       datatypes: epiviz.datatypes,
+      data: {
+        DataProvider: epiviz.data.DataProvider,
+        Request: epiviz.data.Request,
+        Response: epiviz.data.Response,
+        WebServerDataProvider: {
+          // TODO: In the future, restrict the access to this method, as it can be a risk factor
+          // TODO: For now, it is kept here for DataProvider plugins
+          makeGetRequest: epiviz.data.WebServerDataProvider.makeGetRequest
+        }
+      },
       Config: epiviz.Config
     },
     d3: d3,
