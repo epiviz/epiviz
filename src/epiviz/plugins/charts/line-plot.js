@@ -44,19 +44,12 @@ epiviz.plugins.charts.LinePlot.prototype._initialize = function() {
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.LinePlot.prototype.draw = function(range, data, slide, zoom) {
-
-  var lastRange = this._lastRange;
-
   epiviz.ui.charts.Plot.prototype.draw.call(this, range, data, slide, zoom);
 
   // If data is defined, then the base class sets this._lastData to data.
   // If it isn't, then we'll use the data from the last draw call
   data = this._lastData;
   range = this._lastRange;
-
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
-    slide = range.start() - lastRange.start();
-  }
 
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }

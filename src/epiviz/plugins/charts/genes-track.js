@@ -44,9 +44,6 @@ epiviz.plugins.charts.GenesTrack.prototype._initialize = function() {
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, zoom) {
-
-  var lastRange = this._lastRange;
-
   epiviz.ui.charts.Track.prototype.draw.call(this, range, data, slide, zoom);
 
   // If data is defined, then the base class sets this._lastData to data.
@@ -54,16 +51,13 @@ epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, z
   data = this._lastData;
   range = this._lastRange;
 
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
-    slide = range.start() - lastRange.start();
-  }
-
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() != range.width()) {
-    zoom = lastRange.width() / range.width();
-  }
-
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
+
+  slide = slide || this._slide;
+  zoom = zoom || this._zoom;
+  this._slide = 0;
+  this._zoom = 1;
 
   return this._drawGenes(range, data, slide || 0, zoom || 1);
 };

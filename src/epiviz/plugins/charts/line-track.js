@@ -42,9 +42,6 @@ epiviz.plugins.charts.LineTrack.prototype._initialize = function() {
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zoom) {
-
-  var lastRange = this._lastRange;
-
   epiviz.ui.charts.Track.prototype.draw.call(this, range, data, slide, zoom);
 
   // If data is defined, then the base class sets this._lastData to data.
@@ -52,9 +49,10 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   data = this._lastData;
   range = this._lastRange;
 
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
-    slide = range.start() - lastRange.start();
-  }
+  slide = slide || this._slide || 0;
+  zoom = zoom || this._zoom || 1;
+  this._slide = 0;
+  this._zoom = 1;
 
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
@@ -94,7 +92,6 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   this._clearAxes();
   this._drawAxes(xScale, yScale, 10, 5);
 
-  slide = slide || 0;
   var delta = slide * (this.width() - this.margins().sumAxis(Axis.X)) / range.width();
   var linesGroup = this._svg.selectAll('.lines');
 
@@ -120,7 +117,7 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
     pointSeries.remove();
   }
 
-  return this._drawLines(range, data, delta, zoom || 1, xScale, yScale);
+  return this._drawLines(range, data, delta, zoom, xScale, yScale);
 };
 
 /**

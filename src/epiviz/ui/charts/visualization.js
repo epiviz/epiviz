@@ -163,6 +163,18 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
   this._lastRange = null;
 
   /**
+   * @type {number}
+   * @protected
+   */
+  this._slide = 0;
+
+  /**
+   * @type {number}
+   * @protected
+   */
+  this._zoom = 1;
+
+  /**
    * @type {Array.<epiviz.ui.charts.markers.VisualizationMarker>}
    * @protected
    */
@@ -512,9 +524,11 @@ epiviz.ui.charts.Visualization.prototype.updateSize = function() {
  * @returns {Array.<epiviz.ui.charts.VisObject>}
  */
 epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
+
   if (range != undefined) {
     this._lastRange = range;
   }
+
   if (data != undefined) {
     this._lastData = data;
     this._unalteredData = data;
@@ -822,6 +836,8 @@ epiviz.ui.charts.Visualization.prototype.setAutoPropagateChanges = function(val)
  * @returns {epiviz.deferred.Deferred}
  */
 epiviz.ui.charts.Visualization.prototype.transformData = function(range, data) {
+  var lastRange = this._lastRange;
+
   if (range != undefined) {
     this._lastRange = range;
   }
@@ -829,6 +845,15 @@ epiviz.ui.charts.Visualization.prototype.transformData = function(range, data) {
     this._lastData = data;
     this._unalteredData = data;
   }
+
+  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
+    this._slide = range.start() - lastRange.start();
+  }
+
+  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() != range.width()) {
+    this._zoom = lastRange.width() / range.width();
+  }
+
   var deferred = new epiviz.deferred.Deferred();
   deferred.resolve();
   return deferred;
