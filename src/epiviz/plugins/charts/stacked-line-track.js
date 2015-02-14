@@ -179,7 +179,6 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
       .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
   }
 
-  Math.seedrandom(0);
   var stack = d3.layout.stack().offset(offset);
   var layers = stack(seriesAreas);
 
