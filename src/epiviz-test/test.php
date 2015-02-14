@@ -144,7 +144,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
-    <title>EpiViz 2 Test</title>
+    <title>EpiViz 3 Test</title>
 
     <link rel="shortcut icon" href="../../css/epiviz_2_icon.png"/>
 
