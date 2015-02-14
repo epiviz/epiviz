@@ -143,6 +143,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
     <title>EpiViz 2</title>
 
+    <base href="<?php echo getenv('base_location'); ?>" target="_blank">
+
     <link rel="shortcut icon" href="img/epiviz_2_icon.png"/>
 
     <!-- CSS -->
