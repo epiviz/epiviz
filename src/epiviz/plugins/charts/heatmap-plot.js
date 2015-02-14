@@ -361,6 +361,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var colSelection = itemsGroup.selectAll('.col-text');
 
+  var maxColSize = 0;
   if (colnames.length > nCols) {
     colSelection
       .transition()
@@ -405,7 +406,6 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
       .style('opacity', 0)
       .remove();
 
-    var maxColSize = 0;
     $('#' + this.id() + ' .col-text')
       .each(function(i) {
         var textWidth = this.getBBox().width;
