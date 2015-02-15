@@ -241,6 +241,7 @@ epiviz.utils.asyncFor = function(n, iterationCallback, finishedCallback) {
  */
 epiviz.utils.deferredFor = function(n, deferredIteration) {
   // TODO: Add a timeout in iteration every N number of iterations, so we don't run out of stack
+  var maxDepth = 1000;
   var iterate = function(i, deferredIteration) {
     var d = new epiviz.deferred.Deferred();
     if (i >= n) { d.resolve(); }
@@ -248,8 +249,14 @@ epiviz.utils.deferredFor = function(n, deferredIteration) {
       deferredIteration(i).then(
         // Done (continue)
         function() {
-          iterate(i + 1, deferredIteration)
-            .done(function() { d.resolve(); });
+          if (i % maxDepth != 0) {
+            iterate(i + 1, deferredIteration)
+              .done(function() { d.resolve(); });
+          } else {
+            setTimeout(function() {
+              iterate(i + 1, deferredIteration).done(function() { d.resolve(); });
+            }, 0);
+          }
         },
         // Fail (break)
         function() { d.resolve(); });
