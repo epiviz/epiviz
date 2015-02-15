@@ -292,6 +292,14 @@ epiviz.workspaces.Workspace.prototype.computedMeasurementsRemoved = function(mea
 };
 
 /**
+ * @param {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>} chartsOrder
+ */
+epiviz.workspaces.Workspace.prototype.chartsOrderChanged = function(chartsOrder) {
+  this._chartsOrder = chartsOrder;
+  this._setChanged();
+};
+
+/**
  * @returns {boolean}
  */
 epiviz.workspaces.Workspace.prototype.changed = function() {

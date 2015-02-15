@@ -57,6 +57,12 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._chartRemoved = new epiviz.events.Event();
 
   /**
+   * @type {epiviz.events.Event.<Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>>}
+   * @private
+   */
+  this._chartsOrderChanged = new epiviz.events.Event();
+
+  /**
    * @type {epiviz.events.Event}
    * @private
    */
@@ -114,18 +120,6 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._chartRequestHierarchy = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, epiviz.ui.charts.tree.NodeSelectionType>>>}
-   * @private
-   */
-  //this._chartPropagateHierarchySelection = new epiviz.events.Event();
-
-  /**
-   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
-   * @private
-   */
-  //this._chartPropagateHierarchyOrder = new epiviz.events.Event();
-
-  /**
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
    * @private
    */
@@ -151,12 +145,25 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   var chartsContainer = chartsAccordion.find('.vis-container');
   if (chartsAccordion.length == 0) {
     chartsAccordion = $('<div class="accordion"></div>').appendTo(chartDisplayTypeContainer);
+    var displayType = chartType.chartDisplayType();
     chartsAccordion.append(
       sprintf('<h3><a href="#"><b><span style="color: #025167">Views by %s</span></b></a></h3>',
-        epiviz.ui.ControlManager.DISPLAY_TYPE_LABELS[chartType.chartDisplayType()]));
+        epiviz.ui.ControlManager.DISPLAY_TYPE_LABELS[displayType]));
     chartsContainer = $('<div class="vis-container"></div>').appendTo(chartsAccordion);
     chartsAccordion.multiAccordion();
     chartsAccordion.multiAccordion('option', 'active', 'all');
+    var self = this;
+    chartsContainer.sortable({
+      stop: function(e, ui) {
+        var newOrder = chartsContainer.find('.visualization-container')
+          .map(function(i, el) {
+            return $(el).attr('id');
+          });
+        if (epiviz.utils.arraysEqual(newOrder, self._chartsOrder[displayType])) { return; }
+        self._chartsOrder[displayType] = newOrder;
+        self._chartsOrderChanged.notify(self._chartsOrder);
+      }
+    });
   }
 
   chartsContainer.append(sprintf('<div id="%s" class="%s"></div>', id, css));
@@ -325,6 +332,11 @@ epiviz.ui.charts.ChartManager.prototype.onChartAdded = function() { return this.
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartRemoved = function() { return this._chartRemoved; };
+
+/**
+ * @returns {epiviz.events.Event.<Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>>}
+ */
+epiviz.ui.charts.ChartManager.prototype.onChartsOrderChanged = function() { return this._chartsOrderChanged; };
 
 /**
  * @returns {epiviz.events.Event}
