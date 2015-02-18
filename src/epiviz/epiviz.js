@@ -147,7 +147,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
  * @type {string}
  * @const
  */
-epiviz.EpiViz.VERSION = '2';
+epiviz.EpiViz.VERSION = '3';
 
 epiviz.EpiViz.prototype.start = function() {
   this._cookieManager.initialize();
