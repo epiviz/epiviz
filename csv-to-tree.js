@@ -8,8 +8,6 @@ jsdom = require('jsdom');
 fs = require('fs');
 $ = require('jquery')(jsdom.jsdom('<html><body></body></html>').parentWindow);
 
-//require('./lib/closure/goog/bootstrap/nodejs');
-
 /** @type {string} */
 var csv = fs.readFileSync('./tree.csv', {encoding: 'utf8'});
 
@@ -62,10 +60,6 @@ function addTreeMetadata(node) {
     nleaves += node.children[i].nleaves;
   }
 
-  /*for (i = 0; i < node.children.length; ++i) {
-    node.children[i].nextSibling = (i < node.children.length - 1) ? node.children[i + 1].id : undefined;
-    node.children[i].prevSibling = (i > 0) ? node.children[i - 1].id : undefined;
-  }*/
   node.nleaves = nleaves;
 }
 

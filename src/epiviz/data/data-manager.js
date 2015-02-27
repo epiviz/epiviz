@@ -320,14 +320,25 @@ epiviz.data.DataManager.prototype.propagateHierarchyChanges = function(chartVisC
       });
     }
     var provider = this._dataProviderFactory.get(dataprovider);
-    (function(chartId) {
+    (function(chartId, provider, visConfigSelection) {
       provider.getData(epiviz.data.Request.propagateHierarchyChanges(
         visConfigSelection.datasourceGroup,
         visConfigSelection.customData.selection,
         visConfigSelection.customData.order), function(response) {
-        dataReadyCallback(chartId, response.data());
+
+        setTimeout(function() {
+          provider.onRequestClearDatasourceGroupCache().notify({
+            datasourceGroup: visConfigSelection.datasourceGroup,
+            result: new epiviz.events.EventResult()
+          });
+          provider.onRequestRedraw().notify({
+            result: new epiviz.events.EventResult()
+          });
+
+          dataReadyCallback(chartId, response.data());
+        }, 0);
       });
-    })(chartId);
+    })(chartId, provider, visConfigSelection);
   }
 };
 
