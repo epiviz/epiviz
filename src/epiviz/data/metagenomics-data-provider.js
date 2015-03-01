@@ -499,20 +499,6 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
           node.globalDepth - parent.globalDepth < self._maxDepth;
         });
 
-      /*setTimeout(function(){
-        self.onRequestClearDatasourceGroupCache().notify({
-          datasourceGroup: datasourceGroup,
-          result: new epiviz.events.EventResult()
-        });
-        self.onRequestRedraw().notify({
-          result: new epiviz.events.EventResult()
-        });
-
-        callback(epiviz.data.Response.fromRawObject({
-          requestId: request.id(),
-          data: newRoot
-        }));
-      }, 0);*/
       callback(epiviz.data.Response.fromRawObject({
         requestId: request.id(),
         data: newRoot

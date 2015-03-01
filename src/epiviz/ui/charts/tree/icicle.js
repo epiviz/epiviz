@@ -327,6 +327,13 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .attr('width', function(d) { return Math.max(0, calcNewWidth(d) - 2 * self._nodeMargin); })
     .attr('height', function(d) { return Math.max(0, calcNewHeight(d) - 2 * self._nodeMargin); });
 
+  itemsGroup.selectAll('.item')
+    .attr('class', function(d) {
+      var selectionType = self.selectedNodes()[d.id];
+      if (selectionType == undefined) { selectionType = d.selectionType || 0; }
+      return 'item ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
+    });
+
   itemsGroup.selectAll('.item').selectAll('rect')
     .transition().duration(this._animationDelay)
     .style('fill', function(d) { return self.colors().getByKey(d.taxonomy); })

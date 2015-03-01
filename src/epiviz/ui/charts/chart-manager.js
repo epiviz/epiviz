@@ -282,6 +282,24 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
 };
 
 /**
+ */
+epiviz.ui.charts.ChartManager.prototype.updateDataStructureCharts = function() {
+  var chartIds = Object.keys(this._charts);
+  for (var i = 0; i < chartIds.length; ++i) {
+    if (!this._charts.hasOwnProperty(chartIds[i])) { continue; }
+    var chart = this._charts[chartIds[i]];
+    if (!chart) { continue; }
+    if (chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { continue; }
+
+    (function(chart) {
+      setTimeout(function() {
+        chart.fireRequestHierarchy();
+      }, 0);
+    })(chart);
+  }
+};
+
+/**
  * Clears all the charts on stage
  */
 epiviz.ui.charts.ChartManager.prototype.clear = function() {

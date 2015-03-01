@@ -365,6 +365,18 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.firePropagateHierarchyCha
 };
 
 /**
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.fireRequestHierarchy = function() {
+  var nodeId = null;
+  if (this._lastData && this._lastData.children) {
+    nodeId = this._lastData.children[0].id;
+  }
+  this.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
+    this.id(),
+    new epiviz.ui.controls.VisConfigSelection(undefined, undefined, this.datasourceGroup(), this.dataprovider(), undefined, undefined, undefined, nodeId)));
+};
+
+/**
  * @param {boolean} val
  */
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.setAutoPropagateChanges = function(val) {

@@ -633,6 +633,8 @@ epiviz.EpiViz.prototype._registerDataRedraw = function() {
         var currentLocation = self._locationManager.currentLocation();
         self._locationManager.changeCurrentLocation(currentLocation);
         e.result.success = true;
+
+        self._chartManager.updateDataStructureCharts();
       } catch (error) {
         e.result.success = false;
         e.errorMessage = error.toString();
