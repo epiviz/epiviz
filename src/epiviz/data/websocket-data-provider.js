@@ -356,42 +356,50 @@ epiviz.data.WebsocketDataProvider.prototype._removeSeqNames = function (request)
 epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
   /** @type {epiviz.events.EventResult.<{id: string}>} */
   var result = new epiviz.events.EventResult();
-  var measurements = new epiviz.measurements.MeasurementSet();
 
-  /**
-   * @type {Array.<{
-   *   id: string,
-   *   name: string,
-   *   type: string,
-   *   datasourceId: string,
-   *   datasourceGroup: string,
-   *   defaultChartType: ?string,
-   *   annotation: ?Object.<string, string>,
-   *   minValue: ?number,
-   *   maxValue: ?number,
-   *   metadata: ?Array.<string>}>}
-   */
-  var rawMeasurements = JSON.parse(request.get('measurements'));
-  for (var i = 0; i < rawMeasurements.length; ++i) {
-    measurements.add(new epiviz.measurements.Measurement(
-      rawMeasurements[i]['id'],
-      rawMeasurements[i]['name'],
-      rawMeasurements[i]['type'],
-      rawMeasurements[i]['datasourceId'],
-      rawMeasurements[i]['datasourceGroup'],
-      this.id(),
-      null,
-      rawMeasurements[i]['defaultChartType'],
-      rawMeasurements[i]['annotation'],
-      rawMeasurements[i]['minValue'],
-      rawMeasurements[i]['maxValue'],
-      rawMeasurements[i]['metadata']
-    ));
+  var measurements, datasource, datasourceGroup;
+
+  if (request.get('measurements') != undefined) {
+    measurements = new epiviz.measurements.MeasurementSet();
+
+    /**
+     * @type {Array.<{
+     *   id: string,
+     *   name: string,
+     *   type: string,
+     *   datasourceId: string,
+     *   datasourceGroup: string,
+     *   defaultChartType: ?string,
+     *   annotation: ?Object.<string, string>,
+     *   minValue: ?number,
+     *   maxValue: ?number,
+     *   metadata: ?Array.<string>}>}
+     */
+    var rawMeasurements = JSON.parse(request.get('measurements'));
+    for (var i = 0; i < rawMeasurements.length; ++i) {
+      measurements.add(new epiviz.measurements.Measurement(
+        rawMeasurements[i]['id'],
+        rawMeasurements[i]['name'],
+        rawMeasurements[i]['type'],
+        rawMeasurements[i]['datasourceId'],
+        rawMeasurements[i]['datasourceGroup'],
+        this.id(),
+        null,
+        rawMeasurements[i]['defaultChartType'],
+        rawMeasurements[i]['annotation'],
+        rawMeasurements[i]['minValue'],
+        rawMeasurements[i]['maxValue'],
+        rawMeasurements[i]['metadata']
+      ));
+    }
   }
+
+  datasource = request.get('datasource');
+  datasourceGroup = request.get('datasourceGroup') || datasource;
 
   this._fireEvent(this.onRequestAddChart(), {
     type: request.get('type'),
-    measurements: measurements,
+    visConfigSelection: new epiviz.ui.controls.VisConfigSelection(measurements, datasource, datasourceGroup),
     result: result
   });
 

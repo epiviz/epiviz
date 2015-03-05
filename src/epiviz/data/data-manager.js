@@ -55,7 +55,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._requestRemoveMeasurements = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{type: string, measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult.<{id: string}>}>}
+   * @type {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
    * @private
    */
   this._requestAddChart = new epiviz.events.Event();
@@ -132,7 +132,7 @@ epiviz.data.DataManager.prototype.onRequestAddMeasurements = function() { return
 epiviz.data.DataManager.prototype.onRequestRemoveMeasurements = function() { return this._requestRemoveMeasurements; };
 
 /**
- * @returns {epiviz.events.Event.<{type: string, measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult.<{id: string}>}>}
+ * @returns {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
  */
 epiviz.data.DataManager.prototype.onRequestAddChart = function() { return this._requestAddChart; };
 
