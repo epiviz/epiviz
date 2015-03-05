@@ -153,7 +153,7 @@ epiviz.ui.LocationManager.prototype.updateSeqInfos = function(seqInfos) {
     if (this._lastUnfilledRequest.seqName() in this._seqInfos) {
       this._doChangeCurrentLocation(this._lastUnfilledRequest);
     } else if (seqInfos.length > 0) {
-      var request = new epiviz.datatypes.GenomicRange(seqInfos[0].name(), this._lastUnfilledRequest.start(), this._lastUnfilledRequest.width());
+      var request = new epiviz.datatypes.GenomicRange(seqInfos[0].seqName, this._lastUnfilledRequest.start(), this._lastUnfilledRequest.width());
       this._doChangeCurrentLocation(request);
     }
   }

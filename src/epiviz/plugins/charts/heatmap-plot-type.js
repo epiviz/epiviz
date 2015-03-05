@@ -93,6 +93,18 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
       'Max columns'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Min Value'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Max Value'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_ALG,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       clusteringFactory.algorithms()[0],

@@ -295,7 +295,7 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
       return false;
     });
   }
-  var provider = this._dataProviderFactory.get(dataprovider);
+  var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
   provider.getData(epiviz.data.Request.getHierarchy(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
     dataReadyCallback(chartId, response.data());
   });
@@ -319,7 +319,7 @@ epiviz.data.DataManager.prototype.propagateHierarchyChanges = function(chartVisC
         return false;
       });
     }
-    var provider = this._dataProviderFactory.get(dataprovider);
+    var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
     (function(chartId, provider, visConfigSelection) {
       provider.getData(epiviz.data.Request.propagateHierarchyChanges(
         visConfigSelection.datasourceGroup,
