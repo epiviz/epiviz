@@ -256,8 +256,11 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var colorLabelsMap;
   var colorScales;
-  this._min = data.measurements()[0].minValue();
-  this._max = data.measurements()[0].maxValue();
+  this._min = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  this._max = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
+  var CustomSetting = epiviz.ui.charts.CustomSetting;
+  if (this._min == CustomSetting.DEFAULT) { this._min = data.measurements()[0].minValue(); }
+  if (this._max == CustomSetting.DEFAULT) { this._max = data.measurements()[0].maxValue(); }
   if (this._globalIndexColorLabels) {
     colorLabelsMap = {};
     for (var j = firstGlobalIndex; j < lastGlobalIndex; ++j) {

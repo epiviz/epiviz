@@ -43,7 +43,7 @@ epiviz.data.DataProvider = function(id) {
   this._requestRemoveMeasurements = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{type: string, measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult.<{id: string}>}>}
+   * @type {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
    * @private
    */
   this._requestAddChart = new epiviz.events.Event();
@@ -127,7 +127,7 @@ epiviz.data.DataProvider.prototype.onRequestRemoveMeasurements = function() { re
 /**
  * The type argument is a string denoting the complete class name of the chart to be used.
  * For example: 'epiviz.plugins.charts.BlocksTrack'.
- * @returns {epiviz.events.Event.<{type: string, measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult.<{id: string}>}>}
+ * @returns {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
  */
 epiviz.data.DataProvider.prototype.onRequestAddChart = function() { return this._requestAddChart; };
 

@@ -47,7 +47,8 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.GenesTrackType',
     'epiviz.plugins.charts.HeatmapPlotType',
     'epiviz.plugins.charts.LinePlotType',
-    'epiviz.plugins.charts.StackedLinePlotType'
+    'epiviz.plugins.charts.StackedLinePlotType',
+    'epiviz.ui.charts.tree.IcicleType'
   ],
 
   // Chart default settings
@@ -88,6 +89,17 @@ epiviz.Config.SETTINGS = {
 
         'epiviz.ui.charts.decoration.ChartTooltip',
         'epiviz.ui.charts.decoration.ChartFilterCodeButton'
+      ]
+    },
+
+    'data-structure': {
+      width: 800,
+      height: 300,
+      margins: new epiviz.ui.charts.Margins(10, 10, 10, 10),
+      colors: 'epiviz-v2-medium',
+      decorations: [
+        'epiviz.ui.charts.tree.decoration.TogglePropagateSelectionButton',
+        'epiviz.ui.charts.decoration.HierarchyFilterCodeButton'
       ]
     },
 

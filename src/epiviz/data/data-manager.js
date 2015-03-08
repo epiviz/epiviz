@@ -55,7 +55,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._requestRemoveMeasurements = new epiviz.events.Event();
 
   /**
-   * @type {epiviz.events.Event.<{type: string, measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult.<{id: string}>}>}
+   * @type {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
    * @private
    */
   this._requestAddChart = new epiviz.events.Event();
@@ -132,7 +132,7 @@ epiviz.data.DataManager.prototype.onRequestAddMeasurements = function() { return
 epiviz.data.DataManager.prototype.onRequestRemoveMeasurements = function() { return this._requestRemoveMeasurements; };
 
 /**
- * @returns {epiviz.events.Event.<{type: string, measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult.<{id: string}>}>}
+ * @returns {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
  */
 epiviz.data.DataManager.prototype.onRequestAddChart = function() { return this._requestAddChart; };
 
@@ -295,7 +295,7 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
       return false;
     });
   }
-  var provider = this._dataProviderFactory.get(dataprovider);
+  var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
   provider.getData(epiviz.data.Request.getHierarchy(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
     dataReadyCallback(chartId, response.data());
   });
@@ -319,15 +319,26 @@ epiviz.data.DataManager.prototype.propagateHierarchyChanges = function(chartVisC
         return false;
       });
     }
-    var provider = this._dataProviderFactory.get(dataprovider);
-    (function(chartId) {
+    var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    (function(chartId, provider, visConfigSelection) {
       provider.getData(epiviz.data.Request.propagateHierarchyChanges(
         visConfigSelection.datasourceGroup,
         visConfigSelection.customData.selection,
         visConfigSelection.customData.order), function(response) {
-        dataReadyCallback(chartId, response.data());
+
+        setTimeout(function() {
+          provider.onRequestClearDatasourceGroupCache().notify({
+            datasourceGroup: visConfigSelection.datasourceGroup,
+            result: new epiviz.events.EventResult()
+          });
+          provider.onRequestRedraw().notify({
+            result: new epiviz.events.EventResult()
+          });
+
+          dataReadyCallback(chartId, response.data());
+        }, 0);
       });
-    })(chartId);
+    })(chartId, provider, visConfigSelection);
   }
 };
 
