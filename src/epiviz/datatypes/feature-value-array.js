@@ -20,7 +20,7 @@ epiviz.datatypes.FeatureValueArray = function(measurement, boundaries, globalSta
   if (!values || $.isArray(values)) { vals = values; }
   else {
     vals = values.values;
-    valuesAnnotation = values.valuesAnnotation;
+    valuesAnnotation = values;
   }
 
   epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, vals);
