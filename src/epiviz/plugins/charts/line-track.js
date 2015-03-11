@@ -209,14 +209,14 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     var errMinus = function(j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      var v = cell.rowItem.metadata('errMinus');
+      var v = cell.valueAnnotation ? cell.valueAnnotation['errMinus'] : null;
       return v != undefined ? yScale(v) : null;
     };
 
     var errPlus = function(j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      var v = cell.rowItem.metadata('errPlus');
+      var v = cell.valueAnnotation ? cell.valueAnnotation['errPlus'] : null;
       return v != undefined ? yScale(v) : null;
     };
 

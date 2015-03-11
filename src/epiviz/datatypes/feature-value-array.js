@@ -10,12 +10,26 @@ goog.provide('epiviz.datatypes.FeatureValueArray');
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.GenomicRange} boundaries
  * @param {number} globalStartIndex
- * @param {Array.<number>} values
+ * @param {Array.<number>|{ values: Array.<number>, valuesAnnotation: Object.<string, Array.<*>>}} values
  * @constructor
  * @extends {epiviz.datatypes.GenomicArray}
  */
 epiviz.datatypes.FeatureValueArray = function(measurement, boundaries, globalStartIndex, values) {
-  epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, values);
+  var vals = null;
+  var valuesAnnotation = null;
+  if (!values || $.isArray(values)) { vals = values; }
+  else {
+    vals = values.values;
+    valuesAnnotation = values.valuesAnnotation;
+  }
+
+  epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, vals);
+
+  /**
+   * @type {Object.<string, Array.<*>>}
+   * @private
+   */
+  this._valuesAnnotation = valuesAnnotation;
 };
 
 /**
@@ -43,6 +57,20 @@ epiviz.datatypes.FeatureValueArray.prototype.createNew = function(measurement, b
  */
 epiviz.datatypes.FeatureValueArray.prototype.get = function(index) {
   return this._values[index];
+};
+
+/**
+ * @param index
+ * @returns {?Object.<string, *>}
+ */
+epiviz.datatypes.FeatureValueArray.prototype.getAnnotation = function(index) {
+  if (this._valuesAnnotation == undefined) { return null; }
+  var ret = {};
+  for (var col in this._valuesAnnotation) {
+    if (!this._valuesAnnotation.hasOwnProperty(col)) { continue; }
+    ret[col] = this._valuesAnnotation[col][index];
+  }
+  return ret;
 };
 
 /**

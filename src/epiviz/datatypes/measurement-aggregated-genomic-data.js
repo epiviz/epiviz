@@ -106,7 +106,7 @@ epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize = functi
             annotation = epiviz.utils.mapCopy(ms[0].annotation()),
             minValue = ms[0].minValue(),
             maxValue = ms[0].maxValue(),
-            metadata = ['errMinus', 'errPlus'].concat(ms[0].metadata());
+            metadata = ms[0].metadata();
           var metadataColsMap = {};
           metadata.forEach(function(c) { metadataColsMap[c] = c; });
           grouped[label].forEach(function(m) {
@@ -158,8 +158,8 @@ epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize = functi
             var aggregation = self._aggregator.aggregate(label, ms, values);
             var row = indexItems[0].rowItem;
             var aggRow = new epiviz.datatypes.RowItemImpl(row.id(), row.seqName(), row.start(), row.end(), row.globalIndex(), row.strand(),
-              epiviz.utils.mapCombine(row.rowMetadata() || {}, {errMinus:aggregation.errMinus, errPlus:aggregation.errPlus}));
-            var item = new epiviz.datatypes.GenomicData.ValueItem(globalIndex, aggRow, aggregation.value, m);
+              row.rowMetadata() || {});
+            var item = new epiviz.datatypes.GenomicData.ValueItem(globalIndex, aggRow, aggregation.value, m, {errMinus:aggregation.errMinus, errPlus:aggregation.errPlus});
             items.push(item);
             itemsByGlobalIndex[globalIndex] = item;
           }
