@@ -606,7 +606,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
       .enter()
       .append('rect')
       .attr('class', 'row-color-label')
-      .attr('x', width - self.margins().left() - 20)// TODO: Use a custom variable instead of 20
+      .attr('x', width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
       .attr('y', -cellHeight*0.5)
       .attr('width', 20)// TODO: Use a custom variable
       .attr('height', cellHeight)
@@ -623,7 +623,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
     rowColorLabels
       .transition()
       .duration(500)
-      .attr('x', width - self.margins().left() - 20)// TODO: Use a custom variable instead of 20
+      .attr('x', width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
       .attr('y', -cellHeight*0.5)
       .attr('height', cellHeight)
       .attr('transform', function(d, i){
