@@ -85,6 +85,7 @@ text {
 
 /* Heatmap */
 
+.heatmap-plot .row-legend { font-weight: bold; font-size: 11px; text-anchor: end; }
 .heatmap-plot .items { stroke: #efefef; stroke-opacity: 0.3; shape-rendering: 'crispEdges'; }
 .heatmap-plot .selected { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
 .heatmap-plot .hovered { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }

@@ -176,10 +176,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   var nEntries = lastGlobalIndex - firstGlobalIndex;
 
   var colLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL];
-  var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
 
   var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
-  var width = this.width() * (1 - dendrogramRatio);
+  var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
+  var rowLabelColorWidth = rowLabelsAsColors ? 20 : 0; // TODO: Customize
+
+  var width = this.width() * (1 - dendrogramRatio) - rowLabelColorWidth;
   var height = this.height();
 
   var colnames = [], columnMap = {};
@@ -352,156 +354,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
       d3.event.stopPropagation();
     });
 
-  var mapCol = function(i, centered) {
-    return i * cellWidth + ((centered) ? 0.5 * cellWidth : 0);
-  };
-
-  var mapRow = function(i, centered) {
-    return i * cellHeight + ((centered) ? cellHeight * 0.5 : 0);
-  };
-
-  // Column names
-
-  var colSelection = itemsGroup.selectAll('.col-text');
-
-  var maxColSize = 0;
-  if (colnames.length > nCols) {
-    colSelection
-      .transition()
-      .duration(500)
-      .style('opacity', 0)
-      .remove();
-  } else {
-    colSelection = colSelection
-      .data(colnames, function(d, i) { return d + columnMap[i]; });
-
-    colSelection
-      .enter()
-      .append('text')
-      .attr('class', 'col-text')
-      .style('opacity', '0')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('transform', function(d, i){
-        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
-      })
-      .text(function(d){ return d; });
-
-    colSelection
-      .transition()
-      .duration(500)
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('transform', function(d, i){
-        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
-      })
-      .style('opacity', null)
-      .attr('fill', function(colName, i) {
-        var globalIndex = i + firstGlobalIndex;
-        if (!self._globalIndexColorLabels) { return '#000000'; }
-        return self.colors().getByKey(self._globalIndexColorLabels[globalIndex]);
-      });
-
-    colSelection
-      .exit()
-      .transition()
-      .duration(500)
-      .style('opacity', 0)
-      .remove();
-
-    $('#' + this.id() + ' .col-text')
-      .each(function(i) {
-        var textWidth = this.getBBox().width;
-        if (maxColSize < textWidth) { maxColSize = textWidth; }
-      });
-  }
-
-  // Row names
-
-  var rowSelection = itemsGroup.selectAll('.row-text')
-    .data(rows, function(m) { return m.id(); });
-
-  rowSelection
-    .enter()
-    .append('text')
-    .attr('class', 'row-text')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('transform', function(d, i){
-      return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
-    });
-
-  rowSelection
-    .text(function(m){
-      if (rowLabel == 'name') { return m.name(); }
-      var anno = m.annotation();
-      if (!anno || !(rowLabel in anno)) { return '<NA>'; }
-      return anno[rowLabel];
-    });
-
-  rowSelection
-    .transition()
-    .duration(500)
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('transform', function(d, i){
-      return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
-    });
-
-  rowSelection.exit().remove();
-
-  // Draw legend
-  var title = '';
-
-  this._svg.selectAll('.chart-title').remove();
-  this._svg.selectAll('.chart-title-color ').remove();
-  var titleEntries = this._svg
-    .selectAll('.chart-title')
-    .data(['Min'].concat(this._colorLabels));
-  titleEntries
-    .enter()
-    .append('text')
-    .attr('class', 'chart-title')
-    .attr('font-weight', 'bold')
-    .attr('y', self.margins().top() - 5 - maxColSize);
-  titleEntries
-    .attr('fill', function(label, i) {
-      if (i == 0) { return '#000000'; }
-      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
-      return self.colors().getByKey(label);
-    })
-    .text(function(label) { return label; });
-  var textLength = 0;
-  var titleEntriesStartPosition = [];
-
-  $('#' + this.id() + ' .chart-title')
-    .each(function(i) {
-      titleEntriesStartPosition.push(textLength);
-      textLength += this.getBBox().width + 15;
-    });
-
-  titleEntries.attr('x', function(column, i) {
-    return self.margins().left() + 10 + titleEntriesStartPosition[i];
-  });
-
-  var colorEntries = this._svg
-    .selectAll('.chart-title-color')
-    .data(['Min'].concat(this._colorLabels))
-    .enter()
-    .append('circle')
-    .attr('class', 'chart-title-color')
-    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
-    .attr('cy', self.margins().top() - 9 - maxColSize)
-    .attr('r', 4)
-    .style('shape-rendering', 'auto')
-    .style('stroke-width', '0')
-    .attr('fill', function(label, i) {
-      if (i == 0) { return '#ffffff'; }
-      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
-      return self.colors().getByKey(label);
-    })
-    .style('stroke-width', function(label, i) { return i ? 0 : 1; })
-    .style('stroke', '#000000');
+  this._drawLabels(itemsGroup, colnames, columnMap, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width);
 
   return items;
 };
@@ -603,6 +456,282 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
     .style('shape-rendering', 'crispEdges');
 
   return (firstY + lastY) * 0.5;
+};
+
+/**
+ * @param itemsGroup D3 selection
+ * @param {Array.<string>} colnames
+ * @param {Object.<number, number>} columnMap
+ * @param {number} nCols
+ * @param {Array.<epiviz.measurements.Measurement>} rows
+ * @param {number} cellWidth
+ * @param {number} cellHeight
+ * @param {number} firstGlobalIndex
+ * @param {number} width
+ * @private
+ */
+epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, colnames, columnMap, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width) {
+
+  var self = this;
+
+  var mapCol = function(i, centered) {
+    return i * cellWidth + ((centered) ? 0.5 * cellWidth : 0);
+  };
+
+  var mapRow = function(i, centered) {
+    return i * cellHeight + ((centered) ? cellHeight * 0.5 : 0);
+  };
+
+  var measurementLabel = function(m) {
+    var label;
+    if (rowLabel == 'name') { label = m.name(); }
+    else {
+      var anno = m.annotation();
+      if (!anno || !(rowLabel in anno)) { label = '<NA>'; }
+      else { label = anno[rowLabel]; }
+    }
+    rowLabelMap[label] = label;
+    return label;
+  };
+
+  // Column names
+  var colSelection = itemsGroup.selectAll('.col-text');
+
+  var maxColSize = 0;
+  if (colnames.length > nCols) {
+    colSelection
+      .transition()
+      .duration(500)
+      .style('opacity', 0)
+      .remove();
+  } else {
+    colSelection = colSelection
+      .data(colnames, function(d, i) { return d + columnMap[i]; });
+
+    colSelection
+      .enter()
+      .append('text')
+      .attr('class', 'col-text')
+      .style('opacity', '0')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
+      })
+      .text(function(d){ return d; });
+
+    colSelection
+      .transition()
+      .duration(500)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
+      })
+      .style('opacity', null)
+      .attr('fill', function(colName, i) {
+        var globalIndex = i + firstGlobalIndex;
+        if (!self._globalIndexColorLabels) { return '#000000'; }
+        return self.colors().getByKey(self._globalIndexColorLabels[globalIndex]);
+      });
+
+    colSelection
+      .exit()
+      .transition()
+      .duration(500)
+      .style('opacity', 0)
+      .remove();
+
+    $('#' + this.id() + ' .col-text')
+      .each(function(i) {
+        var textWidth = this.getBBox().width;
+        if (maxColSize < textWidth) { maxColSize = textWidth; }
+      });
+  }
+
+  // Row names
+
+  var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
+  var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
+
+  if (!rowLabelsAsColors) {
+    itemsGroup.selectAll('.row-color-label').remove();
+    var rowSelection = itemsGroup.selectAll('.row-text')
+      .data(rows, function(m) { return m.id(); });
+
+    rowSelection
+      .enter()
+      .append('text')
+      .attr('class', 'row-text')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
+      });
+
+    rowSelection
+      .text(function(m){
+        if (rowLabel == 'name') { return m.name(); }
+        var anno = m.annotation();
+        if (!anno || !(rowLabel in anno)) { return '<NA>'; }
+        return anno[rowLabel];
+      });
+
+    rowSelection
+      .transition()
+      .duration(500)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
+      });
+
+    rowSelection.exit().remove();
+  }
+
+  var rowLabelCat;
+  if (rowLabelsAsColors) {
+    itemsGroup.selectAll('.row-text').remove();
+    var rowLabelMap = {};
+    rows.forEach(function(m) {
+      var label = measurementLabel(m);
+      rowLabelMap[label] = label;
+    });
+    rowLabelCat = Object.keys(rowLabelMap);
+
+    var rowColorLabels = itemsGroup.selectAll('.row-color-label')
+      .data(rows, function(m) { return m.id(); });
+
+    rowColorLabels
+      .enter()
+      .append('rect')
+      .attr('class', 'row-color-label')
+      .attr('x', width - self.margins().left() - 20)// TODO: Use a custom variable instead of 20
+      .attr('y', -cellHeight*0.5)
+      .attr('width', 20)// TODO: Use a custom variable
+      .attr('height', cellHeight)
+      .attr('transform', function(d, i){
+        return 'translate(' + (0) + ',' + (mapRow(i, true)) + ')';
+      });
+
+    rowColorLabels
+      .style('fill', function(m) {
+        var label = measurementLabel(m);
+        return self.colors().getByKey(label);
+      });
+
+    rowColorLabels
+      .transition()
+      .duration(500)
+      .attr('x', width - self.margins().left() - 20)// TODO: Use a custom variable instead of 20
+      .attr('y', -cellHeight*0.5)
+      .attr('height', cellHeight)
+      .attr('transform', function(d, i){
+        return 'translate(' + (0) + ',' + (mapRow(i, true)) + ')';
+      });
+
+    rowColorLabels.exit().remove();
+  }
+
+  // Legend
+  this._svg.selectAll('.chart-title').remove();
+  this._svg.selectAll('.chart-title-color ').remove();
+  var titleEntries = this._svg
+    .selectAll('.chart-title')
+    .data(['Min'].concat(this._colorLabels));
+  titleEntries
+    .enter()
+    .append('text')
+    .attr('class', 'chart-title')
+    .attr('font-weight', 'bold')
+    .attr('y', self.margins().top() - 5 - maxColSize);
+  titleEntries
+    .attr('fill', function(label, i) {
+      if (i == 0) { return '#000000'; }
+      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
+      return self.colors().getByKey(label);
+    })
+    .text(function(label) { return label; });
+  var textLength = 0;
+  var titleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .chart-title')
+    .each(function(i) {
+      titleEntriesStartPosition.push(textLength);
+      textLength += this.getBBox().width + 15;
+    });
+
+  titleEntries.attr('x', function(column, i) {
+    return self.margins().left() + 10 + titleEntriesStartPosition[i];
+  });
+
+  var colorEntries = this._svg
+    .selectAll('.chart-title-color')
+    .data(['Min'].concat(this._colorLabels))
+    .enter()
+    .append('circle')
+    .attr('class', 'chart-title-color')
+    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
+    .attr('cy', self.margins().top() - 9 - maxColSize)
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .attr('fill', function(label, i) {
+      if (i == 0) { return '#ffffff'; }
+      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
+      return self.colors().getByKey(label);
+    })
+    .style('stroke-width', function(label, i) { return i ? 0 : 1; })
+    .style('stroke', '#000000');
+
+  // Row labels legend
+
+  this._svg.selectAll('.row-legend').remove();
+  this._svg.selectAll('.row-legend-color').remove();
+  if (rowLabelsAsColors) {
+    rowLabelCat.sort();
+    var textEntries = this._svg
+      .selectAll('.row-legend')
+      .data(rowLabelCat);
+    textEntries
+      .enter()
+      .append('text')
+      .attr('class', 'row-legend')
+      .attr('font-weight', 'bold')
+      .attr('x', -20);
+    textEntries
+      .attr('fill', function(label) {
+        return self.colors().getByKey(label);
+      })
+      .text(function(label) { return label; })
+      .attr('transform', function(d, i){
+        return 'translate(' + (self.margins().left()) + ',' + (self.margins().top()) + ')';
+      });
+
+    textEntries.attr('y', function(label, i) {
+      return 10 + i * 15;
+    });
+
+    this._svg
+      .selectAll('.row-legend-color')
+      .data(rowLabelCat)
+      .enter()
+      .append('rect')
+      .attr('class', 'chart-title-color')
+      .attr('x', -18)
+      .attr('y', function(label, i) { return 2 + i * 15})
+      .attr('width', 10)
+      .attr('height', 10)
+      .style('shape-rendering', 'auto')
+      .style('stroke-width', '0')
+      .attr('fill', function(label) { return self.colors().getByKey(label); })
+      .style('stroke-width', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (self.margins().left()) + ',' + (self.margins().top()) + ')';
+      });
+
+    this._colorLabels = this._colorLabels.concat(rowLabelCat)
+  }
 };
 
 /**
