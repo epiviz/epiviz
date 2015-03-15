@@ -40,7 +40,7 @@ epiviz.plugins.charts.HeatmapPlot = function(id, container, properties) {
    * @type {function(number): string}
    * @private
    */
-  this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().get(0));
+  this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().getByKey('Max'));
 
   /**
    * @type {Array.<string>}
@@ -278,7 +278,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     this._colorLabels = [
       sprintf('Max', data.firstSeries().measurement().maxValue())
     ];
-    this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().get(0));
+    this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().getByKey('Max'));
   }
 
   var nCols = Math.min(colnames.length, maxColumns);
@@ -648,7 +648,6 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
   titleEntries
     .attr('fill', function(label, i) {
       if (i == 0) { return '#000000'; }
-      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
       return self.colors().getByKey(label);
     })
     .text(function(label) { return label; });
@@ -678,7 +677,6 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
     .style('stroke-width', '0')
     .attr('fill', function(label, i) {
       if (i == 0) { return '#ffffff'; }
-      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
       return self.colors().getByKey(label);
     })
     .style('stroke-width', function(label, i) { return i ? 0 : 1; })

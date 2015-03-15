@@ -95,7 +95,7 @@ epiviz.Config.SETTINGS = {
     'data-structure': {
       width: 800,
       height: 300,
-      margins: new epiviz.ui.charts.Margins(10, 10, 10, 10),
+      margins: new epiviz.ui.charts.Margins(20, 10, 10, 10),
       colors: 'epiviz-v2-medium',
       decorations: [
         'epiviz.ui.charts.tree.decoration.TogglePropagateSelectionButton',
@@ -120,7 +120,10 @@ epiviz.Config.SETTINGS = {
     },
 
     'epiviz.plugins.charts.ScatterPlot': {
-      margins: new epiviz.ui.charts.Margins(15, 50, 50, 15)
+      margins: new epiviz.ui.charts.Margins(15, 50, 50, 15),
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+      ]
     },
 
     'epiviz.plugins.charts.HeatmapPlot': {
