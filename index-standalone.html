@@ -244,15 +244,7 @@
     <script src="src/epiviz/standalone-settings.js"></script>
 
     <script>
-      var loc = window.location.search.substr(1);
-      var i = loc.indexOf('websocket-host');
-
-      if (i >= 0) {
-        var j = loc.substr(i).indexOf('&');
-        var arg = (j <= 0) ? loc.substr(i).substr(0) : loc.substr(i).substr(0, j);
-        var val = decodeURIComponent(arg.split('=')[1]);
-        epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'] = [val];
-      }
+      epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.extractWindowLocationArgs();
       epiviz.workspaces.UserManager.USER_STATUS = {
         loggedIn: false,
         oauthProvider: null,
