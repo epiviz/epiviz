@@ -192,7 +192,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
     <!-- Future tooltip: <script src="src/lib/qtip/jquery.qtip.min.js"></script>-->
 
-    <script src="src/lib/caja/caja.js"></script>
+    <!--<script src="src/lib/caja/caja.js"></script>-->
+    <script src="//caja.appspot.com/caja.js"></script>
 
     <!-- Google Analytics -->
     <script src="src/lib/google-analytics/google-analytics.js"></script>
