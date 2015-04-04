@@ -568,7 +568,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
       .attr('y2', yCenter)
       .style('stroke', '#555555')
       .style('stroke-width', 1)
-      .style('shape-rendering', 'crispEdges');
+      .style('shape-rendering', 'auto');
 
     if (i == 0 && showLabels) {
       svg.append('text')
@@ -597,7 +597,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
     .attr('y2', lastY)
     .style('stroke', '#555555')
     .style('stroke-width', 1)
-    .style('shape-rendering', 'crispEdges');
+    .style('shape-rendering', 'auto');
 
   return (firstY + lastY) * 0.5;
 };

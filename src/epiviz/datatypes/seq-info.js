@@ -39,7 +39,7 @@ epiviz.datatypes.SeqInfo.prototype.raw = function() { return [this.seqName, this
  * @param {Array} o [seqName, min, max]
  * @returns {epiviz.datatypes.SeqInfo}
  */
-epiviz.datatypes.SeqInfo.fromRawObject = function(o) { return new epiviz.datatypes.SeqInfo(o[0], o[1], o[2]); };
+epiviz.datatypes.SeqInfo.fromRawObject = function(o) { return new epiviz.datatypes.SeqInfo(o[0], parseFloat(o[1]), parseFloat(o[2])); };
 
 /**
  * @param {epiviz.datatypes.SeqInfo} s1

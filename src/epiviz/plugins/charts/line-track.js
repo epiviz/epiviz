@@ -295,13 +295,16 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
             if (m == null || p == null) { return; }
             d3.select(this).append('line')
               .attr('x1', x(j)).attr('x2', x(j)).attr('y1', m).attr('y2', p)
-              .style('stroke', color);
+              .style('stroke', color)
+              .style('shape-rendering', 'auto');
             d3.select(this).append('line')
               .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', m).attr('y2', m)
-              .style('stroke', color);
+              .style('stroke', color)
+              .style('shape-rendering', 'auto');
             d3.select(this).append('line')
               .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', p).attr('y2', p)
-              .style('stroke', color);
+              .style('stroke', color)
+              .style('shape-rendering', 'auto');
           })
           .attr('transform', 'translate(' + (+delta) + ')')
           .transition()
