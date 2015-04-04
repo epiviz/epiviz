@@ -232,11 +232,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
   var width = this.width() * (1 - dendrogramRatio) - rowLabelColorWidth;
   var height = this.height() * (1 - dendrogramRatio);
 
+  var globalIndices = [];
   var colnames = [], columnMap = {};
   var i, globalIndex;
 
   for (i = 0; i < nEntries; ++i) {
-    globalIndex = (colOrder ? colOrder[i] : i) + firstGlobalIndex;
+    globalIndex = i + firstGlobalIndex;
 
     // Find a defined row item for the data
     var item;
@@ -250,9 +251,22 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       item.start() < range.end() && item.end() >= range.start()) {
+      globalIndices.push(globalIndex);
       var label = item.metadata(colLabel) || '' + item.id();
-      columnMap[colnames.length] = globalIndex;
       colnames.push(label);
+    }
+  }
+
+  if (colOrder) {
+    var unorderedGlobalIndices = globalIndices;
+    var unorderedColnames = colnames;
+    globalIndices = new Array(globalIndices.length);
+    colnames = new Array(colnames.length);
+    for (i = 0; i < globalIndices.length; ++i) {
+      globalIndices[i] = unorderedGlobalIndices[colOrder[i]];
+      colnames[i] = unorderedColnames[colOrder[i]];
+      // TODO: Columnmap seems to have same functionality as globalIndices!
+      columnMap[i] = globalIndices[i];
     }
   }
 

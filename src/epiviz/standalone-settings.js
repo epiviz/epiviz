@@ -135,13 +135,13 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlot': {
       width: 800,
       height: 400,
-      margins: new epiviz.ui.charts.Margins(80, 50, 10, 20),
+      margins: new epiviz.ui.charts.Margins(160, 140, 10, 20),
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
       ],
-      colors: 'heatmap-default'
+      colors: 'alternative-5'
     },
 
     'epiviz.plugins.charts.LinePlot': {
@@ -191,7 +191,9 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlot': {
       maxColumns: 150,
       showDendrogramLabels: false,
-      dendrogramRatio: 0.1,
+      dendrogramRatio: 0,
+      showColorsForRowLabels: true,
+      rowLabel: "AgeStatus",
       clusteringAlg: "agglomerative"
     }
   },
@@ -248,6 +250,29 @@ epiviz.Config.SETTINGS = {
   },
 
   colorPalettes: [
+    new epiviz.ui.charts.ColorPalette(
+      ['#3182bd','#3182bd','#e6550d','#6baed6','#fd8d3c','#9ecae1','#fdae6b','#c6dbef','#fdd0a2'],
+      'Alternative', 'alternative'),
+    new epiviz.ui.charts.ColorPalette(
+      ['#3182bd','#e6550d','#6baed6','#fd8d3c','#9ecae1','#fdae6b','#c6dbef','#fdd0a2', '#3182bd','#e6550d'],
+      'Alternative (2)', 'alternative-2'),
+    new epiviz.ui.charts.ColorPalette(
+      ['#3182bd','#6baed6','#9ecae1','#c6dbef', '#3182bd',
+      '#e6550d','#fd8d3c','#fdae6b','#fdd0a2', '#e6550d'],
+      'Alternative (3)', 'alternative-3'),
+    new epiviz.ui.charts.ColorPalette(
+      ['#1f77b4', '#1f77b4', '#67b1e4', '#ff7f0e', '#f4bc8b', '#2ca02c', '#a3e6a3', '#d62728', '#ecacac', '#9467bd', '#cdbade'],
+      'Alternative (4)', 'alternative-4'),
+    new epiviz.ui.charts.ColorPalette(
+      ['#1f77b4', 
+      '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+      '#67b1e4', '#f4bc8b', '#a3e6a3', '#ecacac', '#cdbade'],
+      'Alternative (5)', 'alternative-5'),
+    new epiviz.ui.charts.ColorPalette(
+      ['#1f77b4', 
+      '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+      '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'],
+      'Alternative (6)', 'alternative-6'),
     new epiviz.ui.charts.ColorPalette(
       ['#025167', '#e7003e', '#ffcd00', '#057d9f', '#970026', '#ffe373', '#ff8100'],
       'Epiviz v1.0 Colors', 'epiviz-v1'),
