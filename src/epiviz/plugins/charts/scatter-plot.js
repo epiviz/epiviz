@@ -286,7 +286,8 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     .transition()
     .duration(1000)
     .style('fill-opacity', function(d) {
-      return Math.max(0.3, d.valueItems[0].length / maxGroupItems);
+      //return Math.max(0.3, d.valueItems[0].length / maxGroupItems);
+      return Math.max(0.6, d.valueItems[0].length / maxGroupItems);
     })
     .style('opacity', null)
     .attr('r', circleRadius);

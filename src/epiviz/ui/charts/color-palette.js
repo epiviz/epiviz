@@ -142,5 +142,7 @@ epiviz.ui.charts.ColorPalette.fromRawObject = function(o, config) {
     return config.colorPalettesMap[o.id];
   }
 
+  if (!o.colors || !o.colors.length) { o.colors = epiviz.Config.COLORS_BRIGHT; }
+
   return new epiviz.ui.charts.ColorPalette(o.colors, o.name, o.id);
 };

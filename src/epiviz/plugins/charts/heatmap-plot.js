@@ -178,6 +178,11 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
       }
     }
   });
+
+  if (population.length == 0) {
+    return {data: new epiviz.datatypes.MapGenomicData(orderedData), columnOrder: []};
+  }
+
   dendrogram = clusterer.cluster(population, metric, linkage);
   indexOrder = dendrogram.root().data();
   this._drawDendrogram(dendrogram, true);
@@ -482,7 +487,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
       .attr('y2', yCenter)
       .style('stroke', '#555555')
       .style('stroke-width', 1)
-      .style('shape-rendering', 'crispEdges');
+      .style('shape-rendering', 'auto');
 
     if (i == 0 && showLabels) {
       svg.append('text')
@@ -511,7 +516,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
     .attr('y2', lastY)
     .style('stroke', '#555555')
     .style('stroke-width', 1)
-    .style('shape-rendering', 'crispEdges');
+    .style('shape-rendering', 'auto');
 
   return (firstY + lastY) * 0.5;
 };
@@ -745,7 +750,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
   this._svg.selectAll('.row-legend').remove();
   this._svg.selectAll('.row-legend-color').remove();
   if (rowLabelsAsColors) {
-    rowLabelCat.sort();
+    // TODO: Make this optional
+    //rowLabelCat.sort();
     var textEntries = this._svg
       .selectAll('.row-legend')
       .data(rowLabelCat);
