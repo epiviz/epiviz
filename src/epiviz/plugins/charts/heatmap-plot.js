@@ -48,6 +48,12 @@ epiviz.plugins.charts.HeatmapPlot = function(id, container, properties) {
    */
   this._colorLabels = [];
 
+  /**
+   * @type {number}
+   * @private
+   */
+  this._dendrogramRatio = 0.1;
+
   this._initialize();
 };
 
@@ -84,11 +90,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
+  var cluster = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER];
+
   var pair = this._applyClustering(range, data);
 
   /** @type {epiviz.datatypes.GenomicData} */
   var orderedData = pair.data;
-
   var colOrder = pair.columnOrder;
 
   return this._drawCells(range, orderedData, colOrder);
@@ -106,6 +113,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
   var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
 
   // Apply clustering
+  var cluster = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER];
+  var showDendrogram = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM];
   var clusteringAlgFactory = epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.instance();
   var clusterer = clusteringAlgFactory.algorithm(
     this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_ALG]);
@@ -113,10 +122,10 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
     this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_METRIC]);
   var linkage = clusteringAlgFactory.linkage(
     this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_LINKAGE]);
+  var maxColumns = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS];
 
   var firstGlobalIndex = data.firstSeries().globalStartIndex();
   var lastGlobalIndex = data.firstSeries().size() + firstGlobalIndex;
-  var rows = [];
 
   data.foreach(function(measurement, series) {
     var firstIndex = series.globalStartIndex();
@@ -127,67 +136,101 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
   });
   var nEntries = lastGlobalIndex - firstGlobalIndex;
 
-  var population = [];
-  data.foreach(function(measurement, series) {
-    var row = [];
-    for (var j = 0; j < nEntries; ++j) {
-      var globalIndex = j + firstGlobalIndex;
-      var item = series.getByGlobalIndex(globalIndex);
-      var rowInfo = item.rowItem;
+  var clusterRows = (cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.ROWS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH);
+  var clusterCols = (cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.COLS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH);
+  var dendrogramRatio = showDendrogram * this._dendrogramRatio;
+  var dendrogramCols = (showDendrogram && clusterCols && maxColumns >= nEntries);
 
-      if (!dataHasGenomicLocation ||
-          (range.start() == undefined || range.end() == undefined) ||
-          rowInfo.start() < range.end() && rowInfo.end() >= range.start()) {
-        row.push(item.value);
+  var population, dendrogram, indexOrder, top, left, height, width;
+
+  var svg = this._svg;
+  ['dendrogram-horizontal', 'dendrogram-vertical'].forEach(function(dendClass) { svg.select('.' + dendClass).remove(); });
+
+  /** @type {epiviz.datatypes.GenomicData} */
+  var orderedData = data;
+
+  if (clusterRows) {
+    population = [];
+    data.foreach(function(measurement, series) {
+      var row = [];
+      for (var j = 0; j < nEntries; ++j) {
+        var globalIndex = j + firstGlobalIndex;
+        var item = series.getByGlobalIndex(globalIndex);
+        var rowInfo = item.rowItem;
+
+        if (!dataHasGenomicLocation ||
+            (range.start() == undefined || range.end() == undefined) ||
+            rowInfo.start() < range.end() && rowInfo.end() >= range.start()) {
+          row.push(item.value);
+        }
       }
+      population.push(row);
+    });
+    dendrogram = clusterer.cluster(population, metric, linkage);
+    indexOrder = dendrogram.root().data();
+    var measurements = [];
+    data.foreach(function(measurement) { measurements.push(measurement); });
+    var orderedMs = [];
+    var i;
+    for (i = 0; i < indexOrder.length; ++i) {
+      orderedMs[i] = measurements[indexOrder[i]];
     }
-    population.push(row);
-  });
-  var dendrogram = clusterer.cluster(population, metric, linkage);
-  var indexOrder = dendrogram.root().data();
-  var measurements = [];
-  data.foreach(function(measurement) { measurements.push(measurement); });
-  var orderedMs = [];
-  var i;
-  for (i = 0; i < indexOrder.length; ++i) {
-    orderedMs[i] = measurements[indexOrder[i]];
-  }
 
-  var orderedData = new epiviz.measurements.MeasurementHashtable();
-  for (i = 0; i < orderedMs.length; ++i) {
-    orderedData.put(orderedMs[i], data.getSeries(orderedMs[i]));
-  }
+    var ordered = new epiviz.measurements.MeasurementHashtable();
+    for (i = 0; i < orderedMs.length; ++i) {
+      ordered.put(orderedMs[i], data.getSeries(orderedMs[i]));
+    }
+    orderedData = new epiviz.datatypes.MapGenomicData(ordered);
 
-  this._drawDendrogram(dendrogram);
+    if (dendrogramRatio) {
+      width = (this.width()) * dendrogramRatio;
+      height = this.height() * (1 - dendrogramRatio * dendrogramCols) - this.margins().sumAxis(epiviz.ui.charts.Axis.Y);
+      top = this.margins().top();
+      left = this.width() - width - this.margins().right();
+      this._drawDendrogram(dendrogram, top, left, height, width);
+    }
+  }
 
   // Column clustering
-  population = [];
-  data.foreach(function(measurement, series) {
-    for (var j = 0, row = 0; j < nEntries; ++j) {
-      var globalIndex = j + firstGlobalIndex;
-      var item = series.getByGlobalIndex(globalIndex);
-      var rowInfo = item.rowItem;
-      if (!dataHasGenomicLocation ||
-          (range.start() == undefined || range.end() == undefined) ||
-          rowInfo.start() < range.end() && rowInfo.end() >= range.start()) {
-        if (population.length <= row) {
-          population.push([]);
+  indexOrder = null;
+  if (clusterCols) {
+    population = [];
+    data.foreach(function(measurement, series) {
+      for (var j = 0, row = 0; j < nEntries; ++j) {
+        var globalIndex = j + firstGlobalIndex;
+        var item = series.getByGlobalIndex(globalIndex);
+        var rowInfo = item.rowItem;
+        if (!dataHasGenomicLocation ||
+            (range.start() == undefined || range.end() == undefined) ||
+            rowInfo.start() < range.end() && rowInfo.end() >= range.start()) {
+          if (population.length <= row) {
+            population.push([]);
+          }
+          population[row].push(item.value);
+          ++row;
         }
-        population[row].push(item.value);
-        ++row;
       }
-    }
-  });
+    });
 
-  if (population.length == 0) {
-    return {data: new epiviz.datatypes.MapGenomicData(orderedData), columnOrder: []};
+    if (population.length == 0) {
+      return {data: orderedData, columnOrder: []};
+    }
+
+    dendrogram = clusterer.cluster(population, metric, linkage);
+    indexOrder = dendrogram.root().data();
+
+    if (dendrogramCols) {
+      var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
+      var rowLabelColorWidth = rowLabelsAsColors ? 20 : 0; // TODO: Customize
+      left = this.margins().left();
+      top = this.height() * (1 - dendrogramRatio) - this.margins().bottom();
+      width = this.height() * dendrogramRatio;
+      height = this.width() * (1 - dendrogramRatio * clusterRows) - this.margins().left() - this.margins().right() - rowLabelColorWidth;
+      this._drawDendrogram(dendrogram, top, left, height, width, true);
+    }
   }
 
-  dendrogram = clusterer.cluster(population, metric, linkage);
-  indexOrder = dendrogram.root().data();
-  this._drawDendrogram(dendrogram, true);
-
-  return {data: new epiviz.datatypes.MapGenomicData(orderedData), columnOrder: indexOrder};
+  return {data: orderedData, columnOrder: indexOrder};
 };
 
 /**
@@ -225,15 +268,22 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
 
   var colLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL];
 
-  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
+  //var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
+  var cluster = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER];
+  var clusterRows = (cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.ROWS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH);
+  var clusterCols = ((cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.COLS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH)
+                     && maxColumns >= nEntries);
+
+  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM] * this._dendrogramRatio;
   var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
   var rowLabelColorWidth = rowLabelsAsColors ? 20 : 0; // TODO: Customize
 
-  var width = this.width() * (1 - dendrogramRatio) - rowLabelColorWidth;
-  var height = this.height() * (1 - dendrogramRatio);
+
+  var width = this.width() * (1 - dendrogramRatio * clusterRows) - rowLabelColorWidth;
+  var height = this.height() * (1 - dendrogramRatio * clusterCols);
 
   var globalIndices = [];
-  var colnames = [], columnMap = {};
+  var colnames = [];
   var i, globalIndex;
 
   for (i = 0; i < nEntries; ++i) {
@@ -266,7 +316,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
       globalIndices[i] = unorderedGlobalIndices[colOrder[i]];
       colnames[i] = unorderedColnames[colOrder[i]];
       // TODO: Columnmap seems to have same functionality as globalIndices!
-      columnMap[i] = globalIndices[i];
+      //columnMap[i] = globalIndices[i];
     }
   }
 
@@ -277,7 +327,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
     var nextCellsPerCol = Math.ceil(colnames.length / maxColumns), cellsPerCol = 0;
     var colsLeft = maxColumns;
     for (var i = 0; i < colnames.length; ++i) {
-      globalIndex = columnMap[i];
+      globalIndex = globalIndices[i];
 
       var cell = series.getByGlobalIndex(globalIndex);
       if (!cell) { continue; }
@@ -416,44 +466,30 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
       d3.event.stopPropagation();
     });
 
-  this._drawLabels(itemsGroup, colnames, columnMap, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width);
+  this._drawLabels(itemsGroup, colnames, globalIndices, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width);
 
   return items;
 };
 
 /**
  * @param {epiviz.ui.charts.transform.clustering.ClusterTree} dendrogram
+ * @param {number} top
+ * @param {number} left
+ * @param {number} height
+ * @param {number} width
  * @param {boolean} [horizontal]
  * @private
  */
-epiviz.plugins.charts.HeatmapPlot.prototype._drawDendrogram = function(dendrogram, horizontal) {
+epiviz.plugins.charts.HeatmapPlot.prototype._drawDendrogram = function(dendrogram, top, left, height, width, horizontal) {
   var dendClass = horizontal ? 'dendrogram-horizontal' : 'dendrogram-vertical';
-  this._svg.select('.' + dendClass).remove();
-
-  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
-  var showDendrogram = dendrogramRatio > 0;
-  var showLabels = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM_LABELS];
-
-  if (!showDendrogram) { return; }
+  var showLabels = false;
 
   var dendContainer = this._svg.append('g').attr('class', dendClass);
 
-  var width, height, top, left;
   if (!horizontal) {
-    width = (this.width()) * dendrogramRatio;
-    height = this.height() * (1 - dendrogramRatio) - this.margins().sumAxis(epiviz.ui.charts.Axis.Y);
-    top = this.margins().top();
-    left = this.width() - width - this.margins().right();
     dendContainer.attr('transform', 'translate(' + left + ',' + top + ')');
     this._drawSubDendrogram(this._svg.select('.' + dendClass), dendrogram.root(), 0, 0, width, height, showLabels);
   } else {
-    var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
-    var rowLabelColorWidth = rowLabelsAsColors ? 20 : 0; // TODO: Customize
-    //left = this.width() * (1 - dendrogramRatio) - this.margins().right() - rowLabelColorWidth;
-    left = this.margins().left();
-    top = this.height() * (1 - dendrogramRatio) - this.margins().bottom();
-    width = this.height() * dendrogramRatio;
-    height = this.width() * (1 - dendrogramRatio) - this.margins().left() - this.margins().right() - rowLabelColorWidth;
     dendContainer.attr('transform', 'translate(' + left + ',' + top + ')scale(-1, 1)rotate(90, 0, 0)');
     this._drawSubDendrogram(this._svg.select('.' + dendClass), dendrogram.root(), 0, 0, width, height, showLabels);
   }

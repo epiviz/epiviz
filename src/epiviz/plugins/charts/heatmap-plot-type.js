@@ -111,6 +111,13 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
       'Max Value'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER,
+      epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
+      'rows',
+      'Cluster',
+      Object.keys(epiviz.plugins.charts.HeatmapPlotType.Cluster).map(function(key) { return epiviz.plugins.charts.HeatmapPlotType.Cluster[key]; })),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_ALG,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       clusteringFactory.algorithms()[0],
@@ -131,18 +138,34 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
       'Clustering Linkage',
       clusteringFactory.linkages()),
 
-    new epiviz.ui.charts.CustomSetting(
+    // TODO: Maybe add back later
+    /*new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       0,
-      'Dendrogram Ratio'),
+      'Dendrogram Ratio'),*/
 
-    new epiviz.ui.charts.CustomSetting(
+    /*new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM_LABELS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       false,
-      'Show Dendrogram Labels')
+      'Show Dendrogram Labels')*/
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Show Dendrogram')
   ]);
+};
+
+/**
+ * @enum {string}
+ */
+epiviz.plugins.charts.HeatmapPlotType.Cluster = {
+  NONE: 'none',
+  ROWS: 'rows',
+  COLS: 'columns',
+  BOTH: 'both'
 };
 
 /**
@@ -150,10 +173,13 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
  */
 epiviz.plugins.charts.HeatmapPlotType.CustomSettings = {
   MAX_COLUMNS: 'maxColumns',
+  CLUSTER: 'cluster',
   CLUSTERING_ALG: 'clusteringAlg',
   CLUSTERING_METRIC: 'clusteringMetric',
   CLUSTERING_LINKAGE: 'clusteringLinkage',
-  DENDROGRAM_RATIO: 'dendrogramRatio',
-  SHOW_DENDROGRAM_LABELS: 'showDendrogramLabels',
+  // TODO: Maybe add back later
+  //DENDROGRAM_RATIO: 'dendrogramRatio',
+  //SHOW_DENDROGRAM_LABELS: 'showDendrogramLabels',
+  SHOW_DENDROGRAM: 'showDendrogram',
   SHOW_COLORS_FOR_ROW_LABELS: 'showColorsForRowLabels'
 };
