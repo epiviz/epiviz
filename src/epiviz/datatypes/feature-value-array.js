@@ -97,7 +97,7 @@ epiviz.datatypes.FeatureValueArray.prototype.concatValues = function(second, sec
   for (var key in this._valuesAnnotation) {
     if (!this._valuesAnnotation.hasOwnProperty(key)) { continue; }
     if (!second._valuesAnnotation.hasOwnProperty(key)) { continue; }
-    ret[key] = this._valuesAnnotation[key].concat(second._valuesAnnotation[key]);
+    ret[key] = this._valuesAnnotation[key].concat(second._valuesAnnotation[key].slice(secondIndex));
   }
   return ret;
 };
