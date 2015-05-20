@@ -7,7 +7,7 @@
 /**
  * Overrides the default configuration settings for EpiViz
  */
-epiviz.EpiViz.SETTINGS = {
+epiviz.Config.SETTINGS = {
 
   // PHP/MySQL Data
 
@@ -22,14 +22,17 @@ epiviz.EpiViz.SETTINGS = {
   navigationStepRatio: 0.2,
 
   navigationDelay: 100,
-  
+
   // Plug-ins
 
   dataProviders: [
-      'epiviz.data.EmptyResponseDataProvider'
+      sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
+      sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
+	      epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
+	      sprintf("ws://%s", window.location.host))
   ],
 
-workspacesDataProvider: 'epiviz.data.EmptyResponseDataProvider',
+  workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
 
   cacheUpdateIntervalMilliseconds: 30000,
 
@@ -94,20 +97,8 @@ workspacesDataProvider: 'epiviz.data.EmptyResponseDataProvider',
       circleRadiusRatio: 0.01
     },
     'epiviz.plugins.charts.HeatmapPlot': {
-      label: 'probe',
+      colLabel: 'probe',
       maxColumns: 40
-    }
-  },
-
-  defaultWorkspaceSettings: {
-    name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
-    content: {
-      range: {},
-      measurements: [],
-      charts: {
-        track: [],
-        plot: []
-      }
     }
   },
 
@@ -116,7 +107,7 @@ workspacesDataProvider: 'epiviz.data.EmptyResponseDataProvider',
       'epiviz.ui.charts.transform.clustering.NoneClustering',
       'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
     ],
-    metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
-    linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
+      metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
+      linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
   }
 };
