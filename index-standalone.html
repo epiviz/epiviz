@@ -3,11 +3,14 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
-    <title>EpiViz 2</title>
+    <title>EpiViz 3</title>
 
-    <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
+    <link rel="shortcut icon" href="img/epiviz_2_icon.png"/>
 
     <!-- CSS -->
+
+    <!-- Icons -->
+    <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
 
     <!-- JQuery UI -->
     <link href="css/theme/jquery-ui-1.8.9.custom.css" rel="stylesheet">
@@ -46,6 +49,9 @@
     <script src="src/lib/jquery/DataTables-1.9.4/extras/ColumnFilter/media/js/jquery.dataTables.columnFilter.js"></script>
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
 
+    <!--<script src="src/lib/caja/caja.js"></script>-->
+    <!---<script src="//caja.appspot.com/caja.js"></script>-->
+
     <!-- D3 -->
     <script src="src/lib/d3/d3.v3.min.js"></script>
 
@@ -71,12 +77,14 @@
     <script src="src/lib/closure/goog/structs/collection.js"></script>
 
     <!-- EpiViz framework -->
+    <script src="src/epiviz/deferred/deferred.js"></script>
+    <script src="src/epiviz/deferred/promise.js"></script>
     <script src="src/epiviz/utils/utils.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
+    <script src="src/epiviz/utils/farbtastic.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
     <script src="src/epiviz/utils/iterable-array.js"></script>
     <script src="src/epiviz/config.js"></script>
-    <script src="src/lib/closure/goog/structs/intervaltree.js"></script>
 
     <script src="src/epiviz/events/event-listener.js"></script>
     <script src="src/epiviz/events/event.js"></script>
@@ -107,7 +115,15 @@
     <script src="src/epiviz/datatypes/genomic-range-array.js"></script>
     <script src="src/epiviz/datatypes/feature-value-array.js"></script>
     <script src="src/epiviz/datatypes/partial-summarized-experiment.js"></script>
+    <script src="src/epiviz/datatypes/measurement-genomic-data.js"></script>
     <script src="src/epiviz/datatypes/measurement-genomic-data-wrapper.js"></script>
+    <script src="src/epiviz/datatypes/measurement-genomic-data-array-wrapper.js"></script>
+    <script src="src/epiviz/datatypes/genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/row-item-impl.js"></script>
+    <script src="src/epiviz/datatypes/map-genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/item-filtered-genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/measurement-ordered-genomic-data.js"></script>
+    <script src="src/epiviz/datatypes/measurement-aggregated-genomic-data.js"></script>
 
     <script src="src/epiviz/ui/controls/control.js"></script>
     <script src="src/epiviz/ui/controls/dialog.js"></script>
@@ -125,12 +141,22 @@
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/clustering-algorithm-factory.js"></script>
 
+    <script src="src/epiviz/ui/charts/markers/measurement-aggregator.js"></script>
+    <script src="src/epiviz/ui/charts/markers/visualization-marker.js"></script>
+
     <script src="src/epiviz/ui/charts/margins.js"></script>
     <script src="src/epiviz/ui/charts/color-palette.js"></script>
     <script src="src/epiviz/ui/charts/axis.js"></script>
-    <script src="src/epiviz/ui/charts/chart-properties.js"></script>
-    <script src="src/epiviz/ui/charts/chart-object.js"></script>
     <script src="src/epiviz/ui/charts/custom-setting.js"></script>
+
+    <script src="src/epiviz/ui/charts/vis-object.js"></script>
+    <script src="src/epiviz/ui/charts/visualization-properties.js"></script>
+    <script src="src/epiviz/ui/charts/vis-event-args.js"></script>
+    <script src="src/epiviz/ui/charts/display-type.js"></script>
+    <script src="src/epiviz/ui/charts/visualization.js"></script>
+    <script src="src/epiviz/ui/charts/visualization-type.js"></script>
+
+    <script src="src/epiviz/ui/charts/chart-object.js"></script>
     <script src="src/epiviz/ui/charts/chart.js"></script>
     <script src="src/epiviz/ui/charts/track.js"></script>
     <script src="src/epiviz/ui/charts/plot.js"></script>
@@ -138,11 +164,35 @@
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
+
+    <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/remove-chart-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/save-chart-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/marker-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-filter-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/hierarchy-filter-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-color-by-row-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-order-by-measurements-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-color-by-measurements-code-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-group-by-measurements-code-button.js"></script>
+
+    <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/chart-loader-animation.js"></script>
+
     <script src="src/epiviz/ui/charts/chart-manager.js"></script>
 
     <script src="src/epiviz/workspaces/user-manager.js"></script>
     <script src="src/epiviz/workspaces/workspace.js"></script>
     <script src="src/epiviz/workspaces/workspace-manager.js"></script>
+
+    <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
 
     <script src="src/epiviz/datatypes/genomic-range.js"></script>
     <script src="src/epiviz/ui/location-manager.js"></script>
@@ -151,7 +201,7 @@
 
     <script src="src/epiviz/epiviz.js"></script>
 
-    <script src="src/epiviz/ui/controls/measurements-dialog-data.js"></script>
+    <script src="src/epiviz/ui/controls/vis-config-selection.js"></script>
     <script src="src/epiviz/ui/controls/data-table.js"></script>
     <script src="src/epiviz/ui/controls/wizard.js"></script>
     <script src="src/epiviz/ui/controls/datasource-group-wizard-step.js"></script>
@@ -161,18 +211,28 @@
     <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
     <script src="src/epiviz/ui/controls/computed-measurements-dialog.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
-    <script src="src/epiviz/ui/controls/code-edit-dialog.js"></script>
+
+    <script src="src/epiviz/ui/controls/code-control.js"></script>
+    <script src="src/epiviz/ui/controls/edit-code-control.js"></script>
+    <script src="src/epiviz/ui/controls/marker-code-control.js"></script>
+    <script src="src/epiviz/ui/controls/code-dialog.js"></script>
 
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-track.js"></script>
     <script src="src/epiviz/plugins/charts/line-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/stacked-line-track.js"></script>
+    <script src="src/epiviz/plugins/charts/stacked-line-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/scatter-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/genes-track.js"></script>
     <script src="src/epiviz/plugins/charts/genes-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/line-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/line-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/stacked-line-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/stacked-line-plot-type.js"></script>
 
     <script src="src/epiviz/main.js"></script>
 
@@ -204,7 +264,7 @@
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/epiviz_2_logo_medium.png" alt="EpiViz" width="100" height="24" />
+          <img src="img/epiviz_3_logo_medium.png" alt="EpiViz" width="100" height="24" />
         </div>
 
         <select id="chromosome-selector"></select>
@@ -219,13 +279,9 @@
 
         <span class="separator">|</span>
 
-        <button id="plot-button">Plots</button>
+        <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">
-          <ul id="plot-menu"></ul>
-        </div>
-        <button id="track-button">Tracks</button>
-        <div class="dropdown-menu">
-          <ul id="track-menu"></ul>
+          <ul id="vis-menu"></ul>
         </div>
 
         <button id="computed-measurements-button">Computed Measurements</button>
@@ -237,12 +293,12 @@
 
         <span class="separator">|</span>
 
-        <label for="save-workspace-text"></label>
-        <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
-        <button id="save-workspace-button">Save Workspace</button>
-        <button id="delete-workspace-button">Delete Active Workspace</button>
+        <!--<label for="save-workspace-text"></label>-->
+        <!--<input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>-->
+        <!--<button id="save-workspace-button">Save Workspace</button>-->
+        <!--<button id="delete-workspace-button">Delete Active Workspace</button>-->
 
-        <span class="separator">|</span>
+        <!--<span class="separator">|</span>-->
 
         <button id="help-button">Help</button>
       </div>
