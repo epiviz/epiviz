@@ -168,6 +168,18 @@ epiviz.Config.SETTINGS = {
     }
   },
 
+  defaultWorkspaceSettings: {
+    name: 'Standalone',
+    content: {
+      range: {},
+      measurements: [],
+      charts: {
+        track: [],
+        plot: []
+      }
+    }
+  },
+
   clustering: {
     algorithms: [
       'epiviz.ui.charts.transform.clustering.NoneClustering',
