@@ -109,11 +109,16 @@ epiviz.ui.LocationManager.prototype._doChangeCurrentLocation = function(range) {
     seqName = oldValue.seqName();
   }
 
-  var start = range.start() >= this._seqInfos[seqName].min ? range.start() : this._seqInfos[seqName].min;
-  var end = start + range.width();
-  if (end > this._seqInfos[seqName].max) {
+  var start = undefined, end = undefined;
+  if (this._seqInfos[seqName] && this._seqInfos[seqName].min != undefined && this._seqInfos[seqName].max != undefined) {
+    start = range.start() != undefined && range.start() >= this._seqInfos[seqName].min ? range.start() : this._seqInfos[seqName].min;
+    end = range.width() != undefined ? start + range.width() : start + 9999; // TODO: Set this constant somewhere
+  }
+
+  if (start != undefined && end != undefined &&
+    end > this._seqInfos[seqName].max) {
+    start = Math.max(this._seqInfos[seqName].min, this._seqInfos[seqName].max - end + start);
     end = this._seqInfos[seqName].max;
-    start = Math.max(this._seqInfos[seqName].min, end - range.width());
   }
 
   this._lastUnfilledRequest = null;
@@ -145,7 +150,12 @@ epiviz.ui.LocationManager.prototype.updateSeqInfos = function(seqInfos) {
   this._seqInfosUpdated.notify(seqInfos);
 
   if (this._lastUnfilledRequest !== null) {
-    this._doChangeCurrentLocation(this._lastUnfilledRequest);
+    if (this._lastUnfilledRequest.seqName() in this._seqInfos) {
+      this._doChangeCurrentLocation(this._lastUnfilledRequest);
+    } else if (seqInfos.length > 0) {
+      var request = new epiviz.datatypes.GenomicRange(seqInfos[0].name(), this._lastUnfilledRequest.start(), this._lastUnfilledRequest.width());
+      this._doChangeCurrentLocation(request);
+    }
   }
 };
 

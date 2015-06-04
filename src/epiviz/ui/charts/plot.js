@@ -9,7 +9,7 @@ goog.provide('epiviz.ui.charts.Plot');
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @extends {epiviz.ui.charts.Chart}
  * @constructor
  */
@@ -25,6 +25,6 @@ epiviz.ui.charts.Plot.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Chart.pr
 epiviz.ui.charts.Plot.constructor = epiviz.ui.charts.Plot;
 
 /**
- * @returns {epiviz.ui.charts.ChartType.DisplayType}
+ * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
-epiviz.ui.charts.Plot.prototype.displayType = function() { return epiviz.ui.charts.ChartType.DisplayType.PLOT; };
+epiviz.ui.charts.Plot.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.PLOT; };

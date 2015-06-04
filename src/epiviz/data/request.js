@@ -9,7 +9,7 @@ goog.provide('epiviz.data.Request');
 /**
  * @param {number} id
  * @param {Object.<string, string>} args
- * @param {epiviz.data.Request.Method} method
+ * @param {epiviz.data.Request.Method} [method]
  * @constructor
  */
 epiviz.data.Request = function(id, args, method) {
@@ -53,6 +53,9 @@ epiviz.data.Request.Action = {
   SAVE_WORKSPACE: 'saveWorkspace',
   DELETE_WORKSPACE: 'deleteWorkspace',
   GET_WORKSPACES: 'getWorkspaces',
+
+  GET_HIERARCHY: 'getHierarchy',
+  PROPAGATE_HIERARCHY_CHANGES: 'propagateHierarchyChanges',
 
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
@@ -177,7 +180,7 @@ epiviz.data.Request.emptyRequest = function() {
 
 /**
  * @param {epiviz.measurements.Measurement} datasource
- * @param {epiviz.datatypes.GenomicRange} range
+ * @param {epiviz.datatypes.GenomicRange} [range]
  * @returns {epiviz.data.Request}
  */
 epiviz.data.Request.getRows = function(datasource, range) {
@@ -185,16 +188,16 @@ epiviz.data.Request.getRows = function(datasource, range) {
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_ROWS,
     datasource: datasource.id(),
-    seqName: range.seqName(),
-    start: range.start(),
-    end: range.end(),
+    seqName: range ? range.seqName() : undefined,
+    start: range ? range.start() : undefined,
+    end: range ? range.end() : undefined,
     metadata: datasource.metadata()
   });
 };
 
 /**
  * @param {epiviz.measurements.Measurement} measurement
- * @param {epiviz.datatypes.GenomicRange} range
+ * @param {epiviz.datatypes.GenomicRange} [range]
  * @returns {epiviz.data.Request}
  */
 epiviz.data.Request.getValues = function(measurement, range) {
@@ -203,9 +206,9 @@ epiviz.data.Request.getValues = function(measurement, range) {
     action: epiviz.data.Request.Action.GET_VALUES,
     datasource: measurement.datasource().id(),
     measurement: measurement.id(),
-    seqName: range.seqName(),
-    start: range.start(),
-    end: range.end()
+    seqName: range ? range.seqName() : undefined,
+    start: range ? range.start() : undefined,
+    end: range ? range.end() : undefined
   });
 };
 
@@ -245,15 +248,16 @@ epiviz.data.Request.getSeqInfos = function() {
 
 /**
  * @param {epiviz.workspaces.Workspace} workspace
+ * @param {epiviz.Config} config
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.saveWorkspace = function(workspace) {
+epiviz.data.Request.saveWorkspace = function(workspace, config) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.SAVE_WORKSPACE,
     id: workspace.id(),
     name: workspace.name(),
-    content: encodeURIComponent(JSON.stringify(workspace.raw().content))
+    content: encodeURIComponent(JSON.stringify(workspace.raw(config).content))
   },
   epiviz.data.Request.Method.POST);
 };
@@ -284,3 +288,35 @@ epiviz.data.Request.getWorkspaces = function(filter, requestWorkspaceId) {
     ws: requestWorkspaceId
   });
 };
+
+/**
+ * @param {string} datasourceGroup
+ * @param {string} [nodeId]
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getHierarchy = function(datasourceGroup, nodeId) {
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_HIERARCHY,
+    datasourceGroup: datasourceGroup,
+    nodeId: nodeId
+  });
+};
+
+/**
+ * @param {string} datasourceGroup
+ * @param {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>} [selection]
+ * @param {Object.<string, number>} [order]
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.propagateHierarchyChanges = function(datasourceGroup, selection, order) {
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES,
+    datasourceGroup: datasourceGroup,
+    selection: selection,
+    order: order
+  });
+};
+
+

@@ -171,13 +171,13 @@ epiviz.ui.controls.DataTable.prototype.initialize = function() {
     if (this._columns[j].isVisible) { ++visibleIndex; }
     this._table.fnSetColumnVis(j, this._columns[j].isVisible);
     if (!this._columns[j].defaultFilter) { continue; }
-    this._table.fnFilter(sprintf('(%s)|any', this._columns[j].defaultFilter), j, true, true);
+    this._table.fnFilter(this._columns[j].defaultFilter, j, true, true);
     this._table
       .find('tfoot')
       .find(sprintf('th:eq(%s)', visibleIndex))
       .find('input')
       .removeClass('search_init')
-      .val(sprintf('(%s)|any', this._columns[j].defaultFilter));
+      .val(this._columns[j].defaultFilter);
   }
 
   // Hack

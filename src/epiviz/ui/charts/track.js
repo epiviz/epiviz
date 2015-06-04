@@ -9,7 +9,7 @@ goog.provide('epiviz.ui.charts.Track');
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @extends {epiviz.ui.charts.Chart}
  * @constructor
  */
@@ -67,34 +67,38 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
   this._background
     .on('mouseover', function() { self._captureMouseHover(); })
     .on('mousemove', function() { self._captureMouseHover(); })
-    .on('mouseout', function () { self._unhover.notify(); });
+    .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
   var result = epiviz.ui.charts.Chart.prototype.draw.call(this, range, data);
 
-  this._drawTitle();
+  this._drawLegend();
 
   return result;
 };
 
 /**
- * @returns {epiviz.ui.charts.ChartType.DisplayType}
+ * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
-epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.charts.ChartType.DisplayType.TRACK; };
+epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.TRACK; };
 
 /**
- * @param {epiviz.ui.charts.UiObject} selectedObject
+ * @param {epiviz.ui.charts.ChartObject} selectedObject
  */
 epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
   epiviz.ui.charts.Chart.prototype.doHover.call(this, selectedObject);
+
+  if (selectedObject.start == undefined || selectedObject.end == undefined) {
+    return;
+  }
 
   if (!this._lastRange) { return; }
 
@@ -145,27 +149,29 @@ epiviz.ui.charts.Track.prototype.doUnhover = function() {
  */
 epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
   if (!this._lastRange) { return; }
-  this._unhover.notify();
+  this._unhover.notify(new epiviz.ui.charts.VisEventArgs(this.id()));
   var inverseXScale = d3.scale.linear()
     .domain([0, this.width()])
     .range([this._lastRange.start(), this._lastRange.end()]);
   var start = inverseXScale(d3.mouse(this._background[0][0])[0]) - this._binSize / 2;
   var end = start + this._binSize;
 
-  var selectedObject = new epiviz.ui.charts.UiObject(sprintf('%s-highlight', this._id), start, end, null, null, null, null, null);
-  this._hover.notify(selectedObject);
+  var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this.id()), start, end);
+  this._hover.notify(new epiviz.ui.charts.VisEventArgs(this.id(), selectedObject));
 };
 
 /**
  * @private
  */
-epiviz.ui.charts.Track.prototype._drawTitle = function() {
-  var title = '';
-  var measurements = this.measurements().toArray();
-  var msMap = epiviz.utils.arrayFlip(measurements);
-
+epiviz.ui.charts.Track.prototype._drawLegend = function() {
   var self = this;
   this._svg.selectAll('.chart-title').remove();
+  this._svg.selectAll('.chart-title-color ').remove();
+
+  if (!this._lastData || !this._lastData.isReady()) { return; }
+
+  var title = '';
+  var measurements = this._lastData.measurements();
 
   var titleEntries = this._svg
     .selectAll('.chart-title')
@@ -174,7 +180,10 @@ epiviz.ui.charts.Track.prototype._drawTitle = function() {
     .append('text')
     .attr('class', 'chart-title')
     .attr('font-weight', 'bold')
-    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('fill', function(m, i) {
+      if (!self._measurementColorLabels) { return self.colors().get(i); }
+      return self.colors().getByKey(self._measurementColorLabels.get(m));
+    })
     .attr('y', self.margins().top() - 5)
     .text(function(m, i) { return m.name(); });
 
@@ -184,10 +193,26 @@ epiviz.ui.charts.Track.prototype._drawTitle = function() {
   $('#' + this.id() + ' .chart-title')
     .each(function(i) {
       titleEntriesStartPosition.push(textLength);
-      textLength += this.getBBox().width + 3;
+      textLength += this.getBBox().width + 15;
     });
 
   titleEntries.attr('x', function(column, i) {
-    return self.margins().left() + 3 + titleEntriesStartPosition[i];
+    return self.margins().left() + 10 + titleEntriesStartPosition[i];
   });
+
+  var colorEntries = this._svg
+    .selectAll('.chart-title-color')
+    .data(measurements)
+    .enter()
+    .append('circle')
+    .attr('class', 'chart-title-color')
+    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
+    .attr('cy', self.margins().top() - 9)
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .style('fill', function(m, i) {
+      if (!self._measurementColorLabels) { return self.colors().get(i); }
+      return self.colors().getByKey(self._measurementColorLabels.get(m));
+    });
 };

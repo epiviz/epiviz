@@ -155,10 +155,40 @@ epiviz.measurements.MeasurementHashtable.prototype.foreach = function(func, pred
 };
 
 /**
- * @returns {?{key: epiviz.measurements.Measurement, value: T}}
+ * @returns {{key: epiviz.measurements.Measurement, value: T}}
  */
 epiviz.measurements.MeasurementHashtable.prototype.first = function() {
   return this.iterator().first();
+};
+
+/**
+ * Creates a copy of this hashtable, ordered by keys (measurements)
+ * @param {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number} comparer
+ * @returns {epiviz.measurements.MeasurementHashtable}
+ */
+epiviz.measurements.MeasurementHashtable.prototype.sorted = function(comparer) {
+  var ret = new epiviz.measurements.MeasurementHashtable();
+
+  var pairs = this._order.slice(0);
+  pairs.sort(function(p1, p2) { return comparer(p1.key, p2.key); });
+
+  pairs.forEach(function(pair) {
+    if (!pair.contained) { return; }
+    ret.put(pair.key, pair.value);
+  });
+
+  return ret;
+};
+
+/**
+ * @returns {Array.<epiviz.measurements.Measurement>}
+ */
+epiviz.measurements.MeasurementHashtable.prototype.keys = function() {
+  var ret = [];
+  this._order.forEach(function(o) {
+    if (o.contained) { ret.push(o.key); }
+  });
+  return ret;
 };
 
 /**

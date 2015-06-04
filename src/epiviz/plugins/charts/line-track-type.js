@@ -27,7 +27,7 @@ epiviz.plugins.charts.LineTrackType.constructor = epiviz.plugins.charts.LineTrac
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.LineTrack}
  */
 epiviz.plugins.charts.LineTrackType.prototype.createNew = function(id, container, properties) {
@@ -56,11 +56,9 @@ epiviz.plugins.charts.LineTrackType.prototype.chartHtmlAttributeName = function(
 };
 
 /**
- * @returns {epiviz.measurements.Measurement.Type}
+ * @returns {function(epiviz.measurements.Measurement): boolean}
  */
-epiviz.plugins.charts.LineTrackType.prototype.chartContentType = function() {
-  return epiviz.measurements.Measurement.Type.FEATURE;
-};
+epiviz.plugins.charts.LineTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.FEATURE; }; };
 
 /**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}
@@ -68,10 +66,10 @@ epiviz.plugins.charts.LineTrackType.prototype.chartContentType = function() {
 epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
   return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.LineTrackType.CustomSettings.MAX_POINTS,
+      epiviz.plugins.charts.LineTrackType.CustomSettings.STEP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      100,
-      'Maximum points'),
+      50,
+      'Step'),
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
@@ -82,6 +80,13 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
       'Show lines'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Show error bars'),
+
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
@@ -94,13 +99,13 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
       'Line thickness'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MIN,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Min Y'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MAX,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Max Y'),
@@ -118,8 +123,9 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
  * @enum {string}
  */
 epiviz.plugins.charts.LineTrackType.CustomSettings = {
-  MAX_POINTS: 'maxPoints',
+  STEP: 'step',
   SHOW_POINTS: 'showPoints',
+  SHOW_ERROR_BARS: 'showErrorBars',
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',
   LINE_THICKNESS: 'lineThickness',

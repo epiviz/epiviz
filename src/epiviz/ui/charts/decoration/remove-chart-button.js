@@ -7,13 +7,13 @@
 goog.provide('epiviz.ui.charts.decoration.RemoveChartButton');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
  * @extends {epiviz.ui.charts.decoration.ChartOptionButton}
  * @constructor
  */
-epiviz.ui.charts.decoration.RemoveChartButton = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartOptionButton.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.RemoveChartButton = function(visualization, otherDecoration) {
+  epiviz.ui.charts.decoration.ChartOptionButton.call(this, visualization, otherDecoration);
 };
 
 /*
@@ -29,7 +29,7 @@ epiviz.ui.charts.decoration.RemoveChartButton.constructor = epiviz.ui.charts.dec
 epiviz.ui.charts.decoration.RemoveChartButton.prototype._click = function() {
   var self = this;
   return function(){
-    self.chart().onRemove().notify(self.chart().id());
+    self.visualization().onRemove().notify(new epiviz.ui.charts.VisEventArgs(self.visualization().id()));
   };
 };
 

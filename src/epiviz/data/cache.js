@@ -61,10 +61,11 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
- * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} dataReadyCallback
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
 epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
   var MeasurementType = epiviz.measurements.Measurement.Type;
+
   var self = this;
 
   this._lastRequest = epiviz.datatypes.GenomicRange.fromStartEnd(
@@ -143,7 +144,7 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
 };
 
 /**
- * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} chartDataReadyCallback
+ * @param {function(string, epiviz.datatypes.GenomicData)} chartDataReadyCallback
  * @param {epiviz.datatypes.GenomicRange} chartRequestedRange
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
  * @param {epiviz.data.Request} request
@@ -165,7 +166,10 @@ epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, c
   var computedMs = this._extractComputedMeasurements(chartMeasurementsMap);
   this._updateComputedMeasurementsData(computedMs);
 
-  delete this._measurementPendingRequestsMap.get(measurement)[request.id()];
+  var pendingRequests = this._measurementPendingRequestsMap.get(measurement);
+  if (pendingRequests) {
+    delete pendingRequests[request.id()];
+  }
 
   this._serveAvailableData(chartRequestedRange, chartMeasurementsMap, chartDataReadyCallback);
 };
@@ -176,7 +180,7 @@ epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, c
  *
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
- * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} dataReadyCallback
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  * @private
  */
 epiviz.data.Cache.prototype._serveAvailableData = function(range, chartMeasurementsMap, dataReadyCallback) {
@@ -190,7 +194,7 @@ epiviz.data.Cache.prototype._serveAvailableData = function(range, chartMeasureme
 
     var chartMeasurements = chartMeasurementsMap[chartId];
     var allDataAvailable = true;
-    /** @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} */
+    /** @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>} */
     var chartData = new epiviz.measurements.MeasurementHashtable();
     (function(chartData) {
       chartMeasurements.foreach(function(m) {
@@ -215,14 +219,14 @@ epiviz.data.Cache.prototype._serveAvailableData = function(range, chartMeasureme
           }
         }
 
-        chartData.put(m, new epiviz.datatypes.GenomicDataMeasurementWrapper(m, self._data[m.datasourceGroup()]));
+        chartData.put(m, new epiviz.datatypes.MeasurementGenomicDataWrapper(m, self._data[m.datasourceGroup()]));
 
         return false;
       });
     }(chartData));
 
     if (allDataAvailable) {
-      dataReadyCallback(chartId, chartData);
+      dataReadyCallback(chartId, new epiviz.datatypes.MapGenomicData(chartData));
       servedChartIds.push(chartId);
     }
   }

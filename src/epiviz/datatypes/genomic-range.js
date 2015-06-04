@@ -14,8 +14,17 @@ goog.provide('epiviz.datatypes.GenomicRange');
  * @param {number} start
  * @param {number} width
  * @constructor
+ * @implements {epiviz.datatypes.Range}
  */
 epiviz.datatypes.GenomicRange = function(seqname, start, width) {
+
+  if (width != undefined && width < 0) {
+    width = -width;
+    if (start != undefined) {
+      start -= width;
+    }
+  }
+
   /**
    * @type {string}
    * @private
@@ -42,7 +51,7 @@ epiviz.datatypes.GenomicRange = function(seqname, start, width) {
  * @returns {epiviz.datatypes.GenomicRange}
  */
 epiviz.datatypes.GenomicRange.fromStartEnd = function(seqname, start, end) {
-  return new epiviz.datatypes.GenomicRange(seqname, start, end - start);
+  return new epiviz.datatypes.GenomicRange(seqname, start, (start != undefined && end != undefined) ? end - start : undefined);
 };
 
 /**
@@ -63,7 +72,7 @@ epiviz.datatypes.GenomicRange.prototype.width = function() { return this._width;
 /**
  * @returns {number}
  */
-epiviz.datatypes.GenomicRange.prototype.end = function() { return this._start + this._width; };
+epiviz.datatypes.GenomicRange.prototype.end = function() { return (this._start != undefined && this._width != undefined) ? this._start + this._width : undefined; };
 
 /**
  * @returns {boolean}

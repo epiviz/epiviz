@@ -27,7 +27,7 @@ epiviz.plugins.charts.GenesTrackType.constructor = epiviz.plugins.charts.GenesTr
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.GenesTrack}
  */
 epiviz.plugins.charts.GenesTrackType.prototype.createNew = function(id, container, properties) {
@@ -58,6 +58,16 @@ epiviz.plugins.charts.GenesTrackType.prototype.chartHtmlAttributeName = function
 /**
  * @returns {epiviz.measurements.Measurement.Type}
  */
-epiviz.plugins.charts.GenesTrackType.prototype.chartContentType = function() {
+/*epiviz.plugins.charts.GenesTrackType.prototype.chartContentType = function() {
   return epiviz.measurements.Measurement.Type.RANGE;
-};
+};*/
+
+/**
+ * @returns {boolean}
+ */
+epiviz.plugins.charts.GenesTrackType.prototype.isRestrictedToRangeMeasurements = function() { return true; };
+
+/**
+ * @returns {function(epiviz.measurements.Measurement): boolean}
+ */
+epiviz.plugins.charts.GenesTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.RANGE; }; };

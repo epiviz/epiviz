@@ -17,8 +17,7 @@ goog.require('epiviz.EpiViz');
  * Main entry point
  */
 epiviz.main = function() {
-
-  var config = new epiviz.Config(epiviz.EpiViz.SETTINGS);
+  var config = new epiviz.Config(epiviz.Config.SETTINGS);
 
   /** @type {epiviz.ui.LocationManager} */
   var locationManager = new epiviz.ui.LocationManager(config);
@@ -44,6 +43,9 @@ epiviz.main = function() {
   /** @type {epiviz.workspaces.WorkspaceManager} */
   var workspaceManager = new epiviz.workspaces.WorkspaceManager(config, locationManager, measurementsManager, chartManager, chartFactory);
 
+  /** @type {epiviz.localstorage.LocalStorageManager} */
+  var localStorageManager = new epiviz.localstorage.LocalStorageManager();
+
   /** @type {epiviz.workspaces.UserManager} */
   var userManager = new epiviz.workspaces.UserManager(config);
 
@@ -51,7 +53,7 @@ epiviz.main = function() {
   var webArgsManager = new epiviz.ui.WebArgsManager(locationManager, workspaceManager);
 
   /** @type {epiviz.EpiViz} */
-  var epivizHandler = new epiviz.EpiViz(config, locationManager, measurementsManager, controlManager, dataManager, chartFactory, chartManager, workspaceManager, userManager, webArgsManager);
+  var epivizHandler = new epiviz.EpiViz(config, locationManager, measurementsManager, controlManager, dataManager, chartFactory, chartManager, workspaceManager, userManager, webArgsManager, localStorageManager);
 
   epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.initialize(config);
 

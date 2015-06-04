@@ -270,11 +270,67 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
- * @param {function(string, epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>)} dataReadyCallback
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
 epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
   this._cache.getData(range, chartMeasurementsMap, dataReadyCallback);
 };
+
+/**
+ * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectionMap, dataReadyCallback) {
+  for (var chartId in chartVisConfigSelectionMap) {
+    if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
+    var visConfigSelection = chartVisConfigSelectionMap[chartId];
+  }
+  var dataprovider = visConfigSelection.dataprovider;
+  if (!dataprovider) {
+    visConfigSelection.measurements.foreach(function(m) {
+      if (m.dataprovider()) {
+        dataprovider = m.dataprovider();
+        return true;
+      }
+      return false;
+    });
+  }
+  var provider = this._dataProviderFactory.get(dataprovider);
+  provider.getData(epiviz.data.Request.getHierarchy(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
+    dataReadyCallback(chartId, response.data());
+  });
+};
+
+/**
+ * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.propagateHierarchyChanges = function(chartVisConfigSelectionMap, dataReadyCallback) {
+  for (var chartId in chartVisConfigSelectionMap) {
+    if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
+    var visConfigSelection = chartVisConfigSelectionMap[chartId];
+    var dataprovider = visConfigSelection.dataprovider;
+    if (!dataprovider) {
+      visConfigSelection.measurements.foreach(function(m) {
+        if (m.dataprovider()) {
+          dataprovider = m.dataprovider();
+          return true;
+        }
+        return false;
+      });
+    }
+    var provider = this._dataProviderFactory.get(dataprovider);
+    (function(chartId) {
+      provider.getData(epiviz.data.Request.propagateHierarchyChanges(
+        visConfigSelection.datasourceGroup,
+        visConfigSelection.customData.selection,
+        visConfigSelection.customData.order), function(response) {
+        dataReadyCallback(chartId, response.data());
+      });
+    })(chartId);
+  }
+};
+
 
 /**
  * @param {function(Array)} callback
@@ -314,15 +370,16 @@ epiviz.data.DataManager.prototype.getWorkspaces = function(callback, filter, req
 
 /**
  * @param {epiviz.workspaces.Workspace} workspace
+ * @param {epiviz.Config} config
  * @param {function(string)} callback
  */
-epiviz.data.DataManager.prototype.saveWorkspace = function(workspace, callback) {
+epiviz.data.DataManager.prototype.saveWorkspace = function(workspace, config, callback) {
   var workspaceProvider = this._dataProviderFactory.workspacesDataProvider();
 
   if (!workspaceProvider) { throw Error('Invalid data provider for workspaces (see Config.workspaceDataProvider)'); }
 
   //workspaceProvider.saveWorkspace(workspace, callback);
-  workspaceProvider.getData(epiviz.data.Request.saveWorkspace(workspace),
+  workspaceProvider.getData(epiviz.data.Request.saveWorkspace(workspace, config),
     /**
      * @param {epiviz.data.Response.<string>} response
      */
@@ -340,7 +397,6 @@ epiviz.data.DataManager.prototype.deleteWorkspace = function(workspace) {
 
   if (!workspaceProvider) { throw Error('Invalid data provider for workspaces (see Config.workspaceDataProvider)'); }
 
-  //workspaceProvider.saveWorkspace(workspace, callback);
   workspaceProvider.getData(epiviz.data.Request.deleteWorkspace(workspace),
     /**
      * @param {epiviz.data.Response.<{success: boolean}>} response

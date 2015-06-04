@@ -13,7 +13,7 @@ goog.provide('epiviz.data.WebServerDataProvider');
  * @extends epiviz.data.DataProvider
  */
 epiviz.data.WebServerDataProvider = function(id, serverEndpoint) {
-  epiviz.data.DataProvider.call(this, id || epiviz.data.WebServerDataProvider.DEFAULT_ID);
+  epiviz.data.DataProvider.call(this, id || epiviz.Config.DEFAULT_DATA_PROVIDER_ID);
 
   /**
    * @type {string}
@@ -27,8 +27,6 @@ epiviz.data.WebServerDataProvider = function(id, serverEndpoint) {
  */
 epiviz.data.WebServerDataProvider.prototype = epiviz.utils.mapCopy(epiviz.data.DataProvider.prototype);
 epiviz.data.WebServerDataProvider.constructor = epiviz.data.WebServerDataProvider;
-
-epiviz.data.WebServerDataProvider.DEFAULT_ID = 'umd';
 
 /**
  * @constant

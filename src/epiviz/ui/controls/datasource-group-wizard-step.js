@@ -18,7 +18,7 @@ epiviz.ui.controls.DatasourceGroupWizardStep = function() {
   this._dataTable = null;
 
   /**
-   * @type {epiviz.ui.controls.MeasurementsDialogData}
+   * @type {epiviz.ui.controls.VisConfigSelection}
    * @private
    */
   this._data = null;
@@ -26,7 +26,7 @@ epiviz.ui.controls.DatasourceGroupWizardStep = function() {
 
 /**
  * @param {jQuery} container
- * @param {epiviz.ui.controls.MeasurementsDialogData} data
+ * @param {epiviz.ui.controls.VisConfigSelection} data
  */
 epiviz.ui.controls.DatasourceGroupWizardStep.prototype.initialize = function(container, data) {
   this._data = data;
@@ -39,8 +39,6 @@ epiviz.ui.controls.DatasourceGroupWizardStep.prototype.initialize = function(con
 
   var datasourceGroups = {};
   data.measurements.foreach(function(m) {
-    // Filter out measurements that don't match the given restrictions
-    if (data.type && data.type != m.type()) { return; }
     if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
     if (data.annotation) {
       for (var key in data.annotation) {
@@ -63,7 +61,7 @@ epiviz.ui.controls.DatasourceGroupWizardStep.prototype.initialize = function(con
  *
  * @returns {{
  *   error: string=,
- *   data: epiviz.ui.controls.MeasurementsDialogData=}}
+ *   data: epiviz.ui.controls.VisConfigSelection=}}
  */
 epiviz.ui.controls.DatasourceGroupWizardStep.prototype.next = function() {
   var selectedRows = this._dataTable ? this._dataTable.selectedRows() : [];
@@ -75,8 +73,19 @@ epiviz.ui.controls.DatasourceGroupWizardStep.prototype.next = function() {
 
   this._data.datasourceGroup = selectedRows[0];
 
+  var copy = new epiviz.ui.controls.VisConfigSelection(
+    this._data.measurements.subset(function(m) { return m.datasourceGroup() == selectedRows[0]; }),
+    this._data.datasource,
+    this._data.datasourceGroup,
+    this._data.dataprovider,
+    this._data.annotation ? epiviz.utils.mapCopy(this._data.annotation) : this._data.annotation,
+    this._data.defaultChartType,
+    this._data.minSelectedMeasurements,
+    this._data.customData
+  );
+
   return {
-    data: this._data
+    data: copy
   };
 };
 

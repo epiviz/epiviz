@@ -34,7 +34,7 @@ epiviz.ui.charts.CustomSetting = function(id, type, defaultValue, label, possibl
   this.label = label || id;
 
   /**
-   * @type {Array=}
+   * @type {Array}
    */
   this.possibleValues = possibleValues || null;
 };
@@ -47,7 +47,9 @@ epiviz.ui.charts.CustomSetting.Type = {
   STRING: 'string',
   ARRAY: 'array',
   BOOLEAN: 'boolean',
-  CATEGORICAL: 'categorical'
+  CATEGORICAL: 'categorical',
+  MEASUREMENTS_METADATA: 'measurementsMetadata',
+  MEASUREMENTS_ANNOTATION: 'measurementsAnnotation'
 };
 
 /**

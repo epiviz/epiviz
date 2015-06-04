@@ -117,8 +117,26 @@ epiviz.measurements.Measurement = function(id, name, type, datasourceId, datasou
  */
 epiviz.measurements.Measurement.Type = {
   FEATURE: 'feature',
-  RANGE: 'range'
+  RANGE: 'range',
+  UNORDERED: 'unordered'
 };
+
+/**
+ * @param {epiviz.measurements.Measurement.Type} type
+ * @returns {boolean}
+ */
+epiviz.measurements.Measurement.Type.isOrdered = function(type) {
+  return type == epiviz.measurements.Measurement.Type.FEATURE || type == epiviz.measurements.Measurement.Type.RANGE;
+};
+
+/**
+ * @param {epiviz.measurements.Measurement.Type} type
+ * @returns {boolean}
+ */
+epiviz.measurements.Measurement.Type.hasValues = function(type) {
+  return type == epiviz.measurements.Measurement.Type.FEATURE || type == epiviz.measurements.Measurement.Type.UNORDERED;
+};
+
 
 /**
  * @returns {string}
@@ -264,7 +282,7 @@ epiviz.measurements.Measurement.prototype.maxValue = function() {
  * @returns {Array.<string>}
  */
 epiviz.measurements.Measurement.prototype.metadata = function() {
-  return this._metadata;
+  return this._metadata || [];
 };
 
 /**

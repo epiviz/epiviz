@@ -7,13 +7,13 @@
 goog.provide('epiviz.ui.charts.decoration.ToggleTooltipButton');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
- * @extends {epiviz.ui.charts.decoration.ChartDecoration}
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
+ * @extends {epiviz.ui.charts.decoration.VisualizationDecoration}
  * @constructor
  */
-epiviz.ui.charts.decoration.ToggleTooltipButton = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartDecoration.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.ToggleTooltipButton = function(visualization, otherDecoration) {
+  epiviz.ui.charts.decoration.VisualizationDecoration.call(this, visualization, otherDecoration);
 
   /**
    * @type {boolean}
@@ -25,19 +25,19 @@ epiviz.ui.charts.decoration.ToggleTooltipButton = function(chart, otherDecoratio
    * @type {boolean}
    * @private
    */
-  this._checked = true;
+  this._checked = false;
 };
 
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.decoration.ToggleTooltipButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.ChartDecoration.prototype);
+epiviz.ui.charts.decoration.ToggleTooltipButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.VisualizationDecoration.prototype);
 epiviz.ui.charts.decoration.ToggleTooltipButton.constructor = epiviz.ui.charts.decoration.ToggleTooltipButton;
 
 /**
  */
 epiviz.ui.charts.decoration.ToggleTooltipButton.prototype.decorate = function() {
-  epiviz.ui.charts.decoration.ChartDecoration.prototype.decorate.call(this);
+  epiviz.ui.charts.decoration.VisualizationDecoration.prototype.decorate.call(this);
 
   var buttonIndex = 0;
   for (var decoration = this.otherDecoration(); decoration; decoration = decoration.otherDecoration()) {
@@ -45,8 +45,8 @@ epiviz.ui.charts.decoration.ToggleTooltipButton.prototype.decorate = function() 
   }
 
   var self = this;
-  var tooltipButtonId = sprintf('%s-tooltip-button', this.chart().id());
-  this.chart().container().append(sprintf(
+  var tooltipButtonId = sprintf('%s-tooltip-button', this.visualization().id());
+  this.visualization().container().append(sprintf(
     '<div id="%1$s-container" style="position: absolute; top: 5px; right: %2$spx">' +
     '<input type="checkbox" id="%1$s" %3$s />' +
     '<label for="%1$s" >Toggle tooltip</label>' +
@@ -62,7 +62,7 @@ epiviz.ui.charts.decoration.ToggleTooltipButton.prototype.decorate = function() 
     self._checked = button.is(':checked');
   });
 
-  this.chart().container()
+  this.visualization().container()
     .mousemove(function () { tooltipButtonContainer.show(); })
     .mouseleave(function () { tooltipButtonContainer.hide(); });
 };

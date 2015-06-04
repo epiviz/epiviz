@@ -17,7 +17,7 @@ goog.require('epiviz.EpiViz');
  * Main entry point
  */
 epiviztest.main = function() {
-  var config = new epiviz.Config(epiviz.EpiViz.SETTINGS);
+  var config = new epiviz.Config(epiviz.Config.SETTINGS);
 
   /** @type {epiviz.ui.LocationManager} */
   var locationManager = new epiviz.ui.LocationManager(config);

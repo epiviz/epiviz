@@ -9,7 +9,7 @@ goog.provide('epiviz.plugins.charts.GenesTrack');
 /**
  * @param {string} id
  * @param {jQuery} container
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @extends {epiviz.ui.charts.Track}
  * @constructor
  */
@@ -32,39 +32,18 @@ epiviz.plugins.charts.GenesTrack.constructor = epiviz.plugins.charts.GenesTrack;
 epiviz.plugins.charts.GenesTrack.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Track.prototype._initialize.call(this);
-};
 
-/**
- * @protected
- */
-epiviz.plugins.charts.GenesTrack.prototype._addStyles = function() {
-  var svgId = '#' + this._svgId;
-  var style = sprintf('%s .items { shape-rendering: auto; /* fill: %s; */ stroke: #555555; fill-opacity: 0.6; }\n', svgId, this.colors().get(0)) +
-    sprintf('%s .exons { /* fill: %s; */ stroke: none; }\n', svgId, this.colors().get(1)) +
-    sprintf('%s .gene-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }\n', svgId) +
-    sprintf('%s .selected { /*filter: url(#%s-dropshadow);*/ fill-opacity: 1; stroke: #555555; }\n', svgId, this._id) +
-    sprintf('%s .selected .gene-body { /* fill: #ffc600; */ stroke: %s; stroke-width: 3; stroke-opacity: 0.7; }\n', svgId, this.colors().get(1)) +
-    sprintf('%s .hovered { /*filter: url(#%s-dropshadow);*/ fill-opacity: 1; stroke: #555555; }\n', svgId, this._id) +
-    sprintf('%s .hovered .gene-body { /* fill: #ffc600; */ stroke: %s; stroke-width: 3; stroke-opacity: 0.7; }\n', svgId, this.colors().get(1)) +
-    sprintf('%s .hovered .gene-name { fill-opacity: 1; }\n', svgId) +
-    sprintf('%s .selected .gene-name { fill-opacity: 1; }\n', svgId);
-
-  var jSvg = this._container.find('svg');
-  jSvg.append(sprintf('<style type="text/css">%s</style>', style));
-
+  this._svg.classed('genes-track', true);
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, zoom) {
-
-  var lastRange = this._lastRange;
-
   epiviz.ui.charts.Track.prototype.draw.call(this, range, data, slide, zoom);
 
   // If data is defined, then the base class sets this._lastData to data.
@@ -72,26 +51,23 @@ epiviz.plugins.charts.GenesTrack.prototype.draw = function(range, data, slide, z
   data = this._lastData;
   range = this._lastRange;
 
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
-    slide = range.start() - lastRange.start();
-  }
-
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() != range.width()) {
-    zoom = lastRange.width() / range.width();
-  }
-
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
+
+  slide = slide || this._slide;
+  zoom = zoom || this._zoom;
+  this._slide = 0;
+  this._zoom = 1;
 
   return this._drawGenes(range, data, slide || 0, zoom || 1);
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {number} slide
  * @param {number} zoom
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, slide, zoom) {
@@ -112,12 +88,6 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
   /** @type {epiviz.ui.charts.Margins} */
   var margins = this.margins();
 
-  /** @type {epiviz.measurements.MeasurementSet} */
-  var measurements = this.measurements();
-
-  /** @type {epiviz.ui.charts.ColorPalette} */
-  var colors = this.colors();
-
   var xScale = d3.scale.linear()
     .domain([start, end])
     .range([0, width - margins.sumAxis(Axis.X)]);
@@ -127,18 +97,19 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
   this._drawAxes(xScale, null, 10, 5);
 
   var self = this;
-  /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
-  var series = data.first().value;
+  /** @type {epiviz.datatypes.MeasurementGenomicData} */
+  var series = data.firstSeries();
 
   var indices = epiviz.utils.range(series.size());
 
-  /** @type {Array.<epiviz.ui.charts.UiObject>} */
-  var dataItems = indices.map(function(i) {
+  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
+  var dataItems = indices
+    .map(function(i) {
     var cell = series.get(i);
     var item = cell.rowItem;
     var classes = sprintf('item gene-%s', item.metadata('gene'));
 
-    return new epiviz.ui.charts.UiObject(
+    return new epiviz.ui.charts.ChartObject(
       item.metadata('gene'),
       item.start(),
       item.end(),
@@ -151,7 +122,7 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
 
   if (zoom) {
     this._svg.select('.items').remove();
-    this._svg.select('defs').select('#clip-' + this._id).remove();
+    this._svg.select('defs').select('#clip-' + this.id()).remove();
   }
 
   var items = this._svg.select('.items');
@@ -160,7 +131,7 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
   if (items.empty()) {
     var defs = this._svg.select('defs');
     defs.append('clipPath')
-      .attr('id', 'clip-' + this._id)
+      .attr('id', 'clip-' + this.id())
       .append('rect')
       .attr('x', 0)
       .attr('y', 0)
@@ -170,8 +141,8 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
     items = this._svg.append('g')
       .attr('class', 'items')
       .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
-      .attr('id', this._id + '-gene-content')
-      .attr('clip-path', 'url(#clip-' + this._id + ')');
+      .attr('id', this.id() + '-gene-content')
+      .attr('clip-path', 'url(#clip-' + this.id() + ')');
 
     selected = items.append('g').attr('class', 'selected');
     items.append('g').attr('class', 'hovered');
@@ -184,15 +155,15 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
   selection
     .enter()
     .insert('g', ':first-child')
-    .on('mouseout', function (d) {
-      self._unhover.notify();
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     })
     .on('mouseover', function (d) {
-      self._hover.notify(d);
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
     })
     .on('click', function(d) {
-      self._deselect.notify();
-      self._select.notify(d);
+      self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
       d3.event.stopPropagation();
     })
     .attr('transform', 'translate(' + (delta) + ', 0) scale(1, 1)')
@@ -218,7 +189,7 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
 
 /**
  * @param elem
- * @param {epiviz.ui.charts.UiObject} d
+ * @param {epiviz.ui.charts.ChartObject} d
  * @param delta
  * @private
  */
@@ -239,7 +210,7 @@ epiviz.plugins.charts.GenesTrack.prototype._translateGene = function(elem, d, de
 
 /**
  * @param elem
- * @param {epiviz.ui.charts.UiObject} d
+ * @param {epiviz.ui.charts.ChartObject} d
  * @param {function(number): number} xScale
  * @private
  */
@@ -268,7 +239,7 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGene = function(elem, d, xScale)
     .attr('class', 'gene-body')
     .style('fill', this.colors().get(0))
     .attr('points', function() {
-      var xs = null, ys = null;
+      var xs = null, ys;
       var y0 = (self.height() - self.margins().sumAxis(Axis.Y) - geneHeight) * 0.5 + offset;
       ys = [y0, y0, y0 + geneHeight * 0.5, y0 + geneHeight, y0 + geneHeight];
       if (rowItem.strand() == '+') {
@@ -307,17 +278,10 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGene = function(elem, d, xScale)
 };
 
 /**
- * @returns {string}
- */
-epiviz.plugins.charts.GenesTrack.prototype.chartTypeName = function() { return 'epiviz.plugins.charts.GenesTrack'; };
-
-/**
  * @returns {Array.<{name: string, color: string}>}
  */
-epiviz.plugins.charts.GenesTrack.prototype.colorMap = function() {
-  return [
-    {name: 'Genes', color: this._properties.colors.get(0)},
-    {name: 'Exons', color: this._properties.colors.get(1)}];
+epiviz.plugins.charts.GenesTrack.prototype.colorLabels = function() {
+  return ['Genes', 'Exons'];
 };
 
 /**

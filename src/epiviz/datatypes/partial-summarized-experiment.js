@@ -48,7 +48,8 @@ epiviz.datatypes.PartialSummarizedExperiment.prototype.addRowData = function(row
   if (!this._rowData ||
     this._rowData.boundaries().seqName() != rowData.boundaries().seqName() ||
     this._rowData.boundaries().start() > rowData.boundaries().end() ||
-    this._rowData.boundaries().end() < rowData.boundaries().start()) {
+    this._rowData.boundaries().end() < rowData.boundaries().start() ||
+    rowData.measurement().type() == epiviz.measurements.Measurement.Type.UNORDERED) {
     this._rowData = rowData;
     return;
   }
@@ -67,7 +68,8 @@ epiviz.datatypes.PartialSummarizedExperiment.prototype.addValues = function(valu
   if (!currentValues ||
     currentValues.boundaries().seqName() != values.boundaries().seqName() ||
     currentValues.boundaries().start() > values.boundaries().end() ||
-    currentValues.boundaries().end() < values.boundaries().start()) {
+    currentValues.boundaries().end() < values.boundaries().start() ||
+    values.measurement().type() == epiviz.measurements.Measurement.Type.UNORDERED) {
     this._values.put(values.measurement(), values);
     return;
   }

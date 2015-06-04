@@ -35,6 +35,7 @@ epiviz.ui.charts.transform.clustering.AgglomerativeClustering.prototype.cluster 
   }
 
   while (nodes.length > 1) {
+    /** @type {{min: number, index: Array}} */
     var minInfo = epiviz.utils.indexOfMin(distances, true);
     var indices = minInfo.index;
     var node = new epiviz.ui.charts.transform.clustering.ClusterSubtree([nodes[indices[0]], nodes[indices[1]]], minInfo.min);

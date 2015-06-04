@@ -27,7 +27,7 @@ epiviz.plugins.charts.HeatmapPlotType.constructor = epiviz.plugins.charts.Heatma
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.HeatmapPlot}
  */
 epiviz.plugins.charts.HeatmapPlotType.prototype.createNew = function(id, container, properties) {
@@ -56,11 +56,9 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.chartHtmlAttributeName = functio
 };
 
 /**
- * @returns {epiviz.measurements.Measurement.Type}
+ * @returns {function(epiviz.measurements.Measurement): boolean}
  */
-epiviz.plugins.charts.HeatmapPlotType.prototype.chartContentType = function() {
-  return epiviz.measurements.Measurement.Type.FEATURE;
-};
+epiviz.plugins.charts.HeatmapPlotType.prototype.measurementsFilter = function() { return function(m) { return epiviz.measurements.Measurement.Type.hasValues(m.type()); }; };
 
 /**
  * If true, this flag indicates that the corresponding chart can only show measurements that belong to the same
@@ -77,10 +75,16 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
 
   return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.LABEL,
-      epiviz.ui.charts.CustomSetting.Type.STRING,
-      'probe',
+      epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
+      'colLabel',
       'Columns labels'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
+      'name',
+      'Row labels'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS,

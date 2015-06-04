@@ -120,7 +120,7 @@ epiviztest.TestSuite.prototype.addChart = function(chartTypeName, range, measure
   this.epivizFramework.locationManager.changeCurrentLocation(range);
 
   var t = this.epivizFramework.chartFactory.get(chartTypeName);
-  var chartProperties = new epiviz.ui.charts.ChartProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), measurements, t.defaultColors(), null, customSettings, t.customSettingsDefs());
+  var chartProperties = new epiviz.ui.charts.VisualizationProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), new epiviz.ui.controls.VisConfigSelection(measurements), t.defaultColors(), null, customSettings, t.customSettingsDefs());
   var measurementIds = {};
   measurements.foreach(function(m) { measurementIds[m.id()] = true; });
 
@@ -170,7 +170,7 @@ epiviztest.TestSuite.prototype.addChart = function(chartTypeName, range, measure
     var drawTime, drawnObjects, dataObjects;
     var startTime = new Date().getTime();
 
-    self.epivizFramework.chartManager.addChart(t, measurements, chartId, chartProperties);
+    self.epivizFramework.chartManager.addChart(t, new epiviz.ui.controls.VisConfigSelection(measurements), chartId, chartProperties);
     var chart = self.epivizFramework.chartManager._charts[chartId];
 
     // Highjack the chart draw method, to measure time used to draw
@@ -231,7 +231,7 @@ epiviztest.TestSuite.prototype.navigate = function(chartTypeName, initialRange, 
   this.epivizFramework.locationManager.changeCurrentLocation(initialRange);
 
   var t = this.epivizFramework.chartFactory.get(chartTypeName);
-  var chartProperties = new epiviz.ui.charts.ChartProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), measurements, t.defaultColors(), null, customSettings, t.customSettingsDefs());
+  var chartProperties = new epiviz.ui.charts.VisualizationProperties(t.defaultWidth(), t.defaultHeight(), t.defaultMargins(), new epiviz.ui.controls.VisConfigSelection(measurements), t.defaultColors(), null, customSettings, t.customSettingsDefs());
   var measurementIds = {};
   measurements.foreach(function(m) { measurementIds[m.id()] = true; });
 
@@ -244,7 +244,7 @@ epiviztest.TestSuite.prototype.navigate = function(chartTypeName, initialRange, 
   var startTime = null;
   var getDataStartTime = null, getDataTime = null;
 
-  self.epivizFramework.chartManager.addChart(t, measurements, chartId, chartProperties);
+  self.epivizFramework.chartManager.addChart(t, new epiviz.ui.controls.VisConfigSelection(measurements), chartId, chartProperties);
   var chart = self.epivizFramework.chartManager._charts[chartId];
 
   var doNavigate = function() {

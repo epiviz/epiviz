@@ -197,6 +197,18 @@ epiviz.measurements.MeasurementSet.prototype.subset = function(predicate) {
 };
 
 /**
+ * @param {function(epiviz.measurements.Measurement): epiviz.measurements.Measurement} transformer
+ * @returns {epiviz.measurements.MeasurementSet}
+ */
+epiviz.measurements.MeasurementSet.prototype.map = function(transformer) {
+  var ret = new epiviz.measurements.MeasurementSet();
+  this.foreach(function(m) {
+    ret.add(transformer(m));
+  });
+  return ret;
+};
+
+/**
  * @returns {number}
  */
 epiviz.measurements.MeasurementSet.prototype.size = function() { return this._size; };
@@ -266,6 +278,18 @@ epiviz.measurements.MeasurementSet.prototype.toArray = function() {
   });
 
   return result;
+};
+
+/**
+ * @param {function(epiviz.measurements.Measurement, epiviz.measurements.Measurement): number} comparer
+ * @returns {epiviz.measurements.MeasurementSet}
+ */
+epiviz.measurements.MeasurementSet.prototype.sorted = function(comparer) {
+  /** @type {Array.<epiviz.measurements.Measurement>} */
+  var msArr = this.toArray().sort(comparer);
+  var ret = new epiviz.measurements.MeasurementSet();
+  msArr.forEach(function(m) { ret.add(m); });
+  return ret;
 };
 
 /**

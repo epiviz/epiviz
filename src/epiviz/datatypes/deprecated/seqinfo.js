@@ -4,15 +4,16 @@
  * Time: 10:03 AM
  */
 
-goog.provide('epiviz.datatypes.SeqInfo');
+goog.provide('epiviz.datatypes.deprecated.SeqInfo');
 
 /**
  *
  * @param {Array.<string>} levels A reference to an array shared across all chromosomes
  * @param {number} index
  * @constructor
+ * @deprecated
  */
-epiviz.datatypes.SeqInfo = function(levels, index) {
+epiviz.datatypes.deprecated.SeqInfo = function(levels, index) {
   /**
    * @type {Array.<string>}
    * @private
@@ -28,29 +29,29 @@ epiviz.datatypes.SeqInfo = function(levels, index) {
 
 /**
  * @param {string} name
- * @returns {epiviz.datatypes.SeqInfo}
+ * @returns {epiviz.datatypes.deprecated.SeqInfo}
  */
-epiviz.datatypes.SeqInfo.fromName = function(name) {
-  return new epiviz.datatypes.SeqInfo([name], 0);
+epiviz.datatypes.deprecated.SeqInfo.fromName = function(name) {
+  return new epiviz.datatypes.deprecated.SeqInfo([name], 0);
 };
 
 /**
  * @returns {string}
  */
-epiviz.datatypes.SeqInfo.prototype.name = function() {
+epiviz.datatypes.deprecated.SeqInfo.prototype.name = function() {
   return this._levels[this._index];
 };
 
 /**
  * @returns {number}
  */
-epiviz.datatypes.SeqInfo.prototype.index = function() {
+epiviz.datatypes.deprecated.SeqInfo.prototype.index = function() {
   return this._index;
 };
 
 /**
  * @returns {Array.<string>}
  */
-epiviz.datatypes.SeqInfo.prototype.levels = function() {
+epiviz.datatypes.deprecated.SeqInfo.prototype.levels = function() {
   return this._levels;
 };

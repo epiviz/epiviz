@@ -9,7 +9,7 @@ goog.provide('epiviz.plugins.charts.LineTrack');
 /**
  * @param {string} id
  * @param {jQuery} container
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @extends {epiviz.ui.charts.Track}
  * @constructor
  */
@@ -36,15 +36,12 @@ epiviz.plugins.charts.LineTrack.prototype._initialize = function() {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
+ * @param {?epiviz.datatypes.GenomicData} [data]
  * @param {number} [slide]
  * @param {number} [zoom]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zoom) {
-
-  var lastRange = this._lastRange;
-
   epiviz.ui.charts.Track.prototype.draw.call(this, range, data, slide, zoom);
 
   // If data is defined, then the base class sets this._lastData to data.
@@ -52,16 +49,17 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   data = this._lastData;
   range = this._lastRange;
 
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
-    slide = range.start() - lastRange.start();
-  }
+  slide = slide || this._slide || 0;
+  zoom = zoom || this._zoom || 1;
+  this._slide = 0;
+  this._zoom = 1;
 
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  var minY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MIN];
-  var maxY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MAX];
+  var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
 
   if (minY == CustomSetting.DEFAULT) {
     minY = null;
@@ -94,56 +92,67 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
   this._clearAxes();
   this._drawAxes(xScale, yScale, 10, 5);
 
-  slide = slide || 0;
   var delta = slide * (this.width() - this.margins().sumAxis(Axis.X)) / range.width();
   var linesGroup = this._svg.selectAll('.lines');
 
   if (linesGroup.empty()) {
-    var graph = this._svg.append('g')
+    linesGroup = this._svg.append('g')
       .attr('class', 'lines')
       .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
-    this.measurements().foreach(function(m, i) {
-      graph.append('g').attr('class', 'line-series-index-' + i);
-      graph.append('g').attr('class', 'point-series-index-' + i);
-    });
   }
-  return this._drawLines(range, data, delta, zoom || 1, xScale, yScale);
+
+  data.measurements().forEach(function(m, i) {
+    var lineSeries = linesGroup.selectAll('.line-series-index-' + i);
+    var pointSeries = linesGroup.selectAll('.point-series-index-' + i);
+
+    if (lineSeries.empty()) { linesGroup.append('g').attr('class', 'line-series-index-' + i); }
+    if (pointSeries.empty()) { linesGroup.append('g').attr('class', 'point-series-index-' + i); }
+  });
+
+  for (var i = data.measurements().length;; ++i) {
+    var lineSeries = linesGroup.selectAll('.line-series-index-' + i);
+    var pointSeries = linesGroup.selectAll('.point-series-index-' + i);
+    if (lineSeries.empty()) { break; }
+    lineSeries.remove();
+    pointSeries.remove();
+  }
+
+  return this._drawLines(range, data, delta, zoom, xScale, yScale);
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
+ * @param {epiviz.datatypes.GenomicData} data
  * @param {number} delta
  * @param {number} zoom
  * @param {function} xScale D3 linear scale
  * @param {function} yScale D3 linear scale
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, delta, zoom, xScale, yScale) {
-
-  /** @type {epiviz.ui.charts.Margins} */
-  var margins = this.margins();
-
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
   /** @type {number} */
-  var maxPoints = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.MAX_POINTS];
+  var step = parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.STEP]);
 
   /** @type {boolean} */
-  var showPoints = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS];
+  var showPoints = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS];
 
   /** @type {boolean} */
-  var showLines = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES];
+  var showLines = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES];
+
+  /** @type {boolean} */
+  var showErrorBars = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS];
 
   /** @type {number} */
-  var pointRadius = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS];
+  var pointRadius = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS];
 
   /** @type {number} */
-  var lineThickness = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS];
+  var lineThickness = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS];
 
-  var interpolation = this._customSettingsValues[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];
+  var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];
 
   var self = this;
 
@@ -158,55 +167,57 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
   var graph = this._svg.select('.lines');
 
-  /** @type {Array.<epiviz.ui.charts.UiObject>} */
+  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
 
-  this.measurements().foreach(function(m, i) {
-    /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper} */
-    var series = data.get(m);
+  data.foreach(function(m, series, i) {
+    var color = self._measurementColorLabels ? colors.getByKey(self._measurementColorLabels.get(m)) : colors.get(i);
 
     /** @type {{index: ?number, length: number}} */
     var drawBoundaries = series.binarySearchStarts(extendedRange);
     if (drawBoundaries.length == 0) { return; }
 
-    // Also take the last point that won't be displayed on the left side
-    if (drawBoundaries.index > 0) {
-      --drawBoundaries.index;
-      ++drawBoundaries.length;
-    }
+    // TODO: In the future, use global index to align steps:
+    //var globalIndex = series.get(drawBoundaries.index).globalIndex;
+    //globalIndex = Math.ceil(globalIndex / step) * step;
+    var index = Math.ceil(drawBoundaries.index / step) * step;
+    drawBoundaries.length = Math.max(0, drawBoundaries.length - index + drawBoundaries.index);
+    drawBoundaries.index = index;
 
-    // And the first point on the right side that won't be displayed
-    if (drawBoundaries.index + drawBoundaries.length < series.size()) {
-      ++drawBoundaries.length;
-    }
-
-    var indices = null;
-    if (maxPoints === null || drawBoundaries.length <= maxPoints) {
-      indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index);
-    } else {
-      var step = drawBoundaries.length / maxPoints;
-
-      indices = [];
-      for (var j = 0; Math.round(j) < drawBoundaries.length; j += step) {
-        indices.push(drawBoundaries.index + Math.round(j));
-      }
-    }
+    var indices = epiviz.utils.range(drawBoundaries.length, drawBoundaries.index)
+      .filter(function(i) {
+        return !step || step <= 1 || ((i - drawBoundaries.index) % step == 0);
+      });
 
     for (var k = 0; k < indices.length; ++k) {
       var cell = series.get(indices[k]);
-      items.push(new epiviz.ui.charts.UiObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i)));
+      items.push(new epiviz.ui.charts.ChartObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i)));
     }
 
     var x = function(j) {
-      /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       return xScale(cell.rowItem.start());
     };
 
     var y = function(j) {
-      /** @type {epiviz.datatypes.GenomicDataMeasurementWrapper.ValueItem} */
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       return yScale(cell.value);
+    };
+
+    var errMinus = function(j) {
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+      var cell = series.get(j);
+      var v = cell.rowItem.metadata('errMinus');
+      return v != undefined ? yScale(v) : null;
+    };
+
+    var errPlus = function(j) {
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+      var cell = series.get(j);
+      var v = cell.rowItem.metadata('errPlus');
+      return v != undefined ? yScale(v) : null;
     };
 
     if (showLines) {
@@ -225,11 +236,11 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
         .style('stroke-opacity', '0.7')
         .on('mouseover', function() { self._captureMouseHover(); })
         .on('mousemove', function() { self._captureMouseHover(); })
-        .on('mouseout', function () { self._unhover.notify(); });
+        .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
 
       lines
         .attr('d', line)
-        .style('stroke', colors.get(i))
+        .style('stroke', color)
         .style('stroke-width', lineThickness)
         .attr('transform', 'translate(' + (+delta) + ')')
         .transition()
@@ -242,6 +253,8 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
     graph.select('.point-series-index-' + i)
       .selectAll('circle').remove();
+    graph.select('.point-series-index-' + i)
+      .selectAll('.error-bar').remove();
     if (showPoints) {
       var points = graph.select('.point-series-index-' + i)
         .selectAll('circle')
@@ -253,7 +266,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
         .attr('cx', x)
         .attr('cy', y)
         .attr('fill', 'none')
-        .attr('stroke', colors.get(i))
+        .attr('stroke', color)
         .attr('transform', 'translate(' + (+delta) + ')')
         .transition()
         .duration(500)
@@ -262,20 +275,55 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
       points
         .on('mouseover', function() { self._captureMouseHover(); })
         .on('mousemove', function() { self._captureMouseHover(); })
-        .on('mouseout', function () { self._unhover.notify(); });
+        .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
 
       points.exit()
         .transition()
         .duration(500)
         .style('opacity', 0)
         .remove();
+
+      if (showErrorBars) {
+        var errorBars = graph.select('.point-series-index-' + i)
+          .selectAll('.error-bar')
+          .data(indices);
+        errorBars.enter()
+          .append('g')
+          .attr('class', 'error-bar')
+          .each(function(j) {
+            var m = errMinus(j), p = errPlus(j);
+            if (m == null || p == null) { return; }
+            d3.select(this).append('line')
+              .attr('x1', x(j)).attr('x2', x(j)).attr('y1', m).attr('y2', p)
+              .style('stroke', color)
+              .style('shape-rendering', 'auto');
+            d3.select(this).append('line')
+              .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', m).attr('y2', m)
+              .style('stroke', color)
+              .style('shape-rendering', 'auto');
+            d3.select(this).append('line')
+              .attr('x1', x(j) - 2).attr('x2', x(j) + 2).attr('y1', p).attr('y2', p)
+              .style('stroke', color)
+              .style('shape-rendering', 'auto');
+          })
+          .attr('transform', 'translate(' + (+delta) + ')')
+          .transition()
+          .duration(500)
+          .attr('transform', 'translate(' + (0) + ')');
+
+        errorBars
+          .on('mouseover', function() { self._captureMouseHover(); })
+          .on('mousemove', function() { self._captureMouseHover(); })
+          .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
+
+        errorBars.exit()
+          .transition()
+          .duration(500)
+          .style('opacity', 0)
+          .remove();
+      }
     }
   });
 
   return items;
 };
-
-/**
- * @returns {string}
- */
-epiviz.plugins.charts.LineTrack.prototype.chartTypeName = function() { return 'epiviz.plugins.charts.LineTrack'; };

@@ -9,7 +9,7 @@
  *
  * Settings specific to measuring performance
  */
-epiviz.EpiViz.SETTINGS = {
+epiviz.Config.SETTINGS = {
 
   // PHP/MySQL Data
 
@@ -106,7 +106,7 @@ epiviz.EpiViz.SETTINGS = {
       circleRadiusRatio: 0.01
     },
     'epiviz.plugins.charts.HeatmapPlot': {
-      label: 'probe',
+      colLabel: 'probe',
       maxColumns: 40
     }
   }

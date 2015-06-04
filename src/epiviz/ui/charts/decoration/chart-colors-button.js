@@ -7,13 +7,14 @@
 goog.provide('epiviz.ui.charts.decoration.ChartColorsButton');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
+ * @param {epiviz.Config} [config]
  * @extends {epiviz.ui.charts.decoration.ChartOptionButton}
  * @constructor
  */
-epiviz.ui.charts.decoration.ChartColorsButton = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartOptionButton.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.ChartColorsButton = function(visualization, otherDecoration, config) {
+  epiviz.ui.charts.decoration.ChartOptionButton.call(this, visualization, otherDecoration, config);
 };
 
 /*
@@ -29,16 +30,18 @@ epiviz.ui.charts.decoration.ChartColorsButton.constructor = epiviz.ui.charts.dec
 epiviz.ui.charts.decoration.ChartColorsButton.prototype._click = function() {
   var self = this;
   return function(){
-    var colors = self.chart().colorMap();
+    var labels = self.visualization().colorLabels();
     var colorPickerDialog = new epiviz.ui.controls.ColorPickerDialog(
       {
         ok: function(colors) {
-          self.chart().setColorMap(colors);
+          self.visualization().setColors(colors);
         },
         cancel: function() {},
         reset: function() {}
       },
-      colors);
+      labels,
+      self.config().colorPalettes,
+      self.visualization().colors());
     colorPickerDialog.show();
   };
 };

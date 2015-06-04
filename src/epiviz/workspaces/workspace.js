@@ -12,10 +12,10 @@ goog.provide('epiviz.workspaces.Workspace');
  * @param {{
  *   range: epiviz.datatypes.GenomicRange,
  *   computedMeasurements: epiviz.measurements.MeasurementSet,
- *   charts: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{
+ *   charts: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{
  *     id: string,
  *     type: epiviz.ui.charts.ChartType,
- *     properties: epiviz.ui.charts.ChartProperties
+ *     properties: epiviz.ui.charts.VisualizationProperties
  *   }>>
  * }} content
  * @constructor
@@ -40,7 +40,7 @@ epiviz.workspaces.Workspace = function(id, name, content) {
   this._range = content.range;
 
   /**
-   * @type {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}
+   * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}
    * @private
    */
   this._chartsOrder = {};
@@ -49,7 +49,7 @@ epiviz.workspaces.Workspace = function(id, name, content) {
    * @type {Object.<string, {
    *   id: string,
    *   type: epiviz.ui.charts.ChartType,
-   *   properties: epiviz.ui.charts.ChartProperties
+   *   properties: epiviz.ui.charts.VisualizationProperties
    * }>}
    * @private
    */
@@ -77,9 +77,18 @@ epiviz.workspaces.Workspace = function(id, name, content) {
    * @private
    */
   this._changed = false;
+
+  /**
+   * @type {epiviz.events.Event.<epiviz.workspaces.Workspace>}
+   * @private
+   */
+  this._contentChanged = new epiviz.events.Event();
 };
 
-epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME = 'Default Workspace';
+/**
+ * @const {string}
+ */
+epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME = epiviz.Config.DEFAULT_WORKSPACE_NAME;
 
 /**
  * @returns {string}
@@ -103,7 +112,7 @@ epiviz.workspaces.Workspace.prototype.range = function() {
 };
 
 /**
- * @returns {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.ChartProperties}>>}
+ * @returns {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{id: string, type: epiviz.ui.charts.ChartType, properties: epiviz.ui.charts.VisualizationProperties}>>}
  */
 epiviz.workspaces.Workspace.prototype.charts = function() {
   var charts = {};
@@ -119,7 +128,7 @@ epiviz.workspaces.Workspace.prototype.charts = function() {
 };
 
 /**
- * @returns {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>}
+ * @returns {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>}
  */
 epiviz.workspaces.Workspace.prototype.chartsOrder = function() {
   return this._chartsOrder;
@@ -135,8 +144,8 @@ epiviz.workspaces.Workspace.prototype.computedMeasurements = function() {
 /**
  * @param {string} id
  * @param {epiviz.ui.charts.ChartType} type
- * @param {epiviz.ui.charts.ChartProperties} properties
- * @param {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>} chartsOrder
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
+ * @param {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>} chartsOrder
  */
 epiviz.workspaces.Workspace.prototype.chartAdded = function(id, type, properties, chartsOrder) {
   this._chartsById[id] = {
@@ -152,7 +161,7 @@ epiviz.workspaces.Workspace.prototype.chartAdded = function(id, type, properties
 
 /**
  * @param {string} id
- * @param {Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<string>>} chartsOrder
+ * @param {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>} chartsOrder
  */
 epiviz.workspaces.Workspace.prototype.chartRemoved = function(id, chartsOrder) {
   if (!this._chartsById[id]) { return; }
@@ -168,6 +177,7 @@ epiviz.workspaces.Workspace.prototype.chartRemoved = function(id, chartsOrder) {
  * @param {number|string} height
  */
 epiviz.workspaces.Workspace.prototype.chartSizeChanged = function(chartId, width, height) {
+  if (!this._chartsById[chartId]) { return; }
   if (this._chartsById[chartId].properties.width == width && this._chartsById[chartId].properties.height == height) { return; }
   this._chartsById[chartId].properties.width = width;
   this._chartsById[chartId].properties.height = height;
@@ -206,7 +216,35 @@ epiviz.workspaces.Workspace.prototype.chartMethodsModified = function(chartId, m
       this._chartsById[chartId].properties.modifiedMethods,
       modifiedMethods)) { return; }
 
-  this._chartsById[chartId].properties.modifiedMethods = epiviz.utils.mapCopy(modifiedMethods);
+  this._chartsById[chartId].properties.modifiedMethods = epiviz.utils.mapCombine(
+    modifiedMethods,
+    this._chartsById[chartId].properties.modifiedMethods);
+
+  this._setChanged();
+};
+
+/**
+ * @param {string} chartId
+ */
+epiviz.workspaces.Workspace.prototype.chartMethodsReset = function(chartId) {
+  if (!this._chartsById[chartId].properties.modifiedMethods ||
+    Object.keys(this._chartsById[chartId].properties.modifiedMethods).length == 0) { return; }
+
+  this._chartsById[chartId].properties.modifiedMethods = {};
+
+  this._setChanged();
+};
+
+/**
+ * @param {string} chartId
+ * @param {Array.<epiviz.ui.charts.markers.VisualizationMarker>} markers
+ */
+epiviz.workspaces.Workspace.prototype.chartMarkersModified = function(chartId, markers) {
+  if (epiviz.utils.arraysEqual(
+      this._chartsById[chartId].properties.chartMarkers,
+      markers)) { return; }
+
+  this._chartsById[chartId].properties.chartMarkers = markers.filter(function(marker) { return marker != null; });
 
   this._setChanged();
 };
@@ -254,6 +292,14 @@ epiviz.workspaces.Workspace.prototype.computedMeasurementsRemoved = function(mea
 };
 
 /**
+ * @param {Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<string>>} chartsOrder
+ */
+epiviz.workspaces.Workspace.prototype.chartsOrderChanged = function(chartsOrder) {
+  this._chartsOrder = chartsOrder;
+  this._setChanged();
+};
+
+/**
  * @returns {boolean}
  */
 epiviz.workspaces.Workspace.prototype.changed = function() {
@@ -271,6 +317,7 @@ epiviz.workspaces.Workspace.prototype.resetChanged = function() {
  */
 epiviz.workspaces.Workspace.prototype._setChanged = function() {
   this._changed = true;
+  this._contentChanged.notify(this);
 };
 
 /**
@@ -288,6 +335,7 @@ epiviz.workspaces.Workspace.prototype.copy = function(name, id) {
 };
 
 /**
+ * @param {epiviz.Config} [config]
  * @returns {{
  *   id: ?string,
  *   name: string,
@@ -309,10 +357,14 @@ epiviz.workspaces.Workspace.prototype.copy = function(name, id) {
  *     }>,
  *     charts: Object.<string, Array.<{
  *       type: string,
- *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number}, measurements: Array.<number>, colors: Array.<string>, modifiedMethods: Object.<string, string>}
+ *       properties: {width: number|string, height: number|string, margins: {top: number, left: number, bottom: number, right: number},
+ *         visConfigSelection: { measurements: Array.<number>, datasource: string, datasourceGroup: string, dataprovider: string,
+ *           annotation: Object.<string, string>, defaultChartType: string, minSelectedMeasurements: number, customData: * },
+ *        colors: Array.<string>|{id: string, name: string, colors: Array.<string>}, modifiedMethods: Object.<string, string>,
+ *        chartMarkers: Array.<epiviz.ui.charts.markers.VisualizationMarker>
  *     }>>}}}
  */
-epiviz.workspaces.Workspace.prototype.raw = function() {
+epiviz.workspaces.Workspace.prototype.raw = function(config) {
   /**
    * @type {epiviz.measurements.MeasurementHashtable.<number>}
    */
@@ -359,7 +411,7 @@ epiviz.workspaces.Workspace.prototype.raw = function() {
       var ms = [];
 
       (function(ms) {
-        props.measurements.foreach(function(m) {
+        props.visConfigSelection.measurements.foreach(function(m) {
           var mIndex = wsMeasurements.get(m);
           if (mIndex === null) {
             mIndex = wsMeasurements.size();
@@ -377,10 +429,20 @@ epiviz.workspaces.Workspace.prototype.raw = function() {
           width: props.width,
           height: props.height,
           margins: props.margins.raw(),
-          measurements: ms,
-          colors: props.colors.raw(),
+          visConfigSelection: {
+            measurements: ms,
+            datasource: props.visConfigSelection.datasource,
+            datasourceGroup: props.visConfigSelection.datasourceGroup,
+            dataprovider: props.visConfigSelection.dataprovider,
+            annotation: props.visConfigSelection.annotation,
+            defaultChartType: props.visConfigSelection.defaultChartType,
+            minSelectedMeasurements: props.visConfigSelection.minSelectedMeasurements,
+            customData: props.visConfigSelection.customData
+          },
+          colors: props.colors.raw(config),
           modifiedMethods: epiviz.utils.mapCopy(props.modifiedMethods),
-          customSettings: props.customSettingsValues || null
+          customSettings: props.customSettingsValues || null,
+          chartMarkers: props.chartMarkers.map(function(marker) { return marker.raw(); })
         }
       });
     }
@@ -416,16 +478,26 @@ epiviz.workspaces.Workspace.prototype.raw = function() {
  *        width: number|string,
  *        height: number|string,
  *        margins: {top: number, left: number, bottom: number, right: number},
- *        measurements: Array.<number>,
- *        colors: Array.<string>,
+ *        visConfigSelection: {
+ *          measurements: Array.<number>,
+ *          datasource: string,
+ *          datasourceGroup: string,
+ *          dataprovider: string,
+ *          annotation: Object.<string, string>,
+ *          defaultChartType: string,
+ *          minSelectedMeasurements: number,
+ *          customData: *
+ *        },
+ *        colors: Array.<string>|{id: string, name: string, colors: Array.<string>},
  *        modifiedMethods: ?Object<string, string>,
  *        customSettings: Object.<string, *>
  *      }
  *     }>>}}} o
  * @param {epiviz.ui.charts.ChartFactory} chartFactory
+ * @param {epiviz.Config} config
  * @returns {epiviz.workspaces.Workspace}
  */
-epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
+epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
   var i;
   var ms = new Array(o.content.measurements.length);
   var computedMeasurements = new epiviz.measurements.MeasurementSet();
@@ -455,17 +527,39 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
        *        width: number|string,
        *        height: number|string,
        *        margins: {top: number, left: number, bottom: number, right: number},
-       *        measurements: Array.<number>,
-       *        colors: Array.<string>,
+       *        visConfigSelection: {
+       *          measurements: Array.<number>,
+       *          datasource: string,
+       *          datasourceGroup: string,
+       *          dataprovider: string,
+       *          annotation: Object.<string, string>,
+       *          defaultChartType: string,
+       *          minSelectedMeasurements: number,
+       *          customData: *
+       *        },
+       *        colors: Array.<string>|{id: string, name: string, colors: Array.<string>},
        *        modifiedMethods: ?Object.<string, string>,
-       *        customSettings: Object.<string, *>
+       *        customSettings: Object.<string, *>,
+       *        chartMarkers: Array.<{type: string, id: string, name: string, preMark: string, mark: string}>
        *      }}}
        */
       var chartInfo = o.content.charts[t][i];
-      var chartMs = new epiviz.measurements.MeasurementSet();
-      for (var j = 0; j < chartInfo.properties.measurements.length; ++j) {
-        chartMs.add(ms[chartInfo.properties.measurements[j]]);
+      var chartMs;
+
+      var rawVisConfigSelection = chartInfo.properties.visConfigSelection;
+      var rawMs = rawVisConfigSelection ? rawVisConfigSelection.measurements : chartInfo.properties.measurements;
+
+      if (rawMs) {
+        chartMs = new epiviz.measurements.MeasurementSet();
+        for (var j = 0; j < rawMs.length; ++j) {
+          chartMs.add(ms[rawMs[j]]);
+        }
       }
+      var visConfigSelection = rawVisConfigSelection ?
+        new epiviz.ui.controls.VisConfigSelection(chartMs, rawVisConfigSelection.datasource,
+          rawVisConfigSelection.datasourceGroup, rawVisConfigSelection.dataprovider, rawVisConfigSelection.annotation,
+          rawVisConfigSelection.defaultChartType, rawVisConfigSelection.minSelectedMeasurements, rawVisConfigSelection.customData) :
+        new epiviz.ui.controls.VisConfigSelection(chartMs);
       var chartType = chartFactory.get(chartInfo.type);
 
       if (!chartType) { continue; }
@@ -473,15 +567,19 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
       charts[t].push({
         id: chartInfo.id,
         type: chartType,
-        properties: new epiviz.ui.charts.ChartProperties(
+        properties: new epiviz.ui.charts.VisualizationProperties(
           chartInfo.properties.width,
           chartInfo.properties.height,
           epiviz.ui.charts.Margins.fromRawObject(chartInfo.properties.margins),
-          chartMs,
-          epiviz.ui.charts.ColorPalette.fromRawObject(chartInfo.properties.colors),
+          visConfigSelection,
+          epiviz.ui.charts.ColorPalette.fromRawObject(chartInfo.properties.colors, config),
           chartInfo.properties.modifiedMethods,
           chartInfo.properties.customSettings,
-          chartType.customSettingsDefs())
+          chartType.customSettingsDefs(),
+          chartInfo.properties.chartMarkers ?
+            chartInfo.properties.chartMarkers.map(function(rawMarker) { return epiviz.ui.charts.markers.VisualizationMarker.fromRawObject(rawMarker); }) :
+            []
+        )
       });
     }
   }
@@ -492,3 +590,9 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory) {
     charts: charts
   });
 };
+
+
+/**
+ * @returns {epiviz.events.Event.<epiviz.workspaces.Workspace>}
+ */
+epiviz.workspaces.Workspace.prototype.onContentChanged = function() { return this._contentChanged; };

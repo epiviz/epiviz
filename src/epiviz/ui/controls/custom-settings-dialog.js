@@ -79,6 +79,8 @@ epiviz.ui.controls.CustomSettingsDialog.prototype.show = function() {
             '<input id="%s" value="%s" class="ui-widget-content ui-corner-all" style="text-align: right; padding: 5px;" />', inputId, value));
           break;
         case SettingType.CATEGORICAL:
+        case SettingType.MEASUREMENTS_METADATA:
+        case SettingType.MEASUREMENTS_ANNOTATION:
           var optionFormat = '<option value="%1$s"%2$s>%1$s</option>';
           var options = '';
           var def = this._customSettingsDefs[i];
@@ -114,6 +116,8 @@ epiviz.ui.controls.CustomSettingsDialog.prototype.show = function() {
           input.watermark(this._customSettingsDefs[i].label);
           break;
         case SettingType.CATEGORICAL:
+        case SettingType.MEASUREMENTS_METADATA:
+        case SettingType.MEASUREMENTS_ANNOTATION:
           input.selectmenu();
       }
     }
@@ -159,6 +163,8 @@ epiviz.ui.controls.CustomSettingsDialog.prototype.show = function() {
                     break;
                   case SettingType.STRING:
                   case SettingType.CATEGORICAL:
+                  case SettingType.MEASUREMENTS_METADATA:
+                  case SettingType.MEASUREMENTS_ANNOTATION:
                     newValue = input.val();
                     break;
                 }

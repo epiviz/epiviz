@@ -7,13 +7,13 @@
 goog.provide('epiviz.ui.charts.decoration.ChartLoaderAnimation');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
- * @extends {epiviz.ui.charts.decoration.ChartDecoration}
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
+ * @extends {epiviz.ui.charts.decoration.VisualizationDecoration}
  * @constructor
  */
-epiviz.ui.charts.decoration.ChartLoaderAnimation = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartDecoration.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.ChartLoaderAnimation = function(visualization, otherDecoration) {
+  epiviz.ui.charts.decoration.VisualizationDecoration.call(this, visualization, otherDecoration);
 
   /**
    * @type {number}
@@ -31,24 +31,24 @@ epiviz.ui.charts.decoration.ChartLoaderAnimation = function(chart, otherDecorati
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.decoration.ChartLoaderAnimation.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.ChartDecoration.prototype);
+epiviz.ui.charts.decoration.ChartLoaderAnimation.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.VisualizationDecoration.prototype);
 epiviz.ui.charts.decoration.ChartLoaderAnimation.constructor = epiviz.ui.charts.decoration.ChartLoaderAnimation;
 
 /**
  */
 epiviz.ui.charts.decoration.ChartLoaderAnimation.prototype.decorate = function() {
-  epiviz.ui.charts.decoration.ChartDecoration.prototype.decorate.call(this);
+  epiviz.ui.charts.decoration.VisualizationDecoration.prototype.decorate.call(this);
 
   var self = this;
-  this.chart().onDataWaitStart().addListener(new epiviz.events.EventListener(function() {
+  this.visualization().onDataWaitStart().addListener(new epiviz.events.EventListener(function() {
     self._addLoaderAnimation();
   }));
 
-  this.chart().onDataWaitEnd().addListener(new epiviz.events.EventListener(function() {
+  this.visualization().onDataWaitEnd().addListener(new epiviz.events.EventListener(function() {
     self._removeLoaderAnimation();
   }));
 
-  this.chart().onSizeChanged().addListener(new epiviz.events.EventListener(function(e) {
+  this.visualization().onSizeChanged().addListener(new epiviz.events.EventListener(function() {
     if (self._animationShowing) {
       self._addLoaderAnimation();
     }
@@ -62,15 +62,15 @@ epiviz.ui.charts.decoration.ChartLoaderAnimation.prototype._addLoaderAnimation =
     self._animationShowing = true;
     var loaderCls = 'chart-loader';
 
-    var chart = self.chart();
-    var container = chart.container();
+    var visualization = self.visualization();
+    var container = visualization.container();
     container.find('.' + loaderCls).remove();
 
     container.append(sprintf(
       '<div class="loader-icon %s" style="top: %spx; left: %spx;"></div>',
       loaderCls,
-      Math.floor(chart.height() * 0.5),
-      Math.floor(chart.width() * 0.5)));
+      Math.floor(visualization.height() * 0.5),
+      Math.floor(visualization.width() * 0.5)));
     container.find('.' + loaderCls).activity({
       segments: 8,
       steps: 5,
@@ -96,5 +96,5 @@ epiviz.ui.charts.decoration.ChartLoaderAnimation.prototype._removeLoaderAnimatio
   if (this._loaderTimeout) { clearTimeout(this._loaderTimeout); }
   this._animationShowing = false;
   var loaderCls = 'chart-loader';
-  this.chart().container().find('.' + loaderCls).remove();
+  this.visualization().container().find('.' + loaderCls).remove();
 };

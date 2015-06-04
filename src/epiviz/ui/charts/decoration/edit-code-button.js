@@ -7,53 +7,50 @@
 goog.provide('epiviz.ui.charts.decoration.EditCodeButton');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
- * @extends {epiviz.ui.charts.decoration.ChartOptionButton}
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
+ * @param {epiviz.Config} [config]
+ * @extends {epiviz.ui.charts.decoration.CodeButton}
  * @constructor
  */
-epiviz.ui.charts.decoration.EditCodeButton = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartOptionButton.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.EditCodeButton = function(visualization, otherDecoration, config) {
+  epiviz.ui.charts.decoration.CodeButton.call(this, visualization, otherDecoration, config);
 };
 
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.decoration.EditCodeButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.ChartOptionButton.prototype);
+epiviz.ui.charts.decoration.EditCodeButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.CodeButton.prototype);
 epiviz.ui.charts.decoration.EditCodeButton.constructor = epiviz.ui.charts.decoration.EditCodeButton;
 
 /**
- * @returns {Function}
- * @protected
+ * @returns {function(jQuery): epiviz.ui.controls.CodeControl}
+ * @private
  */
-epiviz.ui.charts.decoration.EditCodeButton.prototype._click = function() {
+epiviz.ui.charts.decoration.EditCodeButton.prototype._controlCreator = function() {
   var self = this;
-
-  var editCodeDialog = new epiviz.ui.controls.CodeEditDialog(
-    'Edit Chart Code', {
-      save: function(modifiedMethods) {
-        self.chart().setModifiedMethods(modifiedMethods);
-      }, cancel: function() {}},
-    this.chart(), 'draw');
-
-  return function(){
-    editCodeDialog.show();
+  return function(container) {
+    return new epiviz.ui.controls.EditCodeControl(container, 'Edit Code', null, self.visualization(), self.visualization().lastModifiedMethod(), self.visualization().hasModifiedMethods());
   };
 };
 
 /**
- * @returns {*} jQuery button render options
- * @protected
+ * @returns {function(*)}
+ * @private
  */
-epiviz.ui.charts.decoration.EditCodeButton.prototype._renderOptions = function() {
-  return {
-    icons:{ primary:'ui-icon ui-icon-pencil' },
-    text:false
+epiviz.ui.charts.decoration.EditCodeButton.prototype._saveHandler = function() {
+  var self = this;
+  return function(result) {
+    if (result.hasModifiedMethods) {
+      self.visualization().setModifiedMethods(result.modifiedMethods);
+    } else {
+      self.visualization().resetModifiedMethods();
+    }
   };
 };
 
 /**
- * @returns {string}
- * @protected
+ * @returns {function()}
+ * @private
  */
-epiviz.ui.charts.decoration.EditCodeButton.prototype._text = function() { return 'Edit code'; };
+epiviz.ui.charts.decoration.EditCodeButton.prototype._cancelHandler = function() { return function() {}; };

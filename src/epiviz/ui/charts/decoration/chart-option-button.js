@@ -7,17 +7,17 @@
 goog.provide('epiviz.ui.charts.decoration.ChartOptionButton');
 
 /**
- * @param {epiviz.ui.charts.Chart} chart
- * @param {epiviz.ui.charts.decoration.ChartDecoration} [otherDecoration]
- * @extends {epiviz.ui.charts.decoration.ChartDecoration}
+ * @param {epiviz.ui.charts.Visualization} visualization
+ * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
+ * @param {epiviz.Config} [config]
+ * @extends {epiviz.ui.charts.decoration.VisualizationDecoration}
  * @constructor
  */
-epiviz.ui.charts.decoration.ChartOptionButton = function(chart, otherDecoration) {
-  epiviz.ui.charts.decoration.ChartDecoration.call(this, chart, otherDecoration);
+epiviz.ui.charts.decoration.ChartOptionButton = function(visualization, otherDecoration, config) {
+  epiviz.ui.charts.decoration.VisualizationDecoration.call(this, visualization, otherDecoration, config);
 
   /**
    * @type {boolean}
-   * @const
    */
   this.isChartOptionButton = true;
 };
@@ -25,13 +25,15 @@ epiviz.ui.charts.decoration.ChartOptionButton = function(chart, otherDecoration)
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.decoration.ChartOptionButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.ChartDecoration.prototype);
+epiviz.ui.charts.decoration.ChartOptionButton.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.decoration.VisualizationDecoration.prototype);
 epiviz.ui.charts.decoration.ChartOptionButton.constructor = epiviz.ui.charts.decoration.ChartOptionButton;
 
 /**
  */
 epiviz.ui.charts.decoration.ChartOptionButton.prototype.decorate = function() {
-  epiviz.ui.charts.decoration.ChartDecoration.prototype.decorate.call(this);
+  epiviz.ui.charts.decoration.VisualizationDecoration.prototype.decorate.call(this);
+
+  if (!this.isChartOptionButton) { return; }
 
   var buttonIndex = 0;
   for (var decoration = this.otherDecoration(); decoration; decoration = decoration.otherDecoration()) {
@@ -41,11 +43,11 @@ epiviz.ui.charts.decoration.ChartOptionButton.prototype.decorate = function() {
   var button = $(sprintf('<button style="position: absolute; top: 5px; right: %spx">%s</button>',
     5 + buttonIndex * 30,
     this._text()))
-    .appendTo(this.chart().container())
+    .appendTo(this.visualization().container())
     .button(this._renderOptions())
     .click(this._click());
 
-  this.chart().container()
+  this.visualization().container()
     .mousemove(function () { button.show(); })
     .mouseleave(function () { button.hide(); });
 };

@@ -27,7 +27,7 @@ epiviz.plugins.charts.ScatterPlotType.constructor = epiviz.plugins.charts.Scatte
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.ScatterPlot}
  */
 epiviz.plugins.charts.ScatterPlotType.prototype.createNew = function(id, container, properties) {
@@ -56,11 +56,9 @@ epiviz.plugins.charts.ScatterPlotType.prototype.chartHtmlAttributeName = functio
 };
 
 /**
- * @returns {epiviz.measurements.Measurement.Type}
+ * @returns {function(epiviz.measurements.Measurement): boolean}
  */
-epiviz.plugins.charts.ScatterPlotType.prototype.chartContentType = function() {
-  return epiviz.measurements.Measurement.Type.FEATURE;
-};
+epiviz.plugins.charts.ScatterPlotType.prototype.measurementsFilter = function() { return function(m) { return epiviz.measurements.Measurement.Type.hasValues(m.type()); }; };
 
 /**
  * If true, this flag indicates that the corresponding chart can only show measurements that belong to the same
@@ -87,25 +85,25 @@ epiviz.plugins.charts.ScatterPlotType.prototype.customSettingsDefs = function() 
       'Circle radius ratio'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.X_MIN,
+      epiviz.ui.charts.Visualization.CustomSettings.X_MIN,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Min X'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.X_MAX,
+      epiviz.ui.charts.Visualization.CustomSettings.X_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Max X'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MIN,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Min Y'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.ChartType.CustomSettings.Y_MAX,
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Max Y')

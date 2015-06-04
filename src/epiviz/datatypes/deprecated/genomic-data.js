@@ -4,21 +4,22 @@
  * Time: 10:59 AM
  */
 
-goog.provide('epiviz.datatypes.GenomicData');
+goog.provide('epiviz.datatypes.deprecated.GenomicData');
 
 /**
  * @interface
+ * @deprecated
  */
-epiviz.datatypes.GenomicData = function() {
+epiviz.datatypes.deprecated.GenomicData = function() {
 
 };
 
 /**
  * @returns {string} A string of the fully qualified class name
  */
-epiviz.datatypes.GenomicData.prototype.dataType = function() {};
+epiviz.datatypes.deprecated.GenomicData.prototype.dataType = function() {};
 
 /**
  * @returns {epiviz.datatypes.GenomicRanges}
  */
-epiviz.datatypes.GenomicData.prototype.ranges = function() {};
+epiviz.datatypes.deprecated.GenomicData.prototype.ranges = function() {};

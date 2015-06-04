@@ -1,10 +1,15 @@
 .base-chart {
-
 }
 
 .chart-legend {
     border: 1px solid #dcdcdc;
     background-color: #ffffff;
+}
+
+.visualization .visualization-title {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 text {
@@ -23,3 +28,153 @@ text {
     font-family: sans-serif;
     font-size: 11px;
 }
+
+/* Sunburst */
+
+.unselectable-text {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+
+    /*
+      Introduced in IE 10.
+      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+    cursor: context-menu;
+}
+
+.node-label {
+    font-family: Verdana, Geneva, sans-serif;
+    font-size: 11px;
+    text-anchor: middle;
+}
+
+.node-arc {
+    stroke: #fff;
+    fill-rule: evenodd;
+}
+
+/* Scatter plot */
+
+.scatter-plot {}
+.scatter-plot .items {}
+.scatter-plot .selected { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }
+.scatter-plot .hovered { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }
+
+/* Genes Track */
+
+.genes-track {}
+.genes-track .items { shape-rendering: auto; stroke: #555555; fill-opacity: 0.6; }
+.genes-track .exons { stroke: none; }
+.genes-track .gene-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }
+.genes-track .selected { fill-opacity: 1; stroke: #555555; }
+.genes-track .selected .gene-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.genes-track .hovered { fill-opacity: 1; stroke: #555555; }
+.genes-track .hovered .gene-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.genes-track .hovered .gene-name { fill-opacity: 1; }
+.genes-track .selected .gene-name { fill-opacity: 1; }
+
+/* Blocks Track */
+
+.blocks-track {}
+.blocks-track .items { shape-rendering: crispEdges; fill-opacity: 0.6; stroke: #555555; stroke-opacity: 0.5; stroke-width: 1; }
+.blocks-track .selected { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }
+.blocks-track .hovered { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }
+
+/* Heatmap */
+
+.heatmap-plot .items { stroke: #efefef; stroke-opacity: 0.3; shape-rendering: 'crispEdges'; }
+.heatmap-plot .selected { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
+.heatmap-plot .hovered { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1; }
+.heatmap-plot .col-text { font-weight: bold; text-anchor: start; font-size: 11px; }
+.heatmap-plot .row-text { font-weight: bold; text-anchor: end; font-size: 11px; }
+.heatmap-plot .selected .col-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }
+.heatmap-plot .hovered .col-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }
+.heatmap-plot .selected .row-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }
+.heatmap-plot .hovered .row-text { font-weight: bold; fill-opacity: 1; font-size: 10px; }
+
+/* Line Plot */
+
+.line-plot .items .bg-line { stroke: #dddddd; stroke-opacity: 0.1; }
+.line-plot .hovered .bg-line { stroke-opacity: 1!important; opacity: 1!important; }
+
+/* Line Track */
+
+.line-track {}
+
+/* Stacked Line Plot */
+
+.stacked-line-plot {}
+.stacked-line-plot .item { stroke-width: 0; }
+.stacked-line-plot .selected .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1!important; }
+.stacked-line-plot .hovered .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2px!important; stroke-opacity: 1.0; opacity: 1!important; }
+
+/* icicle */
+
+.icicle .item rect { stroke: #fff; stroke-width: 0; fill-rule: evenodd; }
+
+.icicle .icon {
+    font-family: 'epiviz-icons';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* For SVG text */
+    /* text-anchor: end; */
+    /* alignment-baseline: before-edge; */
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    color: #000000;
+}
+
+.icicle .none-select .icon::before {
+    content: "\f379";
+}
+
+.icicle .node-select .icon::before {
+    content: "\f3b2";
+}
+
+.icicle .leaves-select .icon::before {
+    content: "\f3b1";
+}
+
+.icicle .custom-select .icon::before {
+    content: "\f3b3";
+}
+
+.icicle .none-select rect {
+    opacity: 0.5;
+}
+
+.icicle .node-select rect {
+    opacity: 0.7;
+}
+
+.icicle .custom-select rect {
+    opacity: 0.9;
+}
+
+.icicle .leaves-select rect {
+    opacity: 1;
+}
+
+.icicle .selected rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
+
+.icicle .hovered rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
+
+.icicle .unhovered rect { fill-opacity: 0.4; }
+
+.icicle .unselected rect { fill-opacity: 0.4; }
+
+.icicle .dragstart rect { fill-opacity: 0.4; }
+
+.icicle .selected { cursor: w-resize; }

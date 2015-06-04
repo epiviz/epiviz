@@ -18,7 +18,7 @@ epiviz.ui.controls.MeaurementsWizardStep = function() {
   this._dataTable = null;
 
   /**
-   * @type {epiviz.ui.controls.MeasurementsDialogData}
+   * @type {epiviz.ui.controls.VisConfigSelection}
    * @private
    */
   this._data = null;
@@ -32,7 +32,7 @@ epiviz.ui.controls.MeaurementsWizardStep = function() {
 
 /**
  * @param {jQuery} container
- * @param {epiviz.ui.controls.MeasurementsDialogData} data
+ * @param {epiviz.ui.controls.VisConfigSelection} data
  */
 epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(container, data) {
   this._data = data;
@@ -43,7 +43,7 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
   var columns = [
     new epiviz.ui.controls.DataTable.Column('id', 'Id', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('name', 'Name', ColumnType.STRING, false, true),
-    new epiviz.ui.controls.DataTable.Column('defaultChartType', 'Default Chart Type', ColumnType.STRING, false, true, data.defaultChartType || ''),
+    new epiviz.ui.controls.DataTable.Column('defaultChartType', 'Default Chart Type', ColumnType.STRING, false, true),
     new epiviz.ui.controls.DataTable.Column('type', 'Type', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('datasourceId', 'Data Source', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('datasourceGroup', 'Data Source Group', ColumnType.STRING, true),
@@ -55,7 +55,6 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
   // Filter out measurements that don't match the given restrictions
   this._measurements = data.measurements.subset(
     function(m) {
-      if (data.type && data.type != m.type()) { return false; }
       if (data.datasource && data.datasource != m.datasourceId()) { return false; }
       if (data.datasourceGroup && data.datasourceGroup != m.datasourceGroup()) { return false; }
       if (data.dataprovider && data.dataprovider != m.dataprovider()) { return false; }
@@ -67,19 +66,6 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
       }
       return true;
     });
-
-  if (data.type && data.type == epiviz.measurements.Measurement.Type.RANGE) {
-    // Also add all datasources
-    var self = this;
-    var datasourceGroupMap = {};
-    data.measurements.foreach(function(m) {
-      if (m.type() == epiviz.measurements.Measurement.Type.RANGE ||
-        m.datasourceGroup() in datasourceGroupMap ||
-        m.isComputed()) { return; }
-      self._measurements.add(m.datasource());
-      datasourceGroupMap[m.datasourceGroup()] = true;
-    });
-  }
 
   this._dataTable = new epiviz.ui.controls.DataTable(container, columns, this._measurements,
     /**
@@ -111,7 +97,7 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
  *
  * @returns {{
  *   error: string=,
- *   data: epiviz.ui.controls.MeasurementsDialogData=
+ *   data: epiviz.ui.controls.VisConfigSelection=
  * }}
  */
 epiviz.ui.controls.MeaurementsWizardStep.prototype.next = function() {

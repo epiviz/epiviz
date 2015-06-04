@@ -144,7 +144,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
-    <title>EpiViz 2 Test</title>
+    <title>EpiViz 3 Test</title>
 
     <link rel="shortcut icon" href="../../css/epiviz_2_icon.png"/>
 
@@ -237,7 +237,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="../epiviz/datatypes/genomic-range-array.js"></script>
     <script src="../epiviz/datatypes/feature-value-array.js"></script>
     <script src="../epiviz/datatypes/partial-summarized-experiment.js"></script>
-    <script src="../epiviz/datatypes/genomic-data-measurement-wrapper.js"></script>
+    <script src="../epiviz/datatypes/measurement-genomic-data-wrapper.js"></script>
 
     <script src="../epiviz/ui/controls/control.js"></script>
     <script src="../epiviz/ui/controls/dialog.js"></script>
@@ -246,7 +246,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="../epiviz/ui/charts/color-palette.js"></script>
     <script src="../epiviz/ui/charts/axis.js"></script>
     <script src="../epiviz/ui/charts/chart-properties.js"></script>
-    <script src="../epiviz/ui/charts/ui-object.js"></script>
+    <script src="../epiviz/ui/charts/chart-object.js"></script>
     <script src="../epiviz/ui/charts/custom-setting.js"></script>
     <script src="../epiviz/ui/charts/chart.js"></script>
     <script src="../epiviz/ui/charts/track.js"></script>
@@ -277,7 +277,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       foreach ($settings as $setting => $val) {
         if (!is_array($val)) {
 ?>
-      epiviz.EpiViz.SETTINGS['<?php echo $setting; ?>'] = '<?php echo $val; ?>';
+      epiviz.Config.SETTINGS['<?php echo $setting; ?>'] = '<?php echo $val; ?>';
 <?php
         } else {
 ?>
@@ -289,7 +289,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 <?php
           }
 ?>
-      epiviz.EpiViz.SETTINGS['<?php echo $setting; ?>'] = items;
+      epiviz.Config.SETTINGS['<?php echo $setting; ?>'] = items;
 <?php
         }
       }
@@ -338,7 +338,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 ?>
     </script>
 
-    <script src="../epiviz/ui/controls/measurements-dialog-data.js"></script>
+    <script src="../epiviz/ui/controls/vis-config-selection.js"></script>
     <script src="../epiviz/ui/controls/data-table.js"></script>
     <script src="../epiviz/ui/controls/wizard.js"></script>
     <script src="../epiviz/ui/controls/datasource-group-wizard-step.js"></script>
@@ -434,11 +434,11 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
   </div>
 
   <div id="pagemain" class="ui-layout-center">
-    <div id="top-accordion">
+    <div id="feature-view">
       <h3><a href="#"><b><span style="color: #025167">Views by Feature</span></b></a></h3>
       <div id="chart-container"></div>
     </div>
-    <div id="bottom-accordion">
+    <div id="location-view">
       <h3><a href="#"><b><span style="color: #025167">Views by Location</span></b></a></h3>
       <div id="track-container"></div>
     </div>

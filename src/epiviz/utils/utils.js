@@ -90,7 +90,13 @@ epiviz.utils.arraysEqual = function(arr1, arr2) {
 
   if (arr1.length != arr2.length) { return false; }
 
-  return !(arr1 < arr2 || arr2 < arr1);
+  if (arr1 < arr2 || arr2 < arr1) { return false; }
+
+  // The previous check doesn't work when the elements of the array are complex objects
+  for (var i = 0; i < arr1.length; ++i) {
+    if (arr1[i] != arr2[i]) { return false; }
+  }
+  return true;
 };
 
 /**
@@ -182,6 +188,83 @@ epiviz.utils.indexOfMin = function(matrix, isSymmetrical) {
   }
 
   return {min: min, index: ret};
+};
+
+/**
+ * @param {Array.<number|string>} arr1
+ * @param {Array.<number|string>} arr2
+ * @returns {Array.<number|string>}
+ */
+epiviz.utils.arrayIntersection = function(arr1, arr2) {
+  var arr1Map = {};
+  arr1.forEach(function(e) { arr1Map[e] = e; });
+
+  var ret = [];
+  arr2.forEach(function(e) { if (e in arr1Map) { ret.push(e); }});
+
+  return ret;
+};
+
+/**
+ * @param {number} n
+ * @param {function(number, function(boolean))} iterationCallback The callback parameter will be true if should break
+ * @param {function} finishedCallback
+ */
+epiviz.utils.asyncFor = function(n, iterationCallback, finishedCallback) {
+  if (!n) {
+    if (finishedCallback) { finishedCallback(); }
+    return;
+  }
+
+  var iteration = function(i) {
+    if (i >= n) {
+      if (finishedCallback) { finishedCallback(); }
+      return;
+    }
+
+    iterationCallback(i, function(result) {
+      if (result) {
+        if (finishedCallback) { finishedCallback(); }
+      }
+      else {
+        iteration(i + 1);
+      }
+    });
+  };
+
+  iteration(0);
+};
+
+/**
+ * @param {number} n
+ * @param deferredIteration The callback parameter will be true if should break
+ */
+epiviz.utils.deferredFor = function(n, deferredIteration) {
+  // TODO: Add a timeout in iteration every N number of iterations, so we don't run out of stack
+  var maxDepth = 1000;
+  var iterate = function(i, deferredIteration) {
+    var d = new epiviz.deferred.Deferred();
+    if (i >= n) { d.resolve(); }
+    else {
+      deferredIteration(i).then(
+        // Done (continue)
+        function() {
+          if (i % maxDepth != 0) {
+            iterate(i + 1, deferredIteration)
+              .done(function() { d.resolve(); });
+          } else {
+            setTimeout(function() {
+              iterate(i + 1, deferredIteration).done(function() { d.resolve(); });
+            }, 0);
+          }
+        },
+        // Fail (break)
+        function() { d.resolve(); });
+    }
+    return d;
+  };
+
+  return iterate(0, deferredIteration);
 };
 
 // Object (Hashtable)
@@ -361,6 +444,18 @@ epiviz.utils.applyConstructor = function(ctor, params) {
 // Misc
 
 /**
+ * @const
+ * @type {number}
+ */
+epiviz.utils.RAD_TO_DEG = 180 / Math.PI;
+
+/**
+ * @const
+ * @type {number}
+ */
+epiviz.utils.DEG_TO_RAD = Math.PI / 180;
+
+/**
  * @returns {number} The version of Internet Explorer or -1 (indicating the use of another browser).
  */
 epiviz.utils.getInternetExplorerVersion = function() {
@@ -421,3 +516,11 @@ epiviz.utils.colorizeBinary = function(min, max, colorMin, colorMax){
     .domain([min, max])
     .range([colorMin, colorMax]);
 };
+
+// Math
+
+/**
+ * @param {number} val
+ * @returns {number}
+ */
+epiviz.utils.sign = function(val) { return val < 0 ? -1 : (val == 0 ? 0 : 1); };

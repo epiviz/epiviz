@@ -16,33 +16,37 @@ epiviz.Config = function(settingsMap) {
    * The server storing all the back-end PHP scripts
    * @type {string}
    */
-  this.dataServerLocation = '';
+  this.dataServerLocation = null;
 
   /**
    * The path of the php script that handles chart saving, relative to dataServerLocation
    * @type {string}
    */
-  this.chartSaverLocation = '';
+  this.chartSaverLocation = null;
 
   /**
+   * A number between 0 and 1
    * @type {number}
    */
-  this.zoominRatio = 0.8;
+  this.zoominRatio = null;
 
   /**
+   * A number greater than 1
    * @type {number}
    */
-  this.zoomoutRatio = 1.2;
+  this.zoomoutRatio = null;
 
   /**
+   * A number between 0 and 1
    * @type {number}
    */
-  this.navigationStepRatio = 0.2;
+  this.navigationStepRatio = null;
 
   /**
+   * The delay in milliseconds between a user command and the command being propagated to the data layer
    * @type {number}
    */
-  this.navigationDelay = 100;
+  this.navigationDelay = null;
 
   /**
    * @type {{
@@ -56,7 +60,7 @@ epiviz.Config = function(settingsMap) {
             minValue: ?number, maxValue: ?number,
             metadata: ?Array.<string>
           }>,
-   *      charts: Object.<epiviz.ui.charts.ChartType.DisplayType, Array.<{
+   *      charts: Object.<epiviz.ui.charts.VisualizationType.DisplayType, Array.<{
    *        id: string,
    *        type: string,
    *        properties: {
@@ -67,21 +71,7 @@ epiviz.Config = function(settingsMap) {
    *    }
    * }}
    */
-  this.defaultWorkspaceSettings = {
-    name: epiviz.workspaces.Workspace.DEFAULT_WORKSPACE_NAME,
-    content: {
-      range: {
-        seqName: 'chr11',
-        start: 99800000,
-        width: 3583180
-      },
-      measurements: [],
-      charts: {
-        track: [],
-        plot: []
-      }
-    }
-  };
+  this.defaultWorkspaceSettings = null;
 
   /**
    * An array of strings in the following format:
@@ -91,18 +81,12 @@ epiviz.Config = function(settingsMap) {
    *
    * @type {Array.<string>}
    */
-  this.dataProviders = [
-    sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-      epiviz.data.WebServerDataProvider.DEFAULT_ID,
-      epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT)
-  ];
+  this.dataProviders = null;
 
   /**
    * @type {string}
    */
-  this.workspacesDataProvider = sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-    'workspaces_provider',
-    epiviz.data.WebServerDataProvider.DEFAULT_SERVER_ENDPOINT);
+  this.workspacesDataProvider = null;
 
   /**
    * The time interval used by the cache to clear away unneeded loaded data
@@ -114,12 +98,12 @@ epiviz.Config = function(settingsMap) {
    * The maximum number of search results to show in the gene search box
    * @type {number}
    */
-  this.maxSearchResults = 12;
+  this.maxSearchResults = null;
 
   /**
    * @type {Array.<string>}
    */
-  this.chartTypes = [];
+  this.chartTypes = null;
 
   // Default chart properties: these settings map either generic chart display types (plot or track),
   // or specific chart types (for example epiviz.plugins.charts.BlocksTrack) to corresponding
@@ -134,25 +118,9 @@ epiviz.Config = function(settingsMap) {
 
 
   /**
-   * @type {Object.<epiviz.ui.charts.ChartType.DisplayType|string, Object.<epiviz.Config.ChartPropertySettings, *>>}
+   * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType|string, Object.<epiviz.Config.VisualizationPropertySettings, *>>}
    */
-  this.chartSettings = {
-    default: {
-      margins: new epiviz.ui.charts.Margins(10, 5, 5, 5),
-      colors: new epiviz.ui.charts.ColorPalette(epiviz.Config.COLORS_BRIGHT),
-      decorations: []
-    },
-
-    plot: {
-      width: 600,
-      height: 400
-    },
-
-    track: {
-      width: '100%',
-      height: 120
-    }
-  };
+  this.chartSettings = null;
 
   /**
    * A map of chart type and settings specific to that particular chart type
@@ -164,16 +132,22 @@ epiviz.Config = function(settingsMap) {
    * }
    * @type {Object<string, Object<string, *>>}
    */
-  this.chartCustomSettings = {};
+  this.chartCustomSettings = null;
 
-  this.clustering = {
-    algorithms: [
-      'epiviz.ui.charts.transform.clustering.NoneClustering',
-      'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
-    ],
-    metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
-    linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
-  };
+  /**
+   * @type {{algorithms: Array.<string>, metrics: Array.<string>, linkages: Array.<string>}}
+   */
+  this.clustering = null;
+
+  /**
+   * @type {Array.<epiviz.ui.charts.ColorPalette>}
+   */
+  this.colorPalettes = null;
+
+  /**
+   * @type {Object.<string, epiviz.ui.charts.ColorPalette>}
+   */
+  this.colorPalettesMap = null;
 
   // Override settings included in the given object
   if (settingsMap) {
@@ -191,7 +165,29 @@ epiviz.Config = function(settingsMap) {
       }
     }
   }
+
+  var colorPalettesMap = {};
+  this.colorPalettes.forEach(function(palette) {
+    colorPalettesMap[palette.id()] = palette;
+  });
+  this.colorPalettesMap = colorPalettesMap;
 };
+
+/**
+ * A map of settings that are used as input for the EpiViz configuration
+ * @type {*}
+ */
+epiviz.Config.SETTINGS = {};
+
+/**
+ * @const {string}
+ */
+epiviz.Config.DEFAULT_DATA_PROVIDER_ID = 'umd';
+
+/**
+ * @const {string}
+ */
+epiviz.Config.DEFAULT_WORKSPACE_NAME = 'Default Workspace';
 
 /**
  * @type {Array.<string>}
@@ -218,9 +214,33 @@ epiviz.Config.COLORS_LIGHT = ['#b8d2eb', '#f2aeac', '#d8e4aa', '#cccccc', '#f2d1
 epiviz.Config.COLORS_MEDIUM = ['#599ad3', '#f1595f', '#79c36a', '#727272', '#f9a65a', '#9e66ab', '#cd7058', '#d77fb3'];
 
 /**
+ * @type {Array.<string>}
+ * @const
+ */
+epiviz.Config.COLORS_D3_CAT10 = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+
+/**
+ * @type {Array.<string>}
+ * @const
+ */
+epiviz.Config.COLORS_D3_CAT20 = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"];
+
+/**
+ * @type {Array.<string>}
+ * @const
+ */
+epiviz.Config.COLORS_D3_CAT20B = ["#393b79", "#5254a3", "#6b6ecf", "#9c9ede", "#637939", "#8ca252", "#b5cf6b", "#cedb9c", "#8c6d31", "#bd9e39", "#e7ba52", "#e7cb94", "#843c39", "#ad494a", "#d6616b", "#e7969c", "#7b4173", "#a55194", "#ce6dbd", "#de9ed6"];
+
+/**
+ * @type {Array.<string>}
+ * @const
+ */
+epiviz.Config.COLORS_D3_CAT20C = ["#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d", "#fd8d3c", "#fdae6b", "#fdd0a2", "#31a354", "#74c476", "#a1d99b", "#c7e9c0", "#756bb1", "#9e9ac8", "#bcbddc", "#dadaeb", "#636363", "#969696", "#bdbdbd", "#d9d9d9"];
+
+/**
  * @enum {string}
  */
-epiviz.Config.ChartPropertySettings = {
+epiviz.Config.VisualizationPropertySettings = {
   WIDTH: 'width',
   HEIGHT: 'height',
   MARGINS: 'margins',

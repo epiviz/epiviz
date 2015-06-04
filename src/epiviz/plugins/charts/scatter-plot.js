@@ -9,7 +9,7 @@ goog.provide('epiviz.plugins.charts.ScatterPlot');
 /**
  * @param {string} id
  * @param {jQuery} container
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @extends {epiviz.ui.charts.Plot}
  * @constructor
  */
@@ -23,12 +23,6 @@ epiviz.plugins.charts.ScatterPlot = function(id, container, properties) {
    * @private
    */
   this._chartContent = null;
-
-  /**
-   * @type {jQuery}
-   * @private
-   */
-  this._jChartContent = null;
 
   /**
    * D3 legend container
@@ -92,33 +86,16 @@ epiviz.plugins.charts.ScatterPlot.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Plot.prototype._initialize.call(this);
 
+  this._svg.classed('scatter-plot', true);
+
   this._chartContent = this._svg.append('g').attr('class', 'chart-content');
-  this._jChartContent = this._container.find('.chart-content');
   this._legend = this._svg.append('g').attr('class', 'chart-legend');
 };
 
 /**
- * @protected
- */
-epiviz.plugins.charts.ScatterPlot.prototype._addStyles = function() {
-  var svgId = '#' + this._svgId;
-  var style =
-    sprintf('%s .items {}\n', svgId) +
-      sprintf('%s .items .selected { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }\n', svgId) +
-      sprintf('%s .items .hovered { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1; }\n', svgId);
-  var nSeries = Math.min(this._measurementsX.length, this._measurementsY.length);
-  for (var i = 0; i < nSeries; ++i) {
-    style += sprintf('%s .data-series-%s { opacity: 1.0; }\n', svgId, i);
-  }
-
-  var jSvg = this._container.find('svg');
-  jSvg.append(sprintf('<style type="text/css">%s</style>', style));
-};
-
-/**
  * @param {epiviz.datatypes.GenomicRange} [range]
- * @param {?epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} [data]
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @param {?epiviz.datatypes.GenomicData} [data]
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
 
@@ -137,44 +114,46 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
- * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.GenomicDataMeasurementWrapper>} data
- * @returns {Array.<epiviz.ui.charts.UiObject>} The objects drawn
+ * @param {epiviz.datatypes.GenomicData} data
+ * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
 epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data) {
   var self = this;
   var Axis = epiviz.ui.charts.Axis;
-  var circleRadius = Math.max(1,this._customSettingsValues[epiviz.plugins.charts.ScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
+  var circleRadius = Math.max(1,this.customSettingsValues()[epiviz.plugins.charts.ScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
   var gridSquareSize = Math.max(Math.floor(circleRadius), 1);
   var nSeries = Math.min(this._measurementsX.length, this._measurementsY.length);
 
-  var firstGlobalIndex = data.first().value.globalStartIndex();
-  var lastGlobalIndex = data.first().value.size() + firstGlobalIndex;
+  var firstGlobalIndex = data.firstSeries().globalStartIndex();
+  var lastGlobalIndex = data.firstSeries().globalEndIndex();
   data.foreach(function(measurement, series) {
 
     var firstIndex = series.globalStartIndex();
-    var lastIndex = series.size() + firstIndex;
+    var lastIndex = series.globalEndIndex();
 
     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
   });
 
-  var nGenes = lastGlobalIndex - firstGlobalIndex;
+  var nItems = lastGlobalIndex - firstGlobalIndex;
 
   var margins = this.margins();
   var width = this.width();
   var height = this.height();
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  var minY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MIN];
-  var maxY = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.Y_MAX];
-  var minX = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.X_MIN];
-  var maxX = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.X_MAX];
+  var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
+  var minX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN];
+  var maxX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 
   if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
   if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
   if (maxX == CustomSetting.DEFAULT) { maxX = this._measurementsX[0].maxValue(); }
   if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
+
+  var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this._measurementsX[0].type());
 
   var xScale = d3.scale.linear()
     .domain([minX, maxX])
@@ -187,13 +166,17 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   this._drawAxes(xScale, yScale, 15, 15, this._chartContent);
 
   var i, index;
-  var indices = []; //epiviz.utils.range(nSeries * nGenes);
-  for (i = 0; i < nGenes; ++i) {
+  var indices = []; //epiviz.utils.range(nSeries * nItems);
+  for (i = 0; i < nItems; ++i) {
     index = i + firstGlobalIndex;
-    var item = data.get(this._measurementsX[0]).getByGlobalIndex(index).rowItem;
-    if (item.start() < range.end() && item.end() > range.start()) {
+    var item = data.getSeries(this._measurementsX[0]).getRowByGlobalIndex(index);
+    if (!item) { continue; }
+    if (!dataHasGenomicLocation ||
+      (range.start() == undefined || range.end() == undefined) ||
+      (item.start() < range.end() && item.end() > range.start())) {
+
       for (var j = 0; j < nSeries; ++j) {
-        indices.push(j * nGenes + i);
+        indices.push(j * nItems + i);
       }
     }
   }
@@ -202,13 +185,16 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   var items = [];
   var maxGroupItems = 1;
   for (i = 0; i < indices.length; ++i) {
-    index = indices[i] % nGenes;
+    index = indices[i] % nItems;
     var globalIndex = index + firstGlobalIndex;
-    var seriesIndex = Math.floor(index / nGenes);
+    var seriesIndex = Math.floor(indices[i] / nItems);
     var mX = self._measurementsX[seriesIndex];
     var mY = self._measurementsY[seriesIndex];
-    var cellX = data.get(mX).getByGlobalIndex(globalIndex);
-    var cellY = data.get(mY).getByGlobalIndex(globalIndex);
+    var cellX = data.getSeries(mX).getByGlobalIndex(globalIndex);
+    var cellY = data.getSeries(mY).getByGlobalIndex(globalIndex);
+
+    if (!cellX || !cellY) { continue; }
+
     var classes = sprintf('item data-series-%s', seriesIndex);
 
     var x = xScale(cellX.value);
@@ -234,7 +220,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
       continue;
     }
 
-    uiObj = new epiviz.ui.charts.UiObject(
+    uiObj = new epiviz.ui.charts.ChartObject(
       sprintf('scatter_%s_%s', seriesIndex, cellX.globalIndex),
       cellX.rowItem.start(),
       cellX.rowItem.end(),
@@ -259,14 +245,13 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     selectedGroup.append('g').attr('class', 'hovered');
   }
 
-  //itemsGroup.selectAll('circle').remove();
   var selection = itemsGroup.selectAll('circle').data(items, function(d) { return d.id; });
 
   selection
     .enter()
     .insert('circle', ':first-child')
     .attr('id', function (d) {
-      return sprintf('%s-item-%s-%s', self._id, d.seriesIndex, d.valueItems[0][0].globalIndex);
+      return sprintf('%s-item-%s-%s', self.id(), d.seriesIndex, d.valueItems[0][0].globalIndex);
     })
     .style('opacity', 0)
     .style('fill-opacity', 0)
@@ -274,7 +259,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   selection
     .each(
       /**
-       * @param {epiviz.ui.charts.UiObject} d
+       * @param {epiviz.ui.charts.ChartObject} d
        */
       function(d) {
         var circle = d3.select(this);
@@ -304,14 +289,14 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
 
   selection
     .on('mouseover', function (d) {
-      self._hover.notify(d);
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
     })
-    .on('mouseout', function (d) {
-      self._unhover.notify();
+    .on('mouseout', function () {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     })
     .on('click', function (d) {
-      self._deselect.notify();
-      self._select.notify(d);
+      self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
 
       d3.event.stopPropagation();
     });
@@ -320,23 +305,14 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
 };
 
 /**
- * @returns {string}
- */
-epiviz.plugins.charts.ScatterPlot.prototype.chartTypeName = function() { return 'epiviz.plugins.charts.ScatterPlot'; };
-
-/**
  * @returns {Array.<{name: string, color: string}>}
  */
-epiviz.plugins.charts.ScatterPlot.prototype.colorMap = function() {
-  var self = this;
+epiviz.plugins.charts.ScatterPlot.prototype.colorLabels = function() {
   var n = Math.min(this._measurementsX.length, this._measurementsY.length);
   var colors = new Array(n);
 
   for (var i = 0; i < n; ++i) {
-    colors[i] = {
-      name: sprintf('%s vs %s', this._measurementsX[i].name(), this._measurementsY[i].name()),
-      color: this._properties.colors.get(i)
-    };
+    colors[i] = sprintf('%s vs %s', this._measurementsX[i].name(), this._measurementsY[i].name());
   }
 
   return colors;
@@ -358,24 +334,89 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
 
   this._legend.selectAll('text').remove();
 
-  var xWidth = this._xLabel.length * 7;
-  var yWidth = this._yLabel.length * 7;
-  this._legend.append('text')
-    .attr('x', (this.width() - xWidth) * 0.5)
-    .attr('y', (this.height() - this.margins().bottom() + 35))
-    .attr('style', 'font-weight: regular; font-size: 12;')
-    .attr('fill', '#000000')
-    .attr('stroke', 'none')
-    .style('fill-opacity', 1)
-    .text(this._xLabel);
+  var xMeasurements = this._measurementsX;
+  var self = this;
+  this._legend.selectAll('.x-measurement').remove();
+  this._legend.selectAll('.x-measurement-color').remove();
 
-  this._legend.append('text')
-    .attr('x', - this.height() + (this.height() - yWidth) * 0.5 + this.margins().top())
-    .attr('y', this.margins().left() - 25)
+  var xEntries = this._legend
+    .selectAll('.x-measurement')
+    .data(xMeasurements)
+    .enter()
+    .append('text')
+    .attr('class', 'x-measurement')
+    .attr('font-weight', 'bold')
+    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('y', (this.height() - this.margins().bottom() + 35))
+    .text(function(m, i) { return m.name(); });
+
+  var xTextLength = 0;
+  var xTitleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .x-measurement')
+    .each(function(i) {
+      xTitleEntriesStartPosition.push(xTextLength);
+      xTextLength += this.getBBox().width + 15;
+    });
+
+  xEntries.attr('x', function(column, i) {
+    return (self.width() - xTextLength) * 0.5 + 7 + xTitleEntriesStartPosition[i];
+  });
+
+  var xColorEntries = this._legend
+    .selectAll('.x-measurement-color')
+    .data(xMeasurements)
+    .enter()
+    .append('circle')
+    .attr('class', 'x-measurement-color')
+    .attr('cx', function(column, i) { return (self.width() - xTextLength) * 0.5 + 1 + xTitleEntriesStartPosition[i]; })
+    .attr('cy', (this.height() - this.margins().bottom() + 31))
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .style('fill', function(m, i) { return self.colors().get(i); });
+
+
+  var yMeasurements = this._measurementsY;
+  this._legend.selectAll('.y-measurement').remove();
+  this._legend.selectAll('.y-measurement-color').remove();
+
+  var yEntries = this._legend
+    .selectAll('.y-measurement')
+    .data(yMeasurements)
+    .enter()
+    .append('text')
+    .attr('class', 'y-measurement')
+    .attr('font-weight', 'bold')
+    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('y', (this.margins().left() - 35))
     .attr('transform', 'rotate(-90)')
-    .attr('style', 'font-weight: regular; font-size: 12;')
-    .attr('fill', '#000000')
-    .attr('stroke', 'none')
-    .style('fill-opacity', 1)
-    .text(this._yLabel);
+    .text(function(m, i) { return m.name(); });
+
+  var yTextLength = 0;
+  var yTitleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .y-measurement')
+    .each(function(i) {
+      yTitleEntriesStartPosition.push(yTextLength);
+      yTextLength += this.getBBox().width + 15;
+    });
+
+  yEntries.attr('x', function(column, i) {
+    return - self.height() + (self.height() - yTextLength) * 0.5 + 12 + self.margins().top() + yTitleEntriesStartPosition[i];
+  });
+
+  var yColorEntries = this._legend
+    .selectAll('.y-measurement-color')
+    .data(xMeasurements)
+    .enter()
+    .append('circle')
+    .attr('class', 'y-measurement-color')
+    .attr('cx', function(column, i) { return - self.height() + (self.height() - yTextLength) * 0.5 + 6 + self.margins().top() + yTitleEntriesStartPosition[i]; })
+    .attr('cy', (this.margins().left() - 39))
+    .attr('transform', 'rotate(-90)')
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .style('fill', function(m, i) { return self.colors().get(i); });
 };

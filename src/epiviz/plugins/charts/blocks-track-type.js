@@ -27,7 +27,7 @@ epiviz.plugins.charts.BlocksTrackType.constructor = epiviz.plugins.charts.Blocks
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
- * @param {epiviz.ui.charts.ChartProperties} properties
+ * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.BlocksTrack}
  */
 epiviz.plugins.charts.BlocksTrackType.prototype.createNew = function(id, container, properties) {
@@ -58,9 +58,19 @@ epiviz.plugins.charts.BlocksTrackType.prototype.chartHtmlAttributeName = functio
 /**
  * @returns {epiviz.measurements.Measurement.Type}
  */
-epiviz.plugins.charts.BlocksTrackType.prototype.chartContentType = function() {
+/*epiviz.plugins.charts.BlocksTrackType.prototype.chartContentType = function() {
   return epiviz.measurements.Measurement.Type.RANGE;
-};
+};*/
+
+/**
+ * @returns {boolean}
+ */
+epiviz.plugins.charts.BlocksTrackType.prototype.isRestrictedToRangeMeasurements = function() { return true; };
+
+/**
+ * @returns {function(epiviz.measurements.Measurement): boolean}
+ */
+epiviz.plugins.charts.BlocksTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.RANGE; }; };
 
 /**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}
