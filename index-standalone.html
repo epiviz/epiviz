@@ -30,10 +30,11 @@
         epiviz.workspaces.UserManager.USER_STATUS = { loggedIn: false };
     </script>
 
-    <script>
-      // Run main once the page has loaded
-      $(epiviz.main);
-    </script>
+  <script>
+  // Run main once the page has loaded
+  $(epiviz.main);
+  </script>
+
   </head>
   <body>
     <div class="ui-layout-north">
@@ -69,12 +70,12 @@
 
         <span class="separator">|</span>
 
-        <!--<label for="save-workspace-text"></label>-->
-        <!--<input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>-->
-        <!--<button id="save-workspace-button">Save Workspace</button>-->
-        <!--<button id="delete-workspace-button">Delete Active Workspace</button>-->
+        <label for="save-workspace-text"></label>
+        <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text" disabled/>
+        <button id="save-workspace-button" disabled>Save Workspace</button>
+        <button id="delete-workspace-button" disabled>Delete Active Workspace</button>
 
-        <!--<span class="separator">|</span>-->
+        <span class="separator">|</span>
 
         <button id="help-button">Help</button>
       </div>
