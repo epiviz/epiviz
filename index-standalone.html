@@ -73,6 +73,7 @@
         <label for="save-workspace-text"></label>
         <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text" disabled/>
         <button id="save-workspace-button" disabled>Save Workspace</button>
+        <button id="revert-workspace-button" disabled>Revert Workspace Changes</button>  
         <button id="delete-workspace-button" disabled>Delete Active Workspace</button>
 
         <span class="separator">|</span>
@@ -82,22 +83,14 @@
     </div>
 
     <div id="pagemain" class="ui-layout-center">
-      <div id="top-accordion">
-        <h3><a href="#"><b><span style="color: #025167">Views by Feature</span></b></a></h3>
-        <div id="chart-container"></div>
-      </div>
-      <div id="bottom-accordion">
-          <h3><a href="#"><b><span style="color: #025167">Views by Location</span></b></a></h3>
-          <div id="track-container"></div>
-      </div>
-    </div>
-
-    <div class="ui-layout-east"></div>
+      <div id="feature-view"></div>    
+      <div id="location-view"></div>       
+      <div id="data-structure-view"></div>    
+    </div>    
+      
     <div id="pagefooter" class="ui-layout-south"></div>
 
-
     <div id="dialogs">
-
       <div id="location-settings-dialog" title="Location Settings">
         <table>
           <tr>
