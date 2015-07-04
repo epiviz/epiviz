@@ -4,7 +4,7 @@
  * Time: 9:30 AM
  */
 
-goog.provide('epiviz.plugins.charts.LineTrack');
+goog.provide('epiviz.plugins.charts.LineTrackCustom');
 
 /**
  * @param {string} id
@@ -13,7 +13,7 @@ goog.provide('epiviz.plugins.charts.LineTrack');
  * @extends {epiviz.ui.charts.Track}
  * @constructor
  */
-epiviz.plugins.charts.LineTrack = function(id, container, properties) {
+epiviz.plugins.charts.LineTrackCustom = function(id, container, properties) {
   // Call superclass constructor
   epiviz.ui.charts.Track.call(this, id, container, properties);
 
@@ -23,13 +23,13 @@ epiviz.plugins.charts.LineTrack = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.plugins.charts.LineTrack.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Track.prototype);
-epiviz.plugins.charts.LineTrack.constructor = epiviz.plugins.charts.LineTrack;
+epiviz.plugins.charts.LineTrackCustom.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Track.prototype);
+epiviz.plugins.charts.LineTrackCustom.constructor = epiviz.plugins.charts.LineTrackCustom;
 
 /**
  * @protected
  */
-epiviz.plugins.charts.LineTrack.prototype._initialize = function() {
+epiviz.plugins.charts.LineTrackCustom.prototype._initialize = function() {
   // Call super
   epiviz.ui.charts.Track.prototype._initialize.call(this);
 };
@@ -41,7 +41,7 @@ epiviz.plugins.charts.LineTrack.prototype._initialize = function() {
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
-epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zoom) {
+epiviz.plugins.charts.LineTrackCustom.prototype.draw = function(range, data, slide, zoom) {
   epiviz.ui.charts.Track.prototype.draw.call(this, range, data, slide, zoom);
 
   // If data is defined, then the base class sets this._lastData to data.
@@ -130,29 +130,29 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(range, data, slide, zo
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
-epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, delta, zoom, xScale, yScale) {
+epiviz.plugins.charts.LineTrackCustom.prototype._drawLines = function(range, data, delta, zoom, xScale, yScale) {
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
   /** @type {number} */
-  var step = parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.STEP]);
+  var step = parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings.STEP]);
 
   /** @type {boolean} */
-  var showPoints = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS];
+  var showPoints = this.customSettingsValues()[epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings.SHOW_POINTS];
 
   /** @type {boolean} */
-  var showLines = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES];
+  var showLines = this.customSettingsValues()[epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings.SHOW_LINES];
 
   /** @type {boolean} */
-  var showErrorBars = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS];
+  var showErrorBars = this.customSettingsValues()[epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings.SHOW_ERROR_BARS];
 
   /** @type {number} */
-  var pointRadius = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS];
+  var pointRadius = this.customSettingsValues()[epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings.POINT_RADIUS];
 
   /** @type {number} */
-  var lineThickness = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS];
+  var lineThickness = this.customSettingsValues()[epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings.LINE_THICKNESS];
 
-  var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];
+  var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings.INTERPOLATION];
 
   var self = this;
 

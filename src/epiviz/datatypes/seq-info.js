@@ -47,6 +47,10 @@ epiviz.datatypes.SeqInfo.fromRawObject = function(o) { return new epiviz.datatyp
  * @returns {number}
  */
 epiviz.datatypes.SeqInfo.compare = function(s1, s2) {
+  if (s1.seqName == s2.seqName) { return 0; }
+  if (s1.seqName == undefined) { return -1; }
+  if (s2.seqName == undefined) { return 1; }
+
   var n1str = s1.seqName.replace(/\D/g, '');
   var n2str = s2.seqName.replace(/\D/g, '');
 

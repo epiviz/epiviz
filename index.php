@@ -255,6 +255,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/data/webserver-data-provider.js"></script>
     <script src="src/epiviz/data/metagenomics-data-provider.js"></script> <!-- TODO: Delete! -->
 
+    <script src="src/epiviz/data/epiviz-api-data-provider.js"></script><!-- TODO: Move -->
+
     <script src="src/epiviz/datatypes/seq-info.js"></script>
     <script src="src/epiviz/datatypes/genomic-array.js"></script>
     <script src="src/epiviz/datatypes/genomic-range-array.js"></script>

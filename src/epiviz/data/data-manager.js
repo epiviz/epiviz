@@ -227,14 +227,14 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
        * @param {epiviz.data.Response.<{
        *   id: Array.<number>,
        *   name: Array.<string>,
-       *   type: Array.<string>,
-       *   datasourceId: Array.<string>,
-       *   datasourceGroup: Array.<string>,
-       *   defaultChartType: Array.<string>,
+       *   type: Array.<string>|string,
+       *   datasourceId: Array.<string>|string,
+       *   datasourceGroup: Array.<string>|string,
+       *   defaultChartType: Array.<string>|string,
        *   annotation: Array.<Object.<string, string>>,
-       *   minValue: Array.<number>,
-       *   maxValue: Array.<number>,
-       *   metadata: Array.<Array.<string>>
+       *   minValue: Array.<number>|number,
+       *   maxValue: Array.<number>|number,
+       *   metadata: Array.<Array.<string>>|Array.<string>
        * }>} response
        */
       function(response) {
@@ -246,16 +246,16 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
             result.add(new epiviz.measurements.Measurement(
               jsondata['id'][i],
               jsondata['name'][i],
-              jsondata['type'][i],
-              jsondata['datasourceId'][i],
-              jsondata['datasourceGroup'][i],
+              $.isArray(jsondata['type']) ? jsondata['type'][i] : jsondata['type'],
+              $.isArray(jsondata['datasourceId']) ? jsondata['datasourceId'][i] : jsondata['datasourceId'],
+              $.isArray(jsondata['datasourceGroup']) ? jsondata['datasourceGroup'][i] : jsondata['datasourceGroup'],
               provider.id(),
               null,
-              jsondata['defaultChartType'][i],
+              $.isArray(jsondata['defaultChartType']) ? jsondata['defaultChartType'][i] : jsondata['defaultChartType'],
               jsondata['annotation'][i],
-              jsondata['minValue'][i],
-              jsondata['maxValue'][i],
-              jsondata['metadata'][i]
+              $.isArray(jsondata['minValue']) ? jsondata['minValue'][i] : jsondata['minValue'],
+              $.isArray(jsondata['maxValue']) ? jsondata['maxValue'][i] : jsondata['maxValue'],
+              ($.isArray(jsondata['metadata']) && $.isArray(jsondata['metadata'][0])) ? jsondata['metadata'][i] : jsondata['metadata']
             ));
           }
         }

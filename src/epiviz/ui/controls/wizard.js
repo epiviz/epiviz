@@ -162,6 +162,7 @@ epiviz.ui.controls.Wizard.prototype._initialize = function() {
     this._dialog.parent().find('button:contains("Next")').button('disable');
   }
   this._steps[0].initialize($(sprintf('#%s-tab-0', self._id)), this._initialData);
+  this._dialog.css('overflow', 'visible');
 };
 
 /**
