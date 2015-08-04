@@ -20,6 +20,12 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
   this._config = config;
 
   /**
+   * @type {boolean}
+   * @private
+   */
+  this._combineDatasourceRequests = config.cacheCombineDatasourceRequests;
+
+  /**
    * @type {epiviz.data.DataProviderFactory}
    * @private
    */
@@ -36,6 +42,12 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
    * @private
    */
   this._measurementRequestStackMap = new epiviz.measurements.MeasurementHashtable();
+
+  /**
+   * @type {Object.<string, epiviz.data.RequestStack>}
+   * @private
+   */
+  this._dataProviderRequestStackMap = {};
 
   /**
    * measurement -> (requestId -> range)
@@ -64,8 +76,6 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
 epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
-  var MeasurementType = epiviz.measurements.Measurement.Type;
-
   var self = this;
 
   this._lastRequest = epiviz.datatypes.GenomicRange.fromStartEnd(
@@ -97,6 +107,23 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
    */
   var msNeededRanges = this._calcMeasurementNeededRanges(requestRanges, chartMeasurementsMap);
 
+  if (this._combineDatasourceRequests) {
+    this._combineRequests(msNeededRanges, range, chartMeasurementsMap, dataReadyCallback);
+  } else {
+    this._distributeRequests(msNeededRanges, range, chartMeasurementsMap, dataReadyCallback);
+  }
+};
+
+/**
+ * @param {epiviz.measurements.MeasurementHashtable.<Array.<epiviz.datatypes.GenomicRange>>} msNeededRanges
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
+ * @private
+ */
+epiviz.data.Cache.prototype._distributeRequests = function(msNeededRanges, range, chartMeasurementsMap, dataReadyCallback) {
+  var MeasurementType = epiviz.measurements.Measurement.Type;
+  var self = this;
   msNeededRanges.foreach(function(m, ranges) {
     var requestStack = self._measurementRequestStackMap.get(m);
     if (!requestStack) {
@@ -141,6 +168,105 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
       });
     }
   });
+};
+
+/**
+ * @param {epiviz.measurements.MeasurementHashtable.<Array.<epiviz.datatypes.GenomicRange>>} msNeededRanges
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
+ * @private
+ */
+epiviz.data.Cache.prototype._combineRequests = function(msNeededRanges, range, chartMeasurementsMap, dataReadyCallback) {
+  var MeasurementType = epiviz.measurements.Measurement.Type;
+  var self = this;
+
+  /**
+   * @type {Object.<string, epiviz.measurements.MeasurementHashtable.<Array.<epiviz.datatypes.GenomicRange>>>}
+   */
+  var msNeededRangesByDataProvider = {};
+  msNeededRanges.foreach(function(m, ranges) {
+    /*if (ranges.length == 0) {
+      request = epiviz.data.Request.emptyRequest();
+      requestStack.pushRequest(request, function() {
+        self._handleResponse(dataReadyCallback, range, chartMeasurementsMap, request, null, m, null);
+      });
+
+      // When the pending requests for this measurements come back, this will also pop out
+      requestStack.serveData(new epiviz.data.Response(request.id(), {}));
+      return; // continue iteration
+    }*/
+
+    var dataProvider = self._dataProviderFactory.get(m.dataprovider()) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    if (!(dataProvider.id() in msNeededRangesByDataProvider)) {
+      msNeededRangesByDataProvider[dataProvider.id()] = new epiviz.measurements.MeasurementHashtable();
+    }
+    msNeededRangesByDataProvider[dataProvider.id()].put(m, ranges);
+  });
+
+  for (var dataProviderId in msNeededRangesByDataProvider) {
+    if (!msNeededRangesByDataProvider.hasOwnProperty(dataProviderId)) { continue; }
+    var request = epiviz.data.Request.getCombined(msNeededRangesByDataProvider[dataProviderId]);
+    var requestDatasourceMap = {};
+    request.get('datasources').forEach(function(datasourceRequest) {
+      requestDatasourceMap[datasourceRequest.datasource] = datasourceRequest;
+    });
+
+    var requestStack = self._dataProviderRequestStackMap[dataProviderId];
+    if (requestStack == undefined) {
+      requestStack = new epiviz.data.RequestStack();
+      self._dataProviderRequestStackMap[dataProviderId] = requestStack;
+    }
+
+    if ($.isEmptyObject(requestDatasourceMap)) {
+      request = epiviz.data.Request.emptyRequest();
+      requestStack.pushRequest(request, function() {
+        self._handleCombinedResponse(dataReadyCallback, range, chartMeasurementsMap, request, null);
+      });
+
+      // When the pending requests for this measurements come back, this will also pop out
+      requestStack.serveData(new epiviz.data.Response(request.id(), {}));
+      continue; // continue iteration
+    }
+
+    (function(request) {
+      requestStack.pushRequest(request,
+        /** @param {{globalStartIndex: number, values: *, useOffset: ?boolean}} data */ // TODO: Change to correct type of data
+        function(data) {
+          self._handleCombinedResponse(dataReadyCallback, range, chartMeasurementsMap, request, data);
+        });
+    })(request);
+
+    // TODO: Later reintroduce pending requests
+    msNeededRangesByDataProvider[dataProviderId].foreach(function(m, ranges) {
+      var pendingRequests = self._measurementPendingRequestsMap.get(m);
+      if (!pendingRequests) {
+        pendingRequests = {};
+        self._measurementPendingRequestsMap.put(m, pendingRequests);
+      }
+      var datasourceRequest = requestDatasourceMap[m.datasource().id()];
+      pendingRequests[request.id()] = epiviz.datatypes.GenomicRange.fromStartEnd(datasourceRequest.seqName, datasourceRequest.start, datasourceRequest.end);
+    });
+
+    var dataProvider = self._dataProviderFactory.get(dataProviderId);
+    (function(requestStack) {
+      dataProvider.getData(request, function(response) {
+        requestStack.serveData(response);
+      });
+    })(requestStack);
+  }
+};
+
+/**
+ * @param {function(string, epiviz.datatypes.GenomicData)} chartDataReadyCallback
+ * @param {epiviz.datatypes.GenomicRange} chartRequestedRange
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {epiviz.data.Request} request
+ * @param {?{globalStartIndex: number, values: *, useOffset: ?boolean}} rawData TODO: Update type of this data
+ * @private
+ */
+epiviz.data.Cache.prototype._handleCombinedResponse = function(chartDataReadyCallback, chartRequestedRange, chartMeasurementsMap, request, rawData) {
+  // TODO
 };
 
 /**
@@ -304,6 +430,12 @@ epiviz.data.Cache.prototype._calcMeasurementNeededRanges = function(ranges, char
 
             // Now replace neededRanges[j] with dif
             Array.prototype.splice.apply(neededRanges, [j, 1].concat(dif));
+
+            if (dif.length == 0) {
+              --j;
+              break;
+            }
+
             if (j >= neededRanges.length) { break; }
           }
         }

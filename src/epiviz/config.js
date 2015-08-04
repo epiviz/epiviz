@@ -95,6 +95,11 @@ epiviz.Config = function(settingsMap) {
   this.cacheUpdateIntervalMilliseconds = 30000;
 
   /**
+   * @type {boolean}
+   */
+  this.cacheCombineDatasourceRequests = false;
+
+  /**
    * The maximum number of search results to show in the gene search box
    * @type {number}
    */

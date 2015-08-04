@@ -30,6 +30,11 @@ epiviz.data.Request = function(id, args, method) {
    * @private
    */
   this._method = method;
+
+  // TODO Delete
+  if (args['action'] == 'getCombined') {
+    console.log(args.datasources[0]);
+  }
 };
 
 /**
@@ -47,6 +52,7 @@ epiviz.data.Request.Action = {
   // Server actions
   GET_ROWS: 'getRows',
   GET_VALUES: 'getValues',
+  GET_COMBINED: 'getCombined',
   GET_MEASUREMENTS: 'getMeasurements',
   SEARCH: 'search',
   GET_SEQINFOS: 'getSeqInfos',
@@ -209,6 +215,54 @@ epiviz.data.Request.getValues = function(measurement, range) {
     seqName: range ? range.seqName() : undefined,
     start: range ? range.start() : undefined,
     end: range ? range.end() : undefined
+  });
+};
+
+/**
+ * @param {epiviz.measurements.MeasurementHashtable.<Array.<epiviz.datatypes.GenomicRange>>} msNeededRanges
+ */
+epiviz.data.Request.getCombined = function(msNeededRanges) {
+  var datasourceMap = {};
+  var datasourceRequests = [];
+  msNeededRanges.foreach(function(m, ranges) {
+    if (ranges.length == 0) { return; }
+
+    /**
+     * @type {epiviz.datatypes.GenomicRange}
+     */
+    var mergedRange = null;
+    ranges.forEach(function(range) {
+      if (mergedRange == null) {
+        mergedRange = epiviz.datatypes.GenomicRange.fromRawObject(range.raw());
+        return;
+      }
+      var seqName = mergedRange.seqName();
+      var start = Math.min(mergedRange.start(), range.start());
+      var end = Math.max(mergedRange.end(), range.end());
+      mergedRange = epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end);
+    });
+
+    if (!(m.datasource().id() in datasourceMap)) {
+      var datasourceRequest = {
+        datasource: m.datasource().id(),
+        seqName: mergedRange.seqName(),
+        start: mergedRange.start(),
+        end: mergedRange.end(),
+        metadata: m.datasource().metadata(),
+        measurements: []
+      };
+      datasourceMap[m.datasource().id()] = datasourceRequest;
+      datasourceRequests.push(datasourceRequest);
+    }
+
+    if (m.type() == epiviz.measurements.Measurement.Type.FEATURE) {
+      datasourceMap[m.datasource().id()].measurements.push(m.id());
+    }
+  });
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_COMBINED,
+    datasources: datasourceRequests
   });
 };
 

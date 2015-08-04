@@ -4,6 +4,9 @@
  * Time: 4:27 PM
  */
 
+goog.provide('epiviz.data.EpivizApiDataProvider');
+goog.provide('epiviz.data.EpivizApiDataProvider.Request');
+
 /**
  * @param {string} id
  * @param {string} serverEndpoint
@@ -106,15 +109,28 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var start = request.get('start');
       var end = request.get('end');
       var partition = request.get('seqName');
-      if (partition == '[NA]') { partition = undefined; }
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'rows', {start: start, end: end, partition: partition});
+      if (partition == '[NA]') { partition = ''; }
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'rows', {start: start, end: end, partition: JSON.stringify(partition)});
     case epiviz.data.Request.Action.GET_VALUES:
       var start = request.get('start');
       var end = request.get('end');
       var partition = request.get('seqName');
       var measurement = request.get('measurement');
-      if (partition == '[NA]') { partition = undefined; }
+      if (partition == '[NA]') { partition = ''; }
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement)});
+    case epiviz.data.Request.Action.GET_COMBINED:
+      /**
+       * @type {{datasource: string, seqName: string, start: number, end: number, metadata: Array.<string>, measurements: Array.<string>}}
+       */
+      var datasourceRequest = request.get('datasources')[0];
+      var params = {
+        partition: JSON.stringify((datasourceRequest.seqName == '[NA]') ? '' : datasourceRequest.seqName),
+        start: datasourceRequest.start,
+        end: datasourceRequest.end,
+        metadata: JSON.stringify(datasourceRequest.metadata),
+        measurements: JSON.stringify(datasourceRequest.measurements)
+      };
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combined', params);
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
       return;
   }
