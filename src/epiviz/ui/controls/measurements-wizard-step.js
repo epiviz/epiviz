@@ -43,7 +43,7 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
   var columns = [
     new epiviz.ui.controls.DataTable.Column('id', 'Id', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('name', 'Name', ColumnType.STRING, false, true),
-    new epiviz.ui.controls.DataTable.Column('defaultChartType', 'Default Chart Type', ColumnType.STRING, true, true),
+    // new epiviz.ui.controls.DataTable.Column('defaultChartType', 'Default Chart Type', ColumnType.STRING, true, true),
     new epiviz.ui.controls.DataTable.Column('type', 'Type', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('datasourceId', 'Data Source', ColumnType.STRING, false),
     new epiviz.ui.controls.DataTable.Column('datasourceGroup', 'Data Source Group', ColumnType.STRING, true),
