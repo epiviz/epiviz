@@ -118,6 +118,9 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var measurement = request.get('measurement');
       if (partition == '[NA]') { partition = ''; }
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement)});
+    case epiviz.data.Request.Action.GET_HIERARCHY:
+      var nodeId = request.get('nodeId') || '';
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: 2, nodeId: JSON.stringify(nodeId)});
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
       return;
   }
@@ -147,6 +150,8 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, d
       }
       break;
     case epiviz.data.Request.Action.GET_VALUES:
+      break;
+    case epiviz.data.Request.Action.GET_HIERARCHY:
       break;
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
       return;
