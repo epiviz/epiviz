@@ -11,9 +11,10 @@ goog.provide('epiviz.datatypes.GenomicArray');
  * @param {epiviz.datatypes.GenomicRange} boundaries
  * @param {number} globalStartIndex
  * @param {*} values
+ * @param {number} [size]
  * @constructor
  */
-epiviz.datatypes.GenomicArray = function(measurement, boundaries, globalStartIndex, values) {
+epiviz.datatypes.GenomicArray = function(measurement, boundaries, globalStartIndex, values, size) {
   /**
    * @type {epiviz.measurements.Measurement}
    * @private
@@ -37,6 +38,12 @@ epiviz.datatypes.GenomicArray = function(measurement, boundaries, globalStartInd
    * @protected
    */
   this._values = values;
+
+  /**
+   * @type {number}
+   * @protected
+   */
+  this._size = size;
 };
 
 /**
@@ -67,7 +74,7 @@ epiviz.datatypes.GenomicArray.prototype.get = function(index) { throw Error('uni
 /**
  * @returns {number}
  */
-epiviz.datatypes.GenomicArray.prototype.size = function() { throw Error('unimplemented abstract method'); };
+epiviz.datatypes.GenomicArray.prototype.size = function() { return this._size || 0; };
 
 /**
  * @param {number} globalIndex

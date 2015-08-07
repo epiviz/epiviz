@@ -1,20 +1,23 @@
 /**
- * Created by Florin Chelaru ( florinc [at] umd [dot] edu )
- * Date: 11/8/13
- * Time: 8:31 AM
+ * Created by Florin Chelaru ( florin [dot] chelaru [at] gmail [dot] com )
+ * Date: 8/6/2015
+ * Time: 1:55 PM
  */
 
-goog.provide('epiviz.datatypes.FeatureValueArray');
+goog.provide('epiviz.datatypes.SparseFeatureValueArray');
 
 /**
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.GenomicRange} boundaries
  * @param {number} globalStartIndex
  * @param {Array.<number>|Object.<string, Array.<*>>} values
+ * @param {number} [size]
+ * @param {Object.<number, number>} [indexMap]
+ * @param {number} [defaultValue]
  * @constructor
- * @extends {epiviz.datatypes.GenomicArray}
+ * @extends {epiviz.datatypes.SparseGenomicArray}
  */
-epiviz.datatypes.FeatureValueArray = function(measurement, boundaries, globalStartIndex, values) {
+epiviz.datatypes.SparseFeatureValueArray = function(measurement, boundaries, globalStartIndex, values, size, indexMap, defaultValue) {
   var vals = null;
   var valuesAnnotation = null;
   if (!values || $.isArray(values)) {
@@ -25,33 +28,39 @@ epiviz.datatypes.FeatureValueArray = function(measurement, boundaries, globalSta
     valuesAnnotation = values;
   }
 
-  var size = vals ? vals.length : 0;
-
-  epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, vals, size);
+  epiviz.datatypes.SparseGenomicArray.call(this, measurement, boundaries, globalStartIndex, vals, size, indexMap);
 
   /**
    * @type {Object.<string, Array.<*>>}
    * @private
    */
   this._valuesAnnotation = valuesAnnotation;
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this._defaultValue = defaultValue || 0;
 };
 
 /**
  * Copy methods from upper class
  */
-epiviz.datatypes.FeatureValueArray.prototype = epiviz.utils.mapCopy(epiviz.datatypes.GenomicArray.prototype);
-epiviz.datatypes.FeatureValueArray.constructor = epiviz.datatypes.FeatureValueArray;
+epiviz.datatypes.SparseFeatureValueArray.prototype = epiviz.utils.mapCopy(epiviz.datatypes.SparseGenomicArray.prototype);
+epiviz.datatypes.SparseFeatureValueArray.constructor = epiviz.datatypes.SparseFeatureValueArray;
 
 /**
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.GenomicRange} boundaries
  * @param {number} globalStartIndex
  * @param {Array.<number>} values
- * @returns {epiviz.datatypes.GenomicArray}
+ * @param {number} [size]
+ * @param {Object.<number, number>} [indexMap]
+ * @returns {epiviz.datatypes.SparseGenomicArray}
  * @override
  */
-epiviz.datatypes.FeatureValueArray.prototype.createNew = function(measurement, boundaries, globalStartIndex, values) {
-  return new epiviz.datatypes.FeatureValueArray(measurement, boundaries, globalStartIndex, values);
+epiviz.datatypes.SparseFeatureValueArray.prototype.createNew = function(measurement, boundaries, globalStartIndex, values, size, indexMap) {
+  return new epiviz.datatypes.SparseFeatureValueArray(measurement, boundaries, globalStartIndex, values, size, indexMap, this._defaultValue);
 };
 
 /**
@@ -59,39 +68,50 @@ epiviz.datatypes.FeatureValueArray.prototype.createNew = function(measurement, b
  * @returns {number}
  * @override
  */
-epiviz.datatypes.FeatureValueArray.prototype.get = function(index) {
-  return this._values[index];
+epiviz.datatypes.SparseFeatureValueArray.prototype.get = function(index) {
+  if (index < 0 || index >= this._size) { return undefined; }
+  var i = this.calcRealIndex(index);
+  if (Math.abs(i) >= this.realSize()) { return undefined; }
+  if (i < 0) { return this._defaultValue; }
+  return this._values[i];
 };
 
 /**
  * @param index
  * @returns {?Object.<string, *>}
  */
-epiviz.datatypes.FeatureValueArray.prototype.getAnnotation = function(index) {
-  if (this._valuesAnnotation == undefined) { return null; }
+epiviz.datatypes.SparseFeatureValueArray.prototype.getAnnotation = function(index) {
+  if (index < 0 || index >= this._size) { return undefined; }
+  var i = this.calcRealIndex(index);
+  if (Math.abs(i) >= this.realSize()) { return undefined; }
+  if (i < 0) { return null; }
+
   var ret = {};
   for (var col in this._valuesAnnotation) {
     if (!this._valuesAnnotation.hasOwnProperty(col)) { continue; }
-    ret[col] = this._valuesAnnotation[col][index];
+    ret[col] = this._valuesAnnotation[col][i];
   }
   return ret;
 };
 
 /**
- * @param {epiviz.datatypes.FeatureValueArray} second
+ * @param {epiviz.datatypes.SparseFeatureValueArray} second
  * @param {number} secondIndex
  * @returns {Array.<number>|Object.<string, *>}
  */
-epiviz.datatypes.FeatureValueArray.prototype.concatValues = function(second, secondIndex) {
+epiviz.datatypes.SparseFeatureValueArray.prototype.concatValues = function(second, secondIndex) {
   if (!second || !second.size()) { return this._valuesAnnotation; }
   if (!this._valuesAnnotation || !this._valuesAnnotation.values) {
     this._valuesAnnotation = {values:[]};
   }
+
+  var realSecondIndex = Math.abs(second.calcRealIndex(secondIndex));
+
   var ret = {};
   for (var key in this._valuesAnnotation) {
     if (!this._valuesAnnotation.hasOwnProperty(key)) { continue; }
     if (!second._valuesAnnotation.hasOwnProperty(key)) { continue; }
-    ret[key] = this._valuesAnnotation[key].concat(second._valuesAnnotation[key].slice(secondIndex));
+    ret[key] = this._valuesAnnotation[key].concat(second._valuesAnnotation[key].slice(realSecondIndex));
   }
   return ret;
 };
@@ -100,9 +120,9 @@ epiviz.datatypes.FeatureValueArray.prototype.concatValues = function(second, sec
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {number} globalStartIndex
  * @param {number} length
- * @returns {epiviz.datatypes.FeatureValueArray}
+ * @returns {epiviz.datatypes.SparseFeatureValueArray}
  */
-epiviz.datatypes.FeatureValueArray.prototype.trim = function(range, globalStartIndex, length) {
+epiviz.datatypes.SparseFeatureValueArray.prototype.trim = function(range, globalStartIndex, length) {
   if (this.globalStartIndex() == undefined || !this.size() ||
     globalStartIndex == undefined || !range ||
     !this.boundaries() || this.boundaries().seqName() != range.seqName()) {
@@ -117,19 +137,33 @@ epiviz.datatypes.FeatureValueArray.prototype.trim = function(range, globalStartI
   var startIndex = Math.max(globalStartIndex, this.globalStartIndex()) - this.globalStartIndex();
   var endIndex = Math.min(globalStartIndex + length, this.globalStartIndex() + this.size()) - this.globalStartIndex();
   if (endIndex <= startIndex) { return null; }
+
+  var realStartIndex = Math.abs(this.calcRealIndex(startIndex));
+  var realEndIndex = Math.abs(this.calcRealIndex(endIndex));
+
   /** @type {Object.<string, Array.<*>>} */
   var values = {};
   for (var key in this._valuesAnnotation) {
     if (!this._valuesAnnotation.hasOwnProperty(key)) { continue; }
-    values[key] = this._valuesAnnotation[key].slice(startIndex, endIndex);
+    values[key] = this._valuesAnnotation[key].slice(realStartIndex, realEndIndex);
   }
-  return new epiviz.datatypes.FeatureValueArray(this.measurement(), range, startIndex + this.globalStartIndex(), values);
+
+  var indexMap = {};
+  var i = 0;
+  for (var index in this._indexMap) {
+    if (!this._indexMap.hasOwnProperty(index)) { continue; }
+    if (index < startIndex) { continue; }
+    if (index >= endIndex) { break; }
+
+    indexMap[index - startIndex] = i++;
+  }
+  return new epiviz.datatypes.SparseFeatureValueArray(this.measurement(), range, startIndex + this.globalStartIndex(), values, endIndex - startIndex, indexMap, this._defaultValue);
 };
 
 /**
  * @returns {string}
  */
-epiviz.datatypes.FeatureValueArray.prototype.toString = function() {
+epiviz.datatypes.SparseFeatureValueArray.prototype.toString = function() {
   var c, s, e;
   if (this.boundaries()) {
     c = this.boundaries().seqName();

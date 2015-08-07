@@ -17,8 +17,14 @@ goog.provide('epiviz.datatypes.GenomicRangeArray');
  * @extends {epiviz.datatypes.GenomicArray}
  */
 epiviz.datatypes.GenomicRangeArray = function(measurement, boundaries, globalStartIndex, values, useOffset) {
+  var size = Math.max(
+    values.id ? values.id.length : 0,
+    values.start ? values.start.length : 0,
+    values.end ? values.end.length : 0,
+    (values.metadata && Object.keys(values.metadata).length) ?
+      Math.max.apply(undefined, $.map(values.metadata, function(col) { return col.length; })) : 0);
 
-  epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, values);
+  epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, values, size);
 
   /**
    * @type {Array.<string>}
@@ -49,12 +55,6 @@ epiviz.datatypes.GenomicRangeArray = function(measurement, boundaries, globalSta
    * @private
    */
   this._metadata = values.metadata;
-
-  /**
-   * @type {?number}
-   * @private
-   */
-  this._size = null;
 
   // If useOffset is true, it means that the values in the start/end arrays are compressed, and each value
   // in the array (with the exception of the first) is the offset between the real value and the previous one.
@@ -96,23 +96,6 @@ epiviz.datatypes.GenomicRangeArray.prototype.get = function(i) {
   if (i < 0 || i >= this.size()) { return null; }
 
   return new epiviz.datatypes.GenomicRangeArray.RowItemWrapper(this, i);
-};
-
-/**
- * @returns {number} the total number of items in the structure
- * @override
- */
-epiviz.datatypes.GenomicRangeArray.prototype.size = function() {
-  if (this._size == undefined) {
-    var size = Math.max(
-      this._id ? this._id.length : 0,
-      this._start ? this._start.length : 0,
-      this._end ? this._end.length : 0,
-      (this._metadata && Object.keys(this._metadata).length) ?
-        Math.max.apply(undefined, $.map(this._metadata, function(col) { return col.length; })) : 0);
-    this._size = size;
-  }
-  return this._size;
 };
 
 /**
