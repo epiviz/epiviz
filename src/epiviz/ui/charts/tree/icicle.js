@@ -155,7 +155,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         ret = uiNode;
       }
     });
-    console.log(x + ' ' + y + ' ' + globalDepth + ' - ' + (ret ? (ret.id + '[' + ret.name + ']') : 'null'));
+
     return ret;
   };
 

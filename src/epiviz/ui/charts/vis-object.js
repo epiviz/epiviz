@@ -116,10 +116,18 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
           if (thisM == otherM) { continue; }
           if (!useLooseCompare) { metadataMatches = false; break; }
 
-          var r1 = new RegExp('^(.+,)?' + thisM + '(,.+)?$');
-          var r2 = new RegExp('^(.+,)?' + otherM + '(,.+)?$');
+          var first, second;
+          if (thisM.length <= otherM.length) {
+            first = thisM;
+            second = otherM;
+          } else {
+            first = otherM;
+            second = thisM;
+          }
 
-          if (!r1.test(otherM) && !r2.test(thisM)) {
+          var r = new RegExp('^(.+,)?' + first + '(,.+)?$');
+
+          if (!r.test(second)) {
             metadataMatches = false;
             break;
           }
