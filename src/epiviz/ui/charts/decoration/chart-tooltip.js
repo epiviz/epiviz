@@ -142,7 +142,7 @@ epiviz.ui.charts.decoration.ChartTooltip.prototype._verticalContent = function(i
   metadataCols.forEach(function(metadata) {
     var row = [metadata];
     item.valueItems[0].every(function(valueItem, j) {
-      var metadataVal = valueItem.rowItem.metadata(metadata);
+      var metadataVal = valueItem.rowItem.metadata(metadata) || '[NA]';
       if (metadataVal.length > maxMetadataValueLength) {
         metadataVal = metadataVal.substr(0, maxMetadataValueLength) + '...';
       }

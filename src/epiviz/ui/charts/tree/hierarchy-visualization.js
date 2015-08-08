@@ -369,7 +369,11 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.firePropagateHierarchyCha
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.fireRequestHierarchy = function() {
   var nodeId = null;
   if (this._lastData && this._lastData.children) {
-    nodeId = this._lastData.children[0].id;
+    if (this._lastData.children.length == 1) {
+      nodeId = this._lastData.children[0].id;
+    } else {
+      nodeId = this._lastData.id;
+    }
   }
   this.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
     this.id(),

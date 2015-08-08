@@ -28,6 +28,24 @@ epiviz.data.EpivizApiDataProvider = function(id, serverEndpoint, measurementAnno
    * @private
    */
   this._measurementAnnotations = measurementAnnotations;
+
+  /**
+   * @type {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>}
+   * @private
+   */
+  this._selection = {};
+
+  /**
+   * @type {Object.<string, number>}
+   * @private
+   */
+  this._order = {};
+
+  /**
+   * @type {string}
+   * @private
+   */
+  this._lastRoot = '';
 };
 
 /**
@@ -110,19 +128,41 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var end = request.get('end');
       var partition = request.get('seqName');
       if (partition == '[NA]') { partition = ''; }
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'rows', {start: start, end: end, partition: JSON.stringify(partition)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'rows', {start: start, end: end, partition: JSON.stringify(partition), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order)});
     case epiviz.data.Request.Action.GET_VALUES:
       var start = request.get('start');
       var end = request.get('end');
       var partition = request.get('seqName');
       var measurement = request.get('measurement');
       if (partition == '[NA]') { partition = ''; }
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order)});
     case epiviz.data.Request.Action.GET_HIERARCHY:
       var nodeId = request.get('nodeId') || '';
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: 2, nodeId: JSON.stringify(nodeId)});
+      this._lastRoot = nodeId;
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: 2, nodeId: JSON.stringify(nodeId), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order)});
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
-      return;
+      var order = request.get('order');
+      var selection = request.get('selection');
+
+      if (selection) {
+        for (var nodeId  in selection) {
+          if (!selection.hasOwnProperty(nodeId)) { continue; }
+          if (selection[nodeId] == epiviz.ui.charts.tree.NodeSelectionType.LEAVES) {
+            delete this._selection[nodeId];
+            continue;
+          }
+          this._selection[nodeId] = selection[nodeId];
+        }
+      }
+
+      if (order) {
+        for (var nodeId in order) {
+          if (!order.hasOwnProperty(nodeId)) { continue; }
+          this._order[nodeId] = order[nodeId];
+        }
+      }
+
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: 2, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order)});
   }
 };
 
@@ -154,7 +194,7 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, d
     case epiviz.data.Request.Action.GET_HIERARCHY:
       break;
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
-      return;
+      break;
   }
   return epiviz.data.Response.fromRawObject({
     requestId: request.id(),

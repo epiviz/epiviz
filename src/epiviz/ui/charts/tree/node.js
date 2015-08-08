@@ -100,12 +100,12 @@ epiviz.ui.charts.tree.Node.constructor = epiviz.ui.charts.tree.Node;
  * @param {string} metadataCol
  * @returns {string}
  */
-epiviz.ui.charts.tree.Node.prototype.getMetadata = function(i, j, metadataCol) { return (i != 0 || j != 0 || metadataCol != 'hierarchy-path') ? null : this.id; };
+epiviz.ui.charts.tree.Node.prototype.getMetadata = function(i, j, metadataCol) { return (i != 0 || j != 0 || metadataCol != 'lineage') ? null : this.id; };
 
 /**
  * @returns {Array.<string>}
  */
-epiviz.ui.charts.tree.Node.prototype.metadataColumns = function() { return ['hierarchy-path']; };
+epiviz.ui.charts.tree.Node.prototype.metadataColumns = function() { return ['lineage']; };
 
 /**
  * Number of measurements times number of objects stored per measurement

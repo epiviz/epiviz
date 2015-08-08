@@ -183,7 +183,7 @@ epiviz.data.MetagenomicsDataProvider = function () {
       'heatmap',
       {observationType: self._observationType[i], ageRange: self._ageRange[i], country: self._country[i]}, // annotation
       0, 15,
-      ['colLabel', 'bacteria', 'ancestors', 'hierarchy-path'].concat(epiviz.data.MetagenomicsDataProvider.LEVEL_NAMES));
+      ['colLabel', 'bacteria', 'ancestors', 'lineage'].concat(epiviz.data.MetagenomicsDataProvider.LEVEL_NAMES));
     measurements.push(m);
   });
 
@@ -359,7 +359,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
           globalStartIndex: null,
             values: {
             id: [], start: [], end: [],
-              metadata: { colLabel: [], bacteria: [], ancestors: [], 'hierarchy-path': [] } } };
+              metadata: { colLabel: [], bacteria: [], ancestors: [], 'lineage': [] } } };
 
         levelNames.forEach(function(level) { data.values.metadata[level] = []; });
         callback(epiviz.data.Response.fromRawObject({
@@ -379,7 +379,7 @@ epiviz.data.MetagenomicsDataProvider.prototype.getData = function (request, call
             colLabel: this._selectedRows.slice(startIndex, endIndex + 1),
             bacteria: this._selectedRows.slice(startIndex, endIndex + 1),
             ancestors: this._selectedAncestry.slice(startIndex, endIndex + 1),
-            'hierarchy-path': this._selectedPaths.slice(startIndex, endIndex + 1)
+            lineage: this._selectedPaths.slice(startIndex, endIndex + 1)
           }
         }
       };
