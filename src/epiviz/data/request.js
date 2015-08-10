@@ -307,15 +307,17 @@ epiviz.data.Request.getHierarchy = function(datasourceGroup, nodeId) {
  * @param {string} datasourceGroup
  * @param {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>} [selection]
  * @param {Object.<string, number>} [order]
+ * @param {Object.<number, number>} [selectedLevels]
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.propagateHierarchyChanges = function(datasourceGroup, selection, order) {
+epiviz.data.Request.propagateHierarchyChanges = function(datasourceGroup, selection, order, selectedLevels) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES,
     datasourceGroup: datasourceGroup,
     selection: selection,
-    order: order
+    order: order,
+    selectedLevels: selectedLevels
   });
 };
 

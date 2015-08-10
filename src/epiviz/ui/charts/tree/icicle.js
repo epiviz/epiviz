@@ -71,6 +71,12 @@ epiviz.ui.charts.tree.Icicle = function(id, container, properties) {
    */
   this._yScale = null;
 
+  /**
+   * @type {number}
+   * @private
+   */
+  this._rowCtrlWidth = 50;
+
   this._initialize();
 };
 
@@ -109,7 +115,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var width = this.width();
   var height = this.height();
 
-  this._xScale = d3.scale.linear().range([0, width - this.margins().sumAxis(Axis.X)]);
+  this._xScale = d3.scale.linear().range([this._rowCtrlWidth, width - this.margins().sumAxis(Axis.X)]);
   this._yScale = d3.scale.pow().exponent(1.5).range([0, height - this.margins().sumAxis(Axis.Y)]);
 
   var itemsGroup = this._svg.select('.items');
@@ -374,9 +380,120 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; });
   items.exit().transition().delay(this._animationDelay).remove();
 
-
+  this._drawRowControls(root);
 
   return uiData;
+};
+
+/**
+ * @param {epiviz.ui.charts.tree.Node} root
+ * @param {function(number):number} yScale
+ * @private
+ */
+epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root, yScale) {
+  var self = this;
+
+  var calcHeight = function(d, i) { return self._yScale((i + 1) / nLevels) - self._yScale(i / nLevels) - 2; };
+  var calcWidth = function(d, i) { return self._rowCtrlWidth - 2; };
+  var calcY = function(d, i) { return self._yScale(i / nLevels) + 1; };
+  var calcX = function(d, i) { return 1; };
+  var calcR = function(d, i) {
+    var height = calcHeight(d, i) - 3;
+    var width = calcWidth(d, i) - 3;
+    return Math.min(height, width) / 2 - 5;
+  };
+
+  var rowCtrlGroup = this._svg.select('.row-ctrls');
+  if (rowCtrlGroup.empty()) {
+    rowCtrlGroup = this._svg.append('g')
+      .attr('class', 'row-ctrls');
+  }
+
+  rowCtrlGroup
+    .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
+
+  var levelsTaxonomy = this.levelsTaxonomy();
+  var nLevels = levelsTaxonomy.length;
+  var rowCtrls = rowCtrlGroup.selectAll('.row-ctrl')
+    .data(levelsTaxonomy);
+
+  var newCtrls = rowCtrls
+    .enter().append('g')
+    .style('opacity', 0)
+    .attr('class', 'row-ctrl custom-select');
+
+  newCtrls
+    .transition().duration(this._animationDelay)
+    .style('opacity', 1);
+
+  rowCtrls.exit()
+    .transition().duration(this._animationDelay)
+    .style('opacity', 0)
+    .remove();
+
+  newCtrls
+    .append('rect')
+    .style('fill', function(label) { return self.colors().getByKey(label); });
+
+  rowCtrlGroup.selectAll('.row-ctrl').select('rect')
+    .attr('x', calcX)
+    .attr('width', calcWidth)
+    .attr('rx', 10)
+    .attr('ry', 10)
+    .transition().duration(this._animationDelay)
+    .attr('y', calcY)
+    .attr('height', calcHeight)
+    .style('fill', function(label) { return self.colors().getByKey(label); });
+
+  var newIconsBg = newCtrls.append('circle')
+    .attr('class', 'icon-bg')
+    .style('fill', '#ffffff')
+    .style('opacity', 0.5);
+
+  rowCtrlGroup.selectAll('.icon-bg')
+    .transition().duration(this._animationDelay)
+    .attr('cx', function(d, i) { return calcWidth(d, i) / 2 + 1; })
+    .attr('cy', function(d, i) { return  calcY(d, i) + calcHeight(d, i) / 2; })
+    .attr('r', calcR);
+
+  var newIcons = newCtrls.append('svg:foreignObject')
+    .attr('class', 'icon-container')
+    .attr('width', function(d, i) { return calcR(d, i) * 2; })
+    .attr('height', function(d, i) { return calcR(d, i) * 2; });
+
+  newIcons.append('xhtml:span')
+    .attr('class', 'unselectable-text icon large-icon');
+
+  rowCtrlGroup.selectAll('.icon-container')
+    .style('visibility', function(d, i) {
+      return (calcR(d, i) * 2 + 13 < calcWidth(d, i)) ?
+        'hidden' : 'visible';
+    })
+    .transition().duration(this._animationDelay)
+    .attr('x', function(d, i) { return calcX(d, i) + calcWidth(d, i) / 2 - calcR(d, i) + 5; })
+    .attr('y', function(d, i) { return  calcY(d, i) + calcHeight(d, i) / 2 - calcR(d, i) + 5; });
+
+  rowCtrls
+    .on('mouseover', function(d, i) {
+      d3.select(this)
+        .style('opacity', 0.8);
+    })
+    .on('mouseout', function(d) {
+      d3.select(this)
+        .style('opacity', 1);
+    })
+    .on('mousedown', function(d) {
+      d3.select(this)
+        .style('opacity', 0.7);
+    })
+    .on('mouseup', function(d) {
+      d3.select(this)
+        .style('opacity', 0.8);
+    })
+    .on('click', function(d, i) {
+      self.selectLevel(root.globalDepth + i);
+      d3.event.stopPropagation();
+    });
 };
 
 /**

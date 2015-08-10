@@ -324,7 +324,8 @@ epiviz.data.DataManager.prototype.propagateHierarchyChanges = function(chartVisC
       provider.getData(epiviz.data.Request.propagateHierarchyChanges(
         visConfigSelection.datasourceGroup,
         visConfigSelection.customData.selection,
-        visConfigSelection.customData.order), function(response) {
+        visConfigSelection.customData.order,
+        visConfigSelection.customData.selectedLevels), function(response) {
 
         setTimeout(function() {
           provider.onRequestClearDatasourceGroupCache().notify({

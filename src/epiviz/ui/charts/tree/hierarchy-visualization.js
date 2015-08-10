@@ -27,6 +27,12 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
   this._selectedNodes = {};
 
   /**
+   * @type {Object.<number, number>}
+   * @private
+   */
+  this._selectedLevels = {};
+
+  /**
    * @type {Object.<string, number>}
    * @private
    */
@@ -302,6 +308,11 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._drawLegend = function() 
 };
 
 /**
+ * @returns {Array.<string>}
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.levelsTaxonomy = function() { return this._levelsTaxonomy; };
+
+/**
  * @returns {boolean}
  */
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectMode = function() { return this._selectMode; };
@@ -319,6 +330,21 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
   this._selectedNodes[node.id] = selectionType;
 
   this._changeNodeSelection(node, selectionType);
+
+  if (this.autoPropagateChanges()) {
+    this.firePropagateHierarchyChanges();
+  }
+};
+
+/**
+ * @param {number} level
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(level) {
+  if (!(level in this._selectedLevels)) {
+    this._selectedLevels[level] = epiviz.ui.charts.tree.NodeSelectionType.NODE;
+  } else {
+    this._selectedLevels[level] = 3 - this._selectedLevels[level];
+  }
 
   if (this.autoPropagateChanges()) {
     this.firePropagateHierarchyChanges();
@@ -356,12 +382,13 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._changeNodeSelection = fu
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.firePropagateHierarchyChanges = function() {
   var selectedNodes = this._selectedNodes;
   var nodesOrder = this._nodesOrder;
+  var selectedLevels = this._selectedLevels;
   this._selectedNodes = {};
   this._nodesOrder = {};
   this.onPropagateHierarchyChanges().notify(new epiviz.ui.charts.VisEventArgs(
     this.id(),
     new epiviz.ui.controls.VisConfigSelection(undefined, undefined, this.datasourceGroup(), this.dataprovider(), undefined, undefined, undefined,
-      {selection: selectedNodes, order: nodesOrder})));
+      {selection: selectedNodes, order: nodesOrder, selectedLevels: selectedLevels})));
 };
 
 /**
