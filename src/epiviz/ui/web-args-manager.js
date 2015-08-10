@@ -34,6 +34,42 @@ epiviz.ui.WebArgsManager = function(locationManager, workspaceManager) {
 epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.WEB_ARGS || {};
 
 /**
+ * @returns {Object.<string, string|Array.<string>>}
+ */
+epiviz.ui.WebArgsManager.extractWindowLocationArgs = function() {
+  var argsStr = window.location.search.length > 0 ? window.location.search.substr(1) : '';
+  var argPairs = argsStr.split('&');
+
+  var args = {};
+  argPairs.forEach(function(pair, i) {
+    if (pair.trim().length == 0) { return; }
+    var arrInd = pair.indexOf('[]');
+    if (arrInd == 0) { return; }
+
+    var arg, val;
+    var eqInd = pair.indexOf('=');
+    if (eqInd < 0) {
+      arg = (arrInd < 0) ? pair : pair.substr(0, arrInd);
+      val = 'true';
+    } else {
+      arg = (arrInd < 0) ? pair.substr(0, eqInd) : pair.substr(0, arrInd);
+      val = pair.substr(eqInd + 1);
+    }
+
+    arg = decodeURIComponent(arg);
+    val = decodeURIComponent(val);
+
+    if (arrInd < 0) { args[arg] = val; }
+    else {
+      if (!(arg in args)) { args[arg] = []; }
+      args[arg].push(val);
+    }
+  });
+
+  return args;
+};
+
+/**
  * @private
  */
 epiviz.ui.WebArgsManager.prototype._updateUrl = function() {

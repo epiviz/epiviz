@@ -25,9 +25,7 @@ epiviz.Config.SETTINGS = {
 
   // Plug-ins
 
-  dataProviders: [
-      sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', '')
-  ],
+  dataProviders: [],
 
   workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
 
@@ -166,9 +164,13 @@ epiviz.Config.SETTINGS = {
   },
 
   defaultWorkspaceSettings: {
-    name: 'Standalone',
+    name: epiviz.Config.DEFAULT_WORKSPACE_NAME,
     content: {
-      range: {},
+      range: {
+        seqName: 'chr11',
+        start: 99800000,
+        width: 3583180
+      },
       measurements: [],
       charts: {
         track: [],

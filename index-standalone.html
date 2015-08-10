@@ -240,23 +240,16 @@
 
     <! -- Check if requesting websocket -->
     <script>
-        var re = new RegExp("websocket=true")
-        if (re.test(location.search)) {
-             epiviz.Config.SETTINGS.dataProviders.push(
-                sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
-                   epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
-                   sprintf("ws://%s", window.location.host)))
-        }
+      epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.extractWindowLocationArgs();
+      epiviz.workspaces.UserManager.USER_STATUS = {
+        loggedIn: false,
+        oauthProvider: null,
+        userData: null
+      };
+      $(function() {
+        epiviz.main();
+      });
     </script>
-    <script>
-        epiviz.workspaces.UserManager.USER_STATUS = { loggedIn: false };
-    </script>
-
-  <script>
-  // Run main once the page has loaded
-  $(epiviz.main);
-  </script>
-
   </head>
   <body>
     <div class="ui-layout-north">
