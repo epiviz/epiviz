@@ -47,6 +47,7 @@ epiviz.data.Request.Action = {
   // Server actions
   GET_ROWS: 'getRows',
   GET_VALUES: 'getValues',
+  GET_COMBINED: 'getCombined',
   GET_MEASUREMENTS: 'getMeasurements',
   SEARCH: 'search',
   GET_SEQINFOS: 'getSeqInfos',
@@ -209,6 +210,33 @@ epiviz.data.Request.getValues = function(measurement, range) {
     seqName: range ? range.seqName() : undefined,
     start: range ? range.start() : undefined,
     end: range ? range.end() : undefined
+  });
+};
+
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
+  var rawMsByDs = {};
+  for (var ds in measurementsByDatasource) {
+    if (!measurementsByDatasource.hasOwnProperty(ds)) { continue; }
+    rawMsByDs[ds] = (function() {
+      var ms = [];
+      measurementsByDatasource[ds].foreach(function(m) {
+        ms.push(m.id());
+      });
+      return ms;
+    })();
+  }
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_COMBINED,
+    seqName: range ? range.seqName() : undefined,
+    start: range ? range.start() : undefined,
+    end: range ? range.end() : undefined,
+    measurements: rawMsByDs
   });
 };
 

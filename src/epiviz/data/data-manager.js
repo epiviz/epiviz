@@ -43,6 +43,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._cache = new epiviz.data.Cache(config, dataProviderFactory);
 
   /**
+   * @type {Object.<string, epiviz.data.RequestStack>}
+   * @private
+   */
+  this._combinedRequestsStacks = {};
+
+  /**
    * @type {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
    * @private
    */
@@ -273,7 +279,110 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
 epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
-  this._cache.getData(range, chartMeasurementsMap, dataReadyCallback);
+  if (this._config.useCache) {
+    this._cache.getData(range, chartMeasurementsMap, dataReadyCallback);
+  } else {
+    this._getDataNoCache(range, chartMeasurementsMap, dataReadyCallback);
+  }
+};
+
+/**
+ * TODO: Take care of computed measurements as well
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasurementsMap, dataReadyCallback) {
+  var self = this;
+
+  /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+  var msByDp = {};
+  for (var chartId in chartMeasurementsMap) {
+    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }
+    var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+    for (var dp in chartMsByDp) {
+      if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+      var dpMs = msByDp[dp];
+      if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+      else { dpMs.addAll(chartMsByDp[dp]); }
+    }
+  }
+
+  /**
+   * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+   */
+  var allData = {};
+  epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+    var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+    var request = epiviz.data.Request.getCombined(msByDs, range);
+
+    var requestStack = self._combinedRequestsStacks[dataprovider];
+    if (requestStack == undefined) {
+      requestStack = new epiviz.data.RequestStack();
+      self._combinedRequestsStacks[dataprovider] = requestStack;
+    }
+
+    requestStack.pushRequest(request, function(data) {
+      var dataByDs = {};
+      epiviz.utils.forEach(msByDs, function(dsMs, datasourceId) {
+        var datasource = dsMs.first().datasource();
+        var dsData = data[datasourceId];
+        var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+
+        var globalStartIndex = dsData.globalStartIndex;
+        var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, dsData.rows);
+
+        sumExp.addRowData(rowData);
+
+        dsMs.foreach(function(m) {
+          var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols[m.id()]);
+          sumExp.addValues(valueData);
+        });
+
+        dataByDs[datasourceId] = sumExp;
+      });
+
+      allData[dataprovider] = dataByDs;
+      self._serveAvailableData(range, chartMeasurementsMap, dataReadyCallback, allData);
+    });
+
+    var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    dataProvider.getData(request, function(response) {
+      requestStack.serveData(response);
+    });
+  });
+};
+
+/**
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
+ * @param {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>} data
+ * @private
+ */
+epiviz.data.DataManager.prototype._serveAvailableData = function(range, chartMeasurementsMap, dataReadyCallback, data) {
+  var resolvedCharts = [];
+  epiviz.utils.forEach(chartMeasurementsMap, function(ms, chartId) {
+    var allMsDataFetched = true;
+    var msDataMap = new epiviz.measurements.MeasurementHashtable();
+    ms.foreach(function(m) {
+      if (!(m.dataprovider() in data)) {
+        allMsDataFetched = false;
+        return true; // break
+      }
+
+      var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, data[m.dataprovider()][m.datasource().id()]);
+      msDataMap.put(m, msData);
+    });
+
+    if (allMsDataFetched) {
+      var genomicData = new epiviz.datatypes.MapGenomicData(msDataMap);
+      dataReadyCallback(chartId, genomicData);
+      resolvedCharts.push(chartId);
+    }
+  });
+
+  resolvedCharts.forEach(function(chartId) { delete chartMeasurementsMap[chartId]; });
 };
 
 /**

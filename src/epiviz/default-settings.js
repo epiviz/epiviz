@@ -35,6 +35,8 @@ epiviz.Config.SETTINGS = {
     'workspaces_provider',
     ''), // TODO: Fill in
 
+  useCache: false,
+
   cacheUpdateIntervalMilliseconds: 30000,
 
   maxSearchResults: 12,

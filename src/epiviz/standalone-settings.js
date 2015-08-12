@@ -11,7 +11,7 @@ epiviz.Config.SETTINGS = {
 
   // PHP/MySQL Data
 
-  dataServerLocation: 'http://localhost/epiviz-data/', // TODO: Fill in
+  dataServerLocation: '', // TODO: Fill in
 
   chartSaverLocation: 'src/chart_saving/save_svg.php',
 
@@ -25,19 +25,9 @@ epiviz.Config.SETTINGS = {
 
   // Plug-ins
 
-  dataProviders: [
-    'epiviz.data.WebServerDataProvider,' +
-      epiviz.Config.DEFAULT_DATA_PROVIDER_ID + ',' +
-      'http://localhost/epiviz-data/main.php',
-    'epiviz.data.MetagenomicsDataProvider'/*,
-    sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
-      epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
-      sprintf("ws://%s", window.location.host))*/
-  ],
+  dataProviders: [],
 
-  workspacesDataProvider: 'epiviz.data.WebServerDataProvider,' +
-    'workspaces_provider,' +
-    'http://localhost/epiviz-data/main.php', // TODO: Fill in
+  workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
 
   cacheUpdateIntervalMilliseconds: 30000,
 

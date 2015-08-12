@@ -383,6 +383,19 @@ epiviz.utils.mapKeyIntersection = function(m1, m2) {
   return result;
 };
 
+/**
+ * Loops through all the elements of an object or until callback returns something that evaluates to true
+ * @param {Object.<string|number, T>} obj
+ * @param {function(T=, string|number=, Object.<string|number, T>=)} callback
+ * @template T
+ */
+epiviz.utils.forEach = function(obj, callback) {
+  for (var key in obj) {
+    if (!obj.hasOwnProperty(key)) { continue; }
+    if (callback(obj[key], key, obj)) { break; }
+  }
+};
+
 // Reflection
 
 /**

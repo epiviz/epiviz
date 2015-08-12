@@ -142,6 +142,13 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var measurement = request.get('measurement');
       if (partition == '[NA]') { partition = ''; }
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.GET_COMBINED:
+      var start = request.get('start');
+      var end = request.get('end');
+      var partition = request.get('seqName');
+      var measurements = request.get('measurements')[this._id];
+      if (partition == '[NA]') { partition = ''; }
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combined', {start: start, end: end, partition: JSON.stringify(partition), measurements: JSON.stringify(measurements), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.GET_HIERARCHY:
       var nodeId = request.get('nodeId') || '';
       this._lastRoot = nodeId;
@@ -207,6 +214,19 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, d
       }
       break;
     case epiviz.data.Request.Action.GET_VALUES:
+      break;
+    case epiviz.data.Request.Action.GET_COMBINED:
+      result.rows.id = result.rows.index;
+      delete result.rows.index;
+      if (result.rows.end) {
+        // On the API, the resulted values are start inclusive, end exclusive
+        result.rows.end = result.rows.end.map(function(val) { return val - 1; });
+      }
+
+      var datasource = Object.keys(request.get('measurements'))[0];
+      var ret = {};
+      ret[datasource] = result;
+      result = ret;
       break;
     case epiviz.data.Request.Action.GET_HIERARCHY:
       break;
