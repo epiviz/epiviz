@@ -16,7 +16,11 @@ caja.initialize = function() {};
  */
 epiviz.caja.cajole = function(funcStr, args) {
   var deferred = new epiviz.deferred.Deferred();
-  deferred.resolve(eval('(' + funcStr + ')'));
+
+  setTimeout(function() {
+    deferred.resolve(eval('(' + funcStr + ')'));
+  }, 0);
+
   return deferred;
 };
 
@@ -28,20 +32,22 @@ epiviz.caja.cajole = function(funcStr, args) {
 epiviz.caja.run = function(scriptUrl, args) {
   var deferred = new epiviz.deferred.Deferred();
 
-  // Adding the script tag to the head as suggested before
-  var head = document.getElementsByTagName('head')[0];
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = scriptUrl;
+  setTimeout(function() {
+    // Adding the script tag to the head as suggested before
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = scriptUrl;
 
-  // Then bind the event to the callback function.
-  // There are several events for cross browser compatibility.
-  script.onreadystatechange = script.onload = function() {
-    deferred.resolve();
-  };
+    // Then bind the event to the callback function.
+    // There are several events for cross browser compatibility.
+    script.onreadystatechange = script.onload = function() {
+      deferred.resolve();
+    };
 
-  // Fire the loading
-  head.appendChild(script);
+    // Fire the loading
+    head.appendChild(script);
+  }, 0);
 
   return deferred;
 };
