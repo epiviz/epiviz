@@ -238,21 +238,26 @@ epiviz.utils.asyncFor = function(n, iterationCallback, finishedCallback) {
 /**
  * @param {number} n
  * @param {function(number): epiviz.deferred.Deferred} deferredIteration
- *
+ * @returns {epiviz.deferred.Deferred}
  */
 epiviz.utils.deferredFor = function(n, deferredIteration) {
   var initial = new epiviz.deferred.Deferred();
+  var ret = new epiviz.deferred.Deferred();
   var p = initial.promise();
   for (var i = 0; i < n; ++i) {
     (function(i) {
       p = p.then(function () {
-        return deferredIteration(i);
+        var promise = deferredIteration(i);
+        if (i == n - 1) {
+          promise.then(function () { ret.resolve(); });
+        }
+        return promise;
       });
     })(i);
   }
 
   initial.resolve();
-  return initial;
+  return ret;
 };
 
 // Object (Hashtable)
