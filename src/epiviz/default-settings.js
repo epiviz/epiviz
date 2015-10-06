@@ -36,7 +36,7 @@ epiviz.Config.SETTINGS = {
       ['sex', 'hmpbodysubsite', 'hmpbodysupersite', 'sampcollectdevice', 'envmatter', 'bodysite', 'bmi', 'visitno', 'age', 'runcenter', 'runid', 'description'],
 
       // this is the initial depth of icicles:
-      4,
+      3,
 
       // aggregate at these levels in the tree:
       {3: epiviz.ui.charts.tree.NodeSelectionType.NODE, 4: epiviz.ui.charts.tree.NodeSelectionType.NODE}
