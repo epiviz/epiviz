@@ -245,10 +245,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .on('click', function(d) {
       if (self._dragging) { self._dragging = false; return; }
       if (self.selectMode()) {
-        var selectionType = d.selectionType || 0;
-        selectionType = (selectionType + 1) % 3;
-        d.selectionType = selectionType;
-        self.selectNode(d, selectionType);
+        var node = self._getNewNode(d);
+        d.selectionType = node.selectionType = self.selectNode(node);
       } else {
         self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
           self.id(),
@@ -317,11 +315,12 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       d3.select(d3.select(this).node().parentNode.parentNode).select('.icon-bg')
         .style('opacity', 0);
     })
+    .on('mousedown', function(d) {
+      d3.event.stopPropagation();
+    })
     .on('click', function(d) {
-      var selectionType = d.selectionType || 0;
-      selectionType = (selectionType + 1) % 3;
-      d.selectionType = selectionType;
-      self.selectNode(d, selectionType);
+      var node = self._getNewNode(d);
+      d.selectionType = node.selectionType = self.selectNode(node);
       d3.event.stopPropagation();
     });
 
@@ -374,6 +373,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .attr('x', function(d) { return calcNewX(d) + self._nodeMargin; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) - self._nodeMargin - self._iconSize; });
 
+
   items.exit()
     .selectAll('.node-label').transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
@@ -387,10 +387,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
 /**
  * @param {epiviz.ui.charts.tree.Node} root
- * @param {function(number):number} yScale
  * @private
  */
-epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root, yScale) {
+epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
   var self = this;
 
   var calcHeight = function(d, i) { return self._yScale((i + 1) / nLevels) - self._yScale(i / nLevels) - 2; };

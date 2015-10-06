@@ -28,7 +28,7 @@ if (array_key_exists('settingsGist', $_REQUEST)) {
       CURLOPT_SSL_VERIFYHOST => false,
       CURLOPT_USERAGENT => 'epiviz',
       CURLOPT_URL => 'https://api.github.com/gists/' . $settings_gist,
-      CURLOPT_USERPWD => '<token>:x-oauth-basic' // TODO: Change <token> to your personal access token
+      CURLOPT_USERPWD => 'de82de75d3fb251fecbc0cccd0cffea423162b05:x-oauth-basic' // TODO: Change <token> to your personal access token
   ));
 
     // Send the request & save response to $resp
@@ -75,7 +75,7 @@ if (array_key_exists('gist', $_REQUEST)) {
         CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_USERAGENT => 'epiviz',
         CURLOPT_URL => 'https://api.github.com/gists/' . $gist,
-        CURLOPT_USERPWD => '<token>:x-oauth-basic' // TODO: Change <token> to your personal access token
+        CURLOPT_USERPWD => 'de82de75d3fb251fecbc0cccd0cffea423162b05:x-oauth-basic' // TODO: Change <token> to your personal access token
     ));
 
     // Send the request & save response to $resp
@@ -193,7 +193,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- Future tooltip: <script src="src/lib/qtip/jquery.qtip.min.js"></script>-->
 
     <!--<script src="src/lib/caja/caja.js"></script>-->
-    <script src="//caja.appspot.com/caja.js"></script>
+    <!--<script src="//caja.appspot.com/caja.js"></script>-->
 
     <!-- Google Analytics -->
     <script src="src/lib/google-analytics/google-analytics.js"></script>
@@ -225,7 +225,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/deferred/promise.js"></script>
     <script src="src/epiviz/utils/utils.js"></script>
-    <script src="src/epiviz/caja/caja.js"></script>
+    <script src="src/epiviz/caja/caja-standalone.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
     <script src="src/epiviz/utils/iterable-array.js"></script>
