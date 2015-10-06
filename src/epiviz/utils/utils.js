@@ -237,34 +237,22 @@ epiviz.utils.asyncFor = function(n, iterationCallback, finishedCallback) {
 
 /**
  * @param {number} n
- * @param deferredIteration The callback parameter will be true if should break
+ * @param {function(number): epiviz.deferred.Deferred} deferredIteration
+ *
  */
 epiviz.utils.deferredFor = function(n, deferredIteration) {
-  // TODO: Add a timeout in iteration every N number of iterations, so we don't run out of stack
-  var maxDepth = 1000;
-  var iterate = function(i, deferredIteration) {
-    var d = new epiviz.deferred.Deferred();
-    if (i >= n) { d.resolve(); }
-    else {
-      deferredIteration(i).then(
-        // Done (continue)
-        function() {
-          if (i % maxDepth != 0) {
-            iterate(i + 1, deferredIteration)
-              .done(function() { d.resolve(); });
-          } else {
-            setTimeout(function() {
-              iterate(i + 1, deferredIteration).done(function() { d.resolve(); });
-            }, 0);
-          }
-        },
-        // Fail (break)
-        function() { d.resolve(); });
-    }
-    return d;
-  };
+  var initial = new epiviz.deferred.Deferred();
+  var p = initial.promise();
+  for (var i = 0; i < n; ++i) {
+    (function(i) {
+      p = p.then(function () {
+        return deferredIteration(i);
+      });
+    })(i);
+  }
 
-  return iterate(0, deferredIteration);
+  initial.resolve();
+  return initial;
 };
 
 // Object (Hashtable)
