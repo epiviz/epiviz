@@ -10,9 +10,10 @@ goog.provide('epiviz.ui.charts.ColorPalette');
  * @param {Array.<string>} colors
  * @param {string} [name]
  * @param {string} [id]
+ * @param {Object.<string|number, number>} [keyIndices]
  * @constructor
  */
-epiviz.ui.charts.ColorPalette = function(colors, name, id) {
+epiviz.ui.charts.ColorPalette = function(colors, name, id, keyIndices) {
   /**
    * @type {Array.<string>}
    * @private
@@ -35,7 +36,7 @@ epiviz.ui.charts.ColorPalette = function(colors, name, id) {
    * @type {Object.<string|number, number>}
    * @private
    */
-  this._keyIndices = {};
+  this._keyIndices = keyIndices || {};
 
   /**
    * @type {number}
@@ -75,6 +76,21 @@ epiviz.ui.charts.ColorPalette.prototype.getByKey = function(key) {
   }
   return this.get(index);
 };
+
+/**
+ * @param {string} key
+ * @returns {number}
+ */
+epiviz.ui.charts.ColorPalette.prototype.keyColorIndex = function(key) {
+  var ret = this._keyIndices[key];
+  if (ret == undefined) { return -1; }
+  return ret;
+};
+
+/**
+ * @returns {Object.<string|number, number>}
+ */
+epiviz.ui.charts.ColorPalette.prototype.keyIndices = function() { return this._keyIndices; };
 
 /**
  * @returns {Number} The number of colors contained in this palette
@@ -125,6 +141,8 @@ epiviz.ui.charts.ColorPalette.fromRawObject = function(o, config) {
   if (config && (o.id in config.colorPalettesMap)) {
     return config.colorPalettesMap[o.id];
   }
+
+  if (!o.colors || !o.colors.length) { o.colors = epiviz.Config.COLORS_BRIGHT; }
 
   return new epiviz.ui.charts.ColorPalette(o.colors, o.name, o.id);
 };

@@ -43,14 +43,32 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
   var columns = [
     new epiviz.ui.controls.DataTable.Column('id', 'Id', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('name', 'Name', ColumnType.STRING, false, true),
-    new epiviz.ui.controls.DataTable.Column('defaultChartType', 'Default Chart Type', ColumnType.STRING, false, true),
+    // new epiviz.ui.controls.DataTable.Column('defaultChartType', 'Default Chart Type', ColumnType.STRING, true, true),
     new epiviz.ui.controls.DataTable.Column('type', 'Type', ColumnType.STRING, true),
-    new epiviz.ui.controls.DataTable.Column('datasourceId', 'Data Source', ColumnType.STRING, true),
+    new epiviz.ui.controls.DataTable.Column('datasourceId', 'Data Source', ColumnType.STRING, false),
     new epiviz.ui.controls.DataTable.Column('datasourceGroup', 'Data Source Group', ColumnType.STRING, true),
-    new epiviz.ui.controls.DataTable.Column('dataprovider', 'Data Provider', ColumnType.STRING, true),
-    new epiviz.ui.controls.DataTable.Column('formulaStr', 'Formula', ColumnType.STRING, true),
-    new epiviz.ui.controls.DataTable.Column('annotation', 'Annotation', ColumnType.STRING)
+    new epiviz.ui.controls.DataTable.Column('dataprovider', 'Data Provider', ColumnType.STRING, false),
+    new epiviz.ui.controls.DataTable.Column('formulaStr', 'Formula', ColumnType.STRING, true)//,
+    //new epiviz.ui.controls.DataTable.Column('annotation', 'Annotation', ColumnType.STRING)
   ];
+
+  var annotationColumns = [];
+  var annotationMap = {};
+  data.measurements.foreach(function(m) {
+    var anno = m.annotation();
+    if (anno == undefined) { return; }
+    for (var annoCol in anno) {
+      if (!anno.hasOwnProperty(annoCol)) { continue; }
+      if (!(annoCol in annotationMap)) {
+        annotationColumns.push(annoCol);
+        annotationMap[annoCol] = true;
+      }
+    }
+  });
+  annotationColumns.sort();
+  columns = columns.concat(annotationColumns.map(function(annoCol) {
+    return new epiviz.ui.controls.DataTable.Column('[anno] ' + annoCol, annoCol, ColumnType.STRING, true)
+  }));
 
   // Filter out measurements that don't match the given restrictions
   this._measurements = data.measurements.subset(
@@ -75,16 +93,20 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
      */
     function(m, column) {
       var result = null;
-      switch (column.id) {
-        case 'annotation':
-          result = epiviz.utils.mapJoin(m.annotation(), ': ', '<br />');
-          break;
-        default:
-          result = m[column.id](); // Getter with the same name
-          break;
+      if (epiviz.utils.stringStartsWith(column.id, '[anno] ')) {
+        result = '';
+        if (m.annotation() != undefined) { result = m.annotation()[column.name] || ''; }
+      } else {
+        switch (column.id) {
+          case 'annotation':
+            result = epiviz.utils.mapJoin(m.annotation(), ': ', '<br />');
+            break;
+          default:
+            result = m[column.id](); // Getter with the same name
+            break;
+        }
       }
-      if (result === 0 || result === '' || result) { return result; }
-
+      if (result === 0 || result) { return result; }
       return '';
     }, true, true);
   this._dataTable.initialize();

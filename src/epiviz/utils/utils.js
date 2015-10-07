@@ -237,34 +237,27 @@ epiviz.utils.asyncFor = function(n, iterationCallback, finishedCallback) {
 
 /**
  * @param {number} n
- * @param deferredIteration The callback parameter will be true if should break
+ * @param {function(number): epiviz.deferred.Deferred} deferredIteration
+ * @returns {epiviz.deferred.Deferred}
  */
 epiviz.utils.deferredFor = function(n, deferredIteration) {
-  // TODO: Add a timeout in iteration every N number of iterations, so we don't run out of stack
-  var maxDepth = 1000;
-  var iterate = function(i, deferredIteration) {
-    var d = new epiviz.deferred.Deferred();
-    if (i >= n) { d.resolve(); }
-    else {
-      deferredIteration(i).then(
-        // Done (continue)
-        function() {
-          if (i % maxDepth != 0) {
-            iterate(i + 1, deferredIteration)
-              .done(function() { d.resolve(); });
-          } else {
-            setTimeout(function() {
-              iterate(i + 1, deferredIteration).done(function() { d.resolve(); });
-            }, 0);
-          }
-        },
-        // Fail (break)
-        function() { d.resolve(); });
-    }
-    return d;
-  };
+  var initial = new epiviz.deferred.Deferred();
+  var ret = new epiviz.deferred.Deferred();
+  var p = initial.promise();
+  for (var i = 0; i < n; ++i) {
+    (function(i) {
+      p = p.then(function () {
+        var promise = deferredIteration(i);
+        if (i == n - 1) {
+          promise.then(function () { ret.resolve(); });
+        }
+        return promise;
+      });
+    })(i);
+  }
 
-  return iterate(0, deferredIteration);
+  initial.resolve();
+  return ret;
 };
 
 // Object (Hashtable)
@@ -381,6 +374,19 @@ epiviz.utils.mapKeyIntersection = function(m1, m2) {
   }
 
   return result;
+};
+
+/**
+ * Loops through all the elements of an object or until callback returns something that evaluates to true
+ * @param {Object.<string|number, T>} obj
+ * @param {function(T=, string|number=, Object.<string|number, T>=)} callback
+ * @template T
+ */
+epiviz.utils.forEach = function(obj, callback) {
+  for (var key in obj) {
+    if (!obj.hasOwnProperty(key)) { continue; }
+    if (callback(obj[key], key, obj)) { break; }
+  }
 };
 
 // Reflection

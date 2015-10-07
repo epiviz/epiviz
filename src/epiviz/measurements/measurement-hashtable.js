@@ -199,6 +199,22 @@ epiviz.measurements.MeasurementHashtable.prototype.iterator = function() {
 };
 
 /**
+ * @returns {string}
+ */
+epiviz.measurements.MeasurementHashtable.prototype.toString = function() {
+  var result = {};
+  this.foreach(function(m, v) {
+    var id = m.id();
+    var i = 2;
+    while (id in result) {
+      id = m.id() + ' (' + (i++) + ')';
+    }
+    result[id] = v;
+  });
+  return JSON.stringify(result);
+};
+
+/**
  * @param {epiviz.measurements.MeasurementHashtable} measurementHashtable
  * @constructor
  * @implements {epiviz.utils.Iterator}

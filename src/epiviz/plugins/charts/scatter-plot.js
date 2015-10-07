@@ -70,6 +70,12 @@ epiviz.plugins.charts.ScatterPlot = function(id, container, properties) {
     this._yLabel += this._measurementsY[i].name();
   }
 
+  /**
+   * @type {Array.<string>}
+   * @private
+   */
+  this._colorLabels = [];
+
   this._initialize();
 };
 
@@ -263,18 +269,25 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
        */
       function(d) {
         var circle = d3.select(this);
+
+        var fill;
+        if (!self._globalIndexColorLabels) { fill = self.colors().get(d.seriesIndex); }
+        else {
+          fill = self.colors().getByKey(self._globalIndexColorLabels[d.valueItems[0][0].globalIndex]);
+        }
         circle
           .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
           .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
           .attr('class', d.cssClasses)
-          .style('fill', self.colors().get(d.seriesIndex));
+          .style('fill', fill);
       });
 
   selection
     .transition()
     .duration(1000)
     .style('fill-opacity', function(d) {
-      return Math.max(0.3, d.valueItems[0].length / maxGroupItems);
+      //return Math.max(0.3, d.valueItems[0].length / maxGroupItems);
+      return Math.max(0.6, d.valueItems[0].length / maxGroupItems);
     })
     .style('opacity', null)
     .attr('r', circleRadius);
@@ -301,6 +314,69 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
       d3.event.stopPropagation();
     });
 
+  // Draw legend if necessary
+  if (this._globalIndexColorLabels) {
+    var colorLabelsMap = {};
+    for (j = firstGlobalIndex; j < lastGlobalIndex; ++j) {
+      colorLabelsMap[this._globalIndexColorLabels[j]] = this._globalIndexColorLabels[j];
+    }
+    this._colorLabels = Object.keys(colorLabelsMap);
+
+    this._svg.selectAll('.chart-title').remove();
+    this._svg.selectAll('.chart-title-color ').remove();
+    var titleEntries = this._svg
+      .selectAll('.chart-title')
+      .data(this._colorLabels);
+    titleEntries
+      .enter()
+      .append('text')
+      .attr('class', 'chart-title')
+      .attr('font-weight', 'bold')
+      .attr('y', self.margins().top() - 5);
+    titleEntries
+      .attr('fill', function(label, i) {
+        return self.colors().getByKey(label);
+      })
+      .text(function(label) { return label; });
+    var textLength = 0;
+    var titleEntriesStartPosition = [];
+
+    $('#' + this.id() + ' .chart-title')
+      .each(function(i) {
+        titleEntriesStartPosition.push(textLength);
+        textLength += this.getBBox().width + 15;
+      });
+
+    titleEntries.attr('x', function(column, i) {
+      return self.margins().left() + 10 + titleEntriesStartPosition[i];
+    });
+
+    var colorEntries = this._svg
+      .selectAll('.chart-title-color')
+      .data(this._colorLabels)
+      .enter()
+      .append('circle')
+      .attr('class', 'chart-title-color')
+      .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
+      .attr('cy', self.margins().top() - 9)
+      .attr('r', 4)
+      .style('shape-rendering', 'auto')
+      .style('stroke-width', '0')
+      .attr('fill', function(label, i) {
+        return self.colors().getByKey(label);
+      })
+      .style('stroke-width', 0)
+  } else {
+    var n = Math.min(this._measurementsX.length, this._measurementsY.length);
+    var colors = new Array(n);
+
+    for (j = 0; j < n; ++j) {
+      colors[j] = sprintf('%s vs %s', this._measurementsX[j].name(), this._measurementsY[j].name());
+    }
+
+    this._colorLabels = colors;
+  }
+
   return items;
 };
 
@@ -308,14 +384,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
  * @returns {Array.<{name: string, color: string}>}
  */
 epiviz.plugins.charts.ScatterPlot.prototype.colorLabels = function() {
-  var n = Math.min(this._measurementsX.length, this._measurementsY.length);
-  var colors = new Array(n);
-
-  for (var i = 0; i < n; ++i) {
-    colors[i] = sprintf('%s vs %s', this._measurementsX[i].name(), this._measurementsY[i].name());
-  }
-
-  return colors;
+  return this._colorLabels;
 };
 
 /**
@@ -346,7 +415,10 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
     .append('text')
     .attr('class', 'x-measurement')
     .attr('font-weight', 'bold')
-    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('fill', function(m, i) {
+      return self._globalIndexColorLabels ?
+        "#000000" : self.colors().get(i);
+    })
     .attr('y', (this.height() - this.margins().bottom() + 35))
     .text(function(m, i) { return m.name(); });
 
@@ -374,7 +446,10 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
     .attr('r', 4)
     .style('shape-rendering', 'auto')
     .style('stroke-width', '0')
-    .style('fill', function(m, i) { return self.colors().get(i); });
+    .style('fill', function(m, i) {
+      return self._globalIndexColorLabels ?
+        "#ffffff" : self.colors().get(i);
+    });
 
 
   var yMeasurements = this._measurementsY;
@@ -388,7 +463,10 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
     .append('text')
     .attr('class', 'y-measurement')
     .attr('font-weight', 'bold')
-    .attr('fill', function(m, i) { return self.colors().get(i); })
+    .attr('fill', function(m, i) {
+      return self._globalIndexColorLabels ?
+        "#000000" : self.colors().get(i);
+    })
     .attr('y', (this.margins().left() - 35))
     .attr('transform', 'rotate(-90)')
     .text(function(m, i) { return m.name(); });
@@ -418,5 +496,8 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
     .attr('r', 4)
     .style('shape-rendering', 'auto')
     .style('stroke-width', '0')
-    .style('fill', function(m, i) { return self.colors().get(i); });
+    .style('fill', function(m, i) {
+      return self._globalIndexColorLabels ?
+        "#ffffff" : self.colors().get(i);
+    });
 };

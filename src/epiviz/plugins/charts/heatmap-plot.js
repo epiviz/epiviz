@@ -40,13 +40,19 @@ epiviz.plugins.charts.HeatmapPlot = function(id, container, properties) {
    * @type {function(number): string}
    * @private
    */
-  this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().get(0));
+  this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().getByKey('Max'));
 
   /**
    * @type {Array.<string>}
    * @private
    */
   this._colorLabels = [];
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this._dendrogramRatio = 0.1;
 
   this._initialize();
 };
@@ -84,16 +90,21 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  /** @type {epiviz.datatypes.GenomicData} */
-  var orderedData = this._applyClustering(range, data);
+  var cluster = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER];
 
-  return this._drawCells(range, orderedData);
+  var pair = this._applyClustering(range, data);
+
+  /** @type {epiviz.datatypes.GenomicData} */
+  var orderedData = pair.data;
+  var colOrder = pair.columnOrder;
+
+  return this._drawCells(range, orderedData, colOrder);
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {epiviz.datatypes.GenomicData} data
- * @returns {epiviz.datatypes.GenomicData}
+ * @returns {{data:epiviz.datatypes.GenomicData, columnOrder:Array.<number>}}
  * @private
  */
 epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, data) {
@@ -102,6 +113,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
   var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
 
   // Apply clustering
+  var cluster = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER];
+  var showDendrogram = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM];
   var clusteringAlgFactory = epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.instance();
   var clusterer = clusteringAlgFactory.algorithm(
     this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_ALG]);
@@ -109,47 +122,125 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
     this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_METRIC]);
   var linkage = clusteringAlgFactory.linkage(
     this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_LINKAGE]);
+  var maxColumns = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS];
 
-  var population = [];
+  var firstGlobalIndex = data.firstSeries().globalStartIndex();
+  var lastGlobalIndex = data.firstSeries().size() + firstGlobalIndex;
+
   data.foreach(function(measurement, series) {
-    var row = [];
-    for (var j = 0; j < series.size(); ++j) {
-      var item = series.get(j).rowItem;
-      if (!dataHasGenomicLocation ||
-        (range.start() == undefined || range.end() == undefined) ||
-        item.start() < range.end() && item.end() >= range.start()) {
-        row.push(series.get(j).value);
-      }
-    }
-    population.push(row);
+    var firstIndex = series.globalStartIndex();
+    var lastIndex = series.globalEndIndex();
+
+    if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
+    if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
   });
-  var dendrogram = clusterer.cluster(population, metric, linkage);
-  var indexOrder = dendrogram.root().data();
-  var measurements = [];
-  data.foreach(function(measurement) { measurements.push(measurement); });
-  var orderedMs = [];
-  var i;
-  for (i = 0; i < indexOrder.length; ++i) {
-    orderedMs[i] = measurements[indexOrder[i]];
+  var nEntries = lastGlobalIndex - firstGlobalIndex;
+
+  var clusterRows = (cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.ROWS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH);
+  var clusterCols = (cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.COLS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH);
+  var dendrogramRatio = showDendrogram * this._dendrogramRatio;
+  var dendrogramCols = (showDendrogram && clusterCols && maxColumns >= nEntries);
+
+  var population, dendrogram, indexOrder, top, left, height, width;
+
+  var svg = this._svg;
+  ['dendrogram-horizontal', 'dendrogram-vertical'].forEach(function(dendClass) { svg.select('.' + dendClass).remove(); });
+
+  /** @type {epiviz.datatypes.GenomicData} */
+  var orderedData = data;
+
+  if (clusterRows) {
+    population = [];
+    data.foreach(function(measurement, series) {
+      var row = [];
+      for (var j = 0; j < nEntries; ++j) {
+        var globalIndex = j + firstGlobalIndex;
+        var item = series.getByGlobalIndex(globalIndex);
+        var rowInfo = item.rowItem;
+
+        if (!dataHasGenomicLocation ||
+            (range.start() == undefined || range.end() == undefined) ||
+            rowInfo.start() < range.end() && rowInfo.end() >= range.start()) {
+          row.push(item.value);
+        }
+      }
+      population.push(row);
+    });
+    dendrogram = clusterer.cluster(population, metric, linkage);
+    indexOrder = dendrogram.root().data();
+    var measurements = [];
+    data.foreach(function(measurement) { measurements.push(measurement); });
+    var orderedMs = [];
+    var i;
+    for (i = 0; i < indexOrder.length; ++i) {
+      orderedMs[i] = measurements[indexOrder[i]];
+    }
+
+    var ordered = new epiviz.measurements.MeasurementHashtable();
+    for (i = 0; i < orderedMs.length; ++i) {
+      ordered.put(orderedMs[i], data.getSeries(orderedMs[i]));
+    }
+    orderedData = new epiviz.datatypes.MapGenomicData(ordered);
+
+    if (dendrogramRatio) {
+      width = (this.width()) * dendrogramRatio;
+      height = this.height() * (1 - dendrogramRatio * dendrogramCols) - this.margins().sumAxis(epiviz.ui.charts.Axis.Y);
+      top = this.margins().top();
+      left = this.width() - width - this.margins().right();
+      this._drawDendrogram(dendrogram, top, left, height, width);
+    }
   }
 
-  var orderedData = new epiviz.measurements.MeasurementHashtable();
-  for (i = 0; i < orderedMs.length; ++i) {
-    orderedData.put(orderedMs[i], data.getSeries(orderedMs[i]));
+  // Column clustering
+  indexOrder = null;
+  if (clusterCols) {
+    population = [];
+    data.foreach(function(measurement, series) {
+      for (var j = 0, row = 0; j < nEntries; ++j) {
+        var globalIndex = j + firstGlobalIndex;
+        var item = series.getByGlobalIndex(globalIndex);
+        var rowInfo = item.rowItem;
+        if (!dataHasGenomicLocation ||
+            (range.start() == undefined || range.end() == undefined) ||
+            rowInfo.start() < range.end() && rowInfo.end() >= range.start()) {
+          if (population.length <= row) {
+            population.push([]);
+          }
+          population[row].push(item.value);
+          ++row;
+        }
+      }
+    });
+
+    if (population.length == 0) {
+      return {data: orderedData, columnOrder: []};
+    }
+
+    dendrogram = clusterer.cluster(population, metric, linkage);
+    indexOrder = dendrogram.root().data();
+
+    if (dendrogramCols) {
+      var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
+      var rowLabelColorWidth = rowLabelsAsColors ? 20 : 0; // TODO: Customize
+      left = this.margins().left();
+      top = this.height() * (1 - dendrogramRatio) - this.margins().bottom();
+      width = this.height() * dendrogramRatio;
+      height = this.width() * (1 - dendrogramRatio * clusterRows) - this.margins().left() - this.margins().right() - rowLabelColorWidth;
+      this._drawDendrogram(dendrogram, top, left, height, width, true);
+    }
   }
 
-  this._drawDendrogram(dendrogram);
-
-  return new epiviz.datatypes.MapGenomicData(orderedData);
+  return {data: orderedData, columnOrder: indexOrder};
 };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {epiviz.datatypes.GenomicData} data
+ * @param {Array.<number>} [colOrder]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
-epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
+epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, colOrder) {
   var self = this;
   var Axis = epiviz.ui.charts.Axis;
 
@@ -176,13 +267,23 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
   var nEntries = lastGlobalIndex - firstGlobalIndex;
 
   var colLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL];
-  var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
 
-  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
-  var width = this.width() * (1 - dendrogramRatio);
-  var height = this.height();
+  //var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
+  var cluster = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER];
+  var clusterRows = (cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.ROWS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH);
+  var clusterCols = ((cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.COLS || cluster == epiviz.plugins.charts.HeatmapPlotType.Cluster.BOTH)
+                     && maxColumns >= nEntries);
 
-  var colnames = [], columnMap = {};
+  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM] * this._dendrogramRatio;
+  var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
+  var rowLabelColorWidth = rowLabelsAsColors ? 20 : 0; // TODO: Customize
+
+
+  var width = this.width() * (1 - dendrogramRatio * clusterRows) - rowLabelColorWidth;
+  var height = this.height() * (1 - dendrogramRatio * clusterCols);
+
+  var globalIndices = [];
+  var colnames = [];
   var i, globalIndex;
 
   for (i = 0; i < nEntries; ++i) {
@@ -200,9 +301,22 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     if (!dataHasGenomicLocation ||
       (range.start() == undefined || range.end() == undefined) ||
       item.start() < range.end() && item.end() >= range.start()) {
+      globalIndices.push(globalIndex);
       var label = item.metadata(colLabel) || '' + item.id();
-      columnMap[colnames.length] = globalIndex;
       colnames.push(label);
+    }
+  }
+
+  if (colOrder) {
+    var unorderedGlobalIndices = globalIndices;
+    var unorderedColnames = colnames;
+    globalIndices = new Array(globalIndices.length);
+    colnames = new Array(colnames.length);
+    for (i = 0; i < globalIndices.length; ++i) {
+      globalIndices[i] = unorderedGlobalIndices[colOrder[i]];
+      colnames[i] = unorderedColnames[colOrder[i]];
+      // TODO: Columnmap seems to have same functionality as globalIndices!
+      //columnMap[i] = globalIndices[i];
     }
   }
 
@@ -213,7 +327,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     var nextCellsPerCol = Math.ceil(colnames.length / maxColumns), cellsPerCol = 0;
     var colsLeft = maxColumns;
     for (var i = 0; i < colnames.length; ++i) {
-      globalIndex = columnMap[i];
+      globalIndex = globalIndices[i];
 
       var cell = series.getByGlobalIndex(globalIndex);
       if (!cell) { continue; }
@@ -256,8 +370,11 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
 
   var colorLabelsMap;
   var colorScales;
-  this._min = data.measurements()[0].minValue();
-  this._max = data.measurements()[0].maxValue();
+  this._min = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
+  this._max = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
+  var CustomSetting = epiviz.ui.charts.CustomSetting;
+  if (this._min == CustomSetting.DEFAULT) { this._min = data.measurements()[0].minValue(); }
+  if (this._max == CustomSetting.DEFAULT) { this._max = data.measurements()[0].maxValue(); }
   if (this._globalIndexColorLabels) {
     colorLabelsMap = {};
     for (var j = firstGlobalIndex; j < lastGlobalIndex; ++j) {
@@ -273,12 +390,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
     this._colorLabels = [
       sprintf('Max', data.firstSeries().measurement().maxValue())
     ];
-    this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().get(0));
+    this._colorScale = epiviz.utils.colorizeBinary(this._min, this._max, '#ffffff', this.colors().getByKey('Max'));
   }
 
   var nCols = Math.min(colnames.length, maxColumns);
   var cellWidth = nCols ? (width - this.margins().sumAxis(Axis.X)) / nCols : 0;
-  var cellHeight = (this.height() - this.margins().sumAxis(Axis.Y)) / data.measurements().length;
+  var cellHeight = (height - this.margins().sumAxis(Axis.Y)) / data.measurements().length;
 
   var itemsGroup = this._chartContent.select('.items');
 
@@ -349,181 +466,33 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data) {
       d3.event.stopPropagation();
     });
 
-  var mapCol = function(i, centered) {
-    return i * cellWidth + ((centered) ? 0.5 * cellWidth : 0);
-  };
-
-  var mapRow = function(i, centered) {
-    return i * cellHeight + ((centered) ? cellHeight * 0.5 : 0);
-  };
-
-  // Column names
-
-  var colSelection = itemsGroup.selectAll('.col-text');
-
-  var maxColSize = 0;
-  if (colnames.length > nCols) {
-    colSelection
-      .transition()
-      .duration(500)
-      .style('opacity', 0)
-      .remove();
-  } else {
-    colSelection = colSelection
-      .data(colnames, function(d, i) { return d + columnMap[i]; });
-
-    colSelection
-      .enter()
-      .append('text')
-      .attr('class', 'col-text')
-      .style('opacity', '0')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('transform', function(d, i){
-        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
-      })
-      .text(function(d){ return d; });
-
-    colSelection
-      .transition()
-      .duration(500)
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('transform', function(d, i){
-        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
-      })
-      .style('opacity', null)
-      .attr('fill', function(colName, i) {
-        var globalIndex = i + firstGlobalIndex;
-        if (!self._globalIndexColorLabels) { return '#000000'; }
-        return self.colors().getByKey(self._globalIndexColorLabels[globalIndex]);
-      });
-
-    colSelection
-      .exit()
-      .transition()
-      .duration(500)
-      .style('opacity', 0)
-      .remove();
-
-    $('#' + this.id() + ' .col-text')
-      .each(function(i) {
-        var textWidth = this.getBBox().width;
-        if (maxColSize < textWidth) { maxColSize = textWidth; }
-      });
-  }
-
-  // Row names
-
-  var rowSelection = itemsGroup.selectAll('.row-text')
-    .data(rows, function(m) { return m.id(); });
-
-  rowSelection
-    .enter()
-    .append('text')
-    .attr('class', 'row-text')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('transform', function(d, i){
-      return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
-    });
-
-  rowSelection
-    .text(function(m){
-      if (rowLabel == 'name') { return m.name(); }
-      var anno = m.annotation();
-      if (!anno || !(rowLabel in anno)) { return '<NA>'; }
-      return anno[rowLabel];
-    });
-
-  rowSelection
-    .transition()
-    .duration(500)
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('transform', function(d, i){
-      return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
-    });
-
-  rowSelection.exit().remove();
-
-  // Draw legend
-  var title = '';
-
-  this._svg.selectAll('.chart-title').remove();
-  this._svg.selectAll('.chart-title-color ').remove();
-  var titleEntries = this._svg
-    .selectAll('.chart-title')
-    .data(['Min'].concat(this._colorLabels));
-  titleEntries
-    .enter()
-    .append('text')
-    .attr('class', 'chart-title')
-    .attr('font-weight', 'bold')
-    .attr('y', self.margins().top() - 5 - maxColSize);
-  titleEntries
-    .attr('fill', function(label, i) {
-      if (i == 0) { return '#000000'; }
-      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
-      return self.colors().getByKey(label);
-    })
-    .text(function(label) { return label; });
-  var textLength = 0;
-  var titleEntriesStartPosition = [];
-
-  $('#' + this.id() + ' .chart-title')
-    .each(function(i) {
-      titleEntriesStartPosition.push(textLength);
-      textLength += this.getBBox().width + 15;
-    });
-
-  titleEntries.attr('x', function(column, i) {
-    return self.margins().left() + 10 + titleEntriesStartPosition[i];
-  });
-
-  var colorEntries = this._svg
-    .selectAll('.chart-title-color')
-    .data(['Min'].concat(this._colorLabels))
-    .enter()
-    .append('circle')
-    .attr('class', 'chart-title-color')
-    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
-    .attr('cy', self.margins().top() - 9 - maxColSize)
-    .attr('r', 4)
-    .style('shape-rendering', 'auto')
-    .style('stroke-width', '0')
-    .attr('fill', function(label, i) {
-      if (i == 0) { return '#ffffff'; }
-      if (!self._globalIndexColorLabels) { return self.colors().get(0); }
-      return self.colors().getByKey(label);
-    })
-    .style('stroke-width', function(label, i) { return i ? 0 : 1; })
-    .style('stroke', '#000000');
+  this._drawLabels(itemsGroup, colnames, globalIndices, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width);
 
   return items;
 };
 
 /**
  * @param {epiviz.ui.charts.transform.clustering.ClusterTree} dendrogram
+ * @param {number} top
+ * @param {number} left
+ * @param {number} height
+ * @param {number} width
+ * @param {boolean} [horizontal]
  * @private
  */
-epiviz.plugins.charts.HeatmapPlot.prototype._drawDendrogram = function(dendrogram) {
-  this._svg.select('.dendrogram').remove();
+epiviz.plugins.charts.HeatmapPlot.prototype._drawDendrogram = function(dendrogram, top, left, height, width, horizontal) {
+  var dendClass = horizontal ? 'dendrogram-horizontal' : 'dendrogram-vertical';
+  var showLabels = false;
 
-  var dendrogramRatio = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.DENDROGRAM_RATIO];
-  var showDendrogram = dendrogramRatio > 0;
-  var showLabels = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM_LABELS];
+  var dendContainer = this._svg.append('g').attr('class', dendClass);
 
-  if (!showDendrogram) { return; }
-
-  this._svg.append('g').attr('class', 'dendrogram');
-
-  var width = (this.width()) * dendrogramRatio;
-  var height = this.height() - this.margins().sumAxis(epiviz.ui.charts.Axis.Y);
-  var top = this.margins().top();
-  var left = this.width() - width - this.margins().right();
-
-  this._drawSubDendrogram(this._svg.select('.dendrogram'), dendrogram.root(), top, left, width, height, showLabels);
+  if (!horizontal) {
+    dendContainer.attr('transform', 'translate(' + left + ',' + top + ')');
+    this._drawSubDendrogram(this._svg.select('.' + dendClass), dendrogram.root(), 0, 0, width, height, showLabels);
+  } else {
+    dendContainer.attr('transform', 'translate(' + left + ',' + top + ')scale(-1, 1)rotate(90, 0, 0)');
+    this._drawSubDendrogram(this._svg.select('.' + dendClass), dendrogram.root(), 0, 0, width, height, showLabels);
+  }
 };
 
 /**
@@ -600,6 +569,281 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
     .style('shape-rendering', 'auto');
 
   return (firstY + lastY) * 0.5;
+};
+
+/**
+ * @param itemsGroup D3 selection
+ * @param {Array.<string>} colnames
+ * @param {Object.<number, number>} columnMap
+ * @param {number} nCols
+ * @param {Array.<epiviz.measurements.Measurement>} rows
+ * @param {number} cellWidth
+ * @param {number} cellHeight
+ * @param {number} firstGlobalIndex
+ * @param {number} width
+ * @private
+ */
+epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, colnames, columnMap, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width) {
+
+  var self = this;
+
+  var mapCol = function(i, centered) {
+    return i * cellWidth + ((centered) ? 0.5 * cellWidth : 0);
+  };
+
+  var mapRow = function(i, centered) {
+    return i * cellHeight + ((centered) ? cellHeight * 0.5 : 0);
+  };
+
+  var measurementLabel = function(m) {
+    var label;
+    if (rowLabel == 'name') { label = m.name(); }
+    else {
+      var anno = m.annotation();
+      if (!anno || !(rowLabel in anno)) { label = '<NA>'; }
+      else { label = anno[rowLabel]; }
+    }
+    rowLabelMap[label] = label;
+    return label;
+  };
+
+  // Column names
+  var colSelection = itemsGroup.selectAll('.col-text');
+
+  var maxColSize = 0;
+  if (colnames.length > nCols) {
+    colSelection
+      .transition()
+      .duration(500)
+      .style('opacity', 0)
+      .remove();
+  } else {
+    colSelection = colSelection
+      .data(colnames, function(d, i) { return d + columnMap[i]; });
+
+    colSelection
+      .enter()
+      .append('text')
+      .attr('class', 'col-text')
+      .style('opacity', '0')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
+      })
+      .text(function(d){ return d; });
+
+    colSelection
+      .transition()
+      .duration(500)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
+      })
+      .style('opacity', null)
+      .attr('fill', function(colName, i) {
+        var globalIndex = i + firstGlobalIndex;
+        if (!self._globalIndexColorLabels) { return '#000000'; }
+        return self.colors().getByKey(self._globalIndexColorLabels[globalIndex]);
+      });
+
+    colSelection
+      .exit()
+      .transition()
+      .duration(500)
+      .style('opacity', 0)
+      .remove();
+
+    $('#' + this.id() + ' .col-text')
+      .each(function(i) {
+        var textWidth = this.getBBox().width;
+        if (maxColSize < textWidth) { maxColSize = textWidth; }
+      });
+  }
+
+  // Row names
+
+  var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
+  var rowLabelsAsColors = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS];
+
+  if (!rowLabelsAsColors) {
+    itemsGroup.selectAll('.row-color-label').remove();
+    var rowSelection = itemsGroup.selectAll('.row-text')
+      .data(rows, function(m) { return m.id(); });
+
+    rowSelection
+      .enter()
+      .append('text')
+      .attr('class', 'row-text')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
+      });
+
+    rowSelection
+      .text(function(m){
+        if (rowLabel == 'name') { return m.name(); }
+        var anno = m.annotation();
+        if (!anno || !(rowLabel in anno)) { return '<NA>'; }
+        return anno[rowLabel];
+      });
+
+    rowSelection
+      .transition()
+      .duration(500)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (-5) + ',' + (mapRow(i, true)) + ')rotate(30)';
+      });
+
+    rowSelection.exit().remove();
+  }
+
+  var rowLabelCat;
+  if (rowLabelsAsColors) {
+    itemsGroup.selectAll('.row-text').remove();
+    var rowLabelMap = {};
+    rows.forEach(function(m) {
+      var label = measurementLabel(m);
+      rowLabelMap[label] = label;
+    });
+    rowLabelCat = Object.keys(rowLabelMap);
+
+    var rowColorLabels = itemsGroup.selectAll('.row-color-label')
+      .data(rows, function(m) { return m.id(); });
+
+    rowColorLabels
+      .enter()
+      .append('rect')
+      .attr('class', 'row-color-label')
+      .attr('x', width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
+      .attr('y', -cellHeight*0.5)
+      .attr('width', 20)// TODO: Use a custom variable
+      .attr('height', cellHeight)
+      .attr('transform', function(d, i){
+        return 'translate(' + (0) + ',' + (mapRow(i, true)) + ')';
+      });
+
+    rowColorLabels
+      .style('fill', function(m) {
+        var label = measurementLabel(m);
+        return self.colors().getByKey(label);
+      });
+
+    rowColorLabels
+      .transition()
+      .duration(500)
+      .attr('x', width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
+      .attr('y', -cellHeight*0.5)
+      .attr('height', cellHeight)
+      .attr('transform', function(d, i){
+        return 'translate(' + (0) + ',' + (mapRow(i, true)) + ')';
+      });
+
+    rowColorLabels.exit().remove();
+  }
+
+  // Legend
+  this._svg.selectAll('.chart-title').remove();
+  this._svg.selectAll('.chart-title-color ').remove();
+  var titleEntries = this._svg
+    .selectAll('.chart-title')
+    .data(['Min'].concat(this._colorLabels));
+  titleEntries
+    .enter()
+    .append('text')
+    .attr('class', 'chart-title')
+    .attr('font-weight', 'bold')
+    .attr('y', self.margins().top() - 5 - maxColSize);
+  titleEntries
+    .attr('fill', function(label, i) {
+      if (i == 0) { return '#000000'; }
+      return self.colors().getByKey(label);
+    })
+    .text(function(label) { return label; });
+  var textLength = 0;
+  var titleEntriesStartPosition = [];
+
+  $('#' + this.id() + ' .chart-title')
+    .each(function(i) {
+      titleEntriesStartPosition.push(textLength);
+      textLength += this.getBBox().width + 15;
+    });
+
+  titleEntries.attr('x', function(column, i) {
+    return self.margins().left() + 10 + titleEntriesStartPosition[i];
+  });
+
+  var colorEntries = this._svg
+    .selectAll('.chart-title-color')
+    .data(['Min'].concat(this._colorLabels))
+    .enter()
+    .append('circle')
+    .attr('class', 'chart-title-color')
+    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
+    .attr('cy', self.margins().top() - 9 - maxColSize)
+    .attr('r', 4)
+    .style('shape-rendering', 'auto')
+    .style('stroke-width', '0')
+    .attr('fill', function(label, i) {
+      if (i == 0) { return '#ffffff'; }
+      return self.colors().getByKey(label);
+    })
+    .style('stroke-width', function(label, i) { return i ? 0 : 1; })
+    .style('stroke', '#000000');
+
+  // Row labels legend
+
+  this._svg.selectAll('.row-legend').remove();
+  this._svg.selectAll('.row-legend-color').remove();
+  if (rowLabelsAsColors) {
+    // TODO: Make this optional
+    //rowLabelCat.sort();
+    var textEntries = this._svg
+      .selectAll('.row-legend')
+      .data(rowLabelCat);
+    textEntries
+      .enter()
+      .append('text')
+      .attr('class', 'row-legend')
+      .attr('font-weight', 'bold')
+      .attr('x', -20);
+    textEntries
+      .attr('fill', function(label) {
+        return self.colors().getByKey(label);
+      })
+      .text(function(label) { return label; })
+      .attr('transform', function(d, i){
+        return 'translate(' + (self.margins().left()) + ',' + (self.margins().top()) + ')';
+      });
+
+    textEntries.attr('y', function(label, i) {
+      return 10 + i * 15;
+    });
+
+    this._svg
+      .selectAll('.row-legend-color')
+      .data(rowLabelCat)
+      .enter()
+      .append('rect')
+      .attr('class', 'chart-title-color')
+      .attr('x', -18)
+      .attr('y', function(label, i) { return 2 + i * 15})
+      .attr('width', 10)
+      .attr('height', 10)
+      .style('shape-rendering', 'auto')
+      .style('stroke-width', '0')
+      .attr('fill', function(label) { return self.colors().getByKey(label); })
+      .style('stroke-width', 0)
+      .attr('transform', function(d, i){
+        return 'translate(' + (self.margins().left()) + ',' + (self.margins().top()) + ')';
+      });
+
+    this._colorLabels = this._colorLabels.concat(rowLabelCat)
+  }
 };
 
 /**

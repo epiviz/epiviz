@@ -76,13 +76,13 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
       epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
       'colLabel',
-      'Columns labels'),
+      'Color by'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
       'name',
-      'Row labels'),
+      'Labels'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.StackedLinePlotType.CustomSettings.OFFSET,

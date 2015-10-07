@@ -525,11 +525,11 @@ epiviz.EpiViz.prototype._registerDataRemoveMeasurements = function() {
 epiviz.EpiViz.prototype._registerDataAddChart = function() {
   var self = this;
   this._dataManager.onRequestAddChart().addListener(new epiviz.events.EventListener(
-    /** @param {{type: string, measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}} e */
+    /** @param {{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult}} e */
     function(e) {
       try {
         var chartType = self._chartFactory.get(e.type);
-        var chartId = self._addChart(chartType, new epiviz.ui.controls.VisConfigSelection(e.measurements));
+        var chartId = self._addChart(chartType, e.visConfigSelection);
         e.result.success = true;
         e.result.value = { id: chartId };
       } catch (error) {
@@ -633,6 +633,8 @@ epiviz.EpiViz.prototype._registerDataRedraw = function() {
         var currentLocation = self._locationManager.currentLocation();
         self._locationManager.changeCurrentLocation(currentLocation);
         e.result.success = true;
+
+        self._chartManager.updateDataStructureCharts();
       } catch (error) {
         e.result.success = false;
         e.errorMessage = error.toString();

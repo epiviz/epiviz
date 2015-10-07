@@ -206,8 +206,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
         return {
           x: i,
           y: item ? item.value : null,
-          errMinus: item ? item.rowItem.metadata('errMinus') : null,
-          errPlus: item ? item.rowItem.metadata('errPlus') : null
+          errMinus: (item && item.valueAnnotation) ? item.valueAnnotation['errMinus'] : null,
+          errPlus: (item && item.valueAnnotation) ? item.valueAnnotation['errPlus'] : null
         };
       })
       .filter(function(o) {

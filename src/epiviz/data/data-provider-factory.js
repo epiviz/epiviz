@@ -40,7 +40,11 @@ epiviz.data.DataProviderFactory = function(config) {
 
   var tokens;
   for (var i = 0; i < this._config.dataProviders.length; ++i) {
-    tokens = this._config.dataProviders[i].split(',');
+    if (!$.isArray(this._config.dataProviders[i])) {
+      tokens = this._config.dataProviders[i].split(',');
+    } else {
+      tokens = this._config.dataProviders[i];
+    }
     /**
      * @type {?function(new:epiviz.data.DataProvider)}
      */

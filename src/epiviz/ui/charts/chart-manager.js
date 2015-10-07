@@ -153,7 +153,9 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     chartsAccordion.multiAccordion();
     chartsAccordion.multiAccordion('option', 'active', 'all');
     var self = this;
-    chartsContainer.sortable({
+    // TODO: This doesn't go well with the icicle, because that requires a lot of drag & drop
+    // TODO: Once we find a solution for it, re-enable the feature
+    /*chartsContainer.sortable({
       stop: function(e, ui) {
         var newOrder = chartsContainer.find('.visualization-container')
           .map(function(i, el) {
@@ -163,7 +165,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
         self._chartsOrder[displayType] = newOrder;
         self._chartsOrderChanged.notify(self._chartsOrder);
       }
-    });
+    });*/
   }
 
   chartsContainer.append(sprintf('<div id="%s" class="%s"></div>', id, css));
@@ -284,6 +286,24 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
         // No need to call with arguments, since transformData will set the lastRange and lastData values
         chart.draw();
       });
+    })(chart);
+  }
+};
+
+/**
+ */
+epiviz.ui.charts.ChartManager.prototype.updateDataStructureCharts = function() {
+  var chartIds = Object.keys(this._charts);
+  for (var i = 0; i < chartIds.length; ++i) {
+    if (!this._charts.hasOwnProperty(chartIds[i])) { continue; }
+    var chart = this._charts[chartIds[i]];
+    if (!chart) { continue; }
+    if (chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { continue; }
+
+    (function(chart) {
+      setTimeout(function() {
+        chart.fireRequestHierarchy();
+      }, 0);
     })(chart);
   }
 };

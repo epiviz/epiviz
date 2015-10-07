@@ -49,11 +49,12 @@ epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.get = function(index) {
 
   var item = null;
   var value = null;
+  var valueAnnotation = null;
   var globalIndex = null;
 
   var size = this.size();
   if (!size || index >= size || index < 0) {
-    return new epiviz.datatypes.GenomicData.ValueItem(globalIndex, item, value, this._measurement);
+    return new epiviz.datatypes.GenomicData.ValueItem(globalIndex, item, value, this._measurement, valueAnnotation);
   }
 
   if (firstGlobalIndex != undefined) {
@@ -62,6 +63,7 @@ epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.get = function(index) {
       values = this._container.values(this._measurement);
       var valueIndex = firstGlobalIndex - values.globalStartIndex() + index;
       value = values.get(valueIndex);
+      valueAnnotation = values.getAnnotation(valueIndex);
     }
 
     var rowIndex = firstGlobalIndex - rows.globalStartIndex() + index;
@@ -70,7 +72,7 @@ epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.get = function(index) {
     globalIndex = firstGlobalIndex + index;
   }
 
-  return new epiviz.datatypes.GenomicData.ValueItem(globalIndex, item, value, this._measurement);
+  return new epiviz.datatypes.GenomicData.ValueItem(globalIndex, item, value, this._measurement, valueAnnotation);
 };
 
 /**
@@ -168,7 +170,7 @@ epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.size = function() {
  */
 epiviz.datatypes.MeasurementGenomicDataWrapper.prototype.getByGlobalIndex = function(globalIndex) {
   var firstGlobalIndex = this.globalStartIndex();
-  if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicData.ValueItem(null, null, null, this._measurement); }
+  if (firstGlobalIndex == undefined) { return new epiviz.datatypes.GenomicData.ValueItem(null, null, null, this._measurement, null); }
 
   return this.get(globalIndex - firstGlobalIndex);
 };

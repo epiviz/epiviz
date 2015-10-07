@@ -89,6 +89,11 @@ epiviz.Config = function(settingsMap) {
   this.workspacesDataProvider = null;
 
   /**
+   * @type {boolean}
+   */
+  this.useCache = true;
+
+  /**
    * The time interval used by the cache to clear away unneeded loaded data
    * @type {number}
    */
