@@ -19,22 +19,13 @@ epiviz.Config.SETTINGS = {
 
   // Data retrieval
 
-  dataServerLocation: 'http://epiviz.cbcb.umd.edu/data/', // TODO: Fill in
+  dataServerLocation: '', //TODO: Fill in (in site-settings.js)
   chartSaverLocation: 'src/chart_saving/save_svg.php',
-  dataProviders: [
-    [
-      // fully qualified class name for the class
-      'epiviz.data.WebServerDataProvider',
-      epiviz.Config.DEFAULT_DATA_PROVIDER_ID,
-      'http://epiviz.cbcb.umd.edu/data/main.php'
-    ]
-  ],
+  dataProviders: [], //TODO: Fill in (in site-settings.js)
 
   // This is the data provider that handles workspaces; it can be different from the one getting all the other data:
-  workspacesDataProvider: sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-    'workspaces_provider',
-    'http://epiviz.cbcb.umd.edu/data/main.php'), // TODO: Fill in
-
+  workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''), //TODO: Fill in (in site-settings.js)
+  
   // For datasources with hierarchies, the cache must be disabled (Epiviz will crash otherwise)
   useCache: true,
 
