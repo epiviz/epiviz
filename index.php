@@ -7,6 +7,14 @@ const SETTINGS_EXPIRATION_TIME = 2592000; // One month in seconds
 const DEFAULT_SETTINGS_ARG = 'default';
 const DEFAULT_SETTINGS_FILE = 'src/epiviz/default-settings.js';
 $settings_file = (array_key_exists('settings', $_COOKIE)) ? $_COOKIE['settings'] : DEFAULT_SETTINGS_FILE;
+$curlopt_userpwd = '';
+
+if(file_exists("token.txt")){
+  $myfile = fopen("token.txt", "r");
+  $curlopt_userpwd = fgets($myfile);
+  fclose($myfile);
+}
+
 if (array_key_exists('settings', $_REQUEST)) {
   $settings_file = $_REQUEST['settings'];
   if ($settings_file == DEFAULT_SETTINGS_ARG) {
@@ -28,11 +36,12 @@ if (array_key_exists('settingsGist', $_REQUEST)) {
       CURLOPT_SSL_VERIFYHOST => false,
       CURLOPT_USERAGENT => 'epiviz',
       CURLOPT_URL => 'https://api.github.com/gists/' . $settings_gist,
-      CURLOPT_USERPWD => '<token>:x-oauth-basic' // TODO: Change <token> to your personal access token
+      CURLOPT_USERPWD => $curlopt_userpwd // TODO: Change <token> to your personal access token
   ));
 
     // Send the request & save response to $resp
   $resp = curl_exec($curl);
+
   if ($resp) {
     $json = json_decode($resp, true);
     if (array_key_exists('files', $json)) {
@@ -75,11 +84,10 @@ if (array_key_exists('gist', $_REQUEST)) {
         CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_USERAGENT => 'epiviz',
         CURLOPT_URL => 'https://api.github.com/gists/' . $gist,
-        CURLOPT_USERPWD => '<token>:x-oauth-basic' // TODO: Change <token> to your personal access token
+        CURLOPT_USERPWD => $curlopt_userpwd // TODO: Change <token> to your personal access token
     ));
 
     // Send the request & save response to $resp
-    $resp = curl_exec($curl);
     if (!$resp) { continue; }
 
     $json = json_decode($resp, true);
@@ -398,8 +406,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script>
       caja.initialize({ cajaServer: 'https://caja.appspot.com/', debug: false });
-      epiviz.caja.run(<?php echo json_encode($settings_file); ?>, epiviz.caja.buildChartMethodContext()).done(function() {
 
+      var caja_array = [<?php echo json_encode($settings_file); ?>];
+      if(<?php echo file_exists('site-settings.js') ? "true" : "false"?>){
+        caja_array.push('site-settings.js');
+      }
+
+      epiviz.caja.chain(caja_array, epiviz.caja.buildChartMethodContext()).done(function() {
         var items;
 <?php
     foreach ($settings as $setting => $val) {
@@ -590,6 +603,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         </table>
       </div>
     </div>
+
 
   </body>
 
