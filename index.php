@@ -141,8 +141,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
-    <title>EpiViz 3</title>
+    <meta name="description" content="Epiviz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
+    <title>Epiviz 4</title>
 
     <base href="<?php echo getenv('base_location'); ?>" target="_blank">
 
@@ -497,7 +497,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/epiviz_3_logo_medium.png" alt="EpiViz" width="100" height="21" />
+          <img src="img/epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />
         </div>
         <div style="float: right; font-size: small; margin-top: 7px; margin-left: 7px; margin-right: 7px">
           <?php
