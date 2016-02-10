@@ -514,6 +514,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         epiviz.ui.WebArgsManager.WEB_ARGS['settings'] = <?php echo json_encode($settings_arg); ?>;
 <?php
     }
+?>
+        epiviz.ui.WebArgsManager.WEB_ARGS['useCookie'] = <?php echo json_encode($useCookie); ?>;
+<?php
     if (is_array($scripts) && count($scripts) == 0) { $scripts = DEFAULT_SETTINGS_ARG; }
     if ($scripts != DEFAULT_SETTINGS_ARG) {
 ?>
