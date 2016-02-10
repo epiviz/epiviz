@@ -9,6 +9,9 @@ const DEFAULT_SETTINGS_FILE = 'src/epiviz/default-settings.js';
 $settings_file = (array_key_exists('settings', $_COOKIE)) ? $_COOKIE['settings'] : DEFAULT_SETTINGS_FILE;
 $curlopt_userpwd = '';
 
+// If the request does not contain a value for useCookie, default value will be true
+$useCookie = (array_key_exists('useCookie', $_REQUEST)) ? ($_REQUEST['useCookie'] === 'true' ? true : false) : true;
+
 if(file_exists("token.txt")){
   $myfile = fopen("token.txt", "r");
   $curlopt_userpwd = fgets($myfile);
@@ -20,7 +23,14 @@ if (array_key_exists('settings', $_REQUEST)) {
   if ($settings_file == DEFAULT_SETTINGS_ARG) {
     $settings_file = DEFAULT_SETTINGS_FILE;
   }
-  //setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+  if($useCookie) {
+    setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+  }
+  else {
+    //If useCookie is set to false, delete/expire existing cookies set by the last instance of epiviz
+    setcookie('settings', $settings_file, time() - SETTINGS_EXPIRATION_TIME);
+  }
+
 }
 
 $settings_gist = null;
@@ -53,7 +63,15 @@ if (array_key_exists('settingsGist', $_REQUEST)) {
         break;
       }
     }
-    //setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+
+    if($useCookie) {
+      setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+    }
+    else {
+      //If useCookie is set to false, delete/expire existing cookies set by the last instance of epiviz
+      setcookie('settings', $settings_file, time() - SETTINGS_EXPIRATION_TIME);
+    }
+
   } else {
     $settings_gist = null;
   }
@@ -120,7 +138,14 @@ foreach ($setting_names as $setting) {
     $val = $_COOKIE[$setting]; }
   if (isset($_REQUEST[$setting])) {
     $val = $_REQUEST[$setting];
-    //setcookie($setting, $val, time() + SETTINGS_EXPIRATION_TIME);
+
+    if($useCookie) {
+      setcookie($setting, $val, time() + SETTINGS_EXPIRATION_TIME);
+    }
+    else {
+      //If useCookie is set to false, delete/expire existing cookies set by the last instance of epiviz
+      setcookie($setting, $val, time() - SETTINGS_EXPIRATION_TIME);
+    }
   }
   if ($val !== null) {
     $settings[$setting] = $val;
