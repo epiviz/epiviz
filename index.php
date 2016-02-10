@@ -134,8 +134,9 @@ $settings = array(); // Used for determining configuration of EpiViz
 
 foreach ($setting_names as $setting) {
   $val = null;
-  if (isset($_COOKIE[$setting])) {
-    $val = $_COOKIE[$setting]; }
+  if (isset($_COOKIE[$setting]) && $useCookie) {
+    $val = $_COOKIE[$setting];
+  }
   if (isset($_REQUEST[$setting])) {
     $val = $_REQUEST[$setting];
 
