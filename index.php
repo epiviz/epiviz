@@ -20,7 +20,7 @@ if (array_key_exists('settings', $_REQUEST)) {
   if ($settings_file == DEFAULT_SETTINGS_ARG) {
     $settings_file = DEFAULT_SETTINGS_FILE;
   }
-  setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+  //setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
 }
 
 $settings_gist = null;
@@ -49,12 +49,11 @@ if (array_key_exists('settingsGist', $_REQUEST)) {
         if (!array_key_exists('type', $details) ||
             stripos($details['type'], 'javascript') === FALSE ||
             !array_key_exists('raw_url', $details)) { continue; }
-
         $settings_file = 'raw.php?url=' . urlencode($details['raw_url']);
         break;
       }
     }
-    setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+    //setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
   } else {
     $settings_gist = null;
   }
@@ -117,10 +116,11 @@ $settings = array(); // Used for determining configuration of EpiViz
 
 foreach ($setting_names as $setting) {
   $val = null;
-  if (isset($_COOKIE[$setting])) { $val = $_COOKIE[$setting]; }
+  if (isset($_COOKIE[$setting])) {
+    $val = $_COOKIE[$setting]; }
   if (isset($_REQUEST[$setting])) {
     $val = $_REQUEST[$setting];
-    setcookie($setting, $val, time() + SETTINGS_EXPIRATION_TIME);
+    //setcookie($setting, $val, time() + SETTINGS_EXPIRATION_TIME);
   }
   if ($val !== null) {
     $settings[$setting] = $val;
