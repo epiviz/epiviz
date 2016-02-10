@@ -7,12 +7,30 @@ const SETTINGS_EXPIRATION_TIME = 2592000; // One month in seconds
 const DEFAULT_SETTINGS_ARG = 'default';
 const DEFAULT_SETTINGS_FILE = 'src/epiviz/default-settings.js';
 $settings_file = (array_key_exists('settings', $_COOKIE)) ? $_COOKIE['settings'] : DEFAULT_SETTINGS_FILE;
+$curlopt_userpwd = '';
+
+// If the request does not contain a value for useCookie, default value will be true
+$useCookie = (array_key_exists('useCookie', $_REQUEST)) ? ($_REQUEST['useCookie'] === 'true' ? true : false) : true;
+
+if(file_exists("token.txt")){
+  $myfile = fopen("token.txt", "r");
+  $curlopt_userpwd = fgets($myfile);
+  fclose($myfile);
+}
+
 if (array_key_exists('settings', $_REQUEST)) {
   $settings_file = $_REQUEST['settings'];
   if ($settings_file == DEFAULT_SETTINGS_ARG) {
     $settings_file = DEFAULT_SETTINGS_FILE;
   }
-  //setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+  if($useCookie) {
+    setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+  }
+  else {
+    //If useCookie is set to false, delete/expire existing cookies set by the last instance of epiviz
+    setcookie('settings', $settings_file, time() - SETTINGS_EXPIRATION_TIME);
+  }
+
 }
 
 $settings_gist = null;
@@ -28,11 +46,12 @@ if (array_key_exists('settingsGist', $_REQUEST)) {
       CURLOPT_SSL_VERIFYHOST => false,
       CURLOPT_USERAGENT => 'epiviz',
       CURLOPT_URL => 'https://api.github.com/gists/' . $settings_gist,
-      CURLOPT_USERPWD => '<token>:x-oauth-basic' // TODO: Change <token> to your personal access token
+      CURLOPT_USERPWD => $curlopt_userpwd // TODO: Change <token> to your personal access token
   ));
 
     // Send the request & save response to $resp
   $resp = curl_exec($curl);
+
   if ($resp) {
     $json = json_decode($resp, true);
     if (array_key_exists('files', $json)) {
@@ -44,7 +63,15 @@ if (array_key_exists('settingsGist', $_REQUEST)) {
         break;
       }
     }
-    //setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+
+    if($useCookie) {
+      setcookie('settings', $settings_file, time() + SETTINGS_EXPIRATION_TIME);
+    }
+    else {
+      //If useCookie is set to false, delete/expire existing cookies set by the last instance of epiviz
+      setcookie('settings', $settings_file, time() - SETTINGS_EXPIRATION_TIME);
+    }
+
   } else {
     $settings_gist = null;
   }
@@ -74,11 +101,10 @@ if (array_key_exists('gist', $_REQUEST)) {
         CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_USERAGENT => 'epiviz',
         CURLOPT_URL => 'https://api.github.com/gists/' . $gist,
-        CURLOPT_USERPWD => '<token>:x-oauth-basic' // TODO: Change <token> to your personal access token
+        CURLOPT_USERPWD => $curlopt_userpwd // TODO: Change <token> to your personal access token
     ));
 
     // Send the request & save response to $resp
-    $resp = curl_exec($curl);
     if (!$resp) { continue; }
 
     $json = json_decode($resp, true);
@@ -112,7 +138,14 @@ foreach ($setting_names as $setting) {
     $val = $_COOKIE[$setting]; }
   if (isset($_REQUEST[$setting])) {
     $val = $_REQUEST[$setting];
-    //setcookie($setting, $val, time() + SETTINGS_EXPIRATION_TIME);
+
+    if($useCookie) {
+      setcookie($setting, $val, time() + SETTINGS_EXPIRATION_TIME);
+    }
+    else {
+      //If useCookie is set to false, delete/expire existing cookies set by the last instance of epiviz
+      setcookie($setting, $val, time() - SETTINGS_EXPIRATION_TIME);
+    }
   }
   if ($val !== null) {
     $settings[$setting] = $val;
@@ -146,9 +179,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <base href="<?php echo getenv('base_location'); ?>" target="_blank">
 
-    <base href="<?php echo getenv('base_location'); ?>" target="_blank">
-
-    <link rel="shortcut icon" href="img/epiviz_2_icon.png"/>
+    <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
 
     <!-- CSS -->
 
@@ -186,6 +217,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/jquery.watermark.min.js"></script>
     <script src="src/lib/jquery/jquery.layout-latest.js"></script>
     <script src="src/lib/jquery/jquery.activity-indicator-1.0.0.min.js"></script>
+    <script src="src/lib/jquery/farbtastic-color-picker/farbtastic.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
     <script src="src/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/TableTools.js"></script>
@@ -193,8 +225,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
     <!-- Future tooltip: <script src="src/lib/qtip/jquery.qtip.min.js"></script>-->
 
-    <!--<script src="src/lib/caja/caja.js"></script>-->
-    <script src="//caja.appspot.com/caja.js"></script>
+    <!--<script src="//caja.appspot.com/caja.js"></script>-->
+
+    <!-- Google Analytics -->
+    <script src="src/lib/google-analytics/google-analytics.js"></script>
 
     <!-- D3 -->
     <script src="src/lib/d3/d3.v3.js"></script>
@@ -223,9 +257,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/deferred/promise.js"></script>
     <script src="src/epiviz/utils/utils.js"></script>
-    <script src="src/epiviz/caja/caja.js"></script>
+    <script src="src/epiviz/caja/caja-standalone.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
-    <script src="src/epiviz/utils/farbtastic.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
     <script src="src/epiviz/utils/iterable-array.js"></script>
     <script src="src/epiviz/config.js"></script>
@@ -252,6 +285,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/data/empty-response-data-provider.js"></script>
     <script src="src/epiviz/data/websocket-data-provider.js"></script>
     <script src="src/epiviz/data/webserver-data-provider.js"></script>
+    <script src="src/epiviz/data/metagenomics-data-provider.js"></script> <!-- TODO: Delete! -->
+
+    <script src="src/epiviz/data/epiviz-api-data-provider.js"></script><!-- TODO: Move -->
 
     <script src="src/epiviz/datatypes/seq-info.js"></script>
     <script src="src/epiviz/datatypes/genomic-array.js"></script>
@@ -303,9 +339,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/chart.js"></script>
     <script src="src/epiviz/ui/charts/track.js"></script>
     <script src="src/epiviz/ui/charts/plot.js"></script>
+    <script src="src/epiviz/ui/charts/data-structure-visualization.js"></script>
+    <script src="src/epiviz/ui/charts/tree/hierarchy-visualization.js"></script>
     <script src="src/epiviz/ui/charts/chart-type.js"></script>
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
+    <script src="src/epiviz/ui/charts/data-structure-visualization-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/hierarchy-visualization-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
 
     <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
@@ -376,14 +416,28 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/stacked-line-plot.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-plot-type.js"></script>
 
+    <script src="src/epiviz/ui/charts/tree/node-selection-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/node.js"></script>
+    <script src="src/epiviz/ui/charts/tree/ui-node.js"></script>
+    <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
+    <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
+    <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
+
+    <script src="src/epiviz/ui/charts/tree/decoration/toggle-propagate-selection-button.js"></script>
+
     <script src="src/epiviz/main.js"></script>
 
     <!-- Dynamic initializations -->
 
     <script>
       caja.initialize({ cajaServer: 'https://caja.appspot.com/', debug: false });
-      epiviz.caja.run(<?php echo json_encode($settings_file); ?>, epiviz.caja.buildChartMethodContext()).done(function() {
 
+      var caja_array = [<?php echo json_encode($settings_file); ?>];
+      if(<?php echo file_exists('site-settings.js') ? "true" : "false"?>){
+        caja_array.push('site-settings.js');
+      }
+
+      epiviz.caja.chain(caja_array, epiviz.caja.buildChartMethodContext()).done(function() {
         var items;
 <?php
     foreach ($settings as $setting => $val) {
@@ -575,10 +629,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       </div>
     </div>
 
-    <!-- Unimportant scripts -->
 
-    <!-- Google Analytics -->
-    <script src="src/lib/google-analytics/google-analytics.js"></script>
   </body>
 
 </html>
