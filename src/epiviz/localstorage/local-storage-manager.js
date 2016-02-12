@@ -43,4 +43,11 @@ epiviz.localstorage.LocalStorageManager.prototype.saveWorkspace = function(works
   localStorage.setItem(epiviz.localstorage.LocalStorageManager.WORKSPACE, JSON.stringify(raw));
 };
 
+/**
+ * clears all data in localstorage
+ */
+epiviz.localstorage.LocalStorageManager.prototype.clearAll = function() {
+  if(typeof(Storage) === "undefined") { return; } // No support for Storage in this browser
+  localStorage.clear();
+};
 // TODO: Idea - create a workspace history, for undo/redo functionality!

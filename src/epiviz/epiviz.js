@@ -127,7 +127,12 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerRequestWorkspaces();
   this._registerWorkspacesLoaded();
   this._registerActiveWorkspaceChanged();
-  this._registerActiveWorkspaceContentChanged();
+
+  //register workspace events only if useCookie is true
+  if(config.useCookie == "true") {
+    this._registerActiveWorkspaceContentChanged();
+  }
+
   this._registerLocationChanged();
 
   /*
