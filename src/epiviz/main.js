@@ -41,11 +41,16 @@ epiviz.main = function() {
   var dataManager = new epiviz.data.DataManager(config, dataProviderFactory);
 
   /** @type {epiviz.localstorage.LocalStorageManager} */
-  var localStorageManager = new epiviz.localstorage.LocalStorageManager();
+  var localStorageManager = null;
 
-  //If useCookie is false, clear data from localstorage. This will also remove previously set localstorage data!
+  // if useCookie is false, create a localstorage instance [incognito mode].
+  // If there was a previous incognito instance, clear the workspace data
   if(config.useCookie == "false") {
-    localStorageManager.clearAll();
+    localStorageManager = new epiviz.localstorage.LocalStorageManager(epiviz.localstorage.LocalStorageManager.MODE.INCOGNITO_MODE);
+    localStorageManager.clearWorkspace();
+  }
+  else {
+    localStorageManager = new epiviz.localstorage.LocalStorageManager(epiviz.localstorage.LocalStorageManager.MODE.COOKIE_MODE);
   }
 
   /** @type {epiviz.workspaces.WorkspaceManager} */
