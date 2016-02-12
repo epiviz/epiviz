@@ -128,12 +128,17 @@ if (array_key_exists('gist', $_REQUEST)) {
 // Insert here settings based on $_REQUEST.
 // All those settings are saved/retrieved as cookies
 // TODO: Later on, in javascript, modify cookie when location or workspace are modified
-$setting_names = array('ws', 'workspace', 'seqName', 'start', 'end');
+$setting_names = array('ws', 'workspace', 'seqName', 'start', 'end', 'useCookie');
 
 $settings = array(); // Used for determining configuration of EpiViz
 
 foreach ($setting_names as $setting) {
   $val = null;
+
+  if($setting === 'useCookie'){
+    $val = $useCookie;
+  }
+
   if (isset($_COOKIE[$setting]) && $useCookie) {
     $val = $_COOKIE[$setting];
   }

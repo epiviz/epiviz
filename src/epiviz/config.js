@@ -94,6 +94,11 @@ epiviz.Config = function(settingsMap) {
   this.useCache = true;
 
   /**
+   * @type {string}
+   */
+  this.useCookie = null;
+
+  /**
    * The time interval used by the cache to clear away unneeded loaded data
    * @type {number}
    */

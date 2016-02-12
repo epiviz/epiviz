@@ -46,6 +46,11 @@ epiviz.main = function() {
   /** @type {epiviz.localstorage.LocalStorageManager} */
   var localStorageManager = new epiviz.localstorage.LocalStorageManager();
 
+  //If useCookie is false, clear data from localstorage. This will also remove previously set localstorage data!
+  if(config.useCookie == "false") {
+    localStorageManager.clearAll();
+  }
+
   /** @type {epiviz.workspaces.UserManager} */
   var userManager = new epiviz.workspaces.UserManager(config);
 
