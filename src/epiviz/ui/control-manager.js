@@ -600,6 +600,9 @@ epiviz.ui.ControlManager.prototype._initializeHelpButton = function() {
 };
 
 epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
+  var self = this;
+
+  var tutorialMenu = $('');
 
 };
 
@@ -674,15 +677,20 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
             useCORS: true
           }).then(function (canvas) {
 
+            var ctx = canvas.getContext("2d");
+            ctx.webkitImageSmoothingEnabled = false;
+            ctx.mozImageSmoothingEnabled = false;
+            ctx.imageSmoothingEnabled = false;
+
             // add timestamp to every screenshot!
             var timestamp = Math.floor($.now() / 1000);
             var filename = "epiviz_" + timestamp + "." + format;
 
-            if(format == "pdf") {
-              var image = canvas.toDataURL("image/jpeg");
+            var image = canvas.toDataURL("image/png");
 
-              var jsdoc = new jsPDF();
-              jsdoc.addImage(image, 'JPEG', 0, 0);
+            if(format == "pdf") {
+              var jsdoc = new jsPDF('p', 'px', [$("body").width(), $("body").height()]);
+              jsdoc.addImage(image, 'PNG', 0, 0);
               jsdoc.save(filename);
             }
             else {
@@ -694,9 +702,6 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
                 navigator.msSaveBlob(blob, filename);
               }
               else {
-
-                var image = canvas.toDataURL("image/png");
-
                 var blob = new Blob([image], {type: "image/png"});
                 var link = document.createElement("a");
 
