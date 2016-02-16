@@ -168,6 +168,8 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   this._initializeHelpButton();
   this._initializeSearchBox();
   this._initializeWorkspaceSaving();
+  this._initializeTutorials();
+  this._initializeScreenshotMenu();
 
   /*
    * Log in/out
@@ -595,6 +597,143 @@ epiviz.ui.ControlManager.prototype._initializeHelpButton = function() {
       var win=window.open('http://epiviz.github.io/', '_blank');
       win.focus();
     });
+};
+
+epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
+
+};
+
+epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
+  var self = this;
+
+  var savePageButton = $('#save-page');
+
+  savePageButton.button({
+    icons:{
+      primary:'ui-icon ui-icon-print'
+    },
+    text:false
+  })
+  .click( function() {
+
+    savePageButton.append('<div id="loading" title="printing workspace">' +
+        '<p>Save/Print the existing EpiViz workspace.</p>' +
+        '<div style="position:absolute; right:15px;">' +
+        '<select class="screenshot-file-format">' +
+          '<option value="pdf" selected="selected">PDF</option>' +
+          '<option value="png" >PNG</option>' +
+        '</select>' +
+        '</div>' +
+        '</div>');
+
+    $("#loading").dialog({
+      resizable: false,
+      modal: true,
+      title: "Print workspace as image",
+      buttons: {
+        "Print": function () {
+
+          // hide the dialog box from the UI so that its not in the screenshot
+          $(this).dialog('close');
+
+          var format = $('.screenshot-file-format option:selected').val();
+
+          var container = $("body");
+
+          // html2canvas has issues with svg elements on ff and IE.
+          // Convert svg elements into canvas objects, temporarily hide the svg elements for html2canvas to work and
+          // finally remove all dom changes!
+          // TODO: this feature does not work all the time in FF!
+
+          var svgElems = container.find('svg');
+
+          svgElems.each(function () {
+            var canvas, xml;
+
+            canvas = document.createElement("canvas");
+            canvas.className = "tempCanvas";
+
+            // Convert SVG into a XML string
+            xml = (new XMLSerializer()).serializeToString(this);
+
+            // Removing the name space as IE throws an error
+            xml = xml.replace(/xmlns=\"http:\/\/www\.w3\.org\/2000\/svg\"/, '');
+
+            //draw the SVG onto a canvas using canvg
+            canvg(canvas, xml);
+            $(canvas).insertAfter(this);
+            $(this).hide();
+          });
+
+          // use html2canvas to take a screenshot of the page!
+          html2canvas(container, {
+            //allowTaint: true,
+            //taintTest: false,
+            timeout: 0,
+            //logging: true,
+            useCORS: true
+          }).then(function (canvas) {
+
+            // add timestamp to every screenshot!
+            var timestamp = Math.floor($.now() / 1000);
+            var filename = "epiviz_" + timestamp + "." + format;
+
+            if(format == "pdf") {
+              var image = canvas.toDataURL("image/jpeg");
+
+              var jsdoc = new jsPDF();
+              jsdoc.addImage(image, 'JPEG', 0, 0);
+              jsdoc.save(filename);
+            }
+            else {
+
+              if (navigator.msSaveBlob) {
+                // IE 10+
+                var image_blob = canvas.msToBlob();
+                var blob = new Blob([image_blob], {type: "image/png"});
+                navigator.msSaveBlob(blob, filename);
+              }
+              else {
+
+                var image = canvas.toDataURL("image/png");
+
+                var blob = new Blob([image], {type: "image/png"});
+                var link = document.createElement("a");
+
+                if (link.download !== undefined) {
+                  // check if browser supports HTML5 download attribute
+                  var url = URL.createObjectURL(blob);
+                  link.setAttribute("href", image);
+                  link.setAttribute("download", filename);
+                  link.style = "visibility:hidden";
+                  link.setAttribute("target", "_blank");
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }
+                else {
+                  var image_octet = image.replace("image/png", "image/octet-stream");
+                  window.open(image_octet);
+                }
+              }
+            }
+
+            // remove all changes made to the DOM
+            container.find('.tempCanvas').remove();
+            svgElems.each(function () {
+              $(this).show();
+            });
+          });
+
+          $(this).dialog('destroy').remove();
+        },
+        "cancel": function () {
+          $(this).dialog('destroy').remove();
+        }
+      }
+    }).show();
+  });
+
 };
 
 epiviz.ui.ControlManager.prototype._initializeSearchBox = function() {
