@@ -259,6 +259,18 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/closure/goog/base.js"></script>
     <script src="src/lib/closure/goog/structs/collection.js"></script>
 
+    <!-- lightweight es6 promises -->
+    <script src="src/lib/es6-promise/Promise.js"></script>
+
+    <!-- canvg -->
+    <script src="src/lib/canvg/rgbcolor.js"></script>
+    <script src="src/lib/canvg/StackBlur.js"></script>
+    <script src="src/lib/canvg/canvg.js"></script>
+
+    <!-- html2canvas -->
+    <script src="src/lib/html2canvas/html2canvas.js"></script>
+    <script src="src/lib/html2canvas/html2canvas.svg.js"></script>
+
     <!-- EpiViz framework -->
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/deferred/promise.js"></script>
@@ -608,6 +620,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         <span class="separator">|</span>
 
         <button id="help-button">Help</button>
+        <button id="save-page" onclick="savePage();">Save</button>
       </div>
     </div>
 
@@ -638,7 +651,83 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
       </div>
     </div>
 
+  <script type="application/javascript">
+    function savePage() {
 
+      var container = $("body");
+
+      // html2canvas has issues with svg elements on ff and IE.
+      // Convert svg elements into canvas objects, temporarily hide the svg elements for html2canvas to work and remove all dom changes!
+      // TODO: this feature works very randomly in FF!
+
+      var svgElems= container.find('svg');
+
+      svgElems.each(function () {
+        var canvas, xml;
+
+        canvas = document.createElement("canvas");
+        canvas.className = "tempCanvas";
+
+        // Convert SVG into a XML string
+        xml = (new XMLSerializer()).serializeToString(this);
+
+        // Removing the name space as IE throws an error
+        xml = xml.replace(/xmlns=\"http:\/\/www\.w3\.org\/2000\/svg\"/, '');
+
+        //draw the SVG onto a canvas using canvg
+        canvg(canvas, xml);
+        $(canvas).insertAfter(this);
+        $(this).hide();
+      });
+
+      // use html2canvas to take a screenshot of the page!
+      html2canvas(container, {
+        allowTaint: true,
+        //taintTest: false,
+        timeout: 0,
+        //logging: true,
+        useCORS: true
+      }).then(function(canvas) {
+
+        // add timestamp to every screenshot!
+        var timestamp = Math.floor($.now() / 1000);
+        var filename = "epiviz_" + timestamp + ".png";
+
+        if (navigator.msSaveBlob) {
+          // IE 10+
+          var image_blob = canvas.msToBlob();
+          var blob = new Blob([image_blob], {type: "image/png" });
+          navigator.msSaveBlob(blob, filename);
+        }
+        else {
+          var image = canvas.toDataURL("image/png");
+          var blob = new Blob([image], { type: "image/png" });
+          var link = document.createElement("a");
+          if (link.download !== undefined) {
+            // check if browser supports HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", image);
+            link.setAttribute("download", filename);
+            link.style = "visibility:hidden";
+            link.setAttribute("target", "_blank");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+          else {
+            var image_octet = image.replace("image/png", "image/octet-stream");
+            console.log("link.download not supported");
+            window.open(image_octet);
+          }
+        }
+
+        // after picture is rendered, remove all changes made to the DOM
+        container.find('.tempCanvas').remove();
+        svgElems.each(function () {
+          $(this).show();
+        });
+      });
+    }
+  </script>
   </body>
-
 </html>
