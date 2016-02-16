@@ -280,6 +280,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jsPDF/zlib.js"></script>
     <script src="src/lib/jsPDF/png_support.js"></script>
 
+    <!-- IntroJs -->
+    <link rel="stylesheet" type="text/css" href="src/lib/introjs/introjs.css"/>
+    <script src="src/lib/introjs/intro.js"></script>
+
     <!-- EpiViz framework -->
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/deferred/promise.js"></script>
@@ -594,15 +598,17 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
           ?>
         </div>
 
-        <select id="chromosome-selector"></select>
-        <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
-        <button id="moveleft">Slide left</button>
-        <button id="moveright">Slide right</button>
+        <div id="intro-navigation" class="intro-container">
+          <select id="chromosome-selector"></select>
+          <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
+          <button id="moveleft">Slide left</button>
+          <button id="moveright">Slide right</button>
 
-        <button id="zoomin">Zoom in</button>
-        <button id="zoomout">Zoom out</button>
+          <button id="zoomin">Zoom in</button>
+          <button id="zoomout">Zoom out</button>
 
-        <button id="location-settings">Location Settings...</button>
+          <button id="location-settings">Location Settings...</button>
+        </div>
 
         <span class="separator">|</span>
 
@@ -620,11 +626,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
         <span class="separator">|</span>
 
-        <label for="save-workspace-text"></label>
-        <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
-        <button id="save-workspace-button">Save Workspace</button>
-        <button id="revert-workspace-button">Revert Workspace Changes</button>
-        <button id="delete-workspace-button">Delete Active Workspace</button>
+        <div id="intro-workspace" class="intro-container">
+          <label for="save-workspace-text"></label>
+          <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
+          <button id="save-workspace-button">Save Workspace</button>
+          <button id="revert-workspace-button">Revert Workspace Changes</button>
+          <button id="delete-workspace-button">Delete Active Workspace</button>
+        </div>
 
         <span class="separator">|</span>
 
