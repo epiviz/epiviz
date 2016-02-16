@@ -272,8 +272,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/html2canvas/html2canvas.svg.js"></script>
 
     <!-- jsPDF -->
-    <script src="http://parall.ax/parallax/js/jspdf.js"></script>
-    <!--<script src="src/lib/jsPDF/jspdf.debug.js"></script>-->
+    <script src="src/lib/jsPDF/BlobBuilder.js"></script>
+    <script src="src/lib/jsPDF/FileSaver.js"></script>
+    <script src="src/lib/jsPDF/jspdf.js"></script>
+    <script src="src/lib/jsPDF/addimage.js"></script>
+    <script src="src/lib/jsPDF/png.js"></script>
+    <script src="src/lib/jsPDF/zlib.js"></script>
+    <script src="src/lib/jsPDF/png_support.js"></script>
 
     <!-- EpiViz framework -->
     <script src="src/epiviz/deferred/deferred.js"></script>
