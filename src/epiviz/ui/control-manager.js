@@ -602,8 +602,81 @@ epiviz.ui.ControlManager.prototype._initializeHelpButton = function() {
 epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
   var self = this;
 
-  var tutorialMenu = $('');
+  var tutorialMenu = $('#help-tutorials');
 
+  $(sprintf('<div class="dropdown-menu">' +
+      '<ul id="tutorial-list">' +
+      '<li><a href="javascript:void(0)" id="tut-epiviz-overview">EpiViz Overview</a></li>' +
+      '</ul>' +
+      '</div>')).insertAfter(tutorialMenu);
+
+  var tutorialList = $('#tutorial-list');
+
+  tutorialList.hide().menu();
+
+  tutorialMenu.button({
+    icons:{
+      primary:'ui-icon ui-icon-info',
+      secondary: "ui-icon-triangle-1-s"
+    },
+    text:false
+  })
+  .click( function() {
+
+    var visible = tutorialList.is(":visible");
+    if (!visible) {
+      tutorialList.show().position({
+        my: "left top",
+        at: "left bottom",
+        of: this
+      });
+    }
+    $( document ).one('click', function() {
+      tutorialList.hide();
+    });
+
+    $('#tut-epiviz-overview').click(function() {
+      var intro = introJs();
+      intro.setOptions({
+        steps: [
+          {
+            intro: "<p class='intro-header'>Welcome to EpiViz Genomic Browser!<br></p>" +
+            "<p class='intro-text'>This tutorial will walk you through the functionality available in EpiViz.</p>"
+          }, {
+            element: '#intro-navigation',
+            intro: "<p class='intro-text'>The navigation section of EpiViz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
+            "<p class='intro-text'>The settings icon allows you to control the navigation parameters.</p>",
+            position: 'right'
+          }, {
+            element: '#search-box',
+            intro: "<p class='intro-header'>Use the search input to look for a specific gene or target.</p>" +
+            "<p class='intro-text'>This will navigate EpiViz to the selected gene location and update your workspace with the new data.</p>",
+            position: 'right'
+          }, {
+            element: '#vis-menu-button',
+            intro: '<p class="intro-text">To add more data sources and plots to your EpiViz Workspace.</p>' +
+            '<p class="intro-text">Choose from a list of available data sources, measurements or chart types.</p>',
+            position: 'right'
+          }, {
+            element: '#intro-workspace',
+            intro: '<p class="intro-header">This section lets you manage your workspace.</p>' +
+            '<p class="intro-text">If you are logged in, you will be able to save your Epiviz analysis workspaces.' +
+            'You will also be able to retrieve them at a later time from your account and manage your workspaces.</p>',
+            position: 'right'
+          }, {
+            element: '#login-link',
+            intro: '<p class="intro-text">Please login to save and manage EpiViz workspaces.</p>',
+            position: 'left'
+          }, {
+            intro: "<p class='intro-header'>Thank you for using EpiViz!</p>" +
+            '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">EpiViZ webpage</a>.</p>'
+          }
+        ]
+      });
+      intro.start();
+    });
+  return false;
+  });
 };
 
 epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
@@ -619,7 +692,7 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
   })
   .click( function() {
 
-    savePageButton.append('<div id="loading" title="printing workspace">' +
+    savePageButton.append(sprintf('<div id="loading" title="printing workspace">' +
         '<p>Save/Print the existing EpiViz workspace.</p>' +
         '<div style="position:absolute; right:15px;">' +
         '<select class="screenshot-file-format">' +
@@ -627,9 +700,9 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
           '<option value="png" >PNG</option>' +
         '</select>' +
         '</div>' +
-        '</div>');
+        '</div>'));
 
-    $("#loading").dialog({
+    savePageButton.find("#loading").dialog({
       resizable: false,
       modal: true,
       title: "Print workspace as image",

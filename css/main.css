@@ -359,3 +359,16 @@ tfoot th input { width: 80% }
   max-width: 100px;
   padding: 2px;
 }
+
+.intro-header {
+  font-size: 125%;
+  font-weight: bold;
+}
+
+.intro-text {
+  font-size: 110%;
+}
+
+.intro-container {
+  display: inline-block;
+}
