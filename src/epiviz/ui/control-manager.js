@@ -692,7 +692,7 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
     text:false
   })
   .click( function() {
-
+    
     savePageButton.append(sprintf('<div id="loading" title="printing workspace">' +
         '<p>Save/Print the existing EpiViz workspace.</p>' +
         '<div style="position:absolute; right:15px;">' +
