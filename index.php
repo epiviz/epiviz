@@ -274,11 +274,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- jsPDF -->
     <script src="src/lib/jsPDF/BlobBuilder.js"></script>
     <script src="src/lib/jsPDF/FileSaver.js"></script>
-    <script src="src/lib/jsPDF/jspdf.js"></script>
-    <script src="src/lib/jsPDF/addimage.js"></script>
-    <script src="src/lib/jsPDF/png.js"></script>
-    <script src="src/lib/jsPDF/zlib.js"></script>
-    <script src="src/lib/jsPDF/png_support.js"></script>
+    <script src="src/lib/jsPDF/jspdf.debug.js"></script>
 
     <!-- IntroJs -->
     <link rel="stylesheet" type="text/css" href="src/lib/introjs/introjs.css"/>
