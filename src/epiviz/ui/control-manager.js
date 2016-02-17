@@ -507,7 +507,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
     $(sprintf('<li class="ui-widget-header">%s</li>', displayTypeLabels[displayType])).appendTo(visMenu);
     chartsByDisplayType[displayType].forEach(function(chartType, i) {
       var id = sprintf('%s-menu-add-%s', chartType.chartDisplayType(), chartType.chartHtmlAttributeName());
-      visMenu.append(sprintf('<li><a href="javascript:void(0)" id="%s">Add New %s</a></li>', id, chartType.chartName()));
+      visMenu.append(sprintf('<li id="%s">Add New %s</li>', id, chartType.chartName()));
 
       $('#' + id).click(function() {
         var wizardSteps = [];
@@ -606,7 +606,8 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
 
   $(sprintf('<div class="dropdown-menu">' +
       '<ul id="tutorial-list">' +
-      '<li><a href="javascript:void(0)" id="tut-epiviz-overview">EpiViz Overview</a></li>' +
+      '<li class="ui-widget-header">Tutorials</li>' +
+      '<li id="tut-epiviz-overview">EpiViz Overview</li>' +
       '</ul>' +
       '</div>')).insertAfter(tutorialMenu);
 

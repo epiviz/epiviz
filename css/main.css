@@ -372,3 +372,13 @@ tfoot th input { width: 80% }
 .intro-container {
   display: inline-block;
 }
+
+.dropdown-menu ul li {
+  padding: 3px;
+  border-radius: 4px;
+}
+
+.dropdown-menu ul li:hover {
+  background-color: #dddddd;
+  cursor: pointer; cursor: hand;
+}
