@@ -692,7 +692,7 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
     text:false
   })
   .click( function() {
-    
+
     savePageButton.append(sprintf('<div id="loading" title="printing workspace">' +
         '<p>Save/Print the existing EpiViz workspace.</p>' +
         '<div style="position:absolute; right:15px;">' +
@@ -717,6 +717,54 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
 
           var container = $("body");
 
+          function inline_styles(dom) {
+            var used = "";
+            var sheets = document.styleSheets;
+            for (var i = 0; i < sheets.length; i++) {
+              var rules = sheets[i].cssRules;
+              for (var j = 0; j < rules.length; j++) {
+                var rule = rules[j];
+                if (typeof(rule.style) != "undefined") {
+                  var elems = dom.querySelectorAll(rule.selectorText);
+                  if (elems.length > 0) {
+                    used += rule.selectorText + " { " + rule.style.cssText + " }\n";
+                  }
+                }
+              }
+            }
+
+            $(dom).find('style').remove();
+
+            var s = document.createElement('style');
+            s.setAttribute('type', 'text/css');
+            s.innerHTML = "<![CDATA[\n" + used + "\n]]>";
+
+            //dom.getElementsByTagName("defs")[0].appendChild(s);
+            dom.insertBefore(s, dom.firstChild);
+          }
+
+          //add inline styles to svg elements
+          function custom_styles(dom) {
+
+            // style axes lines
+            var axes = $(dom).find('.domain');
+            axes.each(function () {
+              $(this).css({"fill": "none", "stroke-width": "1px", "stroke": "#000000", "shape-rendering": "crispEdges"});
+            });
+
+            //remove gene name labels
+            var gLabels = $(dom).find('.gene-name');
+            gLabels.each(function () {
+              $(this).remove();
+            });
+
+            // fill path on single line tracks
+            var lines = $(dom).find('.line-series-index-0 path');
+            lines.each(function() {
+              $(this).css({"fill": "none"});
+            });
+          }
+
           // html2canvas has issues with svg elements on ff and IE.
           // Convert svg elements into canvas objects, temporarily hide the svg elements for html2canvas to work and
           // finally remove all dom changes!
@@ -730,16 +778,22 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
             canvas = document.createElement("canvas");
             canvas.className = "tempCanvas";
 
+            custom_styles(this);
+
             // Convert SVG into a XML string
-            xml = (new XMLSerializer()).serializeToString(this);
+            xml = new XMLSerializer().serializeToString(this);
 
             // Removing the name space as IE throws an error
-            xml = xml.replace(/xmlns=\"http:\/\/www\.w3\.org\/2000\/svg\"/, '');
+            //xml = xml.replace(/xmlns=\"http:\/\/www\.w3\.org\/2000\/svg\"/, '');
 
-            //draw the SVG onto a canvas using canvg
-            canvg(canvas, xml);
-            $(canvas).insertAfter(this);
-            $(this).hide();
+            //draw the canvas object created from canvg
+            canvg(canvas, xml, {
+              useCORS: true,
+              renderCallback: function() {
+                $(canvas).insertAfter(this);
+                $(this).hide();
+              }
+            });
           });
 
           // use html2canvas to take a screenshot of the page!
@@ -752,7 +806,6 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
           }).then(function (canvas) {
 
             var ctx = canvas.getContext("2d");
-            ctx.webkitImageSmoothingEnabled = false;
             ctx.mozImageSmoothingEnabled = false;
             ctx.imageSmoothingEnabled = false;
 
