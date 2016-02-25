@@ -641,36 +641,35 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       intro.setOptions({
         steps: [
           {
-            intro: "<p class='intro-header'>Welcome to EpiViz Genomic Browser!<br></p>" +
-            "<p class='intro-text'>This tutorial will walk you through the functionality available in EpiViz.</p>"
+            intro: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br></p>" +
+            "<p class='intro-text'>This tutorial will walk you through the functionality available in Epiviz.</p>"
           }, {
             element: '#intro-navigation',
-            intro: "<p class='intro-text'>The navigation section of EpiViz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
+            intro: "<p class='intro-text'>The navigation section of Epiviz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
             "<p class='intro-text'>The settings icon allows you to control the navigation parameters.</p>",
             position: 'right'
           }, {
             element: '#search-box',
             intro: "<p class='intro-header'>Use the search input to look for a specific gene or target.</p>" +
-            "<p class='intro-text'>This will navigate EpiViz to the selected gene location and update your workspace with the new data.</p>",
+            "<p class='intro-text'>This will navigate Epiviz to the selected gene location and update the workspace with the new data.</p>",
             position: 'right'
           }, {
             element: '#vis-menu-button',
-            intro: '<p class="intro-text">To add more data sources and plots to your EpiViz Workspace.</p>' +
-            '<p class="intro-text">Choose from a list of available data sources, measurements or chart types.</p>',
+            intro: '<p class="intro-text">Choose from a list of available data sources, measurements or chart types to add visualizations to the Epiviz Workspace.</p>',
             position: 'right'
           }, {
             element: '#intro-workspace',
             intro: '<p class="intro-header">This section lets you manage your workspace.</p>' +
-            '<p class="intro-text">If you are logged in, you will be able to save your Epiviz analysis workspaces.' +
+            '<p class="intro-text">If you are logged in, you will be able to save your Epiviz analysis and workspaces.' +
             'You will also be able to retrieve them at a later time from your account and manage your workspaces.</p>',
             position: 'right'
           }, {
             element: '#login-link',
-            intro: '<p class="intro-text">Please login to save and manage EpiViz workspaces.</p>',
+            intro: '<p class="intro-text">Please login to save and manage Epiviz workspaces.</p>',
             position: 'left'
           }, {
-            intro: "<p class='intro-header'>Thank you for using EpiViz!</p>" +
-            '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">EpiViZ webpage</a>.</p>'
+            intro: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
+            '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>'
           }
         ]
       });
