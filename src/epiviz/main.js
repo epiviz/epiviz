@@ -48,6 +48,7 @@ epiviz.main = function() {
   if(config.useCookie == "false") {
     localStorageManager = new epiviz.localstorage.LocalStorageManager(epiviz.localstorage.LocalStorageManager.MODE.INCOGNITO_MODE);
     localStorageManager.clearWorkspace();
+    config.defaultWorkspaceSettings.content.charts = null;
   }
   else {
     localStorageManager = new epiviz.localstorage.LocalStorageManager(epiviz.localstorage.LocalStorageManager.MODE.COOKIE_MODE);
