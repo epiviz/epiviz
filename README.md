@@ -3,6 +3,8 @@ Epiviz
 
 Epiviz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.
 
+For more information, visit - http://epiviz.github.io/
+
 Using any PHP supported webserver
 ---------------------------------
 Copy the Epiviz directory to the webserver configured directory. Navigate to index.php on your browser.
