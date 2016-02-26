@@ -3,6 +3,18 @@ Epiviz
 
 Epiviz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.
 
+Using any PHP supported webserver
+---------------------------------
+Copy the Epiviz directory to the webserver configured directory. Navigate to index.php on your browser.
+
+Using PHP
+---------
+PHP (http://php.net/) lets your run local webservers. Navigate to localhost:8181 on your browser.
+To run epiviz use:
+```
+php.exe -S localhost:8181 -t <location of the epiviz directory>
+```
+
 Using with Docker
 -------------------
 
