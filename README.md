@@ -7,7 +7,7 @@ For more information, visit - http://epiviz.github.io/
 
 Using any PHP supported webserver
 ---------------------------------
-Copy the Epiviz directory to the webserver configured directory. Navigate to index.php on your browser.
+Copy the Epiviz directory to the webserver configured directory. Navigate to <webserver-ip>/epiviz/index.php on your browser.
 
 Using PHP
 ---------
