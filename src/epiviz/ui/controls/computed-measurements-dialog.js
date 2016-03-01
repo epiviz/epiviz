@@ -221,7 +221,7 @@ epiviz.ui.controls.ComputedMeasurementsDialog.prototype._addDatasourceGroupTable
 epiviz.ui.controls.ComputedMeasurementsDialog.prototype._addTabs = function() {
   var self = this;
   this._selectDialog().append(
-    '<div class="computed-measurements-dialog">' +
+    '<div id="computedMeasurementsDialog" class="computed-measurements-dialog">' +
       '<div class="computed-measurements-tabs">' +
         '<ul>' +
           sprintf('<li><a href="#datasource-group-tab-%s">Data Source Group</a></li>', this._id) +
