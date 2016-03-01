@@ -72,7 +72,7 @@ epiviz.ui.controls.Wizard.prototype._initialize = function() {
   var self = this;
   this._dialog = $('#' + this._id);
   this._dialog.append(
-    '<div class="wizard-dialog">' +
+    '<div id="wizardDialog" class="wizard-dialog">' +
       '<div class="wizard-tabs">' +
         '<ul class="wizard-tabs-title-list"></ul>' +
       '</div>' +
