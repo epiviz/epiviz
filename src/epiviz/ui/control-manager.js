@@ -481,9 +481,9 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           of: this
         });
       }
-      $( document ).one('click', function() {
+/*      $( document ).one('click', function() {
         menu.hide();
-      });
+      });*/
       return false;
     });
 
@@ -550,6 +550,8 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           '750', undefined, // size of dialog
           chartType.isRestrictedToSameDatasourceGroup()); // showTabs
         dialog.show();
+
+        visMenu.hide();
       });
     });
   }
@@ -608,6 +610,8 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       '<ul id="tutorial-list">' +
       '<li class="ui-widget-header">Tutorials</li>' +
       '<li><a href="javascript:void(0);" id="tut-epiviz-overview">EpiViz Overview</a></li>' +
+      '<li><a href="javascript:void(0);" id="tut-data-controls">Data Visualization and Controls</a></li>' +
+      '<li><a href="javascript:void(0);" id="tut-computed-measurements">Computed Measurements</a></li>' +
       '</ul>' +
       '</div>')).insertAfter(tutorialMenu);
 
@@ -632,51 +636,142 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
         of: this
       });
     }
-    $( document ).one('click', function() {
-      tutorialList.hide();
+    return false;
+  });
+
+  var intro = introJs();
+
+  $('#tut-epiviz-overview').click(function() {
+
+    intro.setOptions({
+      steps: [
+        {
+          intro: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br></p>" +
+          "<p class='intro-text'>This tutorial will walk you through the functionality available in Epiviz.</p>"
+        }, {
+          element: '#intro-navigation',
+          intro: "<p class='intro-text'>The navigation section of Epiviz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
+          "<p class='intro-text'>The settings icon allows you to control the navigation parameters.</p>",
+          position: 'right'
+        }, {
+          element: '#search-box',
+          intro: "<p class='intro-header'>Use the search input to look for a specific gene or target.</p>" +
+          "<p class='intro-text'>This will navigate Epiviz to the selected gene location and update the workspace with the new data.</p>",
+          position: 'right'
+        }, {
+          element: '#vis-menu-button',
+          intro: '<p class="intro-text">Choose from a list of available data sources, measurements or chart types to add visualizations to the Epiviz Workspace.</p>',
+          position: 'right'
+        }, {
+          element: '#intro-workspace',
+          intro: '<p class="intro-header">This section lets you manage your workspace.</p>' +
+          '<p class="intro-text">If you are logged in, you will be able to save your Epiviz analysis and workspaces.' +
+          'You will also be able to retrieve them at a later time from your account and manage your workspaces.</p>',
+          position: 'right'
+        }, {
+          element: '#login-link',
+          intro: '<p class="intro-text">Please login to save and manage Epiviz workspaces.</p>',
+          position: 'left'
+        }, {
+          intro: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
+          '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>'
+        }
+      ]
+    });
+    intro.start();
+
+    tutorialList.hide();
+  });
+
+  $('#tut-data-controls').click(function() {
+    intro.setOptions({
+      steps: [
+        {
+          intro: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br>" +
+          "Data visualization tutorial<br></p>" +
+          "<p class='intro-text'>This tutorial will help you with adding new data visualizations to the Epiviz workspace " +
+          "and controls available for charts.</p>"
+        }, {
+          element: '#vis-menu-button',
+          intro: '<p class="intro-text">The Data Visualizations button helps users add new charts to the workspace. ' +
+          'users have the option to choose data sources and measurements to add to the workspace.</p>',
+          position: 'right'
+        }, {
+          element: '#vis-menu',
+          intro: '<p class="intro-text">Choose the type of chart to add to your workspace.</p>',
+          position: 'right'
+        }, {
+          element: '#wizardDialog',
+          intro: '<p class="intro-text">This window lets you choose form a list of data sources and ' +
+          'the measurements available from each data source to add to your Epiviz workspace</p>'
+        }, {
+          element: '#feature-view',
+          intro: '<p class="intro-text">Visualizations are added to the workspace based on the type of chart. </p>' +
+          '<p>Brushing is implemented on all the plots. When you hover over a data point, it highlight the data across all the plots on the workspace</p>' +
+          '<p>options are available to remove, save or change colors for the visualization.</p>',
+          position: 'bottom'
+        }, {
+          element: $('button[title="Remove"]')[0],
+          intro: '<p class="intro-text">Removes the plot from the workspace</p>',
+          position: 'bottom',
+          disableInteraction: true
+        }, {
+          element: $('button[title="Save"]')[0],
+          intro: '<p class="intro-text">Save a plot to your local machine (image, pdf)</p>',
+          position: 'bottom',
+          disableInteraction: true
+        }, {
+          element: $('button[title="Custom settings"]')[0],
+          intro: '<p class="intro-text">Change chart display properties and aggregation methods for grouping.</p>',
+          position: 'bottom',
+          disableInteraction: true
+        }, {
+          element: $('button[title="Code"]')[0],
+          intro: '<p class="intro-text">Edit code to redraw the chart on the workspace.</p>',
+          position: 'bottom',
+          disableInteraction: true
+        }, {
+          element: $('button[title="Colors"]')[0],
+          intro: '<p class="intro-text">Choose colors for data points on the plot</p>',
+          position: 'bottom',
+          disableInteraction: true
+        }, {
+          intro: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
+          '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>'
+        }
+      ]
     });
 
-    $('#tut-epiviz-overview').click(function() {
-      var intro = introJs();
-      intro.setOptions({
-        steps: [
-          {
-            intro: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br></p>" +
-            "<p class='intro-text'>This tutorial will walk you through the functionality available in Epiviz.</p>"
-          }, {
-            element: '#intro-navigation',
-            intro: "<p class='intro-text'>The navigation section of Epiviz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
-            "<p class='intro-text'>The settings icon allows you to control the navigation parameters.</p>",
-            position: 'right'
-          }, {
-            element: '#search-box',
-            intro: "<p class='intro-header'>Use the search input to look for a specific gene or target.</p>" +
-            "<p class='intro-text'>This will navigate Epiviz to the selected gene location and update the workspace with the new data.</p>",
-            position: 'right'
-          }, {
-            element: '#vis-menu-button',
-            intro: '<p class="intro-text">Choose from a list of available data sources, measurements or chart types to add visualizations to the Epiviz Workspace.</p>',
-            position: 'right'
-          }, {
-            element: '#intro-workspace',
-            intro: '<p class="intro-header">This section lets you manage your workspace.</p>' +
-            '<p class="intro-text">If you are logged in, you will be able to save your Epiviz analysis and workspaces.' +
-            'You will also be able to retrieve them at a later time from your account and manage your workspaces.</p>',
-            position: 'right'
-          }, {
-            element: '#login-link',
-            intro: '<p class="intro-text">Please login to save and manage Epiviz workspaces.</p>',
-            position: 'left'
-          }, {
-            intro: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
-            '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>'
-          }
-        ]
-      });
-      intro.start();
+    intro.onchange(function(targetElem) {
+      var id = targetElem.id;
+
+      if(id === "vis-menu") {
+        $('#vis-menu-button').button().trigger("click");
+      }
+      else if(id === "feature-view") {
+        var parent = $('#wizardDialog').parent().attr('id');
+        $('#' + parent).dialog('close');
+      }
+
+      intro.refresh();
     });
-  return false;
+
+    intro.onbeforechange(function(targetElem) {
+      var id = targetElem.id;
+
+      if(id === "vis-menu") {
+        $('#plot-menu-add-scatter').trigger("click");
+      }
+
+      intro.refresh();
+    });
+
+    intro.start();
+
+    tutorialList.hide();
   });
+
+
 };
 
 epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
