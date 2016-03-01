@@ -683,6 +683,8 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
     tutorialList.hide();
   });
 
+  // TODO: bugs when introjs is used inside modals/dialog box
+
   $('#tut-data-controls').click(function() {
     intro.setOptions({
       steps: [
@@ -709,31 +711,31 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
           intro: '<p class="intro-text">Visualizations are added to the workspace based on the type of chart. </p>' +
           '<p>Brushing is implemented on all the plots. When you hover over a data point, it highlight the data across all the plots on the workspace</p>' +
           '<p>options are available to remove, save or change colors for the visualization.</p>',
-          position: 'bottom'
+          position: 'right'
         }, {
           element: $('button[title="Remove"]')[0],
           intro: '<p class="intro-text">Removes the plot from the workspace</p>',
-          position: 'bottom',
+          position: 'right',
           disableInteraction: true
         }, {
           element: $('button[title="Save"]')[0],
           intro: '<p class="intro-text">Save a plot to your local machine (image, pdf)</p>',
-          position: 'bottom',
+          position: 'right',
           disableInteraction: true
         }, {
           element: $('button[title="Custom settings"]')[0],
           intro: '<p class="intro-text">Change chart display properties and aggregation methods for grouping.</p>',
-          position: 'bottom',
+          position: 'right',
           disableInteraction: true
         }, {
           element: $('button[title="Code"]')[0],
           intro: '<p class="intro-text">Edit code to redraw the chart on the workspace.</p>',
-          position: 'bottom',
+          position: 'right',
           disableInteraction: true
         }, {
           element: $('button[title="Colors"]')[0],
           intro: '<p class="intro-text">Choose colors for data points on the plot</p>',
-          position: 'bottom',
+          position: 'right',
           disableInteraction: true
         }, {
           intro: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
@@ -763,6 +765,64 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
         $('#plot-menu-add-scatter').trigger("click");
       }
 
+      intro.refresh();
+    });
+
+    intro.start();
+
+    tutorialList.hide();
+  });
+
+  $('#tut-computed-measurements').click(function() {
+
+    intro.setOptions({
+      steps: [
+        {
+          intro: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br>" +
+          "Compute Measurements Tutorial<br></p>" +
+          "<p class='intro-text'>This tutorial will help you add new measurements (derived from existing measurements) and generate plots to add " +
+          "to the workspace.</p>"
+        }, {
+          element: '#computed-measurements-button',
+          intro: "<p class='intro-text'>The computed measurements button helps users " +
+          "add new measurements to data sources</p>",
+          position: 'right'
+        }, {
+          element: $('div.ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-draggable.ui-resizable.ui-dialog-buttons')[0],
+          intro: "<p class='intro-text'>This tab lets you " +
+          "choose a data source which you will use to create a new measurements.</p>",
+          position: 'right'
+        }, {
+          element: '#computedMeasurementsDialog table',
+          intro: "<p class='intro-text'>The measurements tab lists " +
+          "all available measurements from the selected data source. <br>On this screen, users will be able to add measurements " +
+          "to the expression window. <br>All mathematical operators can be used in between measurement variables to evaluate.<br>" +
+          "For a list of supported operators - please visit <a href='https://github.com/silentmatt/js-expression-eval/tree/master'>Expression Operators</a></p>",
+          position: 'right'
+        }, {
+          element: '#computedMeasurementsDialog table',
+          intro: "<p class='intro-text'>After adding a computed measurement, " +
+          "you can use the new measurement to plot data on the workspace. To add new plots, please use the Epiviz data visualization tutorial.</p>",
+          position: 'right'
+        }, {
+          intro: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
+          '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>'
+        }
+      ]
+    });
+
+    intro.onchange(function(targetElem) {
+      var id = targetElem.id;
+
+      if(id === "computed-measurements-button") {
+
+        $('#computed-measurements-button').button().trigger("click");
+      }
+      else if(id === "computedMeasurementsDialog") {
+
+        //var parent = $('#computedMeasurementsDialog').parent().attr('id');
+        $('#computedMeasurementsDialog table tbody tr td:first').trigger('click');
+      }
       intro.refresh();
     });
 
