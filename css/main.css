@@ -365,6 +365,12 @@ tfoot th input { width: 80% }
   font-weight: bold;
 }
 
+.intro-footer {
+  font-size: 125%;
+  font-weight: bold;
+  color: #ff0000;
+}
+
 .intro-text {
   font-size: 110%;
 }
