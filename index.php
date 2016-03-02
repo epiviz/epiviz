@@ -276,9 +276,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/jsPDF/FileSaver.js"></script>
     <script src="src/lib/jsPDF/jspdf.debug.js"></script>
 
-    <!-- IntroJs -->
-    <link rel="stylesheet" type="text/css" href="src/lib/introjs/introjs.css"/>
-    <script src="src/lib/introjs/intro.js"></script>
+    <!-- AnnoJS -->
+    <link rel="stylesheet" type="text/css" href="src/lib/annojs/anno.css"/>
+    <script src="src/lib/annojs/anno.js"></script>
 
     <!-- EpiViz framework -->
     <script src="src/epiviz/deferred/deferred.js"></script>
