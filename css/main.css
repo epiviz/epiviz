@@ -361,22 +361,20 @@ tfoot th input { width: 80% }
 }
 
 .intro-header {
-  font-size: 125%;
   font-weight: bold;
 }
 
 .intro-footer {
-  font-size: 125%;
   font-weight: bold;
   color: #ff0000;
 }
 
 .intro-text {
-  font-size: 110%;
 }
 
 .intro-container {
   display: inline-block;
+  padding: 5px;
 }
 
 .dropdown-menu ul li {
