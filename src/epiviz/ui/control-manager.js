@@ -645,8 +645,6 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
     return false;
   });
 
-  var intro = introJs();
-
   $('#tut-epiviz-overview').click(function() {
 
     var anno = new Anno([{
