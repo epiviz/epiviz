@@ -753,6 +753,7 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       content: '<p class="intro-text">Removes the plot from the workspace</p>',
       position: 'left',
       showOverlay: function(){},
+      className: 'anno-width-175',
       onShow: function(anno, $target, $annoElem) {
         $($('button[title="Save"]')[0]).css('display', 'inline-block');
       },
@@ -764,6 +765,7 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       content: '<p class="intro-text">Save a plot to your local machine (image, pdf)</p>',
       position: 'left',
       showOverlay: function(){},
+      className: 'anno-width-175',
       onShow: function(anno, $target, $annoElem) {
         $($('button[title="Custom settings"]')[0]).css('display', 'inline-block');
       },
@@ -775,6 +777,7 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       content: '<p class="intro-text">Change chart display properties and aggregation methods for grouping.</p>',
       position: 'left',
       showOverlay: function(){},
+      className: 'anno-width-175',
       onShow: function(anno, $target, $annoElem) {
         $($('button[title="Code"]')[0]).css('display', 'inline-block');
       },
@@ -786,6 +789,7 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       content: '<p class="intro-text">Edit code to redraw the chart on the workspace.</p>',
       position: 'left',
       showOverlay: function(){},
+      className: 'anno-width-175',
       onShow: function(anno, $target, $annoElem) {
         $($('button[title="Colors"]')[0]).css('display', 'inline-block');
       },
@@ -797,6 +801,7 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       content: '<p class="intro-text">Choose colors for data points on the plot</p>',
       position: 'left',
       showOverlay: function(){},
+      className: 'anno-width-175',
       onShow: function(anno, $target, $annoElem) {
         // TODO: ugly notation
         $($($($($('button[title="Colors"]')[0]).next()).next()).next()).next().css('display', 'inline-block');
@@ -809,6 +814,7 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
       content: '<p class="intro-text">Toggle tooltips for data points</p>',
       position: 'left',
       showOverlay: function(){},
+      className: 'anno-width-175',
       onHide: function(anno, $target, $annoElem, returnFromOnShow) {
         $($target).css('display', 'none');
       }
