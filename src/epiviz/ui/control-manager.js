@@ -13,6 +13,7 @@ goog.require('epiviz.ui.charts.ChartFactory');
 goog.require('epiviz.ui.charts.ChartManager');
 goog.require('epiviz.workspaces.WorkspaceManager');
 goog.require('epiviz.datatypes.GenomicRange');
+goog.require('epiviz.ui.tutorials');
 
 /**
  * @param {epiviz.Config} config
@@ -609,14 +610,25 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
 
   var tutorialMenu = $('#help-tutorials');
 
-  $(sprintf('<div class="dropdown-menu">' +
+  var tuts = new epiviz.ui.tutorials();
+
+  var tMenu = '<div class="dropdown-menu">' +
       '<ul id="tutorial-list">' +
-      '<li class="ui-widget-header">Tutorials</li>' +
-      '<li><a href="javascript:void(0);" id="tut-epiviz-overview">EpiViz Overview</a></li>' +
-      '<li><a href="javascript:void(0);" id="tut-data-controls">Data Visualization and Controls</a></li>' +
-      '<li><a href="javascript:void(0);" id="tut-computed-measurements">Computed Measurements</a></li>' +
-      '</ul>' +
-      '</div>')).insertAfter(tutorialMenu);
+      '<li class="ui-widget-header">Tutorials</li>';
+
+  if(tuts._tutorialList.length > 0) {
+    tuts._tutorialList.forEach(function(t) {
+      tMenu += '<li><a href="javascript:void(0);" id="' + t.id +'">' + t.name + '</a></li>';
+    });
+  }
+  else {
+    tMenu += '<li>No Tutorials available</li>';
+  }
+
+  tMenu += '</ul>' +
+      '</div>';
+
+  $(sprintf(tMenu)).insertAfter(tutorialMenu);
 
   var tutorialList = $('#tutorial-list');
 
@@ -645,266 +657,15 @@ epiviz.ui.ControlManager.prototype._initializeTutorials = function() {
     return false;
   });
 
-  $('#tut-epiviz-overview').click(function() {
-
-    var anno = new Anno([{
-      target: 'body',
-      content: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br></p>" +
-      "<p class='intro-text'>This tutorial will walk you through the functionality available in Epiviz.</p>",
-      position: 'center'
-    }, {
-      target: '#intro-navigation',
-      content: "<p class='intro-text'>The navigation section of Epiviz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
-      "<p class='intro-text'>The settings icon allows you to control the navigation parameters.</p>",
-      position: 'right'
-    }, {
-      target: '#search-box',
-      content: "<p class='intro-header'>Use the search input to look for a specific gene or target.</p>" +
-      "<p class='intro-text'>This will navigate Epiviz to the selected gene location and update the workspace with the new data.</p>",
-      position: 'right'
-    }, {
-      target: '#vis-menu-button',
-      content: '<p class="intro-text">Choose from a list of available data sources, measurements or chart types to add visualizations to the Epiviz Workspace.</p>',
-      position: 'right'
-    }, {
-      target: '#intro-workspace',
-      content: '<p class="intro-header">managing workspaces.</p>' +
-      '<p class="intro-text">If you are logged in, you will be able to save your Epiviz analysis and workspaces.' +
-      'You will also be able to retrieve them at a later time from your account.</p>',
-      position: 'right'
-    }, {
-      target: '#login-link',
-      content: '<p class="intro-text">Please login to save and manage Epiviz workspaces.</p>',
-      position: 'left'
-    }, {
-      target: 'body',
-      content: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
-      '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>',
-      position: 'center'
-    }]);
-
-    anno.show();
-    tutorialList.hide();
-  });
-
-  $('#tut-data-controls').click(function() {
-
-    var anno = new Anno([{
-      target: 'body',
-      content: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br><br>" +
-      "Data visualization tutorial<br></p>" +
-      "<p class='intro-text'>This tutorial will help create/add new data visualizations to the Epiviz workspace " +
-      "and controls available for each visualization.</p>",
-      position: 'center'
-    }, {
-      target: '#vis-menu-button',
-      content: '<p class="intro-text">The Data Visualizations button helps users add new charts to the workspace.</p>' +
-      '<p>Users have the option to choose data sources and measurements to add to the workspace.</p>',
-      position: 'right',
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $('#vis-menu-button').button().trigger("click");
-      },
-      showOverlay: function(){}
-    }, {
-      target: '#vis-menu',
-      content: '<p class="intro-text">Choose the type of chart to add to your workspace. We choose scatter plot to continue with the tutorial</p>',
-      position: 'right',
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $('#plot-menu-add-scatter').trigger("click");
-      },
-      showOverlay: function(){}
-    }, {
-      target: '#wizardDialog',
-      content: '<p class="intro-text">This window lets you choose form a list of data sources and ' +
-      'the measurements available from each data source to add to your Epiviz workspace</p>' +
-      '<p>We selected the first data source in the table or choose a data source from the list.</p>',
-      showOverlay: function(){},
-      onShow: function(anno, $target, $annoElem) {
-        $('#wizardDialog table tbody tr td:first').trigger('click');
-      },
-      position: 'right'
-    }, {
-      target: '#wizardDialog',
-      content: '<p class="intro-text">After choosing a data source, the next tab lists all the measurements (or features) ' +
-      'available from this data source. If you have any computed measurements for this data source, they will be added to this list.</p>' +
-      '<p>To add a plot to the workspace, pick a few measurements and select finish on this window. </p>',
-      showOverlay: function(){},
-      position: 'right',
-      onShow: function(anno, $target, $annoElem) {
-        $('.ui-button:contains("Next")').trigger('click');
-      }
-    }, {
-      target: '#feature-view',
-      content: '<p class="intro-text">Visualizations are added to the workspace based on the type of chart. </p>' +
-      '<p>Brushing is implemented on all the plots. When you hover over a data point, it highlight that region in the gene on all the visualizations.</p>',
-      position: {
-        top: '44em',
-        left: '14em'
-      },
-      showOverlay: function(){},
-      onShow: function(anno, $target, $annoElem) {
-        var parent = $('#wizardDialog').parent().attr('id');
-        $('#' + parent).dialog('close');
-
-        $($('button[title="Remove"]')[0]).css('display', 'inline-block');
-      }
-    }, {
-      target: $('button[title="Remove"]')[0],
-      content: '<p class="intro-text">Removes the plot from the workspace</p>',
-      position: 'left',
-      showOverlay: function(){},
-      className: 'anno-width-175',
-      onShow: function(anno, $target, $annoElem) {
-        $($('button[title="Save"]')[0]).css('display', 'inline-block');
-      },
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $($target).css('display', 'none');
-      }
-    }, {
-      target: $('button[title="Save"]')[0],
-      content: '<p class="intro-text">Save a plot to your local machine (image, pdf)</p>',
-      position: 'left',
-      showOverlay: function(){},
-      className: 'anno-width-175',
-      onShow: function(anno, $target, $annoElem) {
-        $($('button[title="Custom settings"]')[0]).css('display', 'inline-block');
-      },
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $($target).css('display', 'none');
-      }
-    }, {
-      target: $('button[title="Custom settings"]')[0],
-      content: '<p class="intro-text">Change chart display properties and aggregation methods for grouping.</p>',
-      position: 'left',
-      showOverlay: function(){},
-      className: 'anno-width-175',
-      onShow: function(anno, $target, $annoElem) {
-        $($('button[title="Code"]')[0]).css('display', 'inline-block');
-      },
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $($target).css('display', 'none');
-      }
-    }, {
-      target: $('button[title="Code"]')[0],
-      content: '<p class="intro-text">Edit code to redraw the chart on the workspace.</p>',
-      position: 'left',
-      showOverlay: function(){},
-      className: 'anno-width-175',
-      onShow: function(anno, $target, $annoElem) {
-        $($('button[title="Colors"]')[0]).css('display', 'inline-block');
-      },
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $($target).css('display', 'none');
-      }
-    }, {
-      target: $('button[title="Colors"]')[0],
-      content: '<p class="intro-text">Choose colors for data points on the plot</p>',
-      position: 'left',
-      showOverlay: function(){},
-      className: 'anno-width-175',
-      onShow: function(anno, $target, $annoElem) {
-        // TODO: ugly notation
-        $($($($($('button[title="Colors"]')[0]).next()).next()).next()).next().css('display', 'inline-block');
-      },
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $($target).css('display', 'none');
-      }
-    }, {
-      target: $($($($($('button[title="Colors"]')[0]).next()).next()).next()).next(),
-      content: '<p class="intro-text">Toggle tooltips for data points</p>',
-      position: 'left',
-      showOverlay: function(){},
-      className: 'anno-width-175',
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        $($target).css('display', 'none');
-      }
-    }, {
-      target: 'body',
-      content: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
-      '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>',
-      position: 'center'
-    }]);
-
-    anno.show();
-    tutorialList.hide();
-  });
-
-  $('#tut-computed-measurements').click(function() {
-
-    var anno = new Anno([{
-      target: 'body',
-      content: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br>" +
-      "Compute Measurements Tutorial<br></p>" +
-      "<p class='intro-text'>This tutorial will help you create new measurements (derived from existing measurements) and generate plots to add " +
-      "to the workspace.</p>",
-      position: 'center'
-    }, {
-      target: '#computed-measurements-button',
-      content: "<p class='intro-text'>The computed measurements button helps users " +
-      "add new measurements to data sources</p>",
-      position: 'right',
-      onShow: function(anno, $target, $annoElem) {
-        $('#computed-measurements-button').button().trigger("click");
-      }
-    }, {
-      target: '#computedMeasurementsDialog',
-      content: "<p class='intro-text'>This tab lets you " +
-      "choose a data source where you will create a new measurement.</p>" +
-      "<p>We choose the first data source in the list or choose any data source.</p>",
-      position: {
-        top: '20em',
-        left: '1em'
-      },
-      showOverlay: function(){},
-      onShow: function(anno, $target, $annoElem) {
-        $('#computedMeasurementsDialog table tbody tr td:first').trigger('click');
-      }
-    }, {
-      target: '#computedMeasurementsDialog',
-      content: "<p class='intro-text'>The measurements tab lists " +
-      "all available measurements from the selected data source (including previously created computed measurements).</p>" +
-      "<p>Use the buttons next to each measurement to add to the expression window</p>",
-      position: {
-        top: '20em',
-        left: '1em'
-      },
-      showOverlay: function(){},
-      onShow: function(anno, $target, $annoElem) {
-        $('.ui-button:contains("Next")').trigger('click');
-      }
-    }, {
-      target: '#computedMeasurementsDialog',
-      content: "<p class='intro-text'> After choosing measurements, use mathematical operators to evaluate the expression.</p>" +
-      "<p><a target='_blank' href='https://silentmatt.com/javascript-expression-evaluator/'>supported operators</a> </p>",
-      position: {
-        top: '33em',
-        left: '1em'
-      },
-      showOverlay: function(){}
-    }, {
-      target: '#computedMeasurementsDialog',
-      content: "<p class='intro-text'>After adding a computed measurement, " +
-      "use the data visualization button to plot the measurement to your workspace.</p>" +
-      "<p>To learn how to add new plots to the workspace, please use the Epiviz data visualization tutorial.</p>",
-      position: {
-        top: '10em',
-        left: '1em'
-      },
-      showOverlay: function(){},
-      onHide: function(anno, $target, $annoElem, returnFromOnShow) {
-        var parent = $('#computedMeasurementsDialog').parent().attr('id');
-        $('#' + parent).dialog('close');
-      }
-    }, {
-      target: 'body',
-      content: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
-      '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>',
-      position: 'center'
-    }]);
-
-    anno.show();
-    tutorialList.hide();
-  });
+  if(tuts._tutorialList.length > 0) {
+    tuts._tutorialList.forEach(function(t) {
+      $('#' + t.id).click(function() {
+        var anno = new Anno(t.tutorial);
+        anno.show();
+        tutorialList.hide();
+      });
+    });
+  }
 };
 
 epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
@@ -989,6 +750,12 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
             var lines = $(dom).find('.line-series-index-0 path');
             lines.each(function() {
               $(this).css({"fill": "none"});
+            });
+
+            //change text size to fit screen
+            var texts = $(dom).find('text');
+            texts.each(function(){
+              $(this).css({"font-size": "11px"});
             });
           }
 
