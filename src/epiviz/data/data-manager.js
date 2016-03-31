@@ -67,6 +67,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._requestRemoveChart = new epiviz.events.Event();
 
   /**
+   * @type {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestPrintWorkspace = new epiviz.events.Event();
+
+  /**
    * @type {epiviz.events.Event.<{seqInfos: Array.<epiviz.datatypes.SeqInfo>, result: epiviz.events.EventResult}>}
    * @private
    */
@@ -112,6 +118,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderRemoveMeasurements();
   this._registerProviderAddChart();
   this._registerProviderRemoveChart();
+  this._registerProviderPrintWorkspace();
   this._registerProviderAddSeqInfos();
   this._registerProviderRemoveSeqNames();
   this._registerProviderNavigate();
@@ -140,6 +147,11 @@ epiviz.data.DataManager.prototype.onRequestAddChart = function() { return this._
  * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataManager.prototype.onRequestRemoveChart = function() { return this._requestRemoveChart; };
+
+/**
+ * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestPrintWorkspace = function() { return this._requestPrintWorkspace; };
 
 /**
  * @returns {epiviz.events.Event.<{seqInfos: Array.<epiviz.datatypes.SeqInfo>, result: epiviz.events.EventResult}>}
@@ -499,6 +511,19 @@ epiviz.data.DataManager.prototype._registerProviderRemoveChart = function() {
       function(e) {
         self._requestRemoveChart.notify(e);
       }));
+  });
+};
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderPrintWorkspace = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestPrintWorkspace().addListener(new epiviz.events.EventListener(
+        function(e) {
+          self._requestPrintWorkspace.notify(e);
+        }));
   });
 };
 

@@ -177,6 +177,9 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.WRITE_DEBUG_MSG: 
         this._writeDebugMsg(request);
         break;
+      case Action.PRINT_WORKSPACE:
+            this._printWorkspace(request);
+            break;
     }
   }
 };
@@ -505,4 +508,22 @@ epiviz.data.WebsocketDataProvider.prototype._writeDebugMsg = function(request) {
     var response = new epiviz.data.Response(request.id(), {msg: "that msg"});
     document.getElementById("chart-container").appendChild(msgDiv);
     this._sendMessage(JSON.stringify(response.raw()));
+};
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._printWorkspace = function (request) {
+  var fName = request.get('fileName');
+  var fType = request.get('fileType');
+  var result = new epiviz.events.EventResult();
+  this._fireEvent(this.onRequestPrintWorkspace(), {
+    fileName: fName,
+    fileType: fType,
+    result: result
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
 };
