@@ -281,6 +281,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/lib/annojs/anno.js"></script>
 
     <!-- EpiViz framework -->
+    <script src="src/epiviz/ui/print-manager.js"></script>
+
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/deferred/promise.js"></script>
     <script src="src/epiviz/utils/utils.js"></script>
@@ -405,7 +407,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
 
     <script src="src/epiviz/ui/tutorial.js"></script>
-    <script src="src/epiviz/ui/print-manager.js"></script>
 
     <script src="src/epiviz/datatypes/genomic-range.js"></script>
     <script src="src/epiviz/ui/location-manager.js"></script>
