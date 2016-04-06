@@ -92,6 +92,9 @@
     <script src="src/lib/annojs/anno.js"></script>
 
     <!-- EpiViz framework -->
+
+    <script src="src/epiviz/ui/print-manager.js"></script>
+
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/deferred/promise.js"></script>
     <script src="src/epiviz/utils/utils.js"></script>
@@ -212,7 +215,6 @@
     <script src="src/epiviz/workspaces/workspace-manager.js"></script>
 
     <script src="src/epiviz/ui/tutorial.js"></script>
-    <script src="src/epiviz/ui/print-manager.js"></script>
 
     <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
 
@@ -287,15 +289,17 @@
           <img src="img/epiviz_4_logo_medium.png" alt="EpiViz" width="100" height="21" />
         </div>
 
-        <select id="chromosome-selector"></select>
-        <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
-        <button id="moveleft">Slide left</button>
-        <button id="moveright">Slide right</button>
+        <div id="intro-navigation" class="intro-container">
+          <select id="chromosome-selector"></select>
+          <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
+          <button id="moveleft">Slide left</button>
+          <button id="moveright">Slide right</button>
 
-        <button id="zoomin">Zoom in</button>
-        <button id="zoomout">Zoom out</button>
+          <button id="zoomin">Zoom in</button>
+          <button id="zoomout">Zoom out</button>
 
-        <button id="location-settings">Location Settings...</button>
+          <button id="location-settings">Location Settings...</button>
+        </div>
 
         <span class="separator">|</span>
 
@@ -313,15 +317,19 @@
 
         <span class="separator">|</span>
 
-        <label for="save-workspace-text"></label>
-        <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
-        <button id="save-workspace-button">Save Workspace</button>
-        <button id="revert-workspace-button">Revert Workspace Changes</button>
-        <button id="delete-workspace-button">Delete Active Workspace</button>
+        <div id="intro-workspace" class="intro-container">
+          <label for="save-workspace-text"></label>
+          <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
+          <button id="save-workspace-button">Save Workspace</button>
+          <button id="revert-workspace-button">Revert Workspace Changes</button>
+          <button id="delete-workspace-button">Delete Active Workspace</button>
+        </div>
 
         <span class="separator">|</span>
 
         <button id="help-button">Help</button>
+        <button id="help-tutorials">Tutorials</button>
+        <button id="save-page">Screenshot</button>
       </div>
     </div>
 
