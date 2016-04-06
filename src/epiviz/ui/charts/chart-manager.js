@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.charts.ChartManager');
 
+goog.require('epiviz.ui.PrintManager');
+
 /**
  * @param {epiviz.Config} config
  * @constructor
@@ -483,16 +485,28 @@ epiviz.ui.charts.ChartManager.prototype._registerChartRemove = function(chart) {
  */
 epiviz.ui.charts.ChartManager.prototype._registerChartSave = function(chart) {
   var self = this;
-  chart.onSave().addListener(new epiviz.events.EventListener(
-    /** @param {epiviz.ui.charts.VisEventArgs} e */
-    function(e) {
-    var saveSvgDialog = new epiviz.ui.controls.SaveSvgAsImageDialog(
-      {ok: function(){}, cancel: function(){}},
-      e.id,
-      self._config.dataServerLocation + self._config.chartSaverLocation);
 
-    saveSvgDialog.show();
-  }));
+  if(self._config.configType == "standalone") {
+    chart.onSave().addListener(new epiviz.events.EventListener(
+        /** @param {epiviz.ui.charts.VisEventArgs} e */
+        function(e) {
+          var pm = new epiviz.ui.PrintManager(e.id, "epiviz_" + Math.floor($.now() / 1000), "pdf");
+          pm.print();
+        }));
+  }
+  else {
+    chart.onSave().addListener(new epiviz.events.EventListener(
+        /** @param {epiviz.ui.charts.VisEventArgs} e */
+        function(e) {
+          var saveSvgDialog = new epiviz.ui.controls.SaveSvgAsImageDialog(
+              {ok: function(){}, cancel: function(){}},
+              e.id,
+              self._config.dataServerLocation + self._config.chartSaverLocation);
+
+          saveSvgDialog.show();
+        }));
+  }
+
 };
 
 /**

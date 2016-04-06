@@ -3,9 +3,9 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
-    <title>EpiViz 3</title>
+    <title>EpiViz 4</title>
 
-    <link rel="shortcut icon" href="img/epiviz_2_icon.png"/>
+    <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
 
     <!-- CSS -->
 
@@ -13,7 +13,7 @@
     <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
 
     <!-- JQuery UI -->
-    <link href="css/theme/jquery-ui-1.8.9.custom.css" rel="stylesheet">
+    <link href="css/theme/jquery-ui-1.8.9.custom.css" rel="stylesheet"/>
     <link href="css/theme/jquery.ui.selectmenu.css" rel="stylesheet"/>
     <link href="css/theme/ui.panel.css" rel="stylesheet"/>
     <link href="css/theme/ui.multiselect.css" rel="stylesheet"/>
@@ -49,11 +49,8 @@
     <script src="src/lib/jquery/DataTables-1.9.4/extras/ColumnFilter/media/js/jquery.dataTables.columnFilter.js"></script>
     <script src="src/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
 
-    <!--<script src="src/lib/caja/caja.js"></script>-->
-    <!---<script src="//caja.appspot.com/caja.js"></script>-->
-
     <!-- D3 -->
-    <script src="src/lib/d3/d3.v3.min.js"></script>
+    <script src="src/lib/d3/d3.v3.js"></script>
 
     <!-- String formatting -->
     <script src="src/lib/sprintf-0.6.js"></script>
@@ -61,27 +58,45 @@
 
     <!-- Expression evaluation -->
     <script src="src/lib/expression-parser/parser.js"></script>
-    
+
     <!-- Code editor -->
     <script src="src/lib/codemirror-4.5/lib/codemirror.js"></script>
     <script src="src/lib/codemirror-4.5/addon/edit/matchbrackets.js"></script>
     <script src="src/lib/codemirror-4.5/addon/comment/continuecomment.js"></script>
     <script src="src/lib/codemirror-4.5/addon/comment/comment.js"></script>
     <script src="src/lib/codemirror-4.5/mode/javascript/javascript.js"></script>
-    
-    <!-- File upload -->
-    <!-- <script src="src/file-upload/webtoolkit.aim.js"></script> -->
 
     <!-- Google Closure -->
     <script src="src/lib/closure/goog/base.js"></script>
     <script src="src/lib/closure/goog/structs/collection.js"></script>
 
+    <!-- lightweight es6 promises -->
+    <script src="src/lib/es6-promise/Promise.js"></script>
+
+    <!-- canvg -->
+    <script src="src/lib/canvg/rgbcolor.js"></script>
+    <script src="src/lib/canvg/StackBlur.js"></script>
+    <script src="src/lib/canvg/canvg.js"></script>
+
+    <!-- html2canvas -->
+    <script src="src/lib/html2canvas/html2canvas.js"></script>
+    <script src="src/lib/html2canvas/html2canvas.svg.js"></script>
+
+    <!-- jsPDF -->
+    <script src="src/lib/jsPDF/BlobBuilder.js"></script>
+    <script src="src/lib/jsPDF/FileSaver.js"></script>
+    <script src="src/lib/jsPDF/jspdf.debug.js"></script>
+
+    <!-- AnnoJS -->
+    <link rel="stylesheet" type="text/css" href="src/lib/annojs/anno.css"/>
+    <script src="src/lib/annojs/anno.js"></script>
+
     <!-- EpiViz framework -->
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/deferred/promise.js"></script>
     <script src="src/epiviz/utils/utils.js"></script>
+    <script src="src/epiviz/caja/caja-standalone.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
-    <script src="src/epiviz/utils/farbtastic.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
     <script src="src/epiviz/utils/iterable-array.js"></script>
     <script src="src/epiviz/config.js"></script>
@@ -108,7 +123,7 @@
     <script src="src/epiviz/data/empty-response-data-provider.js"></script>
     <script src="src/epiviz/data/websocket-data-provider.js"></script>
     <script src="src/epiviz/data/webserver-data-provider.js"></script>
-    <script src="src/epiviz/data/mock-data-provider.js"></script>
+    <script src="src/epiviz/data/metagenomics-data-provider.js"></script> <!-- TODO: Delete! -->
 
     <script src="src/epiviz/datatypes/seq-info.js"></script>
     <script src="src/epiviz/datatypes/genomic-array.js"></script>
@@ -160,9 +175,13 @@
     <script src="src/epiviz/ui/charts/chart.js"></script>
     <script src="src/epiviz/ui/charts/track.js"></script>
     <script src="src/epiviz/ui/charts/plot.js"></script>
+    <script src="src/epiviz/ui/charts/data-structure-visualization.js"></script>
+    <script src="src/epiviz/ui/charts/tree/hierarchy-visualization.js"></script>
     <script src="src/epiviz/ui/charts/chart-type.js"></script>
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
+    <script src="src/epiviz/ui/charts/data-structure-visualization-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/hierarchy-visualization-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
 
     <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
@@ -192,6 +211,9 @@
     <script src="src/epiviz/workspaces/workspace.js"></script>
     <script src="src/epiviz/workspaces/workspace-manager.js"></script>
 
+    <script src="src/epiviz/ui/tutorial.js"></script>
+    <script src="src/epiviz/ui/print-manager.js"></script>
+
     <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
 
     <script src="src/epiviz/datatypes/genomic-range.js"></script>
@@ -211,7 +233,6 @@
     <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
     <script src="src/epiviz/ui/controls/computed-measurements-dialog.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
-
     <script src="src/epiviz/ui/controls/code-control.js"></script>
     <script src="src/epiviz/ui/controls/edit-code-control.js"></script>
     <script src="src/epiviz/ui/controls/marker-code-control.js"></script>
@@ -234,37 +255,36 @@
     <script src="src/epiviz/plugins/charts/stacked-line-plot.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-plot-type.js"></script>
 
-    <script src="src/epiviz/main.js"></script>
+    <script src="src/epiviz/ui/charts/tree/node-selection-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/node.js"></script>
+    <script src="src/epiviz/ui/charts/tree/ui-node.js"></script>
+    <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
+    <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
+    <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
 
-    <!-- Dynamic initializations -->
+    <script src="src/epiviz/ui/charts/tree/decoration/toggle-propagate-selection-button.js"></script>
+
+    <script src="src/epiviz/main.js"></script>
     <script src="src/epiviz/standalone-settings.js"></script>
 
-    <! -- Check if requesting websocket -->
     <script>
-        var re = new RegExp("websocket=true")
-        if (re.test(location.search)) {
-             epiviz.EpiViz.SETTINGS.dataProviders.push(
-                sprintf('epiviz.data.WebsocketDataProvider,%s,%s', 
-                   epiviz.data.WebsocketDataProvider.DEFAULT_ID, 
-                   sprintf("ws://%s", window.location.host)))
-        }
+      epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.extractWindowLocationArgs();
+      epiviz.workspaces.UserManager.USER_STATUS = {
+        loggedIn: false,
+        oauthProvider: null,
+        userData: null
+      };
+      $(function() {
+        epiviz.main();
+      });
     </script>
-    <script>
-        epiviz.workspaces.UserManager.USER_STATUS = { loggedIn: false };
-    </script>
-
-  <script>
-  // Run main once the page has loaded
-  $(epiviz.main);
-  </script>
-
   </head>
   <body>
     <div class="ui-layout-north">
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/epiviz_3_logo_medium.png" alt="EpiViz" width="100" height="24" />
+          <img src="img/epiviz_4_logo_medium.png" alt="EpiViz" width="100" height="21" />
         </div>
 
         <select id="chromosome-selector"></select>
@@ -293,34 +313,27 @@
 
         <span class="separator">|</span>
 
-        <!--<label for="save-workspace-text"></label>-->
-        <!--<input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>-->
-        <!--<button id="save-workspace-button">Save Workspace</button>-->
-        <!--<button id="delete-workspace-button">Delete Active Workspace</button>-->
+        <label for="save-workspace-text"></label>
+        <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
+        <button id="save-workspace-button">Save Workspace</button>
+        <button id="revert-workspace-button">Revert Workspace Changes</button>
+        <button id="delete-workspace-button">Delete Active Workspace</button>
 
-        <!--<span class="separator">|</span>-->
+        <span class="separator">|</span>
 
         <button id="help-button">Help</button>
       </div>
     </div>
 
     <div id="pagemain" class="ui-layout-center">
-      <div id="top-accordion">
-        <h3><a href="#"><b><span style="color: #025167">Views by Feature</span></b></a></h3>
-        <div id="chart-container"></div>
-      </div>
-      <div id="bottom-accordion">
-          <h3><a href="#"><b><span style="color: #025167">Views by Location</span></b></a></h3>
-          <div id="track-container"></div>
-      </div>
+      <div id="feature-view"></div>
+      <div id="location-view"></div>
+      <div id="data-structure-view"></div>
     </div>
 
-    <div class="ui-layout-east"></div>
     <div id="pagefooter" class="ui-layout-south"></div>
 
-
     <div id="dialogs">
-
       <div id="location-settings-dialog" title="Location Settings">
         <table>
           <tr>

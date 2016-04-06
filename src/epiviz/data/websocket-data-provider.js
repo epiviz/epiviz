@@ -515,10 +515,12 @@ epiviz.data.WebsocketDataProvider.prototype._writeDebugMsg = function(request) {
  * @private
  */
 epiviz.data.WebsocketDataProvider.prototype._printWorkspace = function (request) {
+  var ctrId = request.get('chartId');
   var fName = request.get('fileName');
   var fType = request.get('fileType');
   var result = new epiviz.events.EventResult();
   this._fireEvent(this.onRequestPrintWorkspace(), {
+    ctrId: ctrId,
     fileName: fName,
     fileType: fType,
     result: result
