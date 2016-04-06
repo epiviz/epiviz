@@ -405,6 +405,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
 
     <script src="src/epiviz/ui/tutorial.js"></script>
+    <script src="src/epiviz/ui/print-manager.js"></script>
 
     <script src="src/epiviz/datatypes/genomic-range.js"></script>
     <script src="src/epiviz/ui/location-manager.js"></script>
@@ -451,8 +452,6 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
-
-
 
     <script src="src/epiviz/ui/charts/tree/decoration/toggle-propagate-selection-button.js"></script>
 

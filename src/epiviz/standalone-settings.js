@@ -14,6 +14,7 @@ epiviz.Config.SETTINGS = {
   dataServerLocation: '', // TODO: Fill in
 
   chartSaverLocation: 'src/chart_saving/save_svg.php',
+  configType: 'standalone',
 
   // Navigation settings
 

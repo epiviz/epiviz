@@ -10,6 +10,7 @@ goog.require('epiviz.Config');
 goog.require('epiviz.data.DataProviderFactory');
 goog.require('epiviz.data.DataManager');
 goog.require('epiviz.data.DataProvider');
+goog.require('epiviz.ui.PrintManager');
 
 
 /**
@@ -571,7 +572,9 @@ epiviz.EpiViz.prototype._registerPrintWorkspace = function() {
        */
       function(e) {
         try {
-          self._controlManager.printWorkspace(e.fileName, e.fileType);
+          var pm = new epiviz.ui.PrintManager(e.chartId, e.fileName, e.fileType);
+          pm.print();
+          //self._controlManager.printWorkspace(e.chartId, e.fileName, e.fileType);
           e.result.success = true;
         } catch (error) {
           e.result.success = false;

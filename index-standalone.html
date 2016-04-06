@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
-    <title>EpiViz 3</title>
+    <title>EpiViz 4</title>
 
     <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
 
@@ -69,6 +69,27 @@
     <!-- Google Closure -->
     <script src="src/lib/closure/goog/base.js"></script>
     <script src="src/lib/closure/goog/structs/collection.js"></script>
+
+    <!-- lightweight es6 promises -->
+    <script src="src/lib/es6-promise/Promise.js"></script>
+
+    <!-- canvg -->
+    <script src="src/lib/canvg/rgbcolor.js"></script>
+    <script src="src/lib/canvg/StackBlur.js"></script>
+    <script src="src/lib/canvg/canvg.js"></script>
+
+    <!-- html2canvas -->
+    <script src="src/lib/html2canvas/html2canvas.js"></script>
+    <script src="src/lib/html2canvas/html2canvas.svg.js"></script>
+
+    <!-- jsPDF -->
+    <script src="src/lib/jsPDF/BlobBuilder.js"></script>
+    <script src="src/lib/jsPDF/FileSaver.js"></script>
+    <script src="src/lib/jsPDF/jspdf.debug.js"></script>
+
+    <!-- AnnoJS -->
+    <link rel="stylesheet" type="text/css" href="src/lib/annojs/anno.css"/>
+    <script src="src/lib/annojs/anno.js"></script>
 
     <!-- EpiViz framework -->
     <script src="src/epiviz/deferred/deferred.js"></script>
@@ -190,6 +211,9 @@
     <script src="src/epiviz/workspaces/workspace.js"></script>
     <script src="src/epiviz/workspaces/workspace-manager.js"></script>
 
+    <script src="src/epiviz/ui/tutorial.js"></script>
+    <script src="src/epiviz/ui/print-manager.js"></script>
+
     <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
 
     <script src="src/epiviz/datatypes/genomic-range.js"></script>
@@ -260,7 +284,7 @@
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/epiviz_3_logo_medium.png" alt="EpiViz" width="100" height="21" />
+          <img src="img/epiviz_4_logo_medium.png" alt="EpiViz" width="100" height="21" />
         </div>
 
         <select id="chromosome-selector"></select>
