@@ -135,7 +135,11 @@ epiviz.ui.PrintManager.prototype.print = function() {
         var image = canvas.toDataURL("image/png");
 
         if(format == "pdf") {
-            var jsdoc = new jsPDF('p', 'px', [container.height(), container.width()]);
+
+            var dWidth = container.width() > 800 ? container.width() : 800;
+            var dHeight = container.height() > 800 ? container.height() : 800;
+
+            var jsdoc = new jsPDF('p', 'px', [dHeight, dWidth]);
 
             function toDataUrl(url, callback, outputFormat){
                 var img = new Image();
