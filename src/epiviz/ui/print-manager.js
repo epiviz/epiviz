@@ -84,6 +84,11 @@ epiviz.ui.PrintManager.prototype.print = function() {
         texts.each(function(){
             $(this).css({"font-size": "11px"});
         });
+
+        var cLegends = $(dom).find('.chart-legend');
+        cLegends.each(function() {
+            $(this).css({"border": "none", "background": "transparent"});
+        })
     }
 
     // html2canvas has issues with svg elements on ff and IE.
@@ -136,21 +141,22 @@ epiviz.ui.PrintManager.prototype.print = function() {
 
         if(format == "pdf") {
 
-            var dWidth = container.width() > 800 ? container.width() : 800;
-            var dHeight = container.height() > 800 ? container.height() : 800;
+            var dWidth = container.width() > 1200 ? container.width() : 1200;
+            var dHeight = container.height() > 780 ? container.height() : 780;
 
-            var jsdoc = new jsPDF('p', 'px', [dHeight, dWidth]);
+            var jsdoc = new jsPDF('l', 'px', [dWidth * 0.6, dHeight * 0.65]);
 
             function toDataUrl(url, callback, outputFormat){
                 var img = new Image();
-                img.crossOrigin = 'Anonymous';
+                //img.crossOrigin = 'Anonymous';
                 img.onload = function(){
-                    var canvas = document.createElement('CANVAS');
+                    var canvas = document.createElement('canvas');
                     var ctx = canvas.getContext('2d');
                     var dataURL;
                     canvas.height = this.height;
                     canvas.width = this.width;
                     ctx.drawImage(this, 0, 0);
+
                     dataURL = canvas.toDataURL(outputFormat);
                     callback(dataURL);
                     canvas = null;
