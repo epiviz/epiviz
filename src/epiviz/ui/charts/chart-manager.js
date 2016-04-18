@@ -633,3 +633,23 @@ epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchyChanges 
     }));
   }
 };
+
+epiviz.ui.charts.ChartManager.prototype.getChartSettings = function(id) {
+
+  var chart = this._charts[id];
+  var result = {};
+  //result['defs'] = chart.properties().customSettingsDefs;
+  result['settings'] = chart.customSettingsValues();
+  result['colorMap'] = chart.properties().colors;
+  return result;
+
+};
+
+epiviz.ui.charts.ChartManager.prototype.setChartSettings = function(id, settings, colorMap) {
+
+  var chart = this._charts[id];
+  chart.setCustomSettingsValues(settings);
+  chart.setColors(colorMap);
+  chart.draw();
+};
+
