@@ -58,6 +58,10 @@ epiviz.data.Request.Action = {
   GET_HIERARCHY: 'getHierarchy',
   PROPAGATE_HIERARCHY_CHANGES: 'propagateHierarchyChanges',
 
+  GET_CHART_SETTINGS: 'getChartSettings',
+  SET_CHART_SETTINGS: 'setChartSettings',
+  GET_AVAILABLE_CHARTS: 'getAvailableCharts',
+
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
   REMOVE_MEASUREMENTS: 'removeMeasurements',
