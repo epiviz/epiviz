@@ -17,7 +17,7 @@ To run epiviz use:
 php.exe -S localhost:8181 -t <location of the epiviz directory>
 ```
 
-Using with Docker
+Using Docker
 -------------------
 
 This repository includes a `Dockerfile` to run a webserver that serves
