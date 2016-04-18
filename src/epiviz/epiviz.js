@@ -123,6 +123,9 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerDataRedraw();
   this._registerDataGetCurrentLocation();
   this._registerPrintWorkspace();
+  this._registerDataSetChartSettings();
+  this._registerDataGetChartSettings();
+  this._registerDataGetAvailableCharts();
 
   // Register for Workspace events
 
@@ -582,6 +585,76 @@ epiviz.EpiViz.prototype._registerPrintWorkspace = function() {
         }
       }));
 };
+
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataSetChartSettings = function() {
+  var self = this;
+  this._dataManager.onRequestSetChartSettings().addListener(new epiviz.events.EventListener(
+      /**
+       * @param {{id: string, settings: Array, result: epiviz.events.EventResult}} e
+       */
+      function(e) {
+        try {
+            self._chartManager.setChartSettings(e.chartId, e.settings, e.colorMap);
+            e.result.success = true;
+          } catch(error) {
+            e.result.success = false;
+            e.result.errorMessage = error.toString();
+          }
+        })
+  );
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataGetChartSettings = function() {
+  var self = this;
+  this._dataManager.onRequestGetChartSettings().addListener(new epiviz.events.EventListener(
+      /**
+       * @param {{id: string, settings: Array, result: epiviz.events.EventResult}} e
+       */
+      function(e) {
+        try {
+          self._chartManager.getChartSettings(e.chartId);
+          e.result.success = true;
+        } catch(error) {
+          e.result.success = false;
+          e.result.errorMessage = error.toString();
+        }
+      })
+  );
+};
+
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataGetAvailableCharts = function() {
+  var self = this;
+  this._dataManager.onRequestGetChartSettings().addListener(new epiviz.events.EventListener(
+      /**
+       * @param {{id: string, settings: Array, result: epiviz.events.EventResult}} e
+       */
+      function(e) {
+        try {
+          e.result.value = [];
+          self._chartFactory.foreach(function(chartName, chartType) {
+            e.result.value.push({'chartName': chartName, 'customSettings': chartType.customSettingsDefs()});
+          });
+          e.result.success = true;
+        } catch(error) {
+          e.result.success = false;
+          e.result.errorMessage = error.toString();
+        }
+      })
+  );
+};
+
+
 
 /**
  * @private

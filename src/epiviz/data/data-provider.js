@@ -89,6 +89,26 @@ epiviz.data.DataProvider = function(id) {
    * @private
    */
   this._requestPrintWorkspace = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestSetChartSettings = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestGetChartSettings = new epiviz.events.Event();
+
+  /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestGetAvailableCharts = new epiviz.events.Event();
+
+
 };
 
 /**
@@ -171,3 +191,18 @@ epiviz.data.DataProvider.prototype.onRequestCurrentLocation = function() { retur
  * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataProvider.prototype.onRequestPrintWorkspace = function() { return this._requestPrintWorkspace; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataProvider.prototype.onRequestGetChartSettings = function() { return this._requestGetChartSettings; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataProvider.prototype.onRequestSetChartSettings = function() { return this._requestSetChartSettings; };
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataProvider.prototype.onRequestGetAvailableCharts = function() { return this._requestGetAvailableCharts; };
