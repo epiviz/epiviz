@@ -38,12 +38,16 @@ epiviz.data.Response.prototype.data = function() {
 
   var data = this._data;
 
-  // for getMeasurements and getSeqInfo requests!
+  // for getMeasurements and getSeqInfo response!
   var all_keys = Object.keys(data);
   if(all_keys.length > 0) {
-    if (all_keys.indexOf('measurements') != -1 || all_keys.indexOf('seqInfos') != -1) {
+    if (all_keys.indexOf('success') != -1) {
       all_keys.splice(all_keys.indexOf('success'), 1);
-      return JSON.parse(data[all_keys[0]]);
+      delete data['success'];
+      //for SeqInfo response
+/*      if(all_keys.indexOf("") != -1) {
+        return data[all_keys[0]];
+      }*/
     }
   }
   return data;
