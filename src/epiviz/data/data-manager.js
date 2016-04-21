@@ -249,7 +249,6 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
         var seqs = response.data();
         if (seqs) {
           if(!Array.isArray(seqs)) {
-            seqs = seqs[""];
             var keys = Object.keys(seqs);
             for (var i=0; i<keys.length; i++) {
               if (!(keys[i] in existingSeqNames)) {
