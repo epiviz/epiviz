@@ -254,10 +254,22 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
       function(response) {
         var seqs = response.data();
         if (seqs) {
-          for (var i = 0; i < seqs.length; ++i) {
-            if (!(seqs[i][0] in existingSeqNames)) {
-              result.push(epiviz.datatypes.SeqInfo.fromRawObject(seqs[i]));
-              existingSeqNames[seqs[i][0]] = true;
+          if(!Array.isArray(seqs)) {
+            seqs = seqs[""];
+            var keys = Object.keys(seqs);
+            for (var i=0; i<keys.length; i++) {
+              if (!(keys[i] in existingSeqNames)) {
+                result.push(epiviz.datatypes.SeqInfo.fromRawObject([keys[i], seqs[keys[i]][0], seqs[keys[i][1]]]));
+                existingSeqNames[keys[i]] = true;
+              }
+            }
+          }
+          else {
+            for (var i = 0; i < seqs.length; ++i) {
+              if (!(seqs[i][0] in existingSeqNames)) {
+                result.push(epiviz.datatypes.SeqInfo.fromRawObject(seqs[i]));
+                existingSeqNames[seqs[i][0]] = true;
+              }
             }
           }
         }
