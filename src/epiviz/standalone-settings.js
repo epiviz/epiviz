@@ -26,7 +26,7 @@ epiviz.Config.SETTINGS = {
 
   // Plug-ins
 
-  dataProviders: [],
+  dataProviders: [sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', '')],
 
   workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
 
@@ -190,41 +190,14 @@ epiviz.Config.SETTINGS = {
   },
 
   defaultWorkspaceSettings: {
-    name: epiviz.Config.DEFAULT_WORKSPACE_NAME,
+    name: 'Standalone',
     content: {
       range: {
-        seqName: 'chr11',
-        start: 99800000,
-        width: 3583180
       },
       measurements: [
-        {
-          id: 'genes',
-          name: 'Genes',
-          type: 'range',
-          datasourceId: 'genes',
-          datasourceGroup: 'genes',
-          dataprovider: epiviz.Config.DEFAULT_DATA_PROVIDER_ID,
-          formula: null,
-          defaultChartType: 'Genes Track',
-          annotation: null,
-          minValue: null,
-          maxValue: null,
-          metadata: ['gene', 'entrez', 'exon_starts', 'exon_ends']
-        }
       ],
       charts: {
         track: [
-          {
-            id: 'track-genes-initial',
-            type: 'epiviz.plugins.charts.GenesTrack',
-            properties: { width: 837, height: 120,
-              margins: { top: 25, left: 20, bottom: 23, right: 10 },
-              measurements: [0],
-              colors: { id: 'genes-default' },
-              customSettings: {}
-            }
-          }
         ],
         plot: []
       }
