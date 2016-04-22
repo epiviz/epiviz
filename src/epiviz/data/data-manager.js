@@ -252,7 +252,7 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
             var keys = Object.keys(seqs);
             for (var i=0; i<keys.length; i++) {
               if (!(keys[i] in existingSeqNames)) {
-                result.push(epiviz.datatypes.SeqInfo.fromRawObject([keys[i], seqs[keys[i]][0], seqs[keys[i][1]]]));
+                result.push(epiviz.datatypes.SeqInfo.fromRawObject([keys[i], seqs[keys[i]][0], seqs[keys[i]][1]]));
                 existingSeqNames[keys[i]] = true;
               }
             }

@@ -166,12 +166,14 @@ epiviz.Config = function(settingsMap) {
       this[setting] = settingsMap[setting];
     }
 
-    var socketHosts = epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'];
-    if (socketHosts && socketHosts.length) {
-      for (var i = 0; i < socketHosts.length; ++i) {
-        this.dataProviders.push(sprintf('epiviz.data.WebsocketDataProvider,%s,%s',
-          epiviz.data.WebsocketDataProvider.DEFAULT_ID + '-' + i,
-          socketHosts[i]));
+    if(settingsMap.configType != 'standalone') {
+      var socketHosts = epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'];
+      if (socketHosts && socketHosts.length) {
+        for (var i = 0; i < socketHosts.length; ++i) {
+          this.dataProviders.push(sprintf('epiviz.data.WebsocketDataProvider,%s,%s',
+              epiviz.data.WebsocketDataProvider.DEFAULT_ID + '-' + i,
+              socketHosts[i]));
+        }
       }
     }
   }
