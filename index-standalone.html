@@ -270,13 +270,13 @@
     <script src="src/epiviz/standalone-settings.js"></script>
 
     <script>
-      epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.extractWindowLocationArgs();
-      epiviz.workspaces.UserManager.USER_STATUS = {
-        loggedIn: false,
-        oauthProvider: null,
-        userData: null
-      };
       $(function() {
+        epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.extractWindowLocationArgs();
+        epiviz.workspaces.UserManager.USER_STATUS = {
+          loggedIn: false,
+          oauthProvider: null,
+          userData: null
+        };
         epiviz.main();
       });
     </script>
