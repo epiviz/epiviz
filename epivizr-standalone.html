@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="EpiViz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
     <title>EpiViz 4</title>
@@ -268,45 +268,46 @@
 
     <script src="src/epiviz/main.js"></script>
     <script src="src/epiviz/standalone-settings.js"></script>
+    <script src="epivizr-settings.js"></script>
 
     <script>
-      $(function() {
-        epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.extractWindowLocationArgs();
-        epiviz.workspaces.UserManager.USER_STATUS = {
-          loggedIn: false,
-          oauthProvider: null,
-          userData: null
-        };
+        $(function() {
+            epiviz.ui.WebArgsManager.WEB_ARGS = epiviz.ui.WebArgsManager.extractWindowLocationArgs();
+            epiviz.workspaces.UserManager.USER_STATUS = {
+                loggedIn: false,
+                oauthProvider: null,
+                userData: null
+            };
 
-        epiviz.main();
-      });
+            epiviz.main();
+        });
     </script>
-  </head>
-  <body>
-    <div class="ui-layout-north">
+</head>
+<body>
+<div class="ui-layout-north">
 
-      <div id="toolbar" class="toolbar-header">
+    <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/epiviz_4_logo_medium.png" alt="EpiViz" width="100" height="21" />
+            <img src="img/epiviz_4_logo_medium.png" alt="EpiViz" width="100" height="21" />
         </div>
 
         <div id="intro-navigation" class="intro-container">
-          <select id="chromosome-selector"></select>
-          <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
-          <button id="moveleft">Slide left</button>
-          <button id="moveright">Slide right</button>
+            <select id="chromosome-selector"></select>
+            <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
+            <button id="moveleft">Slide left</button>
+            <button id="moveright">Slide right</button>
 
-          <button id="zoomin">Zoom in</button>
-          <button id="zoomout">Zoom out</button>
+            <button id="zoomin">Zoom in</button>
+            <button id="zoomout">Zoom out</button>
 
-          <button id="location-settings">Location Settings...</button>
+            <button id="location-settings">Location Settings...</button>
         </div>
 
         <span class="separator">|</span>
 
         <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">
-          <ul id="vis-menu"></ul>
+            <ul id="vis-menu"></ul>
         </div>
 
         <button id="computed-measurements-button">Computed Measurements</button>
@@ -319,11 +320,11 @@
         <span class="separator">|</span>
 
         <div id="intro-workspace" class="intro-container">
-          <label for="save-workspace-text"></label>
-          <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text" disabled/>
-          <button id="save-workspace-button" disabled>Save Workspace</button>
-          <button id="revert-workspace-button" disabled>Revert Workspace Changes</button>
-          <button id="delete-workspace-button" disabled>Delete Active Workspace</button>
+            <label for="save-workspace-text"></label>
+            <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text" disabled/>
+            <button id="save-workspace-button" disabled>Save Workspace</button>
+            <button id="revert-workspace-button" disabled>Revert Workspace Changes</button>
+            <button id="delete-workspace-button" disabled>Delete Active Workspace</button>
         </div>
 
         <span class="separator">|</span>
@@ -331,36 +332,36 @@
         <button id="help-button">Help</button>
         <button id="help-tutorials">Tutorials</button>
         <button id="save-page">Screenshot</button>
-      </div>
     </div>
+</div>
 
-    <div id="pagemain" class="ui-layout-center">
-      <div id="feature-view"></div>
-      <div id="location-view"></div>
-      <div id="data-structure-view"></div>
-    </div>
+<div id="pagemain" class="ui-layout-center">
+    <div id="feature-view"></div>
+    <div id="location-view"></div>
+    <div id="data-structure-view"></div>
+</div>
 
-    <div id="pagefooter" class="ui-layout-south"></div>
+<div id="pagefooter" class="ui-layout-south"></div>
 
-    <div id="dialogs">
-      <div id="location-settings-dialog" title="Location Settings">
+<div id="dialogs">
+    <div id="location-settings-dialog" title="Location Settings">
         <table>
-          <tr>
-            <td><label>Zoom-in Ratio:</label></td>
-            <td><input id="zoomin-ratio-text" type="text" /></td>
-          </tr>
-          <tr>
-            <td><label>Zoom-out Ratio:</label></td>
-            <td><input id="zoomout-ratio-text" type="text" /></td>
-          </tr>
-          <tr>
-            <td><label>Navigation Step Ratio:</label></td>
-            <td><input id="navigation-step-ratio-text" type="text" /></td>
-          </tr>
+            <tr>
+                <td><label>Zoom-in Ratio:</label></td>
+                <td><input id="zoomin-ratio-text" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>Zoom-out Ratio:</label></td>
+                <td><input id="zoomout-ratio-text" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>Navigation Step Ratio:</label></td>
+                <td><input id="navigation-step-ratio-text" type="text" /></td>
+            </tr>
         </table>
-      </div>
     </div>
+</div>
 
-  </body>
+</body>
 
 </html>
