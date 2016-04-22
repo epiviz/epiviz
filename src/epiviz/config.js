@@ -183,6 +183,10 @@ epiviz.Config = function(settingsMap) {
     colorPalettesMap[palette.id()] = palette;
   });
   this.colorPalettesMap = colorPalettesMap;
+  
+  if(settingsMap.configType == 'standalone') {
+    this.useCookie = epiviz.ui.WebArgsManager.WEB_ARGS.useCookie;
+  }
 };
 
 /**
