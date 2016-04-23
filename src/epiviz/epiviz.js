@@ -158,7 +158,7 @@ epiviz.EpiViz.prototype.start = function() {
   this._cookieManager.initialize();
 
   this._controlManager.initialize();
-
+  
   this._workspaceManager.initialize();
 
   this._measurementsManager.initialize();

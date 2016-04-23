@@ -5,28 +5,28 @@
 
 goog.provide('epiviz.ui.PrintManager');
 
-
 epiviz.ui.PrintManager = function(ctrId, fName, fType) {
 
+    /**
+     * DOM ID to print
+     * @type {string}
+     */
     this._containerId = ctrId ? ctrId : 'pagemain';
+
+    /**
+     * File Name for the screenshot/chart
+     * @type {string}
+     */
     this._fName = fName ? fName : "epiviz_" + Math.floor($.now() / 1000);
+
+    /**
+     * File Format to save (pdf, png)
+     * @type {string}
+     */
     this._fType = fType ? fType : "pdf";
 };
 
 epiviz.ui.PrintManager.prototype.print = function() {
-
-/*    if(this._containerId == null) {
-        this._containerId = 'pagemain';
-    }
-
-    if(this._fName == null) {
-        var timestamp = Math.floor($.now() / 1000);
-        this._fName =  "epiviz_" + timestamp;
-    }
-
-    if(this._fType == null) {
-        this._fType = "pdf";
-    }*/
 
     var self = this;
 
