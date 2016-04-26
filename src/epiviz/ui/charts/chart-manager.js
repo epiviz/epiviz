@@ -506,7 +506,7 @@ epiviz.ui.charts.ChartManager.prototype._registerChartRemove = function(chart) {
 epiviz.ui.charts.ChartManager.prototype._registerChartSave = function(chart) {
   var self = this;
 
-  if(self._config.configType == "standalone") {
+  if(self._config.configType != "default") {
     chart.onSave().addListener(new epiviz.events.EventListener(
         /** @param {epiviz.ui.charts.VisEventArgs} e */
         function(e) {
