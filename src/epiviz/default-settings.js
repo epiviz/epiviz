@@ -9,6 +9,8 @@
  */
 epiviz.Config.SETTINGS = {
 
+  configType: 'default',
+
   // Navigation settings
 
   zoominRatio: 0.8,
