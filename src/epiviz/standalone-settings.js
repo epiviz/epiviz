@@ -26,7 +26,7 @@ epiviz.Config.SETTINGS = {
 
   // Plug-ins
 
-  dataProviders: [sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', '')],
+  dataProviders: [],
 
   workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
 
