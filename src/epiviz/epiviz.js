@@ -643,7 +643,11 @@ epiviz.EpiViz.prototype._registerDataGetAvailableCharts = function() {
         try {
           e.result.value = [];
           self._chartFactory.foreach(function(chartName, chartType) {
-            e.result.value.push({'chartName': chartName, 'customSettings': chartType.customSettingsDefs()});
+
+            e.result.value.push({
+              'chartName': chartName,
+              'customSettings': chartType.customSettingsDefs(),
+              'colorMap':chartType.defaultColors()._colors});
           });
           e.result.success = true;
         } catch(error) {
