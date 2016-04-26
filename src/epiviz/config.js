@@ -166,7 +166,7 @@ epiviz.Config = function(settingsMap) {
       this[setting] = settingsMap[setting];
     }
 
-    if(settingsMap.configType != 'standalone') {
+    if(settingsMap.configType != 'epivizr_standalone') {
       var socketHosts = epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'];
       if (socketHosts && socketHosts.length) {
         for (var i = 0; i < socketHosts.length; ++i) {
