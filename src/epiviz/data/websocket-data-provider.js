@@ -553,14 +553,16 @@ epiviz.data.WebsocketDataProvider.prototype._printWorkspace = function (request)
  */
 epiviz.data.WebsocketDataProvider.prototype._setChartSettings = function (request) {
   var chartId = request.get('chartId');
-  var settings = JSON.parse(request.get('settings'));
-  var colorMap = JSON.parse(request.get('colorMap'));
+  var settings = request.get('settings');
+  var colorMap = request.get('colorMap');
+
+  var colors = new epiviz.ui.charts.ColorPalette(colorMap);
   var result = new epiviz.events.EventResult();
 
   this._fireEvent(this.onRequestSetChartSettings(), {
     chartId: chartId,
     settings: settings,
-    colorMap: colorMap,
+    colorMap: colors,
     result: result
   });
 
