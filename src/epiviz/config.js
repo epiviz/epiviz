@@ -184,7 +184,7 @@ epiviz.Config = function(settingsMap) {
   });
   this.colorPalettesMap = colorPalettesMap;
   
-  if(settingsMap.configType == 'standalone') {
+  if(settingsMap.configType != 'default') {
     this.useCookie = epiviz.ui.WebArgsManager.WEB_ARGS.useCookie;
   }
 };
