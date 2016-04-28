@@ -103,10 +103,11 @@ epiviz.datatypes.GenomicData.prototype.foreach = function(callback) { throw Erro
  * @param {epiviz.datatypes.GenomicData.RowItem} rowItem
  * @param {?number} [value]
  * @param {epiviz.measurements.Measurement} measurement
+ * @param {Object.<string, *>} [valueAnnotation]
  * @constructor
  * @struct
  */
-epiviz.datatypes.GenomicData.ValueItem = function(globalIndex, rowItem, value, measurement) {
+epiviz.datatypes.GenomicData.ValueItem = function(globalIndex, rowItem, value, measurement, valueAnnotation) {
   /**
    * @type {number}
    */
@@ -126,6 +127,11 @@ epiviz.datatypes.GenomicData.ValueItem = function(globalIndex, rowItem, value, m
    * @type {epiviz.measurements.Measurement}
    */
   this.measurement = measurement;
+
+  /**
+   * @type {?Object.<string, *>}
+   */
+  this.valueAnnotation = valueAnnotation;
 };
 
 /**

@@ -112,8 +112,22 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
           var useLooseCompare = this.metadataLooseCompare() || other.metadataLooseCompare();
           var thisM = this.getMetadata(0, i, commonMetadata[k]);
           var otherM = other.getMetadata(0, j, commonMetadata[k]);
-          if ((!useLooseCompare && thisM != otherM) ||
-            (useLooseCompare && thisM.indexOf(otherM) < 0 && otherM.indexOf(thisM) < 0)) {
+
+          if (thisM == otherM) { continue; }
+          if (!useLooseCompare) { metadataMatches = false; break; }
+
+          var first, second;
+          if (thisM.length <= otherM.length) {
+            first = thisM;
+            second = otherM;
+          } else {
+            first = otherM;
+            second = thisM;
+          }
+
+          var r = new RegExp('^(.+,)?' + first + '(,.+)?$');
+
+          if (!r.test(second)) {
             metadataMatches = false;
             break;
           }

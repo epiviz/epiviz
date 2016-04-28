@@ -304,6 +304,12 @@ epiviz.data.Cache.prototype._calcMeasurementNeededRanges = function(ranges, char
 
             // Now replace neededRanges[j] with dif
             Array.prototype.splice.apply(neededRanges, [j, 1].concat(dif));
+
+            if (dif.length == 0) {
+              --j;
+              break;
+            }
+
             if (j >= neededRanges.length) { break; }
           }
         }

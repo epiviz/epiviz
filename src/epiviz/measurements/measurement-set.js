@@ -305,6 +305,25 @@ epiviz.measurements.MeasurementSet.prototype.raw = function() {
 };
 
 /**
+ * @param {function(epiviz.measurements.Measurement): number|string} criterion
+ * @returns {Object.<string, epiviz.measurements.MeasurementSet>}
+ */
+epiviz.measurements.MeasurementSet.prototype.split = function(criterion) {
+  var ret = {};
+  this.foreach(function(m, i) {
+    var key = criterion(m);
+    var group = ret[key];
+    if (group == undefined) {
+      group = new epiviz.measurements.MeasurementSet();
+      ret[key] = group;
+    }
+    group.add(m);
+  });
+
+  return ret;
+};
+
+/**
  *
  * @param {epiviz.measurements.MeasurementSet} measurementSet
  * @constructor

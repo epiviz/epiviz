@@ -10,12 +10,28 @@ goog.provide('epiviz.datatypes.FeatureValueArray');
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.GenomicRange} boundaries
  * @param {number} globalStartIndex
- * @param {Array.<number>} values
+ * @param {Array.<number>|Object.<string, Array.<*>>} values
  * @constructor
  * @extends {epiviz.datatypes.GenomicArray}
  */
 epiviz.datatypes.FeatureValueArray = function(measurement, boundaries, globalStartIndex, values) {
-  epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, values);
+  var vals = null;
+  var valuesAnnotation = null;
+  if (!values || $.isArray(values)) {
+    vals = values;
+    valuesAnnotation = {values: values};
+  } else {
+    vals = values.values;
+    valuesAnnotation = values;
+  }
+
+  epiviz.datatypes.GenomicArray.call(this, measurement, boundaries, globalStartIndex, vals);
+
+  /**
+   * @type {Object.<string, Array.<*>>}
+   * @private
+   */
+  this._valuesAnnotation = valuesAnnotation;
 };
 
 /**
@@ -46,6 +62,20 @@ epiviz.datatypes.FeatureValueArray.prototype.get = function(index) {
 };
 
 /**
+ * @param index
+ * @returns {?Object.<string, *>}
+ */
+epiviz.datatypes.FeatureValueArray.prototype.getAnnotation = function(index) {
+  if (this._valuesAnnotation == undefined) { return null; }
+  var ret = {};
+  for (var col in this._valuesAnnotation) {
+    if (!this._valuesAnnotation.hasOwnProperty(col)) { continue; }
+    ret[col] = this._valuesAnnotation[col][index];
+  }
+  return ret;
+};
+
+/**
  * @returns {number}
  * @override
  */
@@ -56,12 +86,20 @@ epiviz.datatypes.FeatureValueArray.prototype.size = function() {
 /**
  * @param {epiviz.datatypes.FeatureValueArray} second
  * @param {number} secondIndex
- * @returns {Array.<number>}
+ * @returns {Array.<number>|Object.<string, *>}
  */
 epiviz.datatypes.FeatureValueArray.prototype.concatValues = function(second, secondIndex) {
-  if (!second || !second.size()) { return this._values; }
-  if (!this._values) { this._values = []; }
-  return this._values.concat(second._values.slice(secondIndex));
+  if (!second || !second.size()) { return this._valuesAnnotation; }
+  if (!this._valuesAnnotation || !this._valuesAnnotation.values) {
+    this._valuesAnnotation = {values:[]};
+  }
+  var ret = {};
+  for (var key in this._valuesAnnotation) {
+    if (!this._valuesAnnotation.hasOwnProperty(key)) { continue; }
+    if (!second._valuesAnnotation.hasOwnProperty(key)) { continue; }
+    ret[key] = this._valuesAnnotation[key].concat(second._valuesAnnotation[key].slice(secondIndex));
+  }
+  return ret;
 };
 
 /**
@@ -85,7 +123,12 @@ epiviz.datatypes.FeatureValueArray.prototype.trim = function(range, globalStartI
   var startIndex = Math.max(globalStartIndex, this.globalStartIndex()) - this.globalStartIndex();
   var endIndex = Math.min(globalStartIndex + length, this.globalStartIndex() + this.size()) - this.globalStartIndex();
   if (endIndex <= startIndex) { return null; }
-  var values = this._values.slice(startIndex, endIndex);
+  /** @type {Object.<string, Array.<*>>} */
+  var values = {};
+  for (var key in this._valuesAnnotation) {
+    if (!this._valuesAnnotation.hasOwnProperty(key)) { continue; }
+    values[key] = this._valuesAnnotation[key].slice(startIndex, endIndex);
+  }
   return new epiviz.datatypes.FeatureValueArray(this.measurement(), range, startIndex + this.globalStartIndex(), values);
 };
 

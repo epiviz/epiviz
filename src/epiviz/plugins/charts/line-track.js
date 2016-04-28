@@ -209,14 +209,14 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
     var errMinus = function(j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      var v = cell.rowItem.metadata('errMinus');
+      var v = cell.valueAnnotation ? cell.valueAnnotation['errMinus'] : null;
       return v != undefined ? yScale(v) : null;
     };
 
     var errPlus = function(j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      var v = cell.rowItem.metadata('errPlus');
+      var v = cell.valueAnnotation ? cell.valueAnnotation['errPlus'] : null;
       return v != undefined ? yScale(v) : null;
     };
 
@@ -233,7 +233,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
         .append('path')
         .attr('d', line)
         .style('shape-rendering', 'auto')
-        .style('stroke-opacity', '0.7')
+        .style('stroke-opacity', '0.8')
         .on('mouseover', function() { self._captureMouseHover(); })
         .on('mousemove', function() { self._captureMouseHover(); })
         .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
@@ -265,7 +265,7 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
         .attr('r', pointRadius)
         .attr('cx', x)
         .attr('cy', y)
-        .attr('fill', 'none')
+        .attr('fill', color)
         .attr('stroke', color)
         .attr('transform', 'translate(' + (+delta) + ')')
         .transition()

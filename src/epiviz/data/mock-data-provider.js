@@ -195,7 +195,7 @@ epiviz.data.MockDataProvider.prototype._initializeButtonHandlers = function() {
     ms.add(self._m2);
     self.onRequestAddChart().notify({
       type: 'epiviz.plugins.charts.BlocksTrack',
-      measurements: ms,
+      visConfigSelection: new epiviz.ui.controls.VisConfigSelection(ms),
       result: result
     });
 

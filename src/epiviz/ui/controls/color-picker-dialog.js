@@ -33,7 +33,10 @@ epiviz.ui.controls.ColorPickerDialog = function(handlers, names, palettes, selec
         '<td><label>%s:&nbsp;</label></td>' +
         '<td><input type="text" name="%s" class="colorwell %s" value="%s" /></td>' +
       '</tr>',
-      names[i], inputClass, inputClass, selectedPalette.get(i));
+      names[i], inputClass, inputClass,
+      selectedPalette.keyColorIndex(names[i]) >= 0 ?
+        selectedPalette.getByKey(names[i]) : selectedPalette.get(i)
+    );
   }
   colorPickerForm.append(sprintf('<table class="color-picker-table">%s</table>', tableContent));
 
@@ -107,14 +110,24 @@ epiviz.ui.controls.ColorPickerDialog = function(handlers, names, palettes, selec
 
         var paletteChanged = false;
         var colors = [];
-        for (var i = 0; i < inputs.length; ++i) {
-          colors.push(inputs[i].value);
-          if (colors[i] != selectedPalette.get(i)) {
+
+        var i;
+        for (i = 0; i < selectedPalette.size(); ++i) {
+          colors.push(selectedPalette.get(i));
+        }
+
+        for (i = 0; i < inputs.length; ++i) {
+          var userVal = inputs[i].value;
+          var index = selectedPalette.keyColorIndex(names[i]);
+          if (index < 0) { index = i; }
+
+          if (userVal != colors[index]) {
             paletteChanged = true;
+            colors[index] = userVal;
           }
         }
 
-        if (paletteChanged) { selectedPalette = new epiviz.ui.charts.ColorPalette(colors); }
+        if (paletteChanged) { selectedPalette = new epiviz.ui.charts.ColorPalette(colors, undefined, undefined, selectedPalette.keyIndices()); }
         self._handlers.ok(selectedPalette);
 
         $(this).dialog('close');
