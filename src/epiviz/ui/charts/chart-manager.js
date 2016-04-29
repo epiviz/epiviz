@@ -648,7 +648,15 @@ epiviz.ui.charts.ChartManager.prototype.getChartSettings = function(id) {
 epiviz.ui.charts.ChartManager.prototype.setChartSettings = function(id, settings, colorMap) {
 
   var chart = this._charts[id];
-  chart.setCustomSettingsValues(settings);
+  var currentSettings = chart.customSettingsValues();
+
+  var all_keys = Object.keys(settings);
+
+  all_keys.forEach(function(key) {
+    currentSettings[key] = settings[key];
+  });
+
+  chart.setCustomSettingsValues(currentSettings);
   chart.setColors(colorMap);
   chart.draw();
 };

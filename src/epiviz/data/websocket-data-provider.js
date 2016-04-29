@@ -623,5 +623,9 @@ epiviz.data.WebsocketDataProvider.prototype._registerAvailableCharts = function 
 
   var message = JSON.stringify(request.raw());
 
+  this._callbacks[request.id()] = function (resp) {
+    //do nothing
+  };
+
   this._sendMessage(message);
 };
