@@ -98,6 +98,8 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketOpen = function () {
   }
 
   this._requestsStack = [];
+
+  this._getAvailableCharts(epiviz.data.Request.emptyRequest());
 };
 
 
