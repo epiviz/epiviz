@@ -648,16 +648,23 @@ epiviz.ui.charts.ChartManager.prototype.getChartSettings = function(id) {
 epiviz.ui.charts.ChartManager.prototype.setChartSettings = function(id, settings, colorMap) {
 
   var chart = this._charts[id];
-  var currentSettings = chart.customSettingsValues();
 
-  var all_keys = Object.keys(settings);
+  if(settings != null) {
+    var currentSettings = chart.customSettingsValues();
 
-  all_keys.forEach(function(key) {
-    currentSettings[key] = settings[key];
-  });
+    var all_keys = Object.keys(settings);
 
-  chart.setCustomSettingsValues(currentSettings);
-  chart.setColors(colorMap);
+    all_keys.forEach(function(key) {
+      currentSettings[key] = settings[key];
+    });
+
+    chart.setCustomSettingsValues(currentSettings);
+  }
+
+  if(colorMap != null) {
+    chart.setColors(colorMap);
+  }
+
   chart.draw();
 };
 
