@@ -42,7 +42,7 @@
 			$h3.each(function(index){
 				var $this = $(this);
 
-				$this.addClass(options._classes.h3).prepend('<span class="{class}"></span>'.replace(/{class}/, options._classes.span));
+				$this.addClass(options._classes.h3).prepend('<span class="{class}"></span>'.replace(/\{class}/, options._classes.span));
 				if(self._isActive(index)) {
 					self._showTab($this)
 				}
