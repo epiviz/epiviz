@@ -75,7 +75,8 @@ epiviz.data.Request.Action = {
   REDRAW: 'redraw',
   GET_CURRENT_LOCATION: 'getCurrentLocation',
   WRITE_DEBUG_MSG: 'writeMsg',
-  PRINT_WORKSPACE: 'printWorkspace'
+  PRINT_WORKSPACE: 'printWorkspace',
+  REGISTER_CHART_TYPES: 'registerChartTypes'
 };
 
 /**

@@ -99,7 +99,7 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketOpen = function () {
 
   this._requestsStack = [];
 
-  this._getAvailableCharts(epiviz.data.Request.emptyRequest());
+  this._registerAvailableCharts();
 };
 
 
@@ -602,4 +602,26 @@ epiviz.data.WebsocketDataProvider.prototype._getAvailableCharts = function (requ
 
   var response = new epiviz.data.Response(request.id(), result);
   this._sendMessage(JSON.stringify(response.raw()));
+};
+
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._registerAvailableCharts = function () {
+  var result = new epiviz.events.EventResult();
+
+  this._fireEvent(this.onRequestGetChartSettings(), {
+    result: result
+  });
+
+  request =   epiviz.data.Request.createRequest({
+    action: epiviz.data.Request.Action.REGISTER_CHART_TYPES,
+    data: result.value
+  });
+
+  var message = JSON.stringify(request.raw());
+
+  this._sendMessage(message);
 };
