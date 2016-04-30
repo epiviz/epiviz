@@ -616,7 +616,7 @@ epiviz.data.WebsocketDataProvider.prototype._registerAvailableCharts = function 
     result: result
   });
 
-  request =   epiviz.data.Request.createRequest({
+  request = epiviz.data.Request.createRequest({
     action: epiviz.data.Request.Action.REGISTER_CHART_TYPES,
     data: result.value
   });
@@ -627,5 +627,15 @@ epiviz.data.WebsocketDataProvider.prototype._registerAvailableCharts = function 
     //do nothing
   };
 
+  this._sendMessage(message);
+};
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype.updateChartSettings = function (request, callback) {
+  var message = JSON.stringify(request.raw());
+  this._callbacks[request.id()] = callback;
   this._sendMessage(message);
 };

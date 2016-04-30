@@ -104,6 +104,12 @@ epiviz.workspaces.WorkspaceManager = function(config, locationManager, measureme
    */
   this._activeWorkspaceContentChanged = new epiviz.events.Event();
 
+  /**
+   * @type {epiviz.events.Event.<epiviz.workspaces.Workspace>}
+   * @private
+   */
+  this._uiChartSettingsChanged = new epiviz.events.Event();
+
   var self = this;
 
   /**
@@ -130,6 +136,11 @@ epiviz.workspaces.WorkspaceManager = function(config, locationManager, measureme
   this._registerChartMarginsChanged();
   this._registerChartCustomSettingsChanged();
 };
+
+/**
+ * @returns {epiviz.events.Event}
+ */
+epiviz.workspaces.WorkspaceManager.prototype.onUiChartSettingsChanged = function() { return this._uiChartSettingsChanged; };
 
 /**
  * @returns {?epiviz.workspaces.Workspace}
@@ -404,6 +415,8 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartColorsChanged = funct
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
     self._activeWorkspace.chartColorsChanged(e.id, e.args);
+
+    self.onUiChartSettingsChanged().notify({'chartId': e.id, 'colorMap': e.args});
   }));
 };
 
@@ -452,6 +465,8 @@ epiviz.workspaces.WorkspaceManager.prototype._registerChartCustomSettingsChanged
     if (self._activeWorkspaceChanging) { return; }
     if (!self._activeWorkspace) { return; }
     self._activeWorkspace.chartCustomSettingsChanged(e.id, e.args);
+
+    self.onUiChartSettingsChanged().notify({'chartId': e.id, 'settings': e.args});
   }));
 };
 

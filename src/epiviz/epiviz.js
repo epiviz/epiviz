@@ -111,6 +111,8 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerChartRequestHierarchy();
   this._registerChartPropagateHierarchySelection();
 
+  this._registerUiSettingsChanged();
+
   // Register for Data events
 
   this._registerDataAddMeasurements();
@@ -482,6 +484,19 @@ epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
       self._chartManager.updateCharts(undefined, data, [chartId]);
     })
   }));
+};
+
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerUiSettingsChanged = function() {
+  var self = this;
+  this._workspaceManager.onUiChartSettingsChanged().addListener(new epiviz.events.EventListener(
+      function(e) {
+        //do nothing!
+        self._dataManager.updateChartSettings(e);
+      }));
 };
 
 /*****************************************************************************

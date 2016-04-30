@@ -281,6 +281,36 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
 };
 
 /**
+ */
+epiviz.data.DataManager.prototype.updateChartSettings = function(values) {
+  var self = this;
+
+  this._dataProviderFactory.foreach(function(provider) {
+
+    if(provider.id().includes('websocket-')) {
+
+      var colors = null;
+
+      if(values.colorMap != null) {
+        colors = values.colorMap._colors;
+      }
+
+      provider.updateChartSettings(epiviz.data.Request.createRequest({
+            action: epiviz.data.Request.Action.GET_CHART_SETTINGS,
+            settings: values.settings,
+            colorMap: colors,
+            chartId: values.chartId
+      }),
+          function() {
+            //do nothing
+          }
+      );  
+    }
+  });
+};
+
+
+/**
  * @param {function(epiviz.measurements.MeasurementSet)} callback
  */
 epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
