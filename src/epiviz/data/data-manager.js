@@ -296,7 +296,7 @@ epiviz.data.DataManager.prototype.updateChartSettings = function(values) {
       }
 
       provider.updateChartSettings(epiviz.data.Request.createRequest({
-            action: epiviz.data.Request.Action.GET_CHART_SETTINGS,
+            action: epiviz.data.Request.Action.SET_CHART_SETTINGS,
             settings: values.settings,
             colorMap: colors,
             chartId: values.chartId
