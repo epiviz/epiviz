@@ -17,8 +17,8 @@ cd travis/output
 git checkout -t origin/min
 
 # copy min files to the min branch
-cp ../epiMin/epiviz-min.js src/epiviz/
-cp ../epiMin/epiviz-min.css src/epiviz/
+cp ../epiMin/epiviz-min.js .
+cp ../epiMin/epiviz-min.css .
 cp -r ../epiMin/css-img .
 cp -r ../epiMin/images .
 
