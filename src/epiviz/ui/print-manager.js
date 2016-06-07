@@ -5,7 +5,13 @@
 
 goog.provide('epiviz.ui.PrintManager');
 
-epiviz.ui.PrintManager = function(ctrId, fName, fType) {
+/**
+ * @param {string} ctrId DOM ID to print/save. Can be the whole page or a epiviz.chart id.
+ * @param {string} fName File Name to use
+ * @param {string} fType File Format (pdf, png)
+ * @constructor
+ */
+epiviz.ui.PrintManager = function(ctrId, fName, fType, workspaceId) {
 
     /**
      * DOM ID to print
@@ -24,8 +30,18 @@ epiviz.ui.PrintManager = function(ctrId, fName, fType) {
      * @type {string}
      */
     this._fType = fType ? fType : "pdf";
+
+    /**
+     * workspace id of the current plot
+     * @type {string}
+     */
+    this._workspaceId = workspaceId;
 };
 
+
+/**
+ * Prints the chart or the specified DOM ID to a pdf or png.
+ */
 epiviz.ui.PrintManager.prototype.print = function() {
 
     var self = this;
@@ -165,8 +181,7 @@ epiviz.ui.PrintManager.prototype.print = function() {
             }
 
             //TODO: save workspace if user is not signed in and get workspace id
-            var ws_id = "abcdef";
-            var s_url ="http://epiviz.org/?ws=" + ws_id;
+            var s_url ="http://epiviz.org/?ws=" + self._workspaceId;
 
             /*      toDataUrl(window.location.href + '/img/epiviz_4_logo_medium.png', function(imgData) {
              jsdoc.addImage(imgData, 'PNG', 20, 20, 100, 21);
@@ -177,12 +192,16 @@ epiviz.ui.PrintManager.prototype.print = function() {
             jsdoc.text(150, 25, "Chromosome: Location");
             jsdoc.setFontSize(14);
             jsdoc.text(150, 40, $('#chromosome-selector').val() + ' : ' + $('#text-location').val());
-            jsdoc.setTextColor(0, 0, 255);
-            jsdoc.setFontSize(16);
-            //jsdoc.text(550, 40, s_url);
             jsdoc.setTextColor(0, 0, 0);
             jsdoc.setFontSize(10);
-            jsdoc.text(350, 25, "Workspace ID");
+
+            if(self._workspaceId != null ) {
+              jsdoc.text(350, 25, "Workspace ID");
+              jsdoc.setTextColor(0, 0, 255);
+              jsdoc.setFontSize(16);
+              jsdoc.text(350, 45, s_url);
+            }
+
             jsdoc.setFontSize(14);
             jsdoc.text(350, 40, $('#save-workspace-text').val());
             jsdoc.addImage(image, 'PNG', 15, 55);
