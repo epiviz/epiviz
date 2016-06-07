@@ -81,7 +81,19 @@ epiviz.plugins.charts.BlocksTrackType.prototype.customSettingsDefs = function() 
       epiviz.plugins.charts.BlocksTrackType.CustomSettings.MIN_BLOCK_DISTANCE,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       5,
-      'Minimum block distance')
+      'Minimum block distance'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Use Block Color by'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_COLOR_BY,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
+      'colLabel',
+      'Block color by')
   ]);
 };
 
@@ -89,6 +101,7 @@ epiviz.plugins.charts.BlocksTrackType.prototype.customSettingsDefs = function() 
  * @enum {string}
  */
 epiviz.plugins.charts.BlocksTrackType.CustomSettings = {
-  MIN_BLOCK_DISTANCE: 'minBlockDistance'
+  MIN_BLOCK_DISTANCE: 'minBlockDistance',
+  BLOCK_COLOR_BY: 'blockColorBy',
+  USE_COLOR_BY: 'useColorBy'
 };
-

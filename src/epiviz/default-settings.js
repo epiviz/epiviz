@@ -27,7 +27,7 @@ epiviz.Config.SETTINGS = {
 
   // This is the data provider that handles workspaces; it can be different from the one getting all the other data:
   workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''), //TODO: Fill in (in site-settings.js)
-  
+
   // For datasources with hierarchies, the cache must be disabled (Epiviz will crash otherwise)
   useCache: true,
 
@@ -166,7 +166,9 @@ epiviz.Config.SETTINGS = {
 
   chartCustomSettings: {
     'epiviz.plugins.charts.BlocksTrack': {
-      minBlockDistance: 3
+      minBlockDistance: 3,
+      useColorBy: false,
+      blockColorBy: 'label'
     },
     'epiviz.plugins.charts.GenesTrack': {
 

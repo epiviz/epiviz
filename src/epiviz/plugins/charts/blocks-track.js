@@ -92,6 +92,18 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
 
   var minBlockDistance = this.customSettingsValues()[epiviz.plugins.charts.BlocksTrackType.CustomSettings.MIN_BLOCK_DISTANCE];
 
+  var colorLabel = this.customSettingsValues()[epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_COLOR_BY];
+
+  var useColorBy = this.customSettingsValues()[epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY];
+
+  var colorBy = function(row) {
+    if(data.measurements().length > 1) {
+      return colors.get(row.seriesIndex);
+    }
+
+    return useColorBy ? colors.getByKey(row.values) : colors.get(row.seriesIndex);
+  };
+
   var xScale = d3.scale.linear()
     .domain([start, end])
     .range([0, width - margins.sumAxis(Axis.X)]);
@@ -135,7 +147,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
         sprintf('b-%s-%s-%s', i, cell.rowItem.start(), cell.rowItem.end()),
         cell.rowItem.start(),
         cell.rowItem.end(),
-        null,
+        cell.rowItem.metadata(colorLabel),
         i, // seriesIndex
         [[cell]], // valueItems
         [m], // measurements
@@ -177,6 +189,8 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
     .attr('width', width - margins.sumAxis(Axis.X))
     .attr('height', height - margins.sumAxis(Axis.Y));
 
+  items.selectAll('.item').remove();
+
   var selection = items.selectAll('.item')
     .data(blocks, function(b) { return b.id; });
 
@@ -184,7 +198,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
     .enter()
     .insert('rect', ':first-child')
     .attr('class', function(b) { return b.cssClasses; })
-    .style('fill', function(b) { return colors.get(b.seriesIndex); })
+    .style('fill', function(b) { return colorBy(b); })
     .attr('x', function(b) {
       return xScale(b.start) / zoom + delta;
     })
@@ -230,4 +244,3 @@ epiviz.plugins.charts.BlocksTrack.prototype.setColors = function(colors) {
   this.container().find('.items').remove();
   epiviz.ui.charts.Visualization.prototype.setColors.call(this, colors);
 };
-
