@@ -157,6 +157,12 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
 epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, chartRequestedRange, chartMeasurementsMap, request, range, measurement, rawData) {
 
   if (range) {
+
+    if(rawData.clearCache) {
+      // delete this._data[measurement.datasourceGroup()];
+      this.clearDatasourceGroupCache(measurement.datasourceGroup());
+    }
+
     var genomicArray = measurement.type() == epiviz.measurements.Measurement.Type.RANGE ?
       new epiviz.datatypes.GenomicRangeArray(measurement, range, rawData.globalStartIndex, rawData.values, rawData.useOffset) :
       new epiviz.datatypes.FeatureValueArray(measurement, range, rawData.globalStartIndex, rawData.values);
