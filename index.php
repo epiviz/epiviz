@@ -585,7 +585,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />
+          <img src="img/metaviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />
         </div>
         <div style="float: right; font-size: small; margin-top: 7px; margin-left: 7px; margin-right: 7px">
           <?php
