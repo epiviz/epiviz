@@ -599,7 +599,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         </div>
 
         <div id="intro-navigation" class="intro-container">
-          <input id="text-location" class="ui-widget-content ui-corner-all" type="text" style="display:none;"/>
+          <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
           <button id="moveleft">Slide left</button>
           <button id="moveright">Slide right</button>
 
