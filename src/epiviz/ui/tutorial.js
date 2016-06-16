@@ -18,12 +18,6 @@ epiviz.ui.tutorials = function() {
                     position: 'right',
                     buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
                 }, {
-                    target: '#search-box',
-                    content: "<p class='intro-header'>Use the search input to look for a specific gene or target.</p>" +
-                    "<p class='intro-text'>This will navigate Epiviz to the selected gene location and update the workspace with the new data.</p>",
-                    position: 'right',
-                    buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
-                }, {
                     target: '#vis-menu-button',
                     content: '<p class="intro-text">Choose from a list of available data sources, measurements or chart types to add visualizations to the Epiviz Workspace.</p>',
                     position: 'right',

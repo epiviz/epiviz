@@ -282,17 +282,26 @@
       });
     </script>
   </head>
-  <body>
+<body>
     <div class="ui-layout-north">
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/epiviz_4_logo_medium.png" alt="EpiViz" width="100" height="21" />
+          <img src="img/epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />
+        </div>
+        <div style="float: right; font-size: small; margin-top: 7px; margin-left: 7px; margin-right: 7px">
+          <?php
+          if ($user === null) {
+            echo "<a id=\"login-link\" href=\"javascript:void(0)\">Login</a>";
+          } else {
+            echo "Welcome, <b>".$user['display_name']."&nbsp;(@".$user['oauth_provider'].")</b>!&nbsp;";
+            echo "<a id=\"login-link\" href=\"javascript:void(0)\">logout</a>";
+          }
+          ?>
         </div>
 
         <div id="intro-navigation" class="intro-container">
-          <select id="chromosome-selector"></select>
-          <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
+          <input id="text-location" class="ui-widget-content ui-corner-all" type="text" style="display:none;"/>
           <button id="moveleft">Slide left</button>
           <button id="moveright">Slide right</button>
 
@@ -313,17 +322,17 @@
 
         <span class="separator">|</span>
 
-        <label for="search-box"></label>
-        <input id="search-box" class="ui-widget-content ui-corner-all" type="text" />
+        <label for="search-box" style="display:none;"></label>
+        <input id="search-box" class="ui-widget-content ui-corner-all" type="text"  style="display:none;"/>
 
-        <span class="separator">|</span>
+        <span class="separator" style="display:none;">|</span>
 
         <div id="intro-workspace" class="intro-container">
           <label for="save-workspace-text"></label>
-          <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text" disabled/>
-          <button id="save-workspace-button" disabled>Save Workspace</button>
-          <button id="revert-workspace-button" disabled>Revert Workspace Changes</button>
-          <button id="delete-workspace-button" disabled>Delete Active Workspace</button>
+          <input id="save-workspace-text" class="ui-widget-content ui-corner-all" type="text"/>
+          <button id="save-workspace-button">Save Workspace</button>
+          <button id="revert-workspace-button">Revert Workspace Changes</button>
+          <button id="delete-workspace-button">Delete Active Workspace</button>
         </div>
 
         <span class="separator">|</span>
@@ -360,7 +369,6 @@
         </table>
       </div>
     </div>
-
   </body>
 
 </html>
