@@ -199,43 +199,17 @@ epiviz.Config.SETTINGS = {
     content: {
       // This is the selected chromosome, start and end locations
       range: {
-        seqName: 'chr11',
-        start: 101407173,
-        width: 103922435
+        seqName: '',
+        start: 1,
+        width: 1000
       },
 
       // The initial measurements loaded in the workspace
-      measurements: [
-        {
-          id: 'genes',
-          name: 'Genes',
-          type: 'range',
-          datasourceId: 'genes',
-          datasourceGroup: 'genes',
-          dataprovider: epiviz.Config.DEFAULT_DATA_PROVIDER_ID,
-          formula: null,
-          defaultChartType: 'Genes Track',
-          annotation: null,
-          minValue: null,
-          maxValue: null,
-          metadata: ['gene', 'entrez', 'exon_starts', 'exon_ends']
-        }
-      ],
+      measurements: [],
 
       // The initial charts on the initial workspace
       charts: {
-        track: [
-          {
-            id: 'track-genes-initial',
-            type: 'epiviz.plugins.charts.GenesTrack',
-            properties: { width: 837, height: 120,
-              margins: { top: 25, left: 20, bottom: 23, right: 10 },
-              measurements: [0],
-              colors: { id: 'genes-default' },
-              customSettings: {}
-            }
-          }
-        ],
+        track: [],
         plot: []
       }
     }
