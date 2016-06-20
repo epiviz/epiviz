@@ -39,11 +39,7 @@ epiviz.Config.SETTINGS = {
 
   // Epiviz will only be able to show any of the charts in this list; if it's not registered here, you will not see it in the UI
   chartTypes: [
-    'epiviz.plugins.charts.BlocksTrackType',
-    'epiviz.plugins.charts.LineTrackType',
-    'epiviz.plugins.charts.StackedLineTrackType',
     'epiviz.plugins.charts.ScatterPlotType',
-    'epiviz.plugins.charts.GenesTrackType',
     'epiviz.plugins.charts.HeatmapPlotType',
     'epiviz.plugins.charts.LinePlotType',
     'epiviz.plugins.charts.StackedLinePlotType',
