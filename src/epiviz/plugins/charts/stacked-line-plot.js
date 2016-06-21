@@ -93,7 +93,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
       }
 
       self.transformData(self._lastRange, self._unalteredData).done(function() {
-        self._tempDraw(self._lastRange, self._lastData, slide, zoom);
+        self._drawPlot(self._lastRange, self._lastData, slide, zoom);
       });
 
       self._markersModified.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._markers));
