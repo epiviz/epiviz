@@ -99,9 +99,6 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
       self._markersModified.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._markers));
   };
 
-  console.log(this);
-  // var tdata = new epiviz.datatypes.MeasurementAggregatedGenomicData(self._lastData, groupBy, aggregator);
-
   if(useGroupBy) {
     
     var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS, null, null, 'function(data){return null}', "function(m, data, preMarkResult) {return m.annotation()['" + groupBy + "'];}");
