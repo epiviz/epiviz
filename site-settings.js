@@ -8,13 +8,13 @@ epiviz.Config.SETTINGS.dataProviders = [
       'epiviz.data.EpivizApiDataProvider',
 
       // the name of the datasource (matching the datasource in the UI add measurements dialog)
-      'hmp',
+      'ihmp',
 
       // where the api is located, relative to dataServerLocation (see above)
-      'hmp-api/',
+      'api/',
 
       // retrieve only this measurement annotation:
-      ['sex', 'hmpbodysubsite', 'hmpbodysupersite', 'sampcollectdevice', 'envmatter', 'bodysite', 'bmi', 'visitno', 'age', 'runcenter', 'runid', 'description'],
+      ['parent_a', 'collab_sample_id', 'collab_participant_id', 'interval', 'diagnosis', 'soft_drinks', 'diet_soft_drinks', 'water', 'antibiotics', 'subject_race', 'subject_gender', 'visit_id', 'visit_number', 'visit_interval', 'study_name'],
 
       // this is the initial depth of icicles:
       3,

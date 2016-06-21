@@ -182,6 +182,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlot': {
       colLabel: 'label',
       maxColumns: 120,
+      yMax: 10,
       clusteringAlg: 'agglomerative'
     },
     'epiviz.plugins.charts.StackedLinePlot': {
