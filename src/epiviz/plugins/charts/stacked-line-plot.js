@@ -82,7 +82,12 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
         for(var k=0; k < self._markers.length; k ++) {
           if (self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS) {
             // remove existing groupby marker.
+            var old_mId = self._markers[k].id(); 
+            delete self._markersMap[old_mId];
+            delete self._markersIndices[old_mId];
             delete self._markers[k];
+
+            self._markers.length--;
           }
         }
 
@@ -99,12 +104,11 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
       self._markersModified.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._markers));
   };
 
-  if(useGroupBy) {
-    
-    var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS, null, null, 'function(data){return null}', "function(m, data, preMarkResult) {return m.annotation()['" + groupBy + "'];}");
-    
-    var value = verifyMarker(marker);
+  // var tdata = new epiviz.datatypes.MeasurementAggregatedGenomicData(self._lastData, groupBy, aggregator);
 
+  if(useGroupBy) {
+    var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS, null, null, 'function(data){return null}', "function(m, data, preMarkResult) {return m.annotation()['" + groupBy + "'];}");
+    var value = verifyMarker(marker);
     if(value != null) {
       this._drawPlot(range, data, slide, zoom);
     }
