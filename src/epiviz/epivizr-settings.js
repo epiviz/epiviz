@@ -3,7 +3,7 @@
  * on 4/22/16.
  */
 
-var websocket_path = window.location.pathname.split(',');
+var websocket_path = window.location.pathname.split('/');
 websocket_path.pop();
 websocket_path = window.location.host + websocket_path.join('/') + "/websocket";
 
