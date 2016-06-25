@@ -3,6 +3,10 @@
  * on 4/22/16.
  */
 
+var websocket_path = window.location.pathname.split(',');
+websocket_path.pop();
+websocket_path = window.location.host + websocket_path.join('/') + "/websocket";
+
 epiviz.Config.SETTINGS.dataProviders.push(
     sprintf('epiviz.data.WebsocketDataProvider,%s,%s',
         epiviz.data.WebsocketDataProvider.DEFAULT_ID,
