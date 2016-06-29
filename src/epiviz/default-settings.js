@@ -29,7 +29,7 @@ epiviz.Config.SETTINGS = {
   workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''), //TODO: Fill in (in site-settings.js)
 
   // For datasources with hierarchies, the cache must be disabled (Epiviz will crash otherwise)
-  useCache: true,
+  useCache: false,
 
   // Every n milliseconds, the cache will free up any data associated with parts of the genome not recently visited
   cacheUpdateIntervalMilliseconds: 30000,
