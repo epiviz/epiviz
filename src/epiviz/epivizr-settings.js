@@ -13,5 +13,4 @@ epiviz.Config.SETTINGS.dataProviders.push(
         epiviz.data.WebsocketDataProvider.DEFAULT_ID,
         sprintf("ws://%s", websocket_path)));
 
-
 epiviz.Config.SETTINGS.configType = "epivizr_standalone";

@@ -54,6 +54,82 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
+  var groupBy = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.ROW_GROUP_BY];
+  var useGroupBy = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.USE_GROUP_BY];
+
+  var self = this;
+
+  var removeMarker = function() {
+
+    for(var k=0; k < self._markers.length; k ++) {
+      if (self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS) {
+        // remove existing groupby marker.
+        var old_mId = self._markers[k].id(); 
+        delete self._markersMap[old_mId];
+        delete self._markersIndices[old_mId];
+        delete self._markers[k];
+
+        self._markers.length--;
+      }
+    }
+  };
+
+  var checkMarker = function(marker) {
+
+    // marker is empty!
+    if (!marker) { return null; }
+      var i;
+      if (marker.id() in self._markersMap) {
+        i = self._markersIndices[marker.id()];
+        var oldMarker = self._markers[i];
+        if (oldMarker == marker ||
+            (oldMarker.type() == marker.type() &&
+            oldMarker.preMarkStr() == marker.preMarkStr() &&
+            oldMarker.markStr() == marker.markStr())) {
+          // Marker not modified
+          return null;
+        }
+        self._markers[i] = marker;
+        self._markersMap[marker.id()] = marker;
+      } 
+      else {
+        // remove if the marker type already exists
+        removeMarker();
+
+        // add the new marker
+        i = self._markers.length;
+        self._markers.push(marker);
+        self._markersIndices[marker.id()] = i;
+        self._markersMap[marker.id()] = marker;
+      }
+  };
+
+  var transformPlotData = function() {
+    self.transformData(self._lastRange, self._unalteredData).done(function() {
+       self._drawPlot(self._lastRange, self._lastData, slide, zoom);
+    });
+
+    self._markersModified.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._markers));
+  };
+
+  if(useGroupBy) {
+    var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS, null, null, 'function(data){return null}', "function(m, data, preMarkResult) {return m.annotation()['" + groupBy + "'];}");
+    var value = checkMarker(marker);
+
+    //if(value != null) {
+    //  this._drawPlot(range, data, slide, zoom);
+    //}
+  }
+  else {
+    removeMarker();
+  }
+
+  transformPlotData();
+  
+};
+
+epiviz.plugins.charts.StackedLinePlot.prototype._drawPlot = function(range, data, slide, zoom) {
+
   var rowLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL];
 
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION];
@@ -87,7 +163,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   linesGroup
     .attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
   return this._drawLines(range, data, xScale);
-};
+}
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
