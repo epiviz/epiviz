@@ -90,12 +90,10 @@ epiviz.ui.PrintManager.prototype.print = function() {
         });
 
         // fill path on single line tracks
-        if(epiviz.utils.stringContains($(dom).attr('id'), "track-lines")) {
-            var lines = $(dom).find('.lines path');
-            lines.each(function() {
-                $(this).css({"fill": "none"});
-            });
-        }
+        var lines = $(dom).find('.lines path');
+        lines.each(function() {
+            $(this).css({"fill": "none"});
+        });
 
         //change text size to fit screen
         var texts = $(dom).find('text');
