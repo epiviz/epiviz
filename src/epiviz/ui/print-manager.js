@@ -90,7 +90,7 @@ epiviz.ui.PrintManager.prototype.print = function() {
         });
 
         // fill path on single line tracks
-        var lines = $(dom).find('.line-series-index-0 path');
+        var lines = $(dom).find('.lines path');
         lines.each(function() {
             $(this).css({"fill": "none"});
         });
@@ -104,7 +104,7 @@ epiviz.ui.PrintManager.prototype.print = function() {
         var cLegends = $(dom).find('.chart-legend');
         cLegends.each(function() {
             $(this).css({"border": "none", "background": "transparent"});
-        })
+        });
     }
 
     // html2canvas has issues with svg elements on ff and IE.
