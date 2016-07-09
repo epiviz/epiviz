@@ -90,10 +90,11 @@ epiviz.ui.PrintManager.prototype.print = function() {
         });
 
         // fill path on single line tracks
-        var lines = $(dom).find('.lines path');
-        lines.each(function() {
-            $(this).css({"fill": "none"});
-        });
+
+            var lines = $(dom).find('.lines path');
+            lines.each(function() {
+                $(this).css({"fill": "none"});
+            });
 
         //change text size to fit screen
         var texts = $(dom).find('text');
@@ -106,11 +107,6 @@ epiviz.ui.PrintManager.prototype.print = function() {
             $(this).css({"border": "none", "background": "transparent"});
         });
     }
-
-    // html2canvas has issues with svg elements on ff and IE.
-    // Convert svg elements into canvas objects, temporarily hide the svg elements for html2canvas to work and
-    // finally remove all dom changes!
-    // TODO: this feature does not work all the time in FF!
 
     var svgElems = container.find('svg');
 
@@ -126,9 +122,11 @@ epiviz.ui.PrintManager.prototype.print = function() {
         xml = new XMLSerializer().serializeToString(this);
 
         // Removing the name space as IE throws an error
-        //xml = xml.replace(/xmlns=\"http:\/\/www\.w3\.org\/2000\/svg\"/, '');
+        xml = xml.replace(/xmlns=\"http:\/\/www\.w3\.org\/2000\/svg\"/, '');
 
-        //draw the canvas object created from canvg
+        // draw the canvas object created from canvg
+
+        var self = this;
         canvg(canvas, xml, {
             useCORS: true,
             renderCallback: function() {
@@ -144,6 +142,8 @@ epiviz.ui.PrintManager.prototype.print = function() {
         //taintTest: false,
         timeout: 0,
         //logging: true,
+        width: container[0].scrollWidth + 200,
+        height: container[0].scrollHeight + 200,
         useCORS: true
     }).then(function (canvas) {
 
@@ -157,8 +157,8 @@ epiviz.ui.PrintManager.prototype.print = function() {
 
         if(format == "pdf") {
 
-            var dWidth = container.width() > 1200 ? container.width() : 1200;
-            var dHeight = container.height() > 780 ? container.height() : 780;
+            var dWidth = container[0].scrollWidth > 1400 ? container[0].scrollWidth : 1400;
+            var dHeight = container[0].scrollHeight > 1000 ? container[0].scrollHeight : 1000;
 
             var jsdoc = new jsPDF('l', 'px', [dWidth * 0.6, dHeight * 0.65]);
 
@@ -236,12 +236,14 @@ epiviz.ui.PrintManager.prototype.print = function() {
                     window.open(image_octet);
                 }
             }
-        }
 
-        // remove all changes made to the DOM
-        container.find('.tempCanvas').remove();
-        svgElems.each(function () {
-            $(this).show();
-        });
+            //$(container).css("overflow", "auto");
+
+            // remove all changes made to the DOM
+            container.find('.tempCanvas').remove();
+            svgElems.each(function () {
+                $(this).show();
+            });
+        }
     });
 };
