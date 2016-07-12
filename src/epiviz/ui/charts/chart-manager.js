@@ -6,8 +6,6 @@
 
 goog.provide('epiviz.ui.charts.ChartManager');
 
-goog.require('epiviz.ui.PrintManager');
-
 /**
  * @param {epiviz.Config} config
  * @constructor

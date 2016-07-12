@@ -258,7 +258,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <!-- Google Closure -->
     <script src="src/lib/closure/goog/base.js"></script>
-    <script src="src/lib/closure/goog/structs/collection.js"></script>
+    <!-- <script src="src/lib/closure/goog/structs/collection.js"></script> -->
 
     <!-- lightweight es6 promises -->
     <script src="src/lib/es6-promise/Promise.js"></script>
