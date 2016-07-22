@@ -327,7 +327,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     })
     .on('click', function(d) {
       var node = self._getNewNode(d);
-      d.selectionType = node.selectionType = self.selectNode(node);
+      node.selection = d.selectionType;
+      node.selectionType = self.selectNode(node);
+      d.selectionType = node.selectionType;
       d3.event.stopPropagation();
     });
 
