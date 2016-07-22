@@ -77,6 +77,9 @@ epiviz.ui.charts.tree.Icicle = function(id, container, properties) {
    */
   this._rowCtrlWidth = 50;
 
+
+  this._legend = null;
+
   this._initialize();
 };
 
@@ -94,6 +97,8 @@ epiviz.ui.charts.tree.Icicle.prototype._initialize = function() {
   epiviz.ui.charts.tree.HierarchyVisualization.prototype._initialize.call(this);
 
   this._svg.classed('icicle', true);
+
+  this._legend = this._svg.append('g').attr('class', 'chart-legend');
 };
 
 
@@ -117,6 +122,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   this._xScale = d3.scale.linear().range([this._rowCtrlWidth, width - this.margins().sumAxis(Axis.X)]);
   this._yScale = d3.scale.pow().exponent(1.5).range([0, height - this.margins().sumAxis(Axis.Y)]);
+
+  this._drawAxes();
 
   var itemsGroup = this._svg.select('.items');
   var defs = this._svg.select('.defs');
@@ -383,6 +390,331 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   this._drawRowControls(root);
 
   return uiData;
+};
+
+
+epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
+
+  this._legend.selectAll("*").remove();
+
+  var self = this;
+
+  var location =  $('#text-location').val();
+
+  if(location !== undefined || location != "" || location != null) {
+
+      var startEnd = location.split('-');
+      var loc_start = Globalize.parseInt(startEnd[0]);
+      var loc_end = Globalize.parseInt(startEnd[1]);
+
+      var node_starts = [], node_ends = [];
+
+      this._uiData.forEach(function(uiNode) {
+
+        if( (uiNode.depth+1) == self._subtreeDepth) {
+          if(loc_start <= uiNode.start || (loc_start >= uiNode.start && loc_start < uiNode.end)) {
+            node_starts.push(uiNode.x);
+          }
+
+          if(loc_end > uiNode.end || (loc_end >= uiNode.start && loc_end < uiNode.end)) {
+            node_ends.push(uiNode.x + uiNode.dx);
+          }
+        }
+
+      });
+
+      if(node_starts.length == 0 || node_ends.length ==0) {
+        /// out of range
+        //console.log("out of range");
+
+      this._legend.append("svg:line")
+        .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
+        .attr("y1", this.height() - 10)
+        .attr("x2", self.width() - self.margins().left() - 5)
+        .attr("y2", this.height() - 10)
+        .attr("fill-opacity", .5)
+        .style("stroke", "grey")
+        .style("stroke-width", 3)
+        .attr("stroke-dasharray", "10,10");
+
+      this._legend.append("polyline")
+        .style("stroke", "grey")
+        .style("fill", "none")
+        .style("stroke-width", 2)
+        .style("stroke-linejoin", "round")
+        .attr("fill-opacity", .5)
+        .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 5) + 
+                        "," + (this.height() - 10 - 7) +
+                        " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 3) +
+                        "," + (this.height() - 10) + 
+                        " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 5) + 
+                        "," + (this.height() - 10  + 7)
+                        ); 
+
+
+      this._legend.append("polyline")       
+        .style("stroke", "grey")   
+        .style("fill", "none")      
+        .style("stroke-width", 2)  
+        .style("stroke-linejoin", "round")
+        .attr("fill-opacity", .5)
+        .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 5) + 
+                        "," + (this.height() - 10 - 7) +
+                        " " + (Math.round(self.width() - self.margins().left() - 5) - 3) +
+                        "," + (this.height() - 10) + 
+                        " " +  (Math.round(self.width() - self.margins().left() - 5) + 5) + 
+                        "," + (this.height() - 10  + 7)
+                        ); 
+      }
+      else {
+
+      var x1 = self._xScale(Math.min.apply(Math, node_starts)) + this.margins().left() + 5; // + self._nodeBorder + self._nodeMargin;
+      var x2 = self._xScale(Math.max.apply(Math, node_ends)) + this.margins().left() - 5; // + self._nodeBorder + self._nodeMargin;
+
+      var bar_width = x2 - x1;
+      var bar_start = x1;
+
+      var y1 = this.height() - 15;
+
+      var extend_bar_width = 8;
+
+      var drag = d3.behavior.drag().origin(Object)
+                  .on("drag", dragmove)
+                  .on("dragend", dragend);
+
+      var dragright = d3.behavior.drag().origin(Object)
+        .on("drag", rdragresize)
+        .on("dragend", rdragend);
+
+      var dragleft = d3.behavior.drag()
+        .origin(Object)
+        .on("drag", ldragresize)
+        .on("dragend", ldragend);
+
+      this._legend.data([{x: x1, y:y1}]);
+
+      this._legend.append("svg:line")
+        .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
+        .attr("y1", this.height() - 10)
+        .attr("x2", self.width() - self.margins().left() - 5)
+        .attr("y2", this.height() - 10)
+        .attr("fill-opacity", .5)
+        .style("stroke", "grey")
+        .style("stroke-width", 3);
+
+      this._legend.append("polyline")
+        .style("stroke", "grey")
+        .style("fill", "none")
+        .style("stroke-width", 2)
+        .style("stroke-linejoin", "round")
+        .attr("fill-opacity", .5)
+        .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 5) + 
+                        "," + (this.height() - 10 - 7) +
+                        " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
+                        "," + (this.height() - 10) + 
+                        " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 5) + 
+                        "," + (this.height() - 10  + 7)
+                        ); 
+
+
+      this._legend.append("polyline")       
+        .style("stroke", "grey")   
+        .style("fill", "none")      
+        .style("stroke-width", 2)  
+        .style("stroke-linejoin", "round")
+        .attr("fill-opacity", .5)
+        .attr("points", (Math.round(self.width() - self.margins().left() - 5) - 5) + 
+                        "," + (this.height() - 10 - 7) +
+                        " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                        "," + (this.height() - 10) + 
+                        " " +  (Math.round(self.width() - self.margins().left() - 5) - 5) + 
+                        "," + (this.height() - 10  + 7)
+                        ); 
+
+      var dragrect = this._legend.append("rect")
+          .attr("x", function(d) { return d.x; })
+          .attr("y", function(d) { return d.y; })
+          .attr("height", 10)
+          .attr("width", bar_width)
+          .attr("fill-opacity", .5)
+          .attr("cursor", "move")
+          .call(drag);
+
+      var dragbarleft = this._legend.append("rect")
+          .attr("x", function(d) { return d.x - (extend_bar_width/2); })
+          .attr("y", function(d) { return d.y + 1; })
+          .attr("width", extend_bar_width)
+          .attr("height", 8)
+          .attr("fill", "red")
+          .attr("fill-opacity", .5)
+          .attr("cursor", "ew-resize")
+          .call(dragleft);
+
+      var dragbarright = this._legend.append("rect")
+          .attr("x", function(d) { return d.x + bar_width - (extend_bar_width/2); })
+          .attr("y", function(d) { return d.y + 1; })
+          .attr("width", extend_bar_width)
+          .attr("height", 8)
+          .attr("fill", "red")
+          .attr("fill-opacity", .5)
+          .attr("cursor", "ew-resize")
+          .call(dragright);
+
+
+      function dragmove(d) {
+        dragrect
+            .attr("x", d.x = Math.max(self._rowCtrlWidth + self.margins().left() + 5, Math.min(self.width() - self.margins().left() - 5 - bar_width, d3.event.x)));
+
+        dragbarleft 
+            .attr("x", function(d) { return d.x - (extend_bar_width/2);});
+
+        dragbarright 
+            .attr("x", function(d) { return  d.x + bar_width - (extend_bar_width/2);});
+
+        bar_start = d.x;
+      }
+
+      function ldragresize(d) {
+        var oldx = d.x; 
+
+        d.x = Math.max(self._rowCtrlWidth + self.margins().left() + 5, Math.min(d.x + bar_width - (extend_bar_width/2), d3.event.x)); 
+
+        bar_start = d.x;
+        bar_width = bar_width + (oldx - d.x);
+
+        dragbarleft
+          .attr("x", function(d) { return d.x - (extend_bar_width/2); });
+        
+        dragrect
+          .attr("x", function(d) { return  d.x;})
+          .attr("width", bar_width);
+      }
+
+      function rdragresize(d) {
+          var dragx = Math.max(d.x + (extend_bar_width/2), Math.min(self.width() - self.margins().left() - 5, d.x + bar_width + d3.event.dx));
+          bar_width = dragx - d.x;
+
+          dragbarright
+              .attr("x", dragx - (extend_bar_width/2) );
+          dragrect
+              .attr("width", bar_width);
+      }
+
+      function dragend(d) {
+
+        updateLocationBox(d.x, d.x+bar_width, "drag", d);
+        //updateLocationBox(bar_start, bar_start+bar_width, "drag", d);
+      }
+
+      function ldragend(d) {
+        //console.log(dragbarright.datum());
+        //updateLocationBox(d.x, dragbarright.datum().x - d.x, "dragleft", d);
+        updateLocationBox(d.x, d.x+bar_width, "dragleft", d);
+      }
+
+      function rdragend(d) {
+
+        //updateLocationBox(d.x, d.x - dragbarleft.datum().x, "dragright", d);
+        updateLocationBox(d.x, d.x+bar_width, "dragright", d);
+      }
+
+      function updateLocationBox (loc_x, loc_y, dragType, d) {
+        loc_x = self._xScale.invert(loc_x);
+        loc_y = self._xScale.invert(loc_y);
+
+        // find nodes positions for loc_x and loc_y
+        var node_starts = [], node_ends = [];
+        var node_starts_x = [], node_ends_x = [];
+        var range_start = 0, range_end = 0;
+
+        self._uiData.forEach(function(uiNode) {
+
+          if(uiNode.depth == self._rootDepth) {
+            range_start = uiNode.start;
+            range_end = uiNode.end;
+          }
+
+          if( (uiNode.depth+1) == self._subtreeDepth) {
+
+            //loc_x <= uiNode.x || (loc_x >= uiNode.x && loc_x <= (uiNode.x + uiNode.dx)
+            if(loc_x >= uiNode.x && loc_x < (uiNode.x + uiNode.dx)) {
+              node_starts.push(uiNode.start);
+              node_starts_x.push(uiNode.x);
+            }
+
+            if(loc_y >= uiNode.x && loc_y < (uiNode.x + uiNode.dx) ) {
+              node_ends.push(uiNode.end);
+              node_ends_x.push(uiNode.x + uiNode.dx);
+            }
+          }
+
+        });
+
+        var x1 = Math.max.apply(Math, node_starts);
+        //var snapx1 = Math.max.apply(Math, node_starts_x);
+        var x2 = Math.min.apply(Math, node_ends);
+        //var snapx2 = Math.max.apply(Math, node_ends_x);
+
+        var snapx1min = Math.max.apply(Math, node_starts_x);
+        var snapx2min = Math.min.apply(Math, node_ends_x);
+
+        if (!Number.isFinite(x1)) {
+          x1 = range_start;
+          snapx1min = self._rowCtrlWidth;
+        }
+
+        if(!Number.isFinite(x2)) {
+          x2 = range_end;
+          snapx2min = self.width();
+        }
+
+        var snapx1 = self._xScale(snapx1min) + self.margins().left() + 5;
+        var snapx2 = self._xScale(snapx2min) - 1;
+
+        self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+
+        //snap scroll bar to these edges
+
+        if(dragType == "drag") {
+
+          bar_width = snapx2 - snapx1;
+
+          dragrect
+            .attr("x", d.x = snapx1)
+            .attr("width", bar_width);
+
+          dragbarleft
+            .attr("x", snapx1 - (extend_bar_width/2));
+
+          dragbarright
+            .attr("x", snapx2 - (extend_bar_width/2) );
+
+        }
+        else if(dragType == "dragleft") {
+
+          bar_width = snapx2 - snapx1;
+
+          dragbarleft
+            .attr("x", snapx1 - (extend_bar_width/2));
+
+          dragrect
+            .attr("x", d.x = snapx1)
+            .attr("width", bar_width);
+        }
+        else if(dragType == "dragright") {
+
+          bar_width = snapx2 - snapx1;
+
+          dragbarright
+            .attr("x", snapx2 - (extend_bar_width/2) );
+
+          dragrect
+            .attr("width", bar_width);
+        }
+
+      }
+      }
+  }
 };
 
 /**
