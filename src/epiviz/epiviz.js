@@ -880,6 +880,10 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
         function(chartId, data) {
           self._chartManager.updateCharts(e.newValue, data, [chartId]);
         });
+
+      if(!self._chartManager.onChartPropogateIcicleLocationChanges().isFiring()) {
+          self._chartManager.onChartIcicleLocationChanges().notify();
+        }
     }));
 };
 
