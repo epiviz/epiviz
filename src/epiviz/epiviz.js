@@ -111,6 +111,8 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerChartRequestHierarchy();
   this._registerChartPropagateHierarchySelection();
 
+  this._registerChartPropogateIcicleLocationChange();
+
   this._registerUiSettingsChanged();
 
   // Register for Data events
@@ -879,4 +881,20 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
           self._chartManager.updateCharts(e.newValue, data, [chartId]);
         });
     }));
+};
+
+epiviz.EpiViz.prototype._registerChartPropogateIcicleLocationChange = function() {
+  var self = this;
+
+  self._chartManager.onChartPropogateIcicleLocationChanges().addListener(new epiviz.events.EventListener(
+    function(e) {
+
+      //console.log(e);
+      var currentLocation = self._locationManager.currentLocation();
+      self._locationManager.changeCurrentLocation(
+        new epiviz.datatypes.GenomicRange(currentLocation.seqName(), 
+              e.start, 
+              e.width));
+    }
+  ));
 };

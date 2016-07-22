@@ -125,6 +125,8 @@ epiviz.ui.charts.ChartManager = function(config) {
    */
   this._chartPropagateHierarchyChanges = new epiviz.events.Event();
 
+  this._chartPropogateIcicleLocationChanges = new epiviz.events.Event();
+
   this._registerWindowResize();
 };
 
@@ -202,6 +204,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartSave(chart);
   this._registerChartRequestHierarchy(chart);
   this._registerChartPropagateHierarchyChanges(chart);
+  this._registerChartPropogateIcicleLocationChanges(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -407,6 +410,9 @@ epiviz.ui.charts.ChartManager.prototype.onChartRequestHierarchy = function() { r
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchyChanges = function() { return this._chartPropagateHierarchyChanges; };
+
+epiviz.ui.charts.ChartManager.prototype.onChartPropogateIcicleLocationChanges = function() { return this._chartPropogateIcicleLocationChanges; };
+
 
 /**
  * @private
@@ -631,6 +637,17 @@ epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchyChanges 
     }));
   }
 };
+
+epiviz.ui.charts.ChartManager.prototype._registerChartPropogateIcicleLocationChanges = function(chart) {
+  var self = this;
+
+  if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    var dataStructVis = /** @type {epiviz.ui.charts.DataStructureVisualization} */ chart; // Assignment done for consistency
+    dataStructVis.onPropagateIcicleLocationChanges().addListener(new epiviz.events.EventListener(function(e) {
+      self._chartPropogateIcicleLocationChanges.notify(e);
+    }));
+  }
+ };
 
 epiviz.ui.charts.ChartManager.prototype.getChartSettings = function(id) {
 
