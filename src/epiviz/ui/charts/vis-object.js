@@ -125,6 +125,11 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
             second = thisM;
           }
 
+          if(other.x >= this.x && ((other.x + other.dx) <= (this.x + this.dx)) ) {
+            metadataMatches = true; 
+            break;
+          }
+
           var r = new RegExp('^(.+,)?' + first + '(,.+)?$');
 
           if (!r.test(second)) {
