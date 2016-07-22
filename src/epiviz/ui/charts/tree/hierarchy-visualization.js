@@ -234,7 +234,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getOldNode = function(no
     isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1), // x
     isExtremity ? newNode.dx : 0, // dx
     oldY, // y
-    isExtremity ? 0 : newNode.y + newNode.dy - oldY // dy
+    isExtremity ? 0 : newNode.y + newNode.dy - oldY, // dy
     null,
     node.start,
     node.end
@@ -260,7 +260,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getNewNode = function(no
     isExtremity ? oldNode.x : (oldNode.x <= this._selectedNode.x ? 0 : 1), // x
     isExtremity ? oldNode.dx : 0, // dx
     newY, // y
-    isExtremity ? 0 : oldNode.y + oldNode.dy - newY // dy
+    isExtremity ? 0 : oldNode.y + oldNode.dy - newY, // dy
     null, 
     node.start,
     node.end
