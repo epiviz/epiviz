@@ -350,7 +350,15 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   itemsGroup.selectAll('.item').selectAll('rect')
     .transition().duration(this._animationDelay)
-    .style('fill', function(d) { return self.colors().getByKey(d.taxonomy); })
+    .style('fill', function(d) { 
+      if (Object.keys(self._selectedLevels).indexOf(d.depth.toString()) >= 0 && self._selectedLevels[d.depth] == 0) {
+        return "#bfbfbf"
+      }
+      else if(self._selectedNodes[d.id] == 0) {
+        return "#bfbfbf";
+      }
+      return self.colors().getByKey(d.taxonomy);  
+    })
     .attr('x', calcNewX)
     .attr('y', calcNewY)
     .attr('width', calcNewWidth)
