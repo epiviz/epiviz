@@ -160,7 +160,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     var uiSelected = root.children && root.children.length ? this._uiDataMap[root.children[0].id] : null;
     this._selectedNode = uiSelected ?
       new epiviz.ui.charts.tree.UiNode(uiSelected.id, uiSelected.name, uiSelected.children, uiSelected.parentId, uiSelected.size,
-        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.globalDepth, uiSelected.taxonomy, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent) : null;
+        uiSelected.depth, uiSelected.nchildren, uiSelected.nleaves, uiSelected.selectionType, uiSelected.order, uiSelected.globalDepth, uiSelected.taxonomy, uiSelected.x, uiSelected.dx, uiSelected.y, uiSelected.dy, uiSelected.parent, uiSelected.start, uiSelected.end) : null;
 
     this._oldSubtreeDepth = this._subtreeDepth;
     this._subtreeDepth = 0;
@@ -234,7 +234,11 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getOldNode = function(no
     isExtremity ? newNode.x : (newNode.x <= this._referenceNode.x ? 0 : 1), // x
     isExtremity ? newNode.dx : 0, // dx
     oldY, // y
-    isExtremity ? 0 : newNode.y + newNode.dy - oldY); // dy
+    isExtremity ? 0 : newNode.y + newNode.dy - oldY // dy
+    null,
+    node.start,
+    node.end
+    ); 
 };
 
 /**
@@ -256,7 +260,11 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._getNewNode = function(no
     isExtremity ? oldNode.x : (oldNode.x <= this._selectedNode.x ? 0 : 1), // x
     isExtremity ? oldNode.dx : 0, // dx
     newY, // y
-    isExtremity ? 0 : oldNode.y + oldNode.dy - newY); // dy
+    isExtremity ? 0 : oldNode.y + oldNode.dy - newY // dy
+    null, 
+    node.start,
+    node.end
+    ); 
 };
 
 /**
