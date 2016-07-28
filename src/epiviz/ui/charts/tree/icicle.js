@@ -433,48 +433,91 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       });
 
-      if(node_starts.length == 0 || node_ends.length ==0) {
+if(node_starts.length == 0) {
         /// out of range
+
         //console.log("out of range");
 
-      this._legend.append("svg:line")
-        .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
-        .attr("y1", this.height() - 10)
-        .attr("x2", self.width() - self.margins().left() - 5)
-        .attr("y2", this.height() - 10)
-        .attr("fill-opacity", .5)
-        .style("stroke", "grey")
-        .style("stroke-width", 3)
-        .attr("stroke-dasharray", "10,10");
+        this._legend.append("svg:line")
+          .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
+          .attr("y1", this.height() - 10)
+          .attr("x2", self.width() - self.margins().left() - 5)
+          .attr("y2", this.height() - 10)
+          .attr("fill-opacity", .5)
+          .style("stroke", "grey")
+          .style("stroke-width", 3)
+          .attr("stroke-dasharray", "10,10");
 
-      this._legend.append("polyline")
-        .style("stroke", "grey")
-        .style("fill", "none")
-        .style("stroke-width", 2)
-        .style("stroke-linejoin", "round")
-        .attr("fill-opacity", .5)
-        .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 5) + 
-                        "," + (this.height() - 10 - 7) +
-                        " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 3) +
-                        "," + (this.height() - 10) + 
-                        " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 5) + 
-                        "," + (this.height() - 10  + 7)
-                        ); 
+        this._legend.append("polyline")
+          .style("stroke", "grey")
+          .style("fill", "none")
+          .style("stroke-width", 2)
+          .style("stroke-linejoin", "round")
+          .attr("fill-opacity", .5)
+          .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) + 
+                          "," + (this.height() - 10 - 7) +
+                          " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
+                          "," + (this.height() - 10) + 
+                          " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) + 
+                          "," + (this.height() - 10  + 7)
+                          ); 
 
 
-      this._legend.append("polyline")       
-        .style("stroke", "grey")   
-        .style("fill", "none")      
-        .style("stroke-width", 2)  
-        .style("stroke-linejoin", "round")
-        .attr("fill-opacity", .5)
-        .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 5) + 
-                        "," + (this.height() - 10 - 7) +
-                        " " + (Math.round(self.width() - self.margins().left() - 5) - 3) +
-                        "," + (this.height() - 10) + 
-                        " " +  (Math.round(self.width() - self.margins().left() - 5) + 5) + 
-                        "," + (this.height() - 10  + 7)
-                        ); 
+        this._legend.append("polyline")       
+          .style("stroke", "grey")   
+          .style("fill", "none")      
+          .style("stroke-width", 2)  
+          .style("stroke-linejoin", "round")
+          .attr("fill-opacity", .5)
+          .attr("points", (Math.round(self.width() - self.margins().left() - 5) - 5 ) + 
+                          "," + (this.height() - 10 - 7) +
+                          " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                          "," + (this.height() - 10) + 
+                          " " +  (Math.round(self.width() - self.margins().left() - 5) - 5) + 
+                          "," + (this.height() - 10  + 7)
+                          ); 
+      }
+      else if (node_ends.length == 0) {
+
+        this._legend.append("svg:line")
+          .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
+          .attr("y1", this.height() - 10)
+          .attr("x2", self.width() - self.margins().left() - 5)
+          .attr("y2", this.height() - 10)
+          .attr("fill-opacity", .5)
+          .style("stroke", "grey")
+          .style("stroke-width", 3)
+          .attr("stroke-dasharray", "10,10");
+
+        this._legend.append("polyline")
+          .style("stroke", "grey")
+          .style("fill", "none")
+          .style("stroke-width", 2)
+          .style("stroke-linejoin", "round")
+          .attr("fill-opacity", .5)
+          .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 3) + 
+                          "," + (this.height() - 10 - 7) +
+                          " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 5) +
+                          "," + (this.height() - 10) + 
+                          " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 3) + 
+                          "," + (this.height() - 10  + 7)
+                          ); 
+
+
+        this._legend.append("polyline")       
+          .style("stroke", "grey")   
+          .style("fill", "none")      
+          .style("stroke-width", 2)  
+          .style("stroke-linejoin", "round")
+          .attr("fill-opacity", .5)
+          .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) + 
+                          "," + (this.height() - 10 - 7) +
+                          " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                          "," + (this.height() - 10) + 
+                          " " +  (Math.round(self.width() - self.margins().left() - 5) + 3) + 
+                          "," + (this.height() - 10  + 7)
+                          ); 
+
       }
       else {
 
