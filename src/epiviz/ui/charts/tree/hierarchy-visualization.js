@@ -199,6 +199,11 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     if (this._oldRootDepth == null) { this._oldRootDepth = this._rootDepth; }
   }
 
+  //update to give parent higher preference
+  Object.keys(self._selectedNodes).forEach(function(sel) {
+    self._updateSelectionAttribute(self._uiDataMap[sel], self._selectedNodes[sel]);
+  });
+
   this._drawLegend();
 
   return this._uiData;
@@ -337,7 +342,26 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
   var selectionType = (node.selectionType + 1) % 3;
   this._selectedNodes[node.id] = selectionType;
 
-  this._changeNodeSelection(node, selectionType);
+  var self = this;
+
+  function setDisplay(nes) {
+
+    nes.selectionType = selectionType;
+    self._changeNodeSelection(nes, selectionType);
+
+    if(nes.children.length == 0) {
+      return;
+    }
+    else {
+      nes.children.forEach(function(n) {
+        setDisplay(n);
+      });
+    }
+  }
+
+  setDisplay(node);
+
+  // this._changeNodeSelection(node, selectionType);
 
   if (this.autoPropagateChanges()) {
     this.firePropagateHierarchyChanges();
@@ -433,4 +457,31 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.fireRequestHierarchy = fu
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.setAutoPropagateChanges = function(val) {
   epiviz.ui.charts.Visualization.prototype.setAutoPropagateChanges.call(this, val);
   if (val) { this.firePropagateHierarchyChanges(); }
+};
+
+
+/**
+ * @param {epiviz.ui.charts.tree.UiNode} node
+ * @param {number} selectionType
+ */
+epiviz.ui.charts.tree.HierarchyVisualization.prototype._updateSelectionAttribute = function(node, selectionType) {
+
+  var self = this;
+
+  function setDisplay(nes) {
+
+    nes.selectionType = selectionType;
+    self._changeNodeSelection(nes, selectionType);
+
+    if(nes.children.length == 0) {
+      return;
+    }
+    else {
+      nes.children.forEach(function(n) {
+        setDisplay(n);
+      });
+    }
+  }
+
+  setDisplay(node);
 };
