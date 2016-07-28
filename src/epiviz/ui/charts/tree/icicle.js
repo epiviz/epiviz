@@ -561,11 +561,11 @@ if(node_starts.length == 0) {
         .style("stroke-width", 2)
         .style("stroke-linejoin", "round")
         .attr("fill-opacity", .5)
-        .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 5) + 
+        .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) -3) + 
                         "," + (this.height() - 10 - 7) +
                         " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
                         "," + (this.height() - 10) + 
-                        " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 5) + 
+                        " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) + 
                         "," + (this.height() - 10  + 7)
                         ); 
 
@@ -576,11 +576,11 @@ if(node_starts.length == 0) {
         .style("stroke-width", 2)  
         .style("stroke-linejoin", "round")
         .attr("fill-opacity", .5)
-        .attr("points", (Math.round(self.width() - self.margins().left() - 5) - 5) + 
+        .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) + 
                         "," + (this.height() - 10 - 7) +
                         " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
                         "," + (this.height() - 10) + 
-                        " " +  (Math.round(self.width() - self.margins().left() - 5) - 5) + 
+                        " " +  (Math.round(self.width() - self.margins().left() - 5) + 3) + 
                         "," + (this.height() - 10  + 7)
                         ); 
 
