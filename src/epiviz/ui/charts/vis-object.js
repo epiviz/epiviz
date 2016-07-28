@@ -125,12 +125,6 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
             second = thisM;
           }
 
-          if( (other.x >= this.x && ((other.x + other.dx) <= (this.x + this.dx))) ||
-                this.x >= other.x && ((this.x + this.dx) <= (other.x + other.dx)) ) {
-            metadataMatches = true; 
-            break;
-          }
-
           var r = new RegExp('^(.+,)?' + first + '(,.+)?$');
 
           if (!r.test(second)) {
@@ -154,6 +148,12 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
         return true;
       }
     }
+  }
+
+// check if this element is part of any other elements.
+  if( (other.x >= this.x && ((other.x + other.dx) <= (this.x + this.dx))) ||
+    this.x >= other.x && ((this.x + this.dx) <= (other.x + other.dx)) ) {
+      return true;
   }
 
   return false;
