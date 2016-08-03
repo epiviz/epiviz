@@ -158,11 +158,12 @@ text {
 }
 
 .icicle .none-select rect {
-    opacity: 0.65;
+    opacity: 0.35;
+    fill: #bfbfbf!important;
 }
 
 .icicle .node-select rect {
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .icicle .custom-select rect {
@@ -177,10 +178,18 @@ text {
 
 .icicle .hovered rect { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
 
-.icicle .unhovered rect { fill-opacity: 0.8; }
+.icicle .unhovered rect { fill-opacity: 0.5; }
 
-.icicle .unselected rect { fill-opacity: 0.8; }
+.icicle .unselected rect { fill-opacity: 0.5; }
 
-.icicle .dragstart rect { fill-opacity: 0.8; }
+.icicle .dragstart rect { fill-opacity: 0.5; }
 
 .icicle .selected { cursor: w-resize; }
+
+.icicle .item text {
+   text-anchor: middle;
+   font-family: sans-serif;
+   font-size: 11px;
+   font-weight: bold;
+}
+
