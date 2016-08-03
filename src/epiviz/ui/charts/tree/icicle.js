@@ -804,7 +804,16 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
   var newCtrls = rowCtrls
     .enter().append('g')
     .style('opacity', 0)
-    .attr('class', 'row-ctrl custom-select');
+    .attr('class', function(d) {
+      Object.keys(self._selectedLevels).forEach(function(sl) {
+        var selectionType = self._selectedLevels[sl];
+        if(levelsTaxonomy[sl] == d) {
+          return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
+        }
+      });
+
+      return 'row-ctrl custom-select';
+    });
 
   newCtrls
     .transition().duration(this._animationDelay)
