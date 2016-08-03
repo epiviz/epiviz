@@ -388,11 +388,13 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(level) {
   var self = this;
   var deselectedNodeIds = [];
+  var deselectedNodes = [];
   $.each(this._selectedNodes, function(nodeId, selectionType) {
     /** @type {epiviz.ui.charts.tree.UiNode} */
     var node = self._uiDataMap[nodeId];
     if (node.globalDepth == level) {
       deselectedNodeIds.push(nodeId);
+      deselectedNodes.push(node);
     }
   });
   deselectedNodeIds.forEach(function(nodeId) { delete self._selectedNodes[nodeId]; });
