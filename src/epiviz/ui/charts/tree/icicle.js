@@ -352,9 +352,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .transition().duration(this._animationDelay)
     .style('fill', function(d) { 
 
-      if(d.selectionType == 0) {
-        return "#bfbfbf";
-      }
+      // if(d.selectionType == 0) {
+      //   return "#bfbfbf";
+      // }
 
       return self.colors().getByKey(d.taxonomy);  
     })
@@ -421,18 +421,18 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       this._uiData.forEach(function(uiNode) {
 
         if( (uiNode.depth+1) == self._subtreeDepth) {
-          if(loc_start <= uiNode.start || (loc_start >= uiNode.start && loc_start < uiNode.end)) {
+          if(  loc_start <= uiNode.start || (loc_start >= uiNode.start && loc_start < uiNode.end) ) {
             node_starts.push(uiNode.x);
           }
 
-          if(loc_end > uiNode.end || (loc_end >= uiNode.start && loc_end < uiNode.end)) {
+          if( loc_end > uiNode.end || (loc_end > uiNode.start && loc_end <= uiNode.end) ) {
             node_ends.push(uiNode.x + uiNode.dx);
           }
         }
 
       });
 
-if(node_starts.length == 0) {
+      if(node_starts.length == 0) {
         /// out of range
 
         //console.log("out of range");
@@ -534,7 +534,8 @@ if(node_starts.length == 0) {
                   .on("drag", dragmove)
                   .on("dragend", dragend);
 
-      var dragright = d3.behavior.drag().origin(Object)
+      var dragright = d3.behavior.drag()
+        .origin(Object)
         .on("drag", rdragresize)
         .on("dragend", rdragend);
 
@@ -584,6 +585,7 @@ if(node_starts.length == 0) {
                         ); 
 
       var dragrect = this._legend.append("rect")
+          .attr("id", "active")
           .attr("x", function(d) { return d.x; })
           .attr("y", function(d) { return d.y; })
           .attr("height", 10)
@@ -595,6 +597,7 @@ if(node_starts.length == 0) {
       var dragbarleft = this._legend.append("rect")
           .attr("x", function(d) { return d.x - (extend_bar_width/2); })
           .attr("y", function(d) { return d.y + 1; })
+          .attr("id", "dragleft")
           .attr("width", extend_bar_width)
           .attr("height", 8)
           .attr("fill", "red")
@@ -605,6 +608,7 @@ if(node_starts.length == 0) {
       var dragbarright = this._legend.append("rect")
           .attr("x", function(d) { return d.x + bar_width - (extend_bar_width/2); })
           .attr("y", function(d) { return d.y + 1; })
+          .attr("id", "dragright")
           .attr("width", extend_bar_width)
           .attr("height", 8)
           .attr("fill", "red")
@@ -615,7 +619,7 @@ if(node_starts.length == 0) {
 
       function dragmove(d) {
         dragrect
-            .attr("x", d.x = Math.max(self._rowCtrlWidth + self.margins().left() + 5, Math.min(self.width() - self.margins().left() - 5 - bar_width, d3.event.x)));
+            .attr("x", d.x = Math.max(self._rowCtrlWidth + self.margins().left(), Math.min(self.width() - self.margins().left() - bar_width, d3.event.x)));
 
         dragbarleft 
             .attr("x", function(d) { return d.x - (extend_bar_width/2);});
@@ -629,7 +633,7 @@ if(node_starts.length == 0) {
       function ldragresize(d) {
         var oldx = d.x; 
 
-        d.x = Math.max(self._rowCtrlWidth + self.margins().left() + 5, Math.min(d.x + bar_width - (extend_bar_width/2), d3.event.x)); 
+        d.x = Math.max(self._rowCtrlWidth + self.margins().left(), Math.min(d.x + bar_width - (extend_bar_width/2), d3.event.x)); 
 
         bar_start = d.x;
         bar_width = bar_width + (oldx - d.x);
@@ -643,7 +647,7 @@ if(node_starts.length == 0) {
       }
 
       function rdragresize(d) {
-          var dragx = Math.max(d.x + (extend_bar_width/2), Math.min(self.width() - self.margins().left() - 5, d.x + bar_width + d3.event.dx));
+          var dragx = Math.max(d.x + (extend_bar_width/2), Math.min(self.width() - self.margins().left(), d.x + bar_width + d3.event.dx));
           bar_width = dragx - d.x;
 
           dragbarright
@@ -661,7 +665,7 @@ if(node_starts.length == 0) {
       function ldragend(d) {
         //console.log(dragbarright.datum());
         //updateLocationBox(d.x, dragbarright.datum().x - d.x, "dragleft", d);
-        updateLocationBox(d.x, d.x+bar_width, "dragleft", d);
+        updateLocationBox(d.x, d.x+bar_width - 5, "dragleft", d);
       }
 
       function rdragend(d) {
@@ -674,7 +678,7 @@ if(node_starts.length == 0) {
         loc_x = self._xScale.invert(loc_x);
         loc_y = self._xScale.invert(loc_y);
 
-        // find nodes positions for loc_x and loc_y
+        // find nodes positions for those x1 and x2
         var node_starts = [], node_ends = [];
         var node_starts_x = [], node_ends_x = [];
         var range_start = 0, range_end = 0;
@@ -687,19 +691,16 @@ if(node_starts.length == 0) {
           }
 
           if( (uiNode.depth+1) == self._subtreeDepth) {
-
-            //loc_x <= uiNode.x || (loc_x >= uiNode.x && loc_x <= (uiNode.x + uiNode.dx)
             if(loc_x >= uiNode.x && loc_x < (uiNode.x + uiNode.dx)) {
               node_starts.push(uiNode.start);
               node_starts_x.push(uiNode.x);
             }
 
-            if(loc_y >= uiNode.x && loc_y < (uiNode.x + uiNode.dx) ) {
+            if(loc_y > uiNode.x && loc_y <= (uiNode.x + uiNode.dx) ) {
               node_ends.push(uiNode.end);
               node_ends_x.push(uiNode.x + uiNode.dx);
             }
           }
-
         });
 
         var x1 = Math.max.apply(Math, node_starts);
@@ -712,12 +713,12 @@ if(node_starts.length == 0) {
 
         if (!Number.isFinite(x1)) {
           x1 = range_start;
-          snapx1min = self._rowCtrlWidth;
+          //snapx1min = self._rowCtrlWidth;
         }
 
         if(!Number.isFinite(x2)) {
           x2 = range_end;
-          snapx2min = self.width();
+          //snapx2min = self.width();
         }
 
         var snapx1 = self._xScale(snapx1min) + self.margins().left() + 5;
