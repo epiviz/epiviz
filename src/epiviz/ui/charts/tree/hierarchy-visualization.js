@@ -199,6 +199,16 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     if (this._oldRootDepth == null) { this._oldRootDepth = this._rootDepth; }
   }
 
+  // get selectionType from oldUiData
+  this._uiData.forEach(function(node) {
+    if(node.depth <= self._rootDepth + 1 ) {
+      if(self._oldUiDataMap[node.parentId] != null) {
+        node.selectionType = self._oldUiDataMap[node.parentId].selectionType;
+        self._updateSelectionAttribute(node, node.selectionType);
+      }
+    }
+  });
+
   //update to give parent higher preference
   Object.keys(self._selectedNodes).forEach(function(sel) {
     self._updateSelectionAttribute(self._uiDataMap[sel], self._selectedNodes[sel]);
