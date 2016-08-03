@@ -159,7 +159,7 @@ text {
 
 .icicle .none-select rect {
     opacity: 0.35;
-    fill: #bfbfbf!important;
+    fill: #bfbfbf;
 }
 
 .icicle .node-select rect {
