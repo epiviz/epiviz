@@ -211,7 +211,9 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
 
   //update to give parent higher preference
   Object.keys(self._selectedNodes).forEach(function(sel) {
-    self._updateSelectionAttribute(self._uiDataMap[sel], self._selectedNodes[sel]);
+    if(self._uiDataMap[sel]) {
+      self._updateSelectionAttribute(self._uiDataMap[sel], self._selectedNodes[sel]);
+    }
   });
 
   this._drawLegend();
