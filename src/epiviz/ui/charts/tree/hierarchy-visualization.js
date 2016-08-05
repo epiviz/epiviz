@@ -164,7 +164,17 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
 
     this._oldSubtreeDepth = this._subtreeDepth;
     this._subtreeDepth = 0;
-    this._oldUiDataMap = this._uiDataMap;
+    
+    // append new data to old data for hierarchy propogation
+    if(this._oldUiDataMap == null) {
+        this._oldUiDataMap = this._uiDataMap;
+    }
+    else {
+      Object.keys(self._uiDataMap).forEach(function(uiDM) {
+        self._oldUiDataMap[uiDM] = self._uiDataMap[uiDM];
+      });
+    }
+
     this._uiDataMap = {};
 
     var uiData = this._partition.nodes(root);
