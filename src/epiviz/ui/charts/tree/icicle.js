@@ -77,8 +77,7 @@ epiviz.ui.charts.tree.Icicle = function(id, container, properties) {
    */
   this._rowCtrlWidth = 50;
 
-
-  this._legend = null;
+  this._legendX = null;
 
   this._initialize();
 };
@@ -121,8 +120,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var height = this.height();
 
   this._xScale = d3.scale.linear().range([this._rowCtrlWidth, width - this.margins().sumAxis(Axis.X)]);
-  this._yScale = d3.scale.pow().exponent(1.5).range([0, height - this.margins().sumAxis(Axis.Y)]);
-
+  this._yScale = d3.scale.pow().exponent(1.25).range([0, height - this.margins().sumAxis(Axis.Y)]);
+  
   this._drawAxes();
 
   var itemsGroup = this._svg.select('.items');
@@ -252,8 +251,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .on('click', function(d) {
       if (self._dragging) { self._dragging = false; return; }
       if (self.selectMode()) {
-        var node = self._getNewNode(d);
-        d.selectionType = node.selectionType = self.selectNode(node);
+        //var node = self._getNewNode(d);
+        //d.selectionType = node.selectionType = self.selectNode(node);
       } else {
         self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
           self.id(),
@@ -327,7 +326,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     })
     .on('click', function(d) {
       var node = self._getNewNode(d);
-      node.selection = d.selectionType;
+      node.selectionType = d.selectionType;
       node.selectionType = self.selectNode(node);
       d.selectionType = node.selectionType;
       d3.event.stopPropagation();
@@ -351,12 +350,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   itemsGroup.selectAll('.item').selectAll('rect')
     .transition().duration(this._animationDelay)
     .style('fill', function(d) { 
-
-      // if(d.selectionType == 0) {
-      //   return "#bfbfbf";
-      // }
-
-      return self.colors().getByKey(d.taxonomy);  
+      return self.colors().getByKey(d.taxonomy); 
     })
     .attr('x', calcNewX)
     .attr('y', calcNewY)
@@ -401,7 +395,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   return uiData;
 };
 
-
 epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
   this._legend.selectAll("*").remove();
@@ -417,20 +410,112 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var loc_end = Globalize.parseInt(startEnd[1]);
 
       var node_starts = [], node_ends = [];
+      var node_starts_val = [], node_ends_val = [];
 
       this._uiData.forEach(function(uiNode) {
 
         if( (uiNode.depth+1) == self._subtreeDepth) {
           if(  loc_start <= uiNode.start || (loc_start >= uiNode.start && loc_start < uiNode.end) ) {
             node_starts.push(uiNode.x);
+            node_starts_val.push([uiNode.start, uiNode.end]);
           }
 
           if( loc_end > uiNode.end || (loc_end > uiNode.start && loc_end <= uiNode.end) ) {
             node_ends.push(uiNode.x + uiNode.dx);
+            node_ends_val.push([uiNode.start, uiNode.end]);
           }
         }
 
       });
+
+      var leftCtrl = this._legend.append('g')
+        .on("click", moveLeftCtrl);
+
+      leftCtrl.append("rect")
+        .attr("x", self.margins().left())
+        .attr("y", this.height() - 18)
+        .attr("class", "item")
+        .attr("rx", 5)
+        .attr("ry", 5)
+        .attr("height", 15)
+        .attr("width", this._rowCtrlWidth / 3 - 2)
+        .attr("fill-opacity", .2);
+
+      leftCtrl.append('text')
+        .attr("x", (self.margins().left() - 6 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
+        .attr("y", (this.height() - 7))
+        .attr("fill", "red")
+        .attr("fill-opacity", .5)
+        .text("");
+
+      var ctrCtrl = this._legend.append('g')
+        .on("click", moveCtrCtrl);
+
+      ctrCtrl.append("rect")
+        .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
+        .attr("y", this.height() - 18)
+        .attr("rx", 5)
+        .attr("ry", 5)
+        .attr("height", 15)
+        .attr("width", this._rowCtrlWidth / 3 - 2)
+        .attr("fill-opacity", .2);
+
+      ctrCtrl.append('text')
+        .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
+        .attr("y", (this.height() - 7))
+        .attr("fill", "red")
+        .attr("fill-opacity", .5)
+        .text("");
+
+      var rightCtrl = this._legend.append('g')
+        .on("click", moveRightCtrl);
+
+      rightCtrl.append("rect")
+        .attr("x", self.margins().left() + 2 * (this._rowCtrlWidth / 3 - 1))
+        .attr("y", this.height() - 18)
+        .attr("rx", 5)
+        .attr("ry", 5)
+        .attr("height", 15)
+        .attr("width", this._rowCtrlWidth / 3 - 2)
+        .attr("fill-opacity", .2);
+
+      rightCtrl.append('text')
+        .attr("x", (self.margins().left() - 5 + (2 * (this._rowCtrlWidth / 3 - 1)) + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
+        .attr("y", (this.height() - 7))
+        .attr("fill", "red")
+        .attr("fill-opacity", .5)
+        .text("");
+
+      function moveLeftCtrl() {
+        //console.log("left");
+        //find one block left of current position
+        //node_starts_val.shift();
+        var x1 = node_starts_val[0][0] - 1;
+        var x2 = node_ends_val[node_ends_val.length-1][0];
+        self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+        self._drawAxes();
+     }
+
+
+      function moveCtrCtrl() {
+        console.log("center");
+        //fit the bar to the current length
+        //self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+        var x2 = node_starts_val[node_starts_val.length-1][1];
+        var x1 = node_ends_val[0][0];
+        // find the block right to the current position.
+        self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+        self._drawAxes();
+      }
+
+      function moveRightCtrl() {
+        //console.log("right");
+        var x1 = node_starts_val[0][1];
+        var x2 = node_ends_val[node_ends_val.length-1][1] + 1;
+        // find the block right to the current position.
+        self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+        self._drawAxes();
+      }
 
       if(node_starts.length == 0) {
         /// out of range
@@ -546,7 +631,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       this._legend.data([{x: x1, y:y1}]);
 
-      this._legend.append("svg:line")
+      this._legend.append("line")
         .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
         .attr("y1", this.height() - 10)
         .attr("x2", self.width() - self.margins().left() - 5)
@@ -616,6 +701,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .attr("cursor", "ew-resize")
           .call(dragright);
 
+      var txMin = node_starts_val[0][0];
+      var txMax = node_ends_val[node_ends_val.length-1][1]; 
+      self._propagateIcicleLocationChanges.notify({start: txMin, width: txMax - txMin});
 
       function dragmove(d) {
         dragrect
@@ -803,6 +891,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
 
   var newCtrls = rowCtrls
     .enter().append('g')
+    .attr('id', function(d) { return self.id() + '-' + d; })
     .style('opacity', 0)
     .attr('class', function(d) {
       Object.keys(self._selectedLevels).forEach(function(sl) {
