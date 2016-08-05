@@ -251,6 +251,33 @@ epiviz.Config.SETTINGS = {
       'Genes Default', 'genes-default'),
     new epiviz.ui.charts.ColorPalette(
       ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
-      'Heatmap Default', 'heatmap-default')
+      'Heatmap Default', 'heatmap-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"],
+      'YlGnBu', 'colorBrewer-YlGnBu-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#fff7fb","#ece2f0","#d0d1e6","#a6bddb","#67a9cf","#3690c0","#02818a","#016c59","#014636"],
+      'PuBuGn', 'colorBrewer-PuBuGn-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#ffffcc","#ffeda0","#fed976","#feb24c","#fd8d3c","#fc4e2a","#e31a1c","#bd0026","#800026"],
+      'YlOrRd', 'colorBrewer-YlOrRd-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#ffffe5","#fff7bc","#fee391","#fec44f","#fe9929","#ec7014","#cc4c02","#993404","#662506"],
+      'YlOrBr', 'colorBrewer-YlOrBr-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#a50026","#d73027","#f46d43","#fdae61","#fee090","#ffffbf","#e0f3f8","#abd9e9","#74add1","#4575b4","#313695"],
+      'RdYlBu', 'colorBrewer-RdYlBu-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#ffffbf","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2"],
+      'Spectral', 'colorBrewer-Spectral-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"],
+      'RdYlGn', 'colorBrewer-RdYlGn-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928"],
+      'Paired', 'colorBrewer-Paired-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"],
+      'Set3', 'colorBrewer-Set3-default')
   ]
 };
