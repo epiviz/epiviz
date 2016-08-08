@@ -13,7 +13,7 @@ goog.require('epiviz.ui.charts.ChartFactory');
 goog.require('epiviz.ui.charts.ChartManager');
 goog.require('epiviz.workspaces.WorkspaceManager');
 goog.require('epiviz.datatypes.GenomicRange');
-goog.require('epiviz.ui.tutorials');
+//goog.require('epiviz.ui.tutorials');
 goog.require('epiviz.ui.PrintManager');
 
 /**
