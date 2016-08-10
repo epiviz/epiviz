@@ -278,6 +278,12 @@ epiviz.Config.SETTINGS = {
       'Paired', 'colorBrewer-Paired-default'),
     new epiviz.ui.charts.ColorPalette(
       ["#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5","#d9d9d9","#bc80bd","#ccebc5","#ffed6f"],
-      'Set3', 'colorBrewer-Set3-default')
+      'Set3', 'colorBrewer-Set3-default'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#8e0152","#c51b7d","#de77ae","#f1b6da","#fde0ef","#f7f7f7","#e6f5d0","#b8e186","#7fbc41","#4d9221","#276419"],
+      'Set3', 'colorBrewer-PiYG'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#40004b","#762a83","#9970ab","#c2a5cf","#e7d4e8","#f7f7f7","#d9f0d3","#a6dba0","#5aae61","#1b7837","#00441b"],
+      'Set3', 'colorBrewer-PRGn')
   ]
 };
