@@ -600,13 +600,13 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
         <div id="intro-navigation" class="intro-container">
           <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
-          <button id="moveleft">Slide left</button>
-          <button id="moveright">Slide right</button>
+          <button id="moveleft" style="display:none;">Slide left</button>
+          <button id="moveright" style="display:none;" >Slide right</button>
 
-          <button id="zoomin">Zoom in</button>
-          <button id="zoomout">Zoom out</button>
+          <button id="zoomin" style="display:none;">Zoom in</button>
+          <button id="zoomout" style="display:none;">Zoom out</button>
 
-          <button id="location-settings">Location Settings...</button>
+          <button id="location-settings" style="display:none;">Location Settings...</button>
         </div>
 
         <span class="separator">|</span>
