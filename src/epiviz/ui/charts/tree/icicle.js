@@ -395,19 +395,31 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   return uiData;
 };
 
+
+epiviz.ui.charts.tree.Icicle.prototype._updateChartLocation = function(start, width) {
+
+  var self = this;
+        
+  self._propagateIcicleLocationChanges.notify({start: start, width: width});
+
+  self._lastRange = new epiviz.datatypes.GenomicRange('NA', 
+                          start, 
+                          width);
+};
+
 epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
   this._legend.selectAll("*").remove();
 
   var self = this;
 
-  var location =  $('#text-location').val();
+  //var location =  $('#text-location').val();
+  var location = self._lastRange;
 
-  if(location !== undefined || location != "" || location != null) {
+  if(location !== undefined) {
 
-      var startEnd = location.split('-');
-      var loc_start = Globalize.parseInt(startEnd[0]);
-      var loc_end = Globalize.parseInt(startEnd[1]);
+      var loc_start = location.start();
+      var loc_end = location.end();
 
       var node_starts = [], node_ends = [];
       var node_starts_val = [], node_ends_val = [];
@@ -434,7 +446,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         else {
           var x1 = node_starts_val[0][0] - 1;
           var x2 = node_ends_val[node_ends_val.length-1][0];
-          self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+          self._updateChartLocation(x1, x2 - x1);
               self._drawAxes();
         }        
       }
@@ -445,14 +457,14 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
             var x1 = node_starts_val[0][0];
             var x2 = node_starts_val[node_starts_val.length-1][1];
             // find the block right to the current position.
-            self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+            self._updateChartLocation(x1, x2 - x1);
                 self._drawAxes();
           }
           else if(node_ends_val.length > 0) {
               var x1 = node_ends_val[0][0];
               var x2 = node_ends_val[node_ends_val.length-1][1];
               // find the block right to the current position.
-              self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+              self._updateChartLocation(x1, x2 - x1);
                   self._drawAxes();
           }
         }
@@ -460,7 +472,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           var x2 = node_starts_val[node_starts_val.length-1][1];
           var x1 = node_ends_val[0][0];
           // find the block right to the current position.
-          self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+          self._updateChartLocation(x1, x2 - x1);
               self._drawAxes();
         }
       }
@@ -472,7 +484,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
             var x1 = node_starts_val[0][1];
             var x2 = node_ends_val[node_ends_val.length-1][1] + 1;
             // find the block right to the current position.
-            self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+            self._updateChartLocation(x1, x2 - x1);
                 self._drawAxes();
         }
       }
@@ -790,7 +802,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       var txMin = node_starts_val[0][0];
       var txMax = node_ends_val[node_ends_val.length-1][1]; 
-      self._propagateIcicleLocationChanges.notify({start: txMin, width: txMax - txMin});
+      self._updateChartLocation(txMin, txMax - txMin);
 
       function dragmove(d) {
         dragrect
@@ -883,7 +895,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           x2 = range_end;
         }
 
-        self._propagateIcicleLocationChanges.notify({start: x1, width: x2 - x1});
+        self._updateChartLocation(x1, x2 - x1);
         self._drawAxes();
 
       }
