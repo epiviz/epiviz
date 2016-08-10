@@ -482,26 +482,27 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         var ctrCtrl = this._legend.append('g')
           .on("click", moveCtrCtrl);
 
-        ctrCtrl.append("rect")
-          .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
-          .attr("y", this.height() - 18)
-          .attr("rx", 5)
-          .attr("ry", 5)
-          .attr("height", 15)
-          .attr("width", this._rowCtrlWidth / 3 - 2)
-          .attr("fill-opacity", .2);
+      ctrCtrl.append("rect")
+        .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
+        .attr("y", this.height() - 18)
+        .attr("rx", 5)
+        .attr("ry", 5)
+        .attr("height", 15)
+        .attr("width", this._rowCtrlWidth / 3 - 2)
+        .attr("fill-opacity", .3)
+        .attr("fill","red");
 
-        var ctrIcons = ctrCtrl.append('svg:foreignObject')
-          .attr('class', 'icon-container')
-          .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
-          .attr("y", (this.height() - 17))
-          .attr("height", 15)
-          .attr("width", this._rowCtrlWidth / 3 - 2);
+      var ctrIcons = ctrCtrl.append('svg:foreignObject')
+        .attr('class', 'icon-container')
+        .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
+        .attr("y", (this.height() - 17))
+        .attr("height", 15)
+        .attr("width", this._rowCtrlWidth / 3 - 2);
 
-        ctrIcons.append('xhtml:span')
-          .attr('class', 'unselectable-text fa fa-exchange')
-          .attr("fill-opacity", .5)
-          .style('color', 'red');
+      ctrIcons.append('xhtml:span')
+        .attr('class', 'unselectable-text fa fa-exchange')
+        .attr("fill-opacity", .5)
+        .style('color', 'black');
 
         this._legend.append("svg:line")
           .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
@@ -548,26 +549,27 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         //.attr("cursor", "pointer")
           .on("click", moveCtrCtrl);
 
-        ctrCtrl.append("rect")
-          .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
-          .attr("y", this.height() - 18)
-          .attr("rx", 5)
-          .attr("ry", 5)
-          .attr("height", 15)
-          .attr("width", this._rowCtrlWidth / 3 - 2)
-          .attr("fill-opacity", .2);
+      ctrCtrl.append("rect")
+        .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
+        .attr("y", this.height() - 18)
+        .attr("rx", 5)
+        .attr("ry", 5)
+        .attr("height", 15)
+        .attr("width", this._rowCtrlWidth / 3 - 2)
+        .attr("fill-opacity", .3)
+        .attr("fill","red");
 
-        var ctrIcons = ctrCtrl.append('svg:foreignObject')
-          .attr('class', 'icon-container')
-          .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
-          .attr("y", (this.height() - 17))
-          .attr("height", 15)
-          .attr("width", this._rowCtrlWidth / 3 - 2);
+      var ctrIcons = ctrCtrl.append('svg:foreignObject')
+        .attr('class', 'icon-container')
+        .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
+        .attr("y", (this.height() - 17))
+        .attr("height", 15)
+        .attr("width", this._rowCtrlWidth / 3 - 2);
 
-        ctrIcons.append('xhtml:span')
-          .attr('class', 'unselectable-text fa fa-exchange')
-          .attr("fill-opacity", .5)
-          .style('color', 'red');
+      ctrIcons.append('xhtml:span')
+        .attr('class', 'unselectable-text fa fa-exchange')
+        .attr("fill-opacity", .5)
+        .style('color', 'black');
 
         this._legend.append("svg:line")
           .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
