@@ -314,6 +314,42 @@ epiviz.Config.SETTINGS = {
       'PiYG', 'colorBrewer-PiYG'),
     new epiviz.ui.charts.ColorPalette(
       ["#40004b","#762a83","#9970ab","#c2a5cf","#e7d4e8","#f7f7f7","#d9f0d3","#a6dba0","#5aae61","#1b7837","#00441b"],
-      'PRGn', 'colorBrewer-PRGn')
+      'PRGn', 'colorBrewer-PRGn'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#ffffe5","#f7fcb9","#d9f0a3","#addd8e","#78c679","#41ab5d","#238443","#006837","#004529"],
+      'GnBu', 'colorBrewer-GnBu'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#f7fcfd","#e5f5f9","#ccece6","#99d8c9","#66c2a4","#41ae76","#238b45","#006d2c","#00441b"],
+      'BuGn', 'colorBrewer-BuGn'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#fff7fb","#ece7f2","#d0d1e6","#a6bddb","#74a9cf","#3690c0","#0570b0","#045a8d","#023858"],
+      'PuBu', 'colorBrewer-PuBu'),
+    new epiviz.ui.charts.ColorPalette(
+     ["#f7fcfd","#e0ecf4","#bfd3e6","#9ebcda","#8c96c6","#8c6bb1","#88419d","#810f7c","#4d004b"],
+      'BuPu', 'colorBrewer-BuPu'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#fff7f3","#fde0dd","#fcc5c0","#fa9fb5","#f768a1","#dd3497","#ae017e","#7a0177","#49006a"],
+      'RdPu', 'colorBrewer-RdPu'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#f7f4f9","#e7e1ef","#d4b9da","#c994c7","#df65b0","#e7298a","#ce1256","#980043","#67001f"],
+      'PuRd', 'colorBrewer-PuRd'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#fff7ec","#fee8c8","#fdd49e","#fdbb84","#fc8d59","#ef6548","#d7301f","#b30000","#7f0000"],
+      'OrRd', 'colorBrewer-OrRd'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#7f3b08","#b35806","#e08214","#fdb863","#fee0b6","#f7f7f7","#d8daeb","#b2abd2","#8073ac","#542788","#2d004b"],
+      'PuOr', 'colorBrewer-PuOr'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#543005","#8c510a","#bf812d","#dfc27d","#f6e8c3","#f5f5f5","#c7eae5","#80cdc1","#35978f","#01665e","#003c30"],
+      'BrBG', 'colorBrewer-BrBG'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#67001f","#b2182b","#d6604d","#f4a582","#fddbc7","#f7f7f7","#d1e5f0","#92c5de","#4393c3","#2166ac","#053061"],
+      'RdBu', 'colorBrewer-RdBu'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#67001f","#b2182b","#d6604d","#f4a582","#fddbc7","#ffffff","#e0e0e0","#bababa","#878787","#4d4d4d","#1a1a1a"],
+      'RdGy', 'colorBrewer-RdGy'),
+    new epiviz.ui.charts.ColorPalette(
+      ["#fff7ec","#fee8c8","#fdd49e","#fdbb84","#fc8d59","#ef6548","#d7301f","#b30000","#7f0000"],
+      'OrRd', 'colorBrewer-OrRd')
   ]
 };
