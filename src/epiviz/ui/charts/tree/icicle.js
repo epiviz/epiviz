@@ -416,7 +416,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
   //var location =  $('#text-location').val();
   var location = self._lastRange;
 
-  if(location !== undefined) {
+  if(location != null) {
 
       var loc_start = location.start();
       var loc_end = location.end();
