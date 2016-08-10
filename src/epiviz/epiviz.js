@@ -194,9 +194,10 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
   if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     var chartVisConfigSelectionMap = {};
     chartVisConfigSelectionMap[chartId] = visConfigSelection;
+    var range = this._workspaceManager.activeWorkspace().range();
     this._dataManager.getHierarchy(chartVisConfigSelectionMap,
       function(chartId, hierarchy) {
-        self._chartManager.updateCharts(undefined, hierarchy, [chartId]);
+        self._chartManager.updateCharts(range, hierarchy, [chartId]);
       });
   } else {
     var range = this._workspaceManager.activeWorkspace().range();
@@ -895,10 +896,12 @@ epiviz.EpiViz.prototype._registerChartPropogateIcicleLocationChange = function()
 
       //console.log(e);
       var currentLocation = self._locationManager.currentLocation();
-      self._locationManager.changeCurrentLocation(
-        new epiviz.datatypes.GenomicRange(currentLocation.seqName(), 
+      if(currentLocation != null) {
+        self._locationManager.changeCurrentLocation(
+            new epiviz.datatypes.GenomicRange(currentLocation.seqName(), 
               e.start, 
               e.width));
+      }
     }
   ));
 };
