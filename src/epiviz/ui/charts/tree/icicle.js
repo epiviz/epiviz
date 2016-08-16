@@ -258,6 +258,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
           self.id(),
           new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, d.id)));
       }
+      d3.event.stopPropagation();
     })
     .on('mouseover', function(d) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
@@ -492,7 +493,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       if(node_starts.length == 0) {
 
         var ctrCtrl = this._legend.append('g')
-          .on("click", moveCtrCtrl);
+          .on("click", function(d) {
+              moveCtrCtrl();
+              d3.event.stopPropagation();
+          });
 
       ctrCtrl.append("rect")
         .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
@@ -559,7 +563,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
         var ctrCtrl = this._legend.append('g')
         //.attr("cursor", "pointer")
-          .on("click", moveCtrCtrl);
+          .on("click", function(d) {
+              moveCtrCtrl();
+              d3.event.stopPropagation();
+          });
 
       ctrCtrl.append("rect")
         .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
@@ -627,7 +634,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       var leftCtrl = this._legend.append('g')
       //.attr("cursor", "pointer")
-        .on("click", moveLeftCtrl);
+        .on("click", function(d) {
+              moveLeftCtrl();
+              d3.event.stopPropagation();
+          });
 
       leftCtrl.append("rect")
         .attr("x", self.margins().left())
@@ -654,7 +664,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       var ctrCtrl = this._legend.append('g')
         .attr("class", "ctr-select")
-        .on("click", moveCtrCtrl);
+        .on("click", function(d) {
+              moveCtrCtrl();
+              d3.event.stopPropagation();
+          });
 
       ctrCtrl.append("rect")
         .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
@@ -680,7 +693,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       var rightCtrl = this._legend.append('g')
       //.attr("cursor", "pointer")
-        .on("click", moveRightCtrl);
+        .on("click", function(d) {
+              moveRightCtrl();
+              d3.event.stopPropagation();
+          });
 
       rightCtrl.append("rect")
         .attr("x", self.margins().left() + 2 * (this._rowCtrlWidth / 3 - 1))
