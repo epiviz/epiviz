@@ -1027,14 +1027,28 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
  * @param {epiviz.ui.charts.VisObject} selectedObject
  */
 epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
-  if (this._dragging) { return; }
-  var itemsGroup = this._svg.select('.items');
-  itemsGroup.classed('unhovered', true);
-  var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
-    return selectedObject.overlapsWith(d);
-  });
-  selectItems.classed('hovered', true);
-  itemsGroup.selectAll('.item').sort(function(d1, d2) { return selectedObject.overlapsWith(d1) ? 1 : -1; });
+    if (this._dragging) {
+        return;
+    }
+
+    var itemsGroup = this._svg.select('.items');
+    itemsGroup.classed('unhovered', true);
+    var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+        if (d instanceof epiviz.ui.charts.tree.UiNode) {
+            return selectedObject.overlapsWith(d);
+        }
+        return false;
+    });
+    selectItems.classed('hovered', true);
+    itemsGroup.selectAll('.item').sort(function(d1, d2) {
+        if (d1 instanceof epiviz.ui.charts.tree.UiNode) {
+            return selectedObject.overlapsWith(d1) ? 1 : -1;
+        }
+        return -1;
+
+    });
+
+    this.hoverHierarchy(selectedObject);
 };
 
 /**
@@ -1060,4 +1074,49 @@ epiviz.ui.charts.tree.Icicle.prototype.doSelect = function(selectedObject) {
  */
 epiviz.ui.charts.tree.Icicle.prototype.doDeselect = function() {
   this._svg.select('.items').selectAll('.selected').classed('selected', false);
+};
+
+epiviz.ui.charts.tree.Icicle.prototype.hoverHierarchy = function(selectedObject) {
+
+    var self = this;
+    var itemsGroup = this._svg.select('.items');
+
+    // for all children and parents set class hovered = true;
+    function setChildrenHovered(nes) {
+        var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+            if (d instanceof epiviz.ui.charts.tree.UiNode) {
+                return nes.overlapsWith(d);
+            }
+            return false;
+        });
+
+        selectItems.classed('hovered', true);
+        if (nes.children.length == 0) {
+            return;
+        } else {
+            nes.children.forEach(function(n) {
+                setChildrenHovered(n);
+            });
+        }
+    }
+
+    setChildrenHovered(selectedObject);
+
+    function setParentHovered(nes) {
+        var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+            if (d instanceof epiviz.ui.charts.tree.UiNode) {
+                return nes.overlapsWith(d);
+            }
+            return false;
+        });
+
+        selectItems.classed('hovered', true);
+        if (nes.parent == null) {
+            return;
+        } else {
+            setParentHovered(nes.parent);
+        }
+    }
+    setParentHovered(selectedObject);
+
 };
