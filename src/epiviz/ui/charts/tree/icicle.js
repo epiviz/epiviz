@@ -1064,7 +1064,9 @@ epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
 
     });
 
-    this.hoverHierarchy(selectedObject);
+    if (selectedObject instanceof epiviz.ui.charts.tree.UiNode) {
+        this.hoverHierarchy(selectedObject);
+    }
 };
 
 /**
