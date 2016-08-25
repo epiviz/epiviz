@@ -206,7 +206,25 @@ epiviz.Config.SETTINGS = {
       // The initial charts on the initial workspace
       charts: {
         track: [],
-        plot: []
+        plot: [{
+            id: 'heatmap-initial',
+            type: 'epiviz.plugins.charts.HeatmapPlot',
+            properties: { width: 837, height: 120,
+              margins: { top: 25, left: 20, bottom: 23, right: 10 },
+              measurements: '*',
+              colors: { id: 'heatmap-default' },
+              customSettings: {}
+            }
+          },{
+            id: 'stackedline-initial',
+            type: 'epiviz.plugins.charts.StackedLinePlot',
+            properties: { width: 837, height: 120,
+              margins: { top: 25, left: 20, bottom: 23, right: 10 },
+              measurements: '*',
+              colors: { id: 'epiviz-v2-medium' },
+              customSettings: {}
+            }
+          }]
       }
     }
   },

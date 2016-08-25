@@ -281,17 +281,33 @@ epiviz.EpiViz.prototype._registerRequestWorkspaces = function() {
           ws.push(w);
         }
 
-        if (!activeWorkspace && cookieWorkspace) {
-          unchangedActiveWorkspace = self._workspaceManager.get(cookieWorkspace.id());
-          if (!unchangedActiveWorkspace) {
-            cookieWorkspace = cookieWorkspace.copy(cookieWorkspace.name());
-            unchangedActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(self._config.defaultWorkspaceSettings, self._chartFactory, self._config);
-          }
-          activeWorkspace = cookieWorkspace;
-        }
+        self._dataManager.getMeasurements(function(measurements) {
+          //self._measurementsManager.addMeasurements(measurements);
 
-        self._workspaceManager.updateWorkspaces(ws, activeWorkspace, e.activeWorkspaceId, unchangedActiveWorkspace);
-        if (!cookieWorkspace) { self._workspaceManager.activeWorkspace().resetChanged(); }
+          var rawMea = [];
+
+          measurements.foreach(function(m) {
+           rawMea.push(m.raw());
+          });
+
+          if(self._config.defaultWorkspaceSettings.content.measurements.length == 0) {
+            self._config.defaultWorkspaceSettings.content.measurements = rawMea;
+          }
+
+          if (!activeWorkspace && cookieWorkspace) {
+            unchangedActiveWorkspace = self._workspaceManager.get(cookieWorkspace.id());
+            if (!unchangedActiveWorkspace) {
+              cookieWorkspace = cookieWorkspace.copy(cookieWorkspace.name());
+              unchangedActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(self._config.defaultWorkspaceSettings, self._chartFactory, self._config);
+            }
+            activeWorkspace = cookieWorkspace;
+          }
+
+          self._workspaceManager.updateWorkspaces(ws, activeWorkspace, e.activeWorkspaceId, unchangedActiveWorkspace);
+          if (!cookieWorkspace) { self._workspaceManager.activeWorkspace().resetChanged(); }
+
+          //self._workspaceManager.initialize();
+        });
        }, '', e.activeWorkspaceId);
     }));
 };

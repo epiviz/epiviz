@@ -551,8 +551,15 @@ epiviz.workspaces.Workspace.fromRawObject = function(o, chartFactory, config) {
 
       if (rawMs) {
         chartMs = new epiviz.measurements.MeasurementSet();
-        for (var j = 0; j < rawMs.length; ++j) {
-          chartMs.add(ms[rawMs[j]]);
+        if(rawMs == '*') {
+          for (var j = 0; j < ms.length; ++j) {
+            chartMs.add(ms[j]);
+          }
+        }
+        else {
+          for (var j = 0; j < rawMs.length; ++j) {
+            chartMs.add(ms[rawMs[j]]);
+          }
         }
       }
       var visConfigSelection = rawVisConfigSelection ?
