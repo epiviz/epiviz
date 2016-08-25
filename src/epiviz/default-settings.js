@@ -224,6 +224,16 @@ epiviz.Config.SETTINGS = {
               colors: { id: 'epiviz-v2-medium' },
               customSettings: {}
             }
+          }],
+          'data-structure': [{
+            id: 'icicle-initial',
+            type: 'epiviz.ui.charts.tree.Icicle',
+            properties: { width: 1000, height: 400,
+              measurements: '*',
+              margins: { top: 25, left: 20, bottom: 23, right: 10 },
+              colors: { id: 'd3-category20' },
+              customSettings: {}
+            }
           }]
       }
     }
