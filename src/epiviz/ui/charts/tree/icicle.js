@@ -816,9 +816,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .attr("cursor", "ew-resize")
           .call(dragright);
 
-      var txMin = node_starts_val[0][0];
-      var txMax = node_ends_val[node_ends_val.length-1][1]; 
-      self._updateChartLocation(txMin, txMax - txMin);
+      // var txMin = node_starts_val[0][0];
+      // var txMax = node_ends_val[node_ends_val.length-1][1]; 
+      // self._updateChartLocation(txMin, txMax - txMin);
 
       function dragmove(d) {
         dragrect
