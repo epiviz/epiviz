@@ -1052,7 +1052,13 @@ epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
     itemsGroup.classed('unhovered', true);
     var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
         if (d instanceof epiviz.ui.charts.tree.UiNode) {
-            return selectedObject.overlapsWith(d);
+            var isOverlap = selectedObject.overlapsWith(d);
+
+            if (isOverlap && d.selectionType == 2) {
+                self.hoverHierarchy(d);
+            }
+
+            return isOverlap;
         }
         return false;
     });
@@ -1104,13 +1110,7 @@ epiviz.ui.charts.tree.Icicle.prototype.hoverHierarchy = function(selectedObject)
     function setChildrenHovered(nes) {
         var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
             if (d instanceof epiviz.ui.charts.tree.UiNode) {
-              var isOverlap = selectedObject.overlapsWith(d);
-
-              if (isOverlap && d.selectionType == 2) {
-                  self.hoverHierarchy(d);
-              }
-
-              return isOverlap;
+              return nes.overlapsWith(s);
             }
             return false;
         });
