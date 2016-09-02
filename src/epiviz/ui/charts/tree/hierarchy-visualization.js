@@ -121,6 +121,8 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
    * @private
    */
   this._levelsTaxonomy = null;
+
+  this.selCutLevel = 3;
 };
 
 /**
@@ -214,6 +216,12 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
         if (self._oldUiDataMap[node.id] != null) {
             node.selectionType = self._oldUiDataMap[node.id].selectionType;
             self._updateSelectionAttribute(node, node.selectionType);
+        }
+    });
+
+      Object.keys(self._selectedLevels).forEach(function(sel) {
+        if (self._selectedLevels[sel] < self.selCutLevel) {
+            self.selCutLevel = parseInt(sel);
         }
     });
 
