@@ -1044,6 +1044,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
  * @param {epiviz.ui.charts.VisObject} selectedObject
  */
 epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
+
+    var self = this;
     if (this._dragging) {
         return;
     }
