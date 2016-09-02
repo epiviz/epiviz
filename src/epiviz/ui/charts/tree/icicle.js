@@ -262,6 +262,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     })
     .on('mouseover', function(d) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      self.notifyAggregateNode(d);
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
@@ -1103,7 +1104,13 @@ epiviz.ui.charts.tree.Icicle.prototype.hoverHierarchy = function(selectedObject)
     function setChildrenHovered(nes) {
         var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
             if (d instanceof epiviz.ui.charts.tree.UiNode) {
-                return nes.overlapsWith(d);
+              var isOverlap = selectedObject.overlapsWith(d);
+
+              if (isOverlap && d.selectionType == 2) {
+                  self.hoverHierarchy(d);
+              }
+
+              return isOverlap;
             }
             return false;
         });
@@ -1136,5 +1143,29 @@ epiviz.ui.charts.tree.Icicle.prototype.hoverHierarchy = function(selectedObject)
         }
     }
     setParentHovered(selectedObject);
+
+};
+
+epiviz.ui.charts.tree.Icicle.prototype.notifyAggregateNode = function(node) {
+
+    var self = this;
+
+    function setParentHovered(nes) {
+
+        if (nes.selectionType == 2) {
+            self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), nes));
+        }
+
+        if (nes.parent == null) {
+            return;
+        } else {
+            setParentHovered(nes.parent);
+        }
+
+    }
+
+    if (node.parent != null) {
+        setParentHovered(node.parent);
+    }
 
 };
