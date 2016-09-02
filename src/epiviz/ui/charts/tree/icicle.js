@@ -428,7 +428,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       this._uiData.forEach(function(uiNode) {
 
-        if( (uiNode.depth+1) == self.selCutLevel) {
+        if( (uiNode.depth) == self.selCutLevel) {
           if(  loc_start <= uiNode.start || (loc_start >= uiNode.start && loc_start < uiNode.end) ) {
             node_starts.push(uiNode.x);
             node_starts_val.push([uiNode.start, uiNode.end]);
@@ -888,7 +888,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
             range_end = uiNode.end;
           }
 
-          if( (uiNode.depth+1) == self.selCutLevel) {
+          if( (uiNode.depth) == self.selCutLevel) {
 
             if(loc_x >= uiNode.x && loc_x < (uiNode.x + uiNode.dx)) {
               node_starts.push(uiNode.start);
