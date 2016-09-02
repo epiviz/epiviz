@@ -1112,7 +1112,7 @@ epiviz.ui.charts.tree.Icicle.prototype.hoverHierarchy = function(selectedObject)
     function setChildrenHovered(nes) {
         var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
             if (d instanceof epiviz.ui.charts.tree.UiNode) {
-              return nes.overlapsWith(s);
+              return nes.overlapsWith(d);
             }
             return false;
         });
