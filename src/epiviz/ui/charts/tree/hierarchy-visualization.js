@@ -232,7 +232,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     }
   });
 
-  this._drawLegend();
+  //this._drawLegend();
 
   return this._uiData;
 };
