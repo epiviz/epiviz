@@ -120,7 +120,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var height = this.height();
 
   this._xScale = d3.scale.linear().range([this._rowCtrlWidth, width - this.margins().sumAxis(Axis.X)]);
-  this._yScale = d3.scale.pow().exponent(1.25).range([0, height - this.margins().sumAxis(Axis.Y)]);
+  //this._yScale = d3.scale.pow().exponent(1.25).range([0, height - this.margins().sumAxis(Axis.Y)]);
+  this._yScale = d3.scale.linear().range([0, height - this.margins().sumAxis(Axis.Y)]);
   
   this._drawAxes();
 
@@ -145,14 +146,34 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   if (!root) { return []; }
 
-  var calcOldWidth = function(d) { var node = self._getOldNode(d); return Math.max(0, self._xScale(node.x + node.dx) - self._xScale(node.x) - 2 * self._nodeBorder); };
-  var calcOldHeight = function(d) { var node = self._getOldNode(d); return Math.max(0, self._yScale(node.y + node.dy) - self._yScale(node.y) - 2 * self._nodeBorder); };
-  var calcOldX = function(d) { return self._xScale(self._getOldNode(d).x) + self._nodeBorder; };
-  var calcOldY = function(d) { return self._yScale(self._getOldNode(d).y) + self._nodeBorder; };
-  var calcNewWidth = function(d) { var node = self._getNewNode(d); return Math.max(0, self._xScale(node.x + node.dx) - self._xScale(node.x) - 2 * self._nodeBorder); };
-  var calcNewHeight = function(d) { var node = self._getNewNode(d); return Math.max(0, self._yScale(node.y + node.dy) - self._yScale(node.y) - 2 * self._nodeBorder); };
-  var calcNewX = function(d) { return self._xScale(self._getNewNode(d).x) + self._nodeBorder; };
-  var calcNewY = function(d) { return self._yScale(self._getNewNode(d).y) + self._nodeBorder; };
+    var calcOldWidth = function(d) {
+        var node = self._getOldNode(d);
+        return Math.max(0, self._xScale(node.x + node.dx) - self._xScale(node.x) - 2 * self._nodeBorder);
+    };
+    var calcOldHeight = function(d) {
+        var node = self._getOldNode(d);
+        return Math.max(0, self._yScale(node.y + node.dy) - self._yScale(node.y) - 2 * self._nodeBorder);
+    };
+    var calcOldX = function(d) {
+        return self._xScale(self._getOldNode(d).x) + self._nodeBorder;
+    };
+    var calcOldY = function(d) {
+        return height - self._yScale(self._getOldNode(d).y) - calcOldHeight(d) - self.margins().sumAxis(Axis.Y) + self._nodeBorder;
+    };
+    var calcNewWidth = function(d) {
+        var node = self._getNewNode(d);
+        return Math.max(0, self._xScale(node.x + node.dx) - self._xScale(node.x) - 2 * self._nodeBorder);
+    };
+    var calcNewHeight = function(d) {
+        var node = self._getNewNode(d);
+        return Math.max(0, self._yScale(node.y + node.dy) - self._yScale(node.y) - 2 * self._nodeBorder);
+    };
+    var calcNewX = function(d) {
+        return self._xScale(self._getNewNode(d).x) + self._nodeBorder;
+    };
+    var calcNewY = function(d) {
+        return height - self._yScale(self._getNewNode(d).y) - calcNewHeight(d) - self.margins().sumAxis(Axis.Y) + self._nodeBorder;
+    };
   var getOverlappingNode = function(x, y, globalDepth) {
     var ret = null;
     uiData.forEach(function(uiNode) {
@@ -929,9 +950,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
   var self = this;
 
+  var height = self.height();
+
   var calcHeight = function(d, i) { return self._yScale((i + 1) / nLevels) - self._yScale(i / nLevels) - 2; };
   var calcWidth = function(d, i) { return self._rowCtrlWidth - 2; };
-  var calcY = function(d, i) { return self._yScale(i / nLevels) + 1; };
+  var calcY = function(d, i) { return self._yScale((nLevels - i - 1) / nLevels) + 1; };
   var calcX = function(d, i) { return 1; };
   var calcR = function(d, i) {
     var height = calcHeight(d, i) - 3;
