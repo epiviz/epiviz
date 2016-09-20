@@ -495,6 +495,7 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
       return false;
     });
   }
+  var datasourceGroup = visConfigSelection.datasourceGroup;
   if(!datasourceGroup) {
       visConfigSelection.measurements.foreach(function(m) {
       if (m.datasourceGroup()) {
