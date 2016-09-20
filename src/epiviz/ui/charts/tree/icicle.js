@@ -750,7 +750,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var bar_width = x2 - x1;
       var bar_start = x1;
 
-      var y1 = navbar_y + 3;
+      var y1 = navbar_y + 5;
 
       var extend_bar_width = 8;
 
@@ -771,42 +771,43 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       this._legend.data([{x: x1, y:y1}]);
 
       this._legend.append("line")
-        .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
-        .attr("y1", this.height() - 10)
-        .attr("x2", self.width() - self.margins().left() - 5)
-        .attr("y2", this.height() - 10)
-        .attr("fill-opacity", .5)
-        .style("stroke", "grey")
-        .style("stroke-width", 3);
+                .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
+                .attr("y1", navbar_y + 10)
+                .attr("x2", self.width() - self.margins().left() - 5)
+                .attr("y2", navbar_y + 10)
+                .attr("fill-opacity", .5)
+                .style("stroke", "grey")
+                .style("stroke-width", 3);
 
-      this._legend.append("polyline")
-        .style("stroke", "grey")
-        .style("fill", "none")
-        .style("stroke-width", 2)
-        .style("stroke-linejoin", "round")
-        .attr("fill-opacity", .5)
-        .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) -3) + 
-                        "," + (this.height() - 10 - 7) +
-                        " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
-                        "," + (this.height() - 10) + 
-                        " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) + 
-                        "," + (this.height() - 10  + 7)
-                        ); 
+            this._legend.append("polyline")
+                .style("stroke", "grey")
+                .style("fill", "none")
+                .style("stroke-width", 2)
+                .style("stroke-linejoin", "round")
+                .attr("fill-opacity", .5)
+                .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
+                    "," + (navbar_y + 10 - 7) +
+                    " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
+                    "," + (navbar_y + 10) +
+                    " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
+                    "," + (navbar_y + 10 + 7)
+                );
 
 
-      this._legend.append("polyline")       
-        .style("stroke", "grey")   
-        .style("fill", "none")      
-        .style("stroke-width", 2)  
-        .style("stroke-linejoin", "round")
-        .attr("fill-opacity", .5)
-        .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) + 
-                        "," + (this.height() - 10 - 7) +
-                        " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
-                        "," + (this.height() - 10) + 
-                        " " +  (Math.round(self.width() - self.margins().left() - 5) + 3) + 
-                        "," + (this.height() - 10  + 7)
-                        ); 
+            this._legend.append("polyline")
+                .style("stroke", "grey")
+                .style("fill", "none")
+                .style("stroke-width", 2)
+                .style("stroke-linejoin", "round")
+                .attr("fill-opacity", .5)
+                .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                    "," + (navbar_y + 10 - 7) +
+                    " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                    "," + (navbar_y + 10) +
+                    " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                    "," + (navbar_y + 10 + 7)
+                );
+
 
       var dragrect = this._legend.append("rect")
           .attr("id", "active")
