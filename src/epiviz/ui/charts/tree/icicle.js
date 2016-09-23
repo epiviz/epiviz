@@ -308,6 +308,14 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var newLabels = newItems.append('text')
     .attr('class', 'unselectable-text node-label')
     .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
+    .style("visibility", function(d) {
+      var w = calcNewWidth(d);
+      var maxChars = w / self._charWidth;
+      if (maxChars < 7 && d.depth > (self._levelsTaxonomy.length/2)) {
+          return "hidden";
+      }
+      return "visible";
+    })
     .text(function(d) {
       var w = calcOldWidth(d);
       var maxChars = w / self._charWidth;
@@ -384,6 +392,14 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .transition().duration(this._animationDelay)
     .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.5; })
+    .style("visibility", function(d) {
+      var w = calcNewWidth(d);
+      var maxChars = w / self._charWidth;
+      if (maxChars < 7 && d.depth > (self._levelsTaxonomy.length/2)) {
+          return "hidden";
+      }
+      return "visible";
+    })
     .tween('text', function(d) {
       var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
       return function(t) {
@@ -398,11 +414,25 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   itemsGroup.selectAll('.item').selectAll('.icon-bg')
     .transition().duration(this._animationDelay)
+    .style("visibility", function(d) {
+      var w = calcNewWidth(d);
+      if (w < 20) {
+          return "hidden";
+      }
+      return "visible";
+    })
     .attr('cx', function(d) { return calcNewX(d) + self._nodeMargin + self._iconSize * 0.5; })
     .attr('cy', function(d) { return calcNewY(d) + calcNewHeight(d) - self._nodeMargin - self._iconSize * 0.5; });
 
   itemsGroup.selectAll('.item').selectAll('.icon-container')
     .transition().duration(this._animationDelay)
+    .style("visibility", function(d) {
+      var w = calcNewWidth(d);
+      if (w < 20) {
+          return "hidden";
+      }
+      return "visible";
+    })
     .attr('x', function(d) { return calcNewX(d) + self._nodeMargin; })
     .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) - self._nodeMargin - self._iconSize; });
 
