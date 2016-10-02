@@ -219,11 +219,15 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
         }
     });
 
-      Object.keys(self._selectedLevels).forEach(function(sel) {
-        if (self._selectedLevels[sel] < self.selCutLevel) {
+    Object.keys(self._selectedLevels).forEach(function(sel) {
+        if (parseInt(sel) < self.selCutLevel) {
             self.selCutLevel = parseInt(sel);
         }
     });
+
+    if(Object.keys(self._selectedLevels).length == 0) {
+      self._selectedLevels["3"] = 2;
+    }
 
   //update to give parent higher preference
   Object.keys(self._selectedNodes).forEach(function(sel) {
@@ -418,6 +422,21 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(le
   var tLevel;
 
   if (!(level in this._selectedLevels)) {
+
+    var currentLevel = Object.keys(self._selectedLevels)[0]
+
+    self._changeLevelSelection(this._levelsTaxonomy[currentLevel], 1);
+
+      //propogate level selection to nodes
+    self._uiData.forEach(function(node) {
+      if (node.depth == currentLevel && node.selectionType != 0) {
+          self._updateSelectionAttribute(node, 1);
+          self._uiDataMap[node.id] == node.selectionType;
+      }
+    });
+
+    this._selectedLevels = {};
+
     tLevel = 2;
     this._selectedLevels[level] = epiviz.ui.charts.tree.NodeSelectionType.NODE;
   } else {

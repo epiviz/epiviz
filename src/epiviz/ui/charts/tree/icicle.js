@@ -994,6 +994,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
   };
 
   var rowCtrlGroup = this._svg.select('.row-ctrls');
+
   if (rowCtrlGroup.empty()) {
     rowCtrlGroup = this._svg.append('g')
       .attr('class', 'row-ctrls');
@@ -1011,15 +1012,22 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     .enter().append('g')
     .attr('id', function(d) { return self.id() + '-' + d; })
     .style('opacity', 0)
-    .attr('class', function(d) {
-      Object.keys(self._selectedLevels).forEach(function(sl) {
-        var selectionType = self._selectedLevels[sl];
-        if(levelsTaxonomy[sl] == d) {
-          return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
-        }
-      });
+    .attr('class', function(d, i) {
 
-      return 'row-ctrl custom-select';
+      if((root.globalDepth + i) == Object.keys(self._selectedLevels)[0]) {
+        return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[self._selectedLevels[i]];
+      }
+
+      return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[1];
+
+      // Object.keys(self._selectedLevels).forEach(function(sl) {
+      //   var selectionType = self._selectedLevels[sl];
+      //   if(levelsTaxonomy[sl] == d) {
+      //     return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
+      //   }
+      // });
+
+      // return 'row-ctrl custom-select';
     });
 
   newCtrls
