@@ -202,13 +202,16 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       }
 
       if (selectedLevels) {
-        for (var level in selectedLevels) {
-          if (!selectedLevels.hasOwnProperty(level)) { continue; }
-          this._selectedLevels[level] = selectedLevels[level];
-          if (this._selectedLevels[level] == epiviz.ui.charts.tree.NodeSelectionType.LEAVES) {
-            delete this._selectedLevels[level];
-          }
+        if(Object.keys(selectedLevels).length > 0) {
+          this._selectedLevels = selectedLevels;
         }
+        // for (var level in selectedLevels) {
+        //   if (!selectedLevels.hasOwnProperty(level)) { continue; }
+        //   this._selectedLevels[level] = selectedLevels[level];
+        //   if (this._selectedLevels[level] == epiviz.ui.charts.tree.NodeSelectionType.LEAVES) {
+        //     delete this._selectedLevels[level];
+        //   }
+        // }
       }
 
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
