@@ -1003,6 +1003,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
   rowCtrlGroup
     .attr('transform', sprintf('translate(%s,%s)', this.margins().left(), this.margins().top()));
 
+  rowCtrlGroup.selectAll('.row-ctrl').remove();
+
   var levelsTaxonomy = this.levelsTaxonomy();
   var nLevels = levelsTaxonomy.length;
   var rowCtrls = rowCtrlGroup.selectAll('.row-ctrl')
@@ -1015,7 +1017,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     .attr('class', function(d, i) {
 
       if((root.globalDepth + i) == Object.keys(self._selectedLevels)[0]) {
-        return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[self._selectedLevels[i]];
+        return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[self._selectedLevels[root.globalDepth + i]];
       }
 
       return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[1];
