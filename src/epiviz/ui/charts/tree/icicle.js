@@ -110,6 +110,10 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var uiData = epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw.call(this, range, root);
 
   var self = this;
+
+  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
+
+
   var Axis = epiviz.ui.charts.Axis;
 
   if (!root) {
@@ -284,6 +288,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .on('mouseover', function(d) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
       self.notifyAggregateNode(d);
+
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
@@ -1111,6 +1116,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
  */
 epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
 
+  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
+
     var self = this;
     if (this._dragging) {
         return;
@@ -1142,14 +1149,29 @@ epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
     if (selectedObject instanceof epiviz.ui.charts.tree.UiNode) {
         this.hoverHierarchy(selectedObject);
     }
+
+      this._svg.selectAll(".item rect")
+      .style("fill-opacity", 1 - hoverOpacity);
+
+      this._svg.selectAll(".item.hovered rect")
+      .style("fill-opacity", hoverOpacity);
 };
 
 /**
  */
 epiviz.ui.charts.tree.Icicle.prototype.doUnhover = function() {
+
+  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
+
   if (this._dragging) { return; }
   this._svg.select('.items').classed('unhovered', false);
   this._svg.select('.items').selectAll('.item').classed('hovered', false);
+
+        this._svg.selectAll(".item.hovered rect")
+      .style("fill-opacity", 1);
+
+      this._svg.selectAll(".item rect")
+      .style("fill-opacity", 1);
 };
 
 /**

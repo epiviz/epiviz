@@ -45,3 +45,9 @@ epiviz.ui.charts.DataStructureVisualizationType.prototype.isRestrictedToSameData
  * @returns {boolean}
  */
 epiviz.ui.charts.DataStructureVisualizationType.prototype.hasMeasurements = function() { return false; };
+
+
+epiviz.ui.charts.DataStructureVisualizationType.prototype.customSettingsDefs = function() {
+  var defs = epiviz.ui.charts.VisualizationType.prototype.customSettingsDefs.call(this);
+  return defs;
+};
