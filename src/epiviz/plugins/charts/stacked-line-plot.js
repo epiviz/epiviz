@@ -188,6 +188,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
   /** @type {boolean} */
   var scaleToPercent = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.SCALE_TO_PERCENT];
 
+  var hoverOpacity = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY];
+  
   var self = this;
 
   var graph = this._svg.select('.lines');
@@ -319,9 +321,19 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .style('fill', function(d, i) { return colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))); })
     .on('mouseover', function(d, i) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+
+      graph.selectAll(".item")
+      .style("opacity", 1 - hoverOpacity);
+
+      graph.selectAll(".hovered .item")
+      .style("opacity", hoverOpacity);
+
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+
+
+
     });
 
   lines
@@ -400,4 +412,54 @@ epiviz.plugins.charts.StackedLinePlot.prototype.colorLabels = function() {
     labels.push('Color ' + (i + 1));
   }
   return labels;
+};
+
+
+epiviz.plugins.charts.StackedLinePlot.prototype.doHover = function(selectedObject) {
+
+    var hoverOpacity = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY];
+
+
+  var itemsGroup = this._container.find('.items');
+  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
+  var selectedGroup = itemsGroup.find('> .selected');
+  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+
+  var filter = function() {
+    return selectedObject.overlapsWith(d3.select(this).data()[0]);
+  };
+  var selectItems = itemsGroup.find('> .item').filter(filter);
+  unselectedHoveredGroup.append(selectItems);
+
+  selectItems = selectedGroup.find('> .item').filter(filter);
+  selectedHoveredGroup.append(selectItems);
+
+        this._svg.selectAll(".item")
+      .style("opacity", 1 - hoverOpacity);
+
+      this._svg.selectAll(".hovered .item")
+      .style("opacity", hoverOpacity);
+};
+
+/**
+ */
+epiviz.plugins.charts.StackedLinePlot.prototype.doUnhover = function() {
+
+    var hoverOpacity = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY];
+
+
+  var itemsGroup = this._container.find('.items');
+  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
+  var selectedGroup = itemsGroup.find('> .selected');
+  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+
+  itemsGroup.prepend(unselectedHoveredGroup.children());
+
+  selectedGroup.prepend(selectedHoveredGroup.children());
+
+        this._svg.selectAll(".item")
+      .style("opacity", 1);
+
+      this._svg.selectAll(".hovered .item")
+      .style("opacity", 1);
 };
