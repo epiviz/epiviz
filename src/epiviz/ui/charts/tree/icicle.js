@@ -565,7 +565,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         .attr("height", 15)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
-        .attr("fill","red");
+        .attr("fill","gray");
 
       var ctrIcons = ctrCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
@@ -635,7 +635,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         .attr("height", 15)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
-        .attr("fill","red");
+        .attr("fill","gray");
 
       var ctrIcons = ctrCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
@@ -707,7 +707,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         .attr("height", 15)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
-        .attr("fill","red");
+        .attr("fill","gray");
 
       var leftIcons = leftCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
@@ -736,7 +736,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         .attr("height", 15)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
-        .attr("fill","red");
+        .attr("fill","gray");
 
       var ctrIcons = ctrCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
@@ -765,7 +765,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
         .attr("height", 15)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
-        .attr("fill","red");
+        .attr("fill","gray");
 
     var rightIcons = rightCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
