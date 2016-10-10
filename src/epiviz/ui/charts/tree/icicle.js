@@ -1046,19 +1046,72 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     .style('opacity', 0)
     .remove();
 
+    // newCtrls
+    // .append('rect')
+    // .style('fill', function(label) { return self.colors().getByKey(label); });
+
+  // rowCtrlGroup.selectAll('.row-ctrl').select('rect')
+  //   .attr('x', calcX)
+  //   .attr('width', calcWidth)
+  //   .attr('rx', 10)
+  //   .attr('ry', 10)
+  //   .transition().duration(this._animationDelay)
+  //   .attr('y', calcY)
+  //   .attr('height', calcHeight)
+  //   .style('fill', function(label) { return self.colors().getByKey(label); });
+
   newCtrls
-    .append('rect')
+    .append('path')
     .style('fill', function(label) { return self.colors().getByKey(label); });
 
-  rowCtrlGroup.selectAll('.row-ctrl').select('rect')
-    .attr('x', calcX)
-    .attr('width', calcWidth)
-    .attr('rx', 10)
-    .attr('ry', 10)
-    .transition().duration(this._animationDelay)
-    .attr('y', calcY)
-    .attr('height', calcHeight)
-    .style('fill', function(label) { return self.colors().getByKey(label); });
+
+  var lineFunction = d3.svg.line()
+                          .x(function(d) { return d.x; })
+                          .y(function(d) { return d.y; })
+                      .interpolate("linear");
+
+  var lineGraph = rowCtrlGroup.selectAll('.row-ctrl').select("path")
+    .attr("d", function(d, i) {
+
+        var height = calcHeight(d, i);
+        var width = calcWidth(d, i);
+        var x = calcX(d, i);
+        var y = calcY(d, i);
+
+        var lineData = [];
+
+        y = y+2;
+
+      if(i == 0 && root.globalDepth + i > 0) {
+        lineData.push({'x': x, 'y': y});
+        lineData.push({'x': x, 'y': (y + (height*2/3))});
+        lineData.push({'x': x + (width/2), 'y': y + height});
+        lineData.push({'x': x + width, 'y': (y + (height*2/3))});
+        lineData.push({'x': x + width, 'y': y});
+        lineData.push({'x': x, 'y': y});
+        return lineFunction(lineData)
+      }
+      else if(i == nLevels-1 && levelsTaxonomy[nLevels-1] != "OTU") {
+        lineData.push({'x': x + (width/2), 'y': y});
+        lineData.push({'x': x, 'y': (y + (height*1/3))});
+        lineData.push({'x': x, 'y': y + height});
+        lineData.push({'x': x + width, 'y': y + height});
+        lineData.push({'x': x + width, 'y': (y + (height*1/3))});
+        lineData.push({'x': x + (width/2), 'y': y});
+        return lineFunction(lineData)
+      }
+      else {
+        lineData.push({'x': x, 'y': y});
+        lineData.push({'x': x, 'y': y + height});
+        lineData.push({'x': x + width, 'y': y + height});
+        lineData.push({'x': x + width, 'y': y});
+        lineData.push({'x': x, 'y': y});
+        return lineFunction(lineData)
+      }
+
+    })
+    .attr("stroke", "none")
+    .attr("stroke-width", 2);
 
   var newIconsBg = newCtrls.append('circle')
     .attr('class', 'icon-bg')
