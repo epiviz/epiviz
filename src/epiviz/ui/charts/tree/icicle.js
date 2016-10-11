@@ -287,11 +287,32 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     })
     .on('mouseover', function(d) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      
+      var w = calcNewWidth(d);
+      var maxChars = w / self._charWidth;
+      if (maxChars < 7) {
+            d3.select(this).append("text")
+                .attr("class", "hoverText")
+                .text(function(d) {return d.name;})
+                .attr("x", function(d) {
+                  var xText = calcNewX(d);
+                  if (xText < 2*self._rowCtrlWidth) {
+                    xText += self._rowCtrlWidth;
+                  }
+                  if(xText > width -  self._rowCtrlWidth) {
+                    xText -= (self._rowCtrlWidth/2);
+                  }
+                  return xText;
+                })
+                .attr("y", function(d) { return calcNewY(d) + (calcNewHeight(d)/3)});
+      }
+      
       self.notifyAggregateNode(d);
 
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+              d3.select(this).selectAll(".hoverText").remove();
     })
     .call(drag);
 
@@ -1062,6 +1083,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
 
   newCtrls
     .append('path')
+    .attr("class", "rowCtrlPath")
     .style('fill', function(label) { return self.colors().getByKey(label); });
 
 
@@ -1070,7 +1092,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
                           .y(function(d) { return d.y; })
                       .interpolate("linear");
 
-  var lineGraph = rowCtrlGroup.selectAll('.row-ctrl').select("path")
+  var lineGraph = rowCtrlGroup.selectAll('.row-ctrl').select("path.rowCtrlPath")
     .attr("d", function(d, i) {
 
         var height = calcHeight(d, i);
@@ -1110,8 +1132,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
       }
 
     })
-    .attr("stroke", "none")
-    .attr("stroke-width", 2);
+    .attr("stroke", "none");
 
   var newIconsBg = newCtrls.append('circle')
     .attr('class', 'icon-bg')
