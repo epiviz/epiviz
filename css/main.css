@@ -386,3 +386,8 @@ tfoot th input { width: 80% }
   background-color: #dddddd;
   cursor: pointer; cursor: hand;
 }
+
+/* hide disabled buttons */
+.ui-state-disabled {
+  display: none;
+}
