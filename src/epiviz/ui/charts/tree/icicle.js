@@ -492,7 +492,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
   var self = this;
 
-  var navbar_y = 28;
+  var navbar_y = 27;
+  var navbar_height = 17;
 
   //var location =  $('#text-location').val();
   var location = self._lastRange;
@@ -580,10 +581,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       ctrCtrl.append("rect")
         .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
-        .attr("y", navbar_y + 3)
+        .attr("y", navbar_y)
         .attr("rx", 5)
         .attr("ry", 5)
-        .attr("height", 15)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
         .attr("fill","gray");
@@ -591,8 +592,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var ctrIcons = ctrCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
         .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
-        .attr("y", (navbar_y + 4))
-        .attr("height", 15)
+        .attr("y", (navbar_y + (navbar_height/3) - 4))
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2);
 
       ctrIcons.append('xhtml:span')
@@ -602,9 +603,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
         this._legend.append("svg:line")
           .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
-          .attr("y1", navbar_y + 10)
+          .attr("y1", navbar_y + (navbar_height/2))
           .attr("x2", self.width() - self.margins().left() - 5)
-          .attr("y2", navbar_y + 10)
+          .attr("y2", navbar_y + (navbar_height/2))
           .attr("fill-opacity", .5)
           .style("stroke", "grey")
           .style("stroke-width", 3)
@@ -617,11 +618,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .style("stroke-linejoin", "round")
           .attr("fill-opacity", .5)
           .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) + 
-                          "," + (navbar_y + 10 - 7) +
+                          "," + (navbar_y + (navbar_height/2) - 7) +
                           " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
-                          "," + (navbar_y + 10) + 
+                          "," + (navbar_y + (navbar_height/2)) + 
                           " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) + 
-                          "," + (navbar_y + 10 + 7)
+                          "," + (navbar_y + (navbar_height/2) + 7)
                           ); 
 
 
@@ -632,11 +633,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .style("stroke-linejoin", "round")
           .attr("fill-opacity", .5)
           .attr("points", (Math.round(self.width() - self.margins().left() - 5) - 5 ) + 
-                          "," + (navbar_y + 10 - 7) +
+                          "," + (navbar_y + (navbar_height/2) - 7) +
                           " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
-                          "," + (navbar_y + 10) + 
+                          "," + (navbar_y + (navbar_height/2)) + 
                           " " +  (Math.round(self.width() - self.margins().left() - 5) - 5) + 
-                          "," + (navbar_y + 10 + 7)
+                          "," + (navbar_y + (navbar_height/2) + 7)
                           ); 
       }
       else if (node_ends.length == 0) {
@@ -650,10 +651,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       ctrCtrl.append("rect")
         .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
-        .attr("y", navbar_y + 3)
+        .attr("y", navbar_y)
         .attr("rx", 5)
         .attr("ry", 5)
-        .attr("height", 15)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
         .attr("fill","gray");
@@ -661,8 +662,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var ctrIcons = ctrCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
         .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
-        .attr("y", (navbar_y + 4))
-        .attr("height", 15)
+        .attr("y", (navbar_y + (navbar_height/3) - 4))
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2);
 
       ctrIcons.append('xhtml:span')
@@ -672,9 +673,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
         this._legend.append("svg:line")
           .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
-          .attr("y1", navbar_y + 10)
+          .attr("y1", navbar_y + (navbar_height/2))
           .attr("x2", self.width() - self.margins().left() - 5)
-          .attr("y2", navbar_y + 10)
+          .attr("y2", navbar_y + (navbar_height/2))
           .attr("fill-opacity", .5)
           .style("stroke", "grey")
           .style("stroke-width", 3)
@@ -687,11 +688,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .style("stroke-linejoin", "round")
           .attr("fill-opacity", .5)
           .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 3) + 
-                          "," + (navbar_y + 10 - 7) +
+                          "," + (navbar_y + (navbar_height/2) - 7) +
                           " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 5) +
-                          "," + (navbar_y + 10) + 
+                          "," + (navbar_y + (navbar_height/2)) + 
                           " " +  (Math.round(self._rowCtrlWidth + self.margins().left() + 5) + 3) + 
-                          "," + (navbar_y + 10  + 7)
+                          "," + (navbar_y + (navbar_height/2)  + 7)
                           ); 
 
 
@@ -702,11 +703,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .style("stroke-linejoin", "round")
           .attr("fill-opacity", .5)
           .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) + 
-                          "," + (navbar_y + 10 - 7) +
+                          "," + (navbar_y + (navbar_height/2) - 7) +
                           " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
-                          "," + (navbar_y + 10) + 
+                          "," + (navbar_y + (navbar_height/2)) + 
                           " " +  (Math.round(self.width() - self.margins().left() - 5) + 3) + 
-                          "," + (navbar_y + 10  + 7)
+                          "," + (navbar_y + (navbar_height/2)  + 7)
                           ); 
 
       }
@@ -721,11 +722,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       leftCtrl.append("rect")
         .attr("x", self.margins().left())
-        .attr("y", navbar_y + 3)
+        .attr("y", navbar_y)
         .attr("class", "item")
         .attr("rx", 5)
         .attr("ry", 5)
-        .attr("height", 15)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
         .attr("fill","gray");
@@ -733,8 +734,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var leftIcons = leftCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
         .attr("x", (self.margins().left() - 4 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
-        .attr("y", (navbar_y + 4))
-        .attr("height", 15)
+        .attr("y", (navbar_y + (navbar_height/3)) - 4)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2);
 
       leftIcons.append('xhtml:span')
@@ -751,10 +752,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       ctrCtrl.append("rect")
         .attr("x", self.margins().left() + this._rowCtrlWidth / 3 - 1)
-        .attr("y", navbar_y + 3)
+        .attr("y", navbar_y)
         .attr("rx", 5)
         .attr("ry", 5)
-        .attr("height", 15)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
         .attr("fill","gray");
@@ -762,8 +763,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var ctrIcons = ctrCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
         .attr("x", (self.margins().left() - 5 + this._rowCtrlWidth / 3 - 1 + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
-        .attr("y", (navbar_y + 4))
-        .attr("height", 15)
+        .attr("y", (navbar_y + (navbar_height/3)) - 4)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2);
 
       ctrIcons.append('xhtml:span')
@@ -780,10 +781,10 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       rightCtrl.append("rect")
         .attr("x", self.margins().left() + 2 * (this._rowCtrlWidth / 3 - 1))
-        .attr("y", navbar_y + 3)
+        .attr("y", navbar_y)
         .attr("rx", 5)
         .attr("ry", 5)
-        .attr("height", 15)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2)
         .attr("fill-opacity", .3)
         .attr("fill","gray");
@@ -791,8 +792,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
     var rightIcons = rightCtrl.append('svg:foreignObject')
         .attr('class', 'icon-container')
         .attr("x", (self.margins().left() - 5 + (2 * (this._rowCtrlWidth / 3 - 1)) + (this._rowCtrlWidth / 3 - 2) * 0.5 ))
-        .attr("y", (navbar_y + 4))
-        .attr("height", 15)
+        .attr("y", (navbar_y + (navbar_height/3)) - 4)
+        .attr("height", navbar_height)
         .attr("width", this._rowCtrlWidth / 3 - 2);
 
       rightIcons.append('xhtml:span')
@@ -806,7 +807,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var bar_width = x2 - x1;
       var bar_start = x1;
 
-      var y1 = navbar_y + 5;
+      var y1 = navbar_y;
 
       var extend_bar_width = 8;
 
@@ -828,9 +829,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       this._legend.append("line")
                 .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
-                .attr("y1", navbar_y + 10)
+                .attr("y1", navbar_y + (navbar_height/2))
                 .attr("x2", self.width() - self.margins().left() - 5)
-                .attr("y2", navbar_y + 10)
+                .attr("y2", navbar_y + (navbar_height/2))
                 .attr("fill-opacity", .5)
                 .style("stroke", "grey")
                 .style("stroke-width", 3);
@@ -842,11 +843,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
                 .style("stroke-linejoin", "round")
                 .attr("fill-opacity", .5)
                 .attr("points", (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
-                    "," + (navbar_y + 10 - 7) +
+                    "," + (navbar_y + (navbar_height/2) - 7) +
                     " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
-                    "," + (navbar_y + 10) +
+                    "," + (navbar_y + (navbar_height/2)) +
                     " " + (Math.round(self._rowCtrlWidth + self.margins().left() + 5) - 3) +
-                    "," + (navbar_y + 10 + 7)
+                    "," + (navbar_y + (navbar_height/2) + 7)
                 );
 
 
@@ -857,11 +858,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
                 .style("stroke-linejoin", "round")
                 .attr("fill-opacity", .5)
                 .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) +
-                    "," + (navbar_y + 10 - 7) +
+                    "," + (navbar_y + (navbar_height/2) - 7) +
                     " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
-                    "," + (navbar_y + 10) +
+                    "," + (navbar_y + (navbar_height/2)) +
                     " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
-                    "," + (navbar_y + 10 + 7)
+                    "," + (navbar_y + (navbar_height/2) + 7)
                 );
 
 
@@ -869,7 +870,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .attr("id", "active")
           .attr("x", function(d) { return d.x; })
           .attr("y", function(d) { return d.y; })
-          .attr("height", 10)
+          .attr("height", navbar_height)
           .attr("width", bar_width)
           .attr("fill-opacity", .5)
           .attr("cursor", "move")
@@ -880,7 +881,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .attr("y", function(d) { return d.y + 1; })
           .attr("id", "dragleft")
           .attr("width", extend_bar_width)
-          .attr("height", 8)
+          .attr("height", navbar_height - 2)
           .attr("fill", "red")
           .attr("fill-opacity", .5)
           .attr("cursor", "ew-resize")
@@ -891,7 +892,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
           .attr("y", function(d) { return d.y + 1; })
           .attr("id", "dragright")
           .attr("width", extend_bar_width)
-          .attr("height", 8)
+          .attr("height", navbar_height - 2)
           .attr("fill", "red")
           .attr("fill-opacity", .5)
           .attr("cursor", "ew-resize")
