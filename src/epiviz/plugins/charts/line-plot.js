@@ -143,6 +143,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 
   var colLabel = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL];
 
+  var absLine = this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.ABS_LINE_VAL];
+
   var self = this;
 
   var graph = this._svg.select('.lines');
@@ -391,6 +393,18 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     .style('shape-rendering', 'auto')
     .style('stroke-width', '0')
     .style('fill', function(label) { return colors.getByKey(label); });
+
+
+// show baseline
+if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
+  graph.append("svg:line")
+        .attr("x1", 0)
+        .attr("x2", self.width() - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
+        .attr("y1", yScale(absLine))
+        .attr("y2", yScale(absLine))
+        .style("stroke", "black")
+        .style("stroke-dasharray", ("5, 5")) ;
+}
 
   return lineItems;
 };
