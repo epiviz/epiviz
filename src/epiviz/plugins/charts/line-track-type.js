@@ -115,7 +115,13 @@ epiviz.plugins.charts.LineTrackType.prototype.customSettingsDefs = function() {
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       'linear',
       'Interpolation',
-      ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone'])
+      ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone']),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Draw abline')
   ]);
 };
 
@@ -129,5 +135,6 @@ epiviz.plugins.charts.LineTrackType.CustomSettings = {
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',
   LINE_THICKNESS: 'lineThickness',
-  INTERPOLATION: 'interpolation'
+  INTERPOLATION: 'interpolation',
+  ABS_LINE_VAL: 'abLine'
 };

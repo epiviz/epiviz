@@ -401,7 +401,7 @@ if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
   graph.selectAll('.abLine').remove();
 
   graph.append("svg:line")
-        ,attr("class", "abLine")
+        .attr("class", "abLine")
         .attr("x1", 0)
         .attr("x2", self.width() - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
         .attr("y1", yScale(absLine))
