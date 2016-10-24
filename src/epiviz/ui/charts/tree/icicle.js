@@ -1068,9 +1068,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     .style('opacity', 0)
     .remove();
 
-    // newCtrls
-    // .append('rect')
-    // .style('fill', function(label) { return self.colors().getByKey(label); });
+  //   newCtrls
+  //   .append('rect')
+  //   .style('fill', function(label) { return self.colors().getByKey(label); });
 
   // rowCtrlGroup.selectAll('.row-ctrl').select('rect')
   //   .attr('x', calcX)
@@ -1100,6 +1100,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
         var width = calcWidth(d, i);
         var x = calcX(d, i);
         var y = calcY(d, i);
+        var polyFactor = 5/7;
 
         var lineData = [];
 
@@ -1107,19 +1108,19 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
 
       if(i == 0 && root.globalDepth + i > 0) {
         lineData.push({'x': x, 'y': y});
-        lineData.push({'x': x, 'y': (y + (height*2/3))});
+        lineData.push({'x': x, 'y': (y + (height*polyFactor))});
         lineData.push({'x': x + (width/2), 'y': y + height});
-        lineData.push({'x': x + width, 'y': (y + (height*2/3))});
+        lineData.push({'x': x + width, 'y': (y + (height*polyFactor))});
         lineData.push({'x': x + width, 'y': y});
         lineData.push({'x': x, 'y': y});
         return lineFunction(lineData)
       }
       else if(i == nLevels-1 && levelsTaxonomy[nLevels-1] != "OTU") {
         lineData.push({'x': x + (width/2), 'y': y});
-        lineData.push({'x': x, 'y': (y + (height*1/3))});
+        lineData.push({'x': x, 'y': (y + (height*(1-polyFactor)))});
         lineData.push({'x': x, 'y': y + height});
         lineData.push({'x': x + width, 'y': y + height});
-        lineData.push({'x': x + width, 'y': (y + (height*1/3))});
+        lineData.push({'x': x + width, 'y': (y + (height*(1-polyFactor)))});
         lineData.push({'x': x + (width/2), 'y': y});
         return lineFunction(lineData)
       }
@@ -1135,6 +1136,19 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     })
     .attr("stroke", "none");
 
+  var textFields2 = newCtrls.append('text')
+    .attr("class", "rotatetext-rowCtrl")
+    .text(function(d){return d.charAt(0).toUpperCase();})
+    .style("font-size", 13)
+    .attr("text-anchor", "middle")
+    .style("font-weight", "bolder")
+    .attr("transform" , function(d, i) {
+      var x = calcWidth(d, i) / 2 + 1 - (calcR(d,i) * Math.cos(265));
+      var y = calcY(d, i) + (calcHeight(d, i)* 7 / 12) - (calcR(d,i) * Math.sin(265));
+
+      return "translate(" + x + "," + y + ") " + "rotate(-30)";
+    });
+
   var newIconsBg = newCtrls.append('circle')
     .attr('class', 'icon-bg')
     .style('fill', '#ffffff')
@@ -1143,7 +1157,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
   rowCtrlGroup.selectAll('.icon-bg')
     .transition().duration(this._animationDelay)
     .attr('cx', function(d, i) { return calcWidth(d, i) / 2 + 1; })
-    .attr('cy', function(d, i) { return  calcY(d, i) + calcHeight(d, i) / 2; })
+    .attr('cy', function(d, i) { return  calcY(d, i) + (calcHeight(d, i)* 7 / 12); })
     .attr('r', calcR);
 
   var newIcons = newCtrls.append('svg:foreignObject')
@@ -1161,7 +1175,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     })
     .transition().duration(this._animationDelay)
     .attr('x', function(d, i) { return calcX(d, i) + calcWidth(d, i) / 2 - calcR(d, i) + 5; })
-    .attr('y', function(d, i) { return  calcY(d, i) + calcHeight(d, i) / 2 - calcR(d, i) + 5; });
+    .attr('y', function(d, i) { return  calcY(d, i) + (calcHeight(d, i)* 7 / 12) - calcR(d, i) + 5; });
 
   rowCtrls
     .on('mouseover', function(d, i) {
