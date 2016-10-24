@@ -599,7 +599,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         </div>
 
         <div id="intro-navigation" class="intro-container">
-          <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
+          <!-- <select id="chromosome-selector"></select> -->
+          <input style="display:none;" id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
           <button id="moveleft" style="display:none;">Slide left</button>
           <button id="moveright" style="display:none;" >Slide right</button>
 
@@ -609,7 +610,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
           <button id="location-settings" style="display:none;">Location Settings...</button>
         </div>
 
-        <span class="separator">|</span>
+        <span style="display:none;" class="separator">|</span>
 
         <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">

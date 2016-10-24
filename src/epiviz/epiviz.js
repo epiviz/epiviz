@@ -281,14 +281,14 @@ epiviz.EpiViz.prototype._registerRequestWorkspaces = function() {
           ws.push(w);
         }
 
-        if (!activeWorkspace && cookieWorkspace) {
-          unchangedActiveWorkspace = self._workspaceManager.get(cookieWorkspace.id());
-          if (!unchangedActiveWorkspace) {
-            cookieWorkspace = cookieWorkspace.copy(cookieWorkspace.name());
-            unchangedActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(self._config.defaultWorkspaceSettings, self._chartFactory, self._config);
-          }
-          activeWorkspace = cookieWorkspace;
-        }
+        // if (!activeWorkspace && cookieWorkspace) {
+        //   unchangedActiveWorkspace = self._workspaceManager.get(cookieWorkspace.id());
+        //   if (!unchangedActiveWorkspace) {
+        //     cookieWorkspace = cookieWorkspace.copy(cookieWorkspace.name());
+        //     unchangedActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(self._config.defaultWorkspaceSettings, self._chartFactory, self._config);
+        //   }
+        //   activeWorkspace = cookieWorkspace;
+        // }
 
         self._workspaceManager.updateWorkspaces(ws, activeWorkspace, e.activeWorkspaceId, unchangedActiveWorkspace);
         if (!cookieWorkspace) { self._workspaceManager.activeWorkspace().resetChanged(); }

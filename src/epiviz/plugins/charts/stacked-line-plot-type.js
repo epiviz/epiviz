@@ -114,7 +114,13 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
       epiviz.plugins.charts.StackedLinePlotType.CustomSettings.ROW_GROUP_BY,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
       'name',
-      'Group By')
+      'Group By'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      0.6,
+      'Hover Opacity')
   ]);
 };
 
@@ -126,5 +132,6 @@ epiviz.plugins.charts.StackedLinePlotType.CustomSettings = {
   OFFSET: 'offset',
   SCALE_TO_PERCENT: 'scaleToPercent',
   ROW_GROUP_BY: 'groupBy',
-  USE_GROUP_BY: 'useGroupBy'
+  USE_GROUP_BY: 'useGroupBy',
+  HOVER_OPACITY: 'hoverOpacity'
 };
