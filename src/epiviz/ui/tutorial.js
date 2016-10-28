@@ -3,41 +3,41 @@ goog.provide('epiviz.ui.tutorials');
 epiviz.ui.tutorials = function() {
     this._tutorialList = [
         {
-            "name": 'Epiviz Overview',
+            "name": 'Metaviz Overview',
             "id": 'tut_epiviz_overview',
             "tutorial": [
                 {
                     target: 'body',
-                    content: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br></p>" +
-                    "<p class='intro-text'>This tutorial will walk you through the functionality available in Epiviz.</p>",
+                    content: "<p class='intro-header'>Welcome to Metaviz Genomic Browser!<br></p>" +
+                    "<p class='intro-text'>This tutorial will walk you through the functionality available in Metaviz.</p>",
                     position: 'center'
                 }, {
                     target: '#intro-navigation',
-                    content: "<p class='intro-text'>The navigation section of Epiviz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
+                    content: "<p class='intro-text'>The navigation section of Metaviz lets you select a chromosome and explore the genome. Options are available to move left/right and zoom in/out.</p>" +
                     "<p class='intro-text'>The settings icon allows you to control the navigation parameters.</p>",
                     position: 'right',
                     buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
                 }, {
                     target: '#vis-menu-button',
-                    content: '<p class="intro-text">Choose from a list of available data sources, measurements or chart types to add visualizations to the Epiviz Workspace.</p>',
+                    content: '<p class="intro-text">Choose from a list of available data sources, measurements or chart types to add visualizations to the Metaviz Workspace.</p>',
                     position: 'right',
                     buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
                 }, {
                     target: '#intro-workspace',
                     content: '<p class="intro-header">managing workspaces.</p>' +
-                    '<p class="intro-text">If you are logged in, you will be able to save your Epiviz analysis and workspaces.' +
+                    '<p class="intro-text">If you are logged in, you will be able to save your Metaviz analysis and workspaces.' +
                     'You will also be able to retrieve them at a later time from your account.</p>',
                     position: 'right',
                     buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
                 }, {
                     target: '#login-link',
-                    content: '<p class="intro-text">Please login to save and manage Epiviz workspaces.</p>',
+                    content: '<p class="intro-text">Please login to save and manage Metaviz workspaces.</p>',
                     position: 'left',
                     buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
                 }, {
                     target: 'body',
-                    content: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
-                    '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>',
+                    content: "<p class='intro-header'>Thank you for using Metaviz!</p>" +
+                    '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Metaviz webpage</a>.</p>',
                     position: 'center'
                 }]
         }, {
@@ -45,9 +45,9 @@ epiviz.ui.tutorials = function() {
             "id": 'tut_data_controls',
             "tutorial": [{
                 target: 'body',
-                content: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br><br>" +
+                content: "<p class='intro-header'>Welcome to Metaviz Genomic Browser!<br><br>" +
                 "Data visualization tutorial<br></p>" +
-                "<p class='intro-text'>This tutorial will help create/add new data visualizations to the Epiviz workspace " +
+                "<p class='intro-text'>This tutorial will help create/add new data visualizations to the Metaviz workspace " +
                 "and controls available for each visualization.</p>",
                 position: 'center'
             }, {
@@ -65,6 +65,7 @@ epiviz.ui.tutorials = function() {
                 content: '<p class="intro-text">Choose the type of chart to add to your workspace. We choose scatter plot to continue with the tutorial</p>',
                 position: 'right',
                 onShow: function(anno, $target, $annoElem) {
+                    $('.anno-overlay').zIndex(0);
                 },
                 onHide: function(anno, $target, $annoElem, returnFromOnShow) {
                     $('#plot-menu-add-scatter').trigger("click");
@@ -101,13 +102,17 @@ epiviz.ui.tutorials = function() {
                 showOverlay: function(){},
                 position: 'right',
                 onShow: function(anno, $target, $annoElem) {
-                    //$('#wizardDialog table tbody tr:first').trigger('click');
-                    //$('#wizardDialog table tbody tr:eq(2)').trigger('click');
+                    $('#wizardDialog table tbody tr:eq(1)').toggleClass('DTTT_selected');
+                    $('#wizardDialog table tbody tr:eq(2)').toggleClass('DTTT_selected');
+                    $('#wisardDialog table tbdoy tr:eq(3)').toggleClass('DTTT_selected');
+                    $('#wizardDialog table tbody tr:eq(1)').trigger('click');
+                    $('#wizardDialog table tbody tr:eq(2)').trigger('click');
+                    $('#wizardDialog table tbody tr:eq(3)').trigger('click');
                 },
                 onHide: function(anno, $target, $annoElem, returnFromOnShow) {
                     var parent = $('#wizardDialog').parent().attr('id');
-                    $('#' + parent).dialog('close');
-                    //$('.ui-button:contains("Finish")').trigger('click');
+                    //$('#' + parent).dialog('close');
+                    $('.ui-button:contains("Finish")').trigger('click');
                 },
                 buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
             }, {
@@ -120,8 +125,9 @@ epiviz.ui.tutorials = function() {
                 },
                 showOverlay: function(){},
                 onShow: function(anno, $target, $annoElem) {
-
-                    $('button:contains("Remove"):first').css('display', 'block');
+                    $('.anno-inner').zIndex(1000);
+                    $('.anno-overlay').zIndex(1);
+                    //$('button:contains("Remove"):first').css('display', 'block');
                 },
                 buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
             }, {
@@ -205,7 +211,7 @@ epiviz.ui.tutorials = function() {
                 buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
             }, {
                 target: 'body',
-                content: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
+                content: "<p class='intro-header'>Thank you for using Metaviz!</p>" +
                 '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>',
                 position: 'center'
             }]
@@ -214,7 +220,7 @@ epiviz.ui.tutorials = function() {
             "id": 'tut_comp_measurements',
             "tutorial": [{
                 target: 'body',
-                content: "<p class='intro-header'>Welcome to Epiviz Genomic Browser!<br>" +
+                content: "<p class='intro-header'>Welcome to Metaviz Genomic Browser!<br>" +
                 "Compute Measurements Tutorial<br></p>" +
                 "<p class='intro-text'>This tutorial will help you create new measurements (derived from existing measurements) and generate plots to add " +
                 "to the workspace.</p>",
@@ -270,7 +276,7 @@ epiviz.ui.tutorials = function() {
                 target: '#computedMeasurementsDialog',
                 content: "<p class='intro-text'>After adding a computed measurement, " +
                 "use the data visualization button to plot the measurement to your workspace.</p>" +
-                "<p>To learn how to add new plots to the workspace, please use the Epiviz data visualization tutorial.</p>",
+                "<p>To learn how to add new plots to the workspace, please use the Metaviz data visualization tutorial.</p>",
                 position: {
                     top: '10em',
                     left: '1em'
@@ -283,8 +289,8 @@ epiviz.ui.tutorials = function() {
                 buttons: [AnnoButton.BackButton, AnnoButton.NextButton]
             }, {
                 target: 'body',
-                content: "<p class='intro-header'>Thank you for using Epiviz!</p>" +
-                '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Epiviz webpage</a>.</p>',
+                content: "<p class='intro-header'>Thank you for using Metaviz!</p>" +
+                '<p class="intro-text">If you would like to give us some feedback or stay informed with updates, Please visit the <a target="_blank" href="http://epiviz.github.io/">Metaviz webpage</a>.</p>',
                 position: 'center'
             }]
         }
