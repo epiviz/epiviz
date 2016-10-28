@@ -90,7 +90,7 @@ epiviz.Config.SETTINGS = {
 
     'data-structure': {
       width: 800,
-      height: 300,
+      height: 350,
       margins: new epiviz.ui.charts.Margins(50, 10, 10, 10),
       colors: 'd3-category20',
       decorations: [
