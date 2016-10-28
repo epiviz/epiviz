@@ -1139,7 +1139,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
   var textFields2 = newCtrls.append('text')
     .attr("class", "rotatetext-rowCtrl")
     .text(function(d){return d.charAt(0).toUpperCase();})
-    .style("font-size", 13)
+    .style("font-size", 17)
     .attr("text-anchor", "middle")
     .style("font-weight", "bolder")
     .attr("transform" , function(d, i) {
