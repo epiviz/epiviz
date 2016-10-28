@@ -133,6 +133,7 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
    * @type {{requestId: number, type: string, data: *}}
    */
   var message = JSON.parse(msg.data);
+  message.data.dataprovidertype = "websocket";
   if (message['type'] == epiviz.data.MessageType.RESPONSE) {
     var response = epiviz.data.Response.fromRawObject(message);
     var callback = this._callbacks[response.id()];
