@@ -105,6 +105,7 @@ if (array_key_exists('gist', $_REQUEST)) {
     ));
 
     // Send the request & save response to $resp
+    $resp = curl_exec($curl);
     if (!$resp) { continue; }
 
     $json = json_decode($resp, true);
