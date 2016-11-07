@@ -175,6 +175,15 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   chartsContainer.append(sprintf('<div id="%s" class="%s"></div>', id, css));
   var container = chartsContainer.find('#' + id);
 
+  var chartMarkers = []; 
+  
+  if( chartType._defaultSettings.chartMarkers != null || chartType._defaultSettings.chartMarkers != undefined) {
+    for (var i=0; i < chartType._defaultSettings.chartMarkers.length ; i++ ) {
+      var tMark = chartType._defaultSettings.chartMarkers[i];
+      chartMarkers.push(new epiviz.ui.charts.markers.VisualizationMarker(tMark.type, tMark.id, tMark.name, tMark.preMark, tMark.mark));
+    }
+  } 
+
   chartProperties = chartProperties || new epiviz.ui.charts.VisualizationProperties(
     chartType.defaultWidth(), // width
     chartType.defaultHeight(), // height
@@ -184,8 +193,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     null, // modified methods
     chartType.customSettingsValues(),
     chartType.customSettingsDefs(),
-    [],
-    null
+    //[],
+    chartMarkers
   );
 
   var chart = chartType.createNew(id, container, chartProperties);
