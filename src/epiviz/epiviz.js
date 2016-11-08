@@ -127,6 +127,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerDataRedraw();
   this._registerDataGetCurrentLocation();
   this._registerPrintWorkspace();
+  this._registerLoadWorkspace();
   this._registerDataSetChartSettings();
   this._registerDataGetChartSettings();
   this._registerDataGetAvailableCharts();
@@ -597,6 +598,27 @@ epiviz.EpiViz.prototype._registerPrintWorkspace = function() {
           pm.print();
           //self._controlManager.printWorkspace(e.chartId, e.fileName, e.fileType);
           e.result.success = true;
+        } catch (error) {
+          e.result.success = false;
+          e.errorMessage = error.toString();
+        }
+      }));
+};
+
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerLoadWorkspace = function() {
+  var self = this;
+  this._dataManager.onRequestLoadWorkspace().addListener(new epiviz.events.EventListener(
+      /**
+       * @param {{id: string, result: epiviz.events.EventResult}} e
+       */
+      function(e) {
+        try {
+          self._workspaceManager._requestWorkspaces.notify({ activeWorkspaceId: e.workspace });
+          
         } catch (error) {
           e.result.success = false;
           e.errorMessage = error.toString();
