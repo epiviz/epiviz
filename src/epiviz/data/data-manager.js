@@ -78,6 +78,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._requestPrintWorkspace = new epiviz.events.Event();
 
+    /**
+   * @type {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestLoadWorkspace = new epiviz.events.Event();
+
   /**
    * @type {epiviz.events.Event.<{seqInfos: Array.<epiviz.datatypes.SeqInfo>, result: epiviz.events.EventResult}>}
    * @private
@@ -144,6 +150,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderAddChart();
   this._registerProviderRemoveChart();
   this._registerProviderPrintWorkspace();
+  this._registerProviderLoadWorkspace();
   this._registerProviderAddSeqInfos();
   this._registerProviderRemoveSeqNames();
   this._registerProviderNavigate();
@@ -181,6 +188,12 @@ epiviz.data.DataManager.prototype.onRequestRemoveChart = function() { return thi
  * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataManager.prototype.onRequestPrintWorkspace = function() { return this._requestPrintWorkspace; };
+
+/**
+ * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestLoadWorkspace = function() { return this._requestLoadWorkspace; };
+
 
 /**
  * @returns {epiviz.events.Event.<{seqInfos: Array.<epiviz.datatypes.SeqInfo>, result: epiviz.events.EventResult}>}
@@ -742,6 +755,19 @@ epiviz.data.DataManager.prototype._registerProviderPrintWorkspace = function() {
     provider.onRequestPrintWorkspace().addListener(new epiviz.events.EventListener(
         function(e) {
           self._requestPrintWorkspace.notify(e);
+        }));
+  });
+};
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderLoadWorkspace = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestLoadWorkspace().addListener(new epiviz.events.EventListener(
+        function(e) {
+          self._requestLoadWorkspace.notify(e);
         }));
   });
 };

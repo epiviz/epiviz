@@ -192,6 +192,9 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.GET_AVAILABLE_CHARTS:
         this._getAvailableCharts(request);
         break;
+      case Action.LOAD_WORKSPACE:
+        this._loadWorkspace(request);
+        break;
     }
   }
 };
@@ -639,4 +642,20 @@ epiviz.data.WebsocketDataProvider.prototype.updateChartSettings = function (requ
   var message = JSON.stringify(request.raw());
   this._callbacks[request.id()] = callback;
   this._sendMessage(message);
+};
+
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._loadWorkspace = function (request) {
+  var workspaceId = request.get('workspaceId');
+  var result = new epiviz.events.EventResult();
+  this._fireEvent(this.onRequestLoadWorkspace(), {
+    workspace: workspaceId,
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
 };
