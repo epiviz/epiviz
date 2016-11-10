@@ -215,6 +215,11 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       }
 
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.SEARCH:
+      var datasource = request.get('datasourceGroup');
+      var maxResults = request.get('maxResults');
+      var q = request.get('q');
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'search', {datasource: datasource, maxResults: maxResults, q: q});
   }
 };
 
@@ -259,6 +264,11 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, d
     case epiviz.data.Request.Action.GET_HIERARCHY:
       break;
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
+      break;
+    case epiviz.data.Request.Action.SEARCH:
+      var resp = {};
+      resp['nodes'] = result;
+      result = resp;
       break;
   }
   return epiviz.data.Response.fromRawObject({
