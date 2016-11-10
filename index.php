@@ -622,10 +622,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
         <span class="separator">|</span>
 
-        <label for="search-box" style="display:none;"></label>
-        <input id="search-box" class="ui-widget-content ui-corner-all" type="text"  style="display:none;"/>
+        <label for="search-box"></label>
+        <input id="search-box" class="ui-widget-content ui-corner-all" type="text"/>
 
-        <span class="separator" style="display:none;">|</span>
+        <span class="separator">|</span>
 
         <div id="intro-workspace" class="intro-container">
           <label for="save-workspace-text"></label>

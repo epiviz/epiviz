@@ -670,6 +670,7 @@ epiviz.ui.charts.ChartManager.prototype._registerChartIcicleLocationChanges = fu
 
    self.onChartIcicleLocationChanges().addListener(new epiviz.events.EventListener(function(e) {
       if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+        chart._updateLocation(e.args.start, e.args.width);
         chart._drawAxes();
       }
    }));

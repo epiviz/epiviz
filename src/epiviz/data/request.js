@@ -262,11 +262,12 @@ epiviz.data.Request.getMeasurements = function() {
  * @param {number} maxResults
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.search = function(query, maxResults) {
+epiviz.data.Request.search = function(query, maxResults, datasourceGroup) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.SEARCH,
     q: query || '',
+    datasourceGroup: datasourceGroup,
     maxResults: maxResults
   });
 };

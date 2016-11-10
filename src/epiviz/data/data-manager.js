@@ -654,36 +654,46 @@ epiviz.data.DataManager.prototype.deleteWorkspace = function(workspace) {
  * @param {function(Array)} callback
  * @param {string} query
  */
-epiviz.data.DataManager.prototype.search = function(callback, query) {
+epiviz.data.DataManager.prototype.search = function(callback, query, chart) {
   var self = this;
-  var remainingResponses = this._dataProviderFactory.size();
+  // var remainingResponses = this._dataProviderFactory.size();
   var results = [];
-  this._dataProviderFactory.foreach(function(provider) {
-    provider.getData(epiviz.data.Request.search(query, self._config.maxSearchResults),
+
+  var visConfigSelection = chart._properties.visConfigSelection;
+
+  var dataprovider = visConfigSelection.dataprovider;
+  if (!dataprovider) {
+    visConfigSelection.measurements.foreach(function(m) {
+      if (m.dataprovider()) {
+        dataprovider = m.dataprovider();
+        return true;
+      }
+      return false;
+    });
+  }
+  var datasourceGroup = visConfigSelection.datasourceGroup;
+  if(!datasourceGroup) {
+      visConfigSelection.measurements.foreach(function(m) {
+      if (m.datasourceGroup()) {
+        datasourceGroup = m.datasourceGroup();
+        return true;
+      }
+      return false;
+    });
+  }
+
+  var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+  provider.getData(epiviz.data.Request.search(query, self._config.maxSearchResults, datasourceGroup),
       /**
        * @param {epiviz.data.Response.<Array.<{probe: string, gene: string, seqName: string, start: number, end: number}>>} response
        */
       function(response) {
-        var providerResults = response.data();
+        var providerResults = response.data().nodes;
         if (providerResults) {
           epiviz.utils.arrayAppend(results, providerResults);
         }
-
-        --remainingResponses;
-
-        if (!remainingResponses) {
-          callback(results);
-        }
-      });
-  });
-};
-
-/**
- * Clears all data from cache
- */
-epiviz.data.DataManager.prototype.flushCache = function() {
-  this._cache.flush();
-  this._flushCache.notify();
+        callback(results);
+    });
 };
 
 /**

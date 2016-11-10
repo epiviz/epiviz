@@ -726,7 +726,7 @@ epiviz.ui.ControlManager.prototype._initializeSearchBox = function() {
   var self = this;
 
   var searchBox = $('#search-box');
-  searchBox.watermark('Find Gene/Probe');
+  searchBox.watermark('Find a taxonomic feature');
 
   searchBox.autocomplete({
     source: function(request, callback) {
@@ -740,14 +740,10 @@ epiviz.ui.ControlManager.prototype._initializeSearchBox = function() {
             items.push({
               value: results[i].probe || results[i].gene,
               label: results[i].probe || results[i].gene,
-              html: results[i].probe ?
-                sprintf('<b>%s</b>, %s, [%s: %s - %s]',
-                  results[i].probe, results[i].gene, results[i].seqName,
-                  Globalize.format(results[i].start, 'n0'), Globalize.format(results[i].end, 'n0')) :
-                sprintf('<b>%s</b>, [%s: %s - %s]',
-                  results[i].gene, results[i].seqName,
-                  Globalize.format(results[i].start, 'n0'), Globalize.format(results[i].end, 'n0')),
-              range: epiviz.datatypes.GenomicRange.fromStartEnd(results[i].seqName, results[i].start, results[i].end)
+              html: sprintf('<b>%s</b>, [%s]', results[i].gene, results[i].level),
+              range: epiviz.datatypes.GenomicRange.fromStartEnd(results[i].seqName, results[i].start, results[i].end),
+              level: results[i].level || null,
+              node: results[i].nodeId || null
             });
           }
 
@@ -758,8 +754,8 @@ epiviz.ui.ControlManager.prototype._initializeSearchBox = function() {
     select: function(event, ui) {
       var currentLocation = self._locationManager.lastUnfilledLocationChangeRequest() || self._locationManager.currentLocation();
       var seqName = ui.item.range.seqName();
-      var start = Math.round(ui.item.range.start() + ui.item.range.width() * 0.5 - currentLocation.width() * 0.5);
-      var width = currentLocation.width();
+      var start = Math.round(ui.item.range.start());
+      var width = Math.round(ui.item.range.width());
       self._updateSelectedLocation(new epiviz.datatypes.GenomicRange(seqName, start, width));
     },
     focus: function(event) {

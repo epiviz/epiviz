@@ -486,6 +486,13 @@ epiviz.ui.charts.tree.Icicle.prototype._updateChartLocation = function(start, wi
                           width);
 };
 
+epiviz.ui.charts.tree.Icicle.prototype._updateLocation = function(start, width) {
+  var self = this;
+  self._lastRange = new epiviz.datatypes.GenomicRange('NA', 
+                          start, 
+                          width);
+};
+
 epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
   this._legend.selectAll("*").remove();

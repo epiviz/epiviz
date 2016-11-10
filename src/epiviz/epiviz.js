@@ -456,9 +456,24 @@ epiviz.EpiViz.prototype._registerUiSearch = function() {
      * @param {{searchTerm: string, callback: (function(Array.<{probe: string, gene: string, seqName: string, start: number, end: number}>))}} e
      */
     function(e) {
-      self._dataManager.search(function(results) {
-        e.callback(results);
-      }, e.searchTerm);
+
+      // find current icicle on the workspace
+      var iciclePlot, icicleMeasuremens;
+
+      for (var chartId in self._chartManager._charts) {
+          if (!self._chartManager._charts.hasOwnProperty(chartId)) { continue; }
+          if (self._chartManager._charts[chartId].displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { 
+            iciclePlot = self._chartManager._charts[chartId]; 
+            // icicleMeasuremens = self._chartManager._charts[chartId].measurements();
+          } 
+        }
+
+      if(iciclePlot != null || iciclePlot != undefined) {
+        self._dataManager.search(function(results) {
+          e.callback(results);
+        }, e.searchTerm, iciclePlot);
+      }
+
     }));
 };
 
@@ -905,7 +920,7 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
         });
 
       if(!self._chartManager.onChartPropogateIcicleLocationChanges().isFiring()) {
-          self._chartManager.onChartIcicleLocationChanges().notify();
+          self._chartManager.onChartIcicleLocationChanges().notify(new epiviz.ui.charts.VisEventArgs('1', {start: e.newValue._start, width: e.newValue._width}));
         }
     }));
 };
