@@ -43,7 +43,9 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlotType',
     'epiviz.plugins.charts.LinePlotType',
     'epiviz.plugins.charts.StackedLinePlotType',
-    'epiviz.ui.charts.tree.IcicleType'
+    'epiviz.ui.charts.tree.IcicleType',
+    'epiviz.plugins.charts.CustomScatterPlotType',
+    'epiviz.plugins.charts.DiversityScatterPlotType'
   ],
 
   // Chart default settings
