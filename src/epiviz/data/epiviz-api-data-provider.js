@@ -220,6 +220,12 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var maxResults = request.get('maxResults');
       var q = request.get('q');
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'search', {datasource: datasource, maxResults: maxResults, q: q});
+    case epiviz.data.Request.Action.GET_PCA:
+      var measurements = request.get('measurements')[this._id];
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pca', {measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.GET_DIVERSITY:
+      var measurements = request.get('measurements')[this._id];
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'diversity', {measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
   }
 };
 
@@ -269,6 +275,10 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, d
       var resp = {};
       resp['nodes'] = result;
       result = resp;
+      break;
+    case epiviz.data.Request.Action.GET_PCA:
+      break;
+    case epiviz.data.Request.Action.GET_DIVERSITY:
       break;
   }
   return epiviz.data.Response.fromRawObject({

@@ -503,7 +503,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
 
   var yColorEntries = this._legend
     .selectAll('.y-measurement-color')
-    .data(xMeasurements)
+    .data(yMeasurements)
     .enter()
     .append('circle')
     .attr('class', 'y-measurement-color')

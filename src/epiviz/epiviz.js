@@ -192,7 +192,25 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
   chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties);
   var self = this;
   // TODO: Maybe later implement hierarchical display type (see display-type.js for the start of the idea)
-  if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+  if (type.typeName() == 'epiviz.plugins.charts.CustomScatterPlot'){
+    var range = null;
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    this._dataManager.getPCA(range, chartMeasurementsMap,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  }
+  else if (type.typeName() == 'epiviz.plugins.charts.DiversityScatterPlot'){
+    var range = null;
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    this._dataManager.getDiversity(range, chartMeasurementsMap,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  }
+  else if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     var chartVisConfigSelectionMap = {};
     chartVisConfigSelectionMap[chartId] = visConfigSelection;
     var range = this._workspaceManager.activeWorkspace().range();
@@ -898,6 +916,14 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
 
       /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
       var chartMeasurementsMap = self._chartManager.chartsMeasurements();
+
+      // TODO: update pca plots for Hierarchy Changes
+      // remove PCA & alphadiversity here
+      for ( var mea in chartMeasurementsMap) {
+          if (mea.indexOf('pca_scatter') != -1 || mea.indexOf('diversity_scatter') != -1) {
+            delete chartMeasurementsMap[mea];
+          }
+      } 
 
       self._dataManager.getData(e.newValue, chartMeasurementsMap,
         function(chartId, data) {
