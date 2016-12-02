@@ -229,6 +229,17 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
       });
   }
 
+  if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    //add measurements as a new datasource
+    var chartMs = visConfigSelection.measurements;
+    chartMs.foreach(function(m, i) {
+      console.log(m);
+      m._datasourceGroup = m._datasourceGroup + "_" + chartId;
+    });
+
+    this._measurementsManager.addMeasurements(chartMs);
+  }
+
   return chartId;
 };
 
