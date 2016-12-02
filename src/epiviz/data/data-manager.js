@@ -526,23 +526,17 @@ epiviz.data.DataManager.prototype.getPCA = function(range, chartMeasurementsMap,
   epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
     var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
     var request = epiviz.data.Request.getPCA(msByDs, range);
-    var requestStack = self._combinedRequestsStacks[dataprovider];
-    if (requestStack == undefined) {
-      requestStack = new epiviz.data.RequestStack();
-      self._combinedRequestsStacks[dataprovider] = requestStack;
-    }
-
-    requestStack.pushRequest(request, function(data) {
-    });
+    var msName = Object.keys(msByDs)[0];
 
     var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
     dataProvider.getData(request, function(response) {
-      // requestStack.serveData(response);
-      dataReadyCallback(chartId, response.data());
+      var resp = response.data();
+      if(response.data().dataprovidertype == "websocket") {
+        resp = resp[msName];
+      }
+      dataReadyCallback(chartId, resp);
     });
   });
-
-
 };
 
 /**
@@ -573,20 +567,15 @@ epiviz.data.DataManager.prototype.getDiversity = function(range, chartMeasuremen
   epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
     var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
     var request = epiviz.data.Request.getDiversity(msByDs, range);
-    var requestStack = self._combinedRequestsStacks[dataprovider];
-    if (requestStack == undefined) {
-      requestStack = new epiviz.data.RequestStack();
-      self._combinedRequestsStacks[dataprovider] = requestStack;
-    }
-
-      requestStack.pushRequest(request, function(data) {
-    });
+    var msName = Object.keys(msByDs)[0];
 
     var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
     dataProvider.getData(request, function(response) {
-      // requestStack.serveData(response);
-      dataReadyCallback(chartId, response.data());
-
+      var resp = response.data();
+      if(response.data().dataprovidertype == "websocket") {
+        resp = resp[msName];
+      }
+      dataReadyCallback(chartId, resp);
     });
   });
 };
