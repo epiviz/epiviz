@@ -146,15 +146,16 @@ text {
 }
 
 .icicle .node-select .icon::before {
-    content: "\f3b2";
+    content: "\f3b3";
 }
 
 .icicle .leaves-select .icon::before {
-    content: "\f3b1";
+    content: "\f3b2";
+    /*content: '\e900';*/
 }
 
 .icicle .custom-select .icon::before {
-    content: "\f3b3";
+    content: "\f3b4";
 }
 
 .icicle .none-select rect {
