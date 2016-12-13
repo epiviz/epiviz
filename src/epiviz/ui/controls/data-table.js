@@ -158,7 +158,7 @@ epiviz.ui.controls.DataTable.prototype.initialize = function() {
     oTableTools: {
       //'sSwfPath': 'src/jquery/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf',
       sRowSelect: this._multiselect ? 'multi' : 'single',
-      aButtons: [],
+      aButtons: ['select_all'],
 
       fnPreRowSelect: function(e, nodes, isSelect) { return self._preRowSelect(this, e, nodes, isSelect); },
       fnRowSelected:  function(nodes) { return self._select(this, nodes); },
