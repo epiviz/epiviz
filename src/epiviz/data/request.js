@@ -253,10 +253,11 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
 /**
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.getMeasurements = function() {
+epiviz.data.Request.getMeasurements = function(datasourceGroup) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
-    action: epiviz.data.Request.Action.GET_MEASUREMENTS
+    action: epiviz.data.Request.Action.GET_MEASUREMENTS,
+    datasourceGroup: datasourceGroup
   });
 };
 
@@ -277,10 +278,11 @@ epiviz.data.Request.search = function(query, maxResults) {
 /**
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.getSeqInfos = function() {
+epiviz.data.Request.getSeqInfos = function(datasourceGroup) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
-    action: epiviz.data.Request.Action.GET_SEQINFOS
+    action: epiviz.data.Request.Action.GET_SEQINFOS,
+    datasourceGroup: datasourceGroup
   });
 };
 
