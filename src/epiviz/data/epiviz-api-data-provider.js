@@ -159,8 +159,9 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combined', {start: start, end: end, partition: JSON.stringify(partition), measurements: JSON.stringify(measurements), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.GET_HIERARCHY:
       var nodeId = request.get('nodeId') || '';
+      var datasourceGroup = request.get('datasourceGroup');
       this._lastRoot = nodeId;
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: this._maxDepth, nodeId: JSON.stringify(nodeId), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(nodeId), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
       var order = request.get('order');
       var selection = request.get('selection');
