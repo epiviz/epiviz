@@ -134,34 +134,37 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
   var action = request.get('action');
   switch (action) {
     case epiviz.data.Request.Action.GET_MEASUREMENTS:
-      var datasourceGroup = request.get('datasourceGroup');
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'measurements', {datasource: datasourceGroup, annotation: JSON.stringify(this._measurementAnnotations)});
     case epiviz.data.Request.Action.GET_SEQINFOS:
-      var datasourceGroup = request.get('datasourceGroup');
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'partitions', {datasource: datasourceGroup});
     case epiviz.data.Request.Action.GET_ROWS:
       var start = request.get('start');
       var end = request.get('end');
       var partition = request.get('seqName');
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       if (partition == '[NA]') { partition = ''; }
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'rows', {start: start, end: end, partition: JSON.stringify(partition), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'rows', {datasource: datasourceGroup, start: start, end: end, partition: JSON.stringify(partition), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.GET_VALUES:
       var start = request.get('start');
       var end = request.get('end');
       var partition = request.get('seqName');
       var measurement = request.get('measurement');
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       if (partition == '[NA]') { partition = ''; }
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {datasource: datasourceGroup, start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.GET_COMBINED:
       var start = request.get('start');
       var end = request.get('end');
       var partition = request.get('seqName');
       var measurements = request.get('measurements')[this._id];
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       if (partition == '[NA]') { partition = ''; }
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combined', {start: start, end: end, partition: JSON.stringify(partition), measurements: JSON.stringify(measurements), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combined', {datasource: datasourceGroup, start: start, end: end, partition: JSON.stringify(partition), measurements: JSON.stringify(measurements), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.GET_HIERARCHY:
       var nodeId = request.get('nodeId') || '';
-      var datasourceGroup = request.get('datasourceGroup');
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       this._lastRoot = nodeId;
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(nodeId), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
@@ -219,16 +222,18 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
 
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.SEARCH:
-      var datasource = request.get('datasourceGroup');
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       var maxResults = request.get('maxResults');
       var q = request.get('q');
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'search', {datasource: datasource, maxResults: maxResults, q: q});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'search', {datasource: datasourceGroup, maxResults: maxResults, q: q});
     case epiviz.data.Request.Action.GET_PCA:
       var measurements = request.get('measurements')[this._id];
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pca', {measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pca', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.GET_DIVERSITY:
       var measurements = request.get('measurements')[this._id];
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'diversity', {measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'diversity', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
   }
 };
 
