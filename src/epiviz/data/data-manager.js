@@ -259,7 +259,7 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
   /** @type {Array.<epiviz.datatypes.SeqInfo>} */
   var result = [];
   this._dataProviderFactory.foreach(function(provider) {
-    provider.getData(epiviz.data.Request.getSeqInfos(),
+    provider.getData(epiviz.data.Request.getSeqInfos(provider.id()),
       /**
        * @param {epiviz.data.Response.<Array.<Array>>} response Each element in the response is an array with three values:
        * the name of the sequence, the minimum and maximum values it can have
@@ -332,7 +332,7 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
 
   var nResponses = 0;
   this._dataProviderFactory.foreach(function(provider) {
-    provider.getData(epiviz.data.Request.getMeasurements(),
+    provider.getData(epiviz.data.Request.getMeasurements(provider.id()),
       /**
        * @param {epiviz.data.Response.<{
        *   id: Array.<number>,

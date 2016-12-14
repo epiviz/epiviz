@@ -134,9 +134,11 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
   var action = request.get('action');
   switch (action) {
     case epiviz.data.Request.Action.GET_MEASUREMENTS:
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'measurements', {annotation: JSON.stringify(this._measurementAnnotations)});
+      var datasourceGroup = request.get('datasourceGroup');
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'measurements', {datasource: datasourceGroup, annotation: JSON.stringify(this._measurementAnnotations)});
     case epiviz.data.Request.Action.GET_SEQINFOS:
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'partitions');
+      var datasourceGroup = request.get('datasourceGroup');
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'partitions', {datasource: datasourceGroup});
     case epiviz.data.Request.Action.GET_ROWS:
       var start = request.get('start');
       var end = request.get('end');
