@@ -168,6 +168,7 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       this._lastRoot = nodeId;
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(nodeId), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
       var order = request.get('order');
       var selection = request.get('selection');
       var selectedLevels = request.get('selectedLevels');
@@ -220,7 +221,7 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
         // }
       }
 
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.SEARCH:
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       var maxResults = request.get('maxResults');
