@@ -39,15 +39,17 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
 
   container.find('.epiviz-data-table').remove();
 
+  var viewCount = 2;
+
   var ColumnType = epiviz.ui.controls.DataTable.ColumnType;
   var columns = [
     new epiviz.ui.controls.DataTable.Column('id', 'Id', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('name', 'Name', ColumnType.STRING, false, true),
     // new epiviz.ui.controls.DataTable.Column('defaultChartType', 'Default Chart Type', ColumnType.STRING, true, true),
     new epiviz.ui.controls.DataTable.Column('type', 'Type', ColumnType.STRING, true),
-    new epiviz.ui.controls.DataTable.Column('datasourceId', 'Data Source', ColumnType.STRING, false),
+    new epiviz.ui.controls.DataTable.Column('datasourceId', 'Data Source', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('datasourceGroup', 'Data Source Group', ColumnType.STRING, true),
-    new epiviz.ui.controls.DataTable.Column('dataprovider', 'Data Provider', ColumnType.STRING, false),
+    new epiviz.ui.controls.DataTable.Column('dataprovider', 'Data Provider', ColumnType.STRING, true),
     new epiviz.ui.controls.DataTable.Column('formulaStr', 'Formula', ColumnType.STRING, true)//,
     //new epiviz.ui.controls.DataTable.Column('annotation', 'Annotation', ColumnType.STRING)
   ];
@@ -67,7 +69,13 @@ epiviz.ui.controls.MeaurementsWizardStep.prototype.initialize = function(contain
   });
   annotationColumns.sort();
   columns = columns.concat(annotationColumns.map(function(annoCol) {
-    return new epiviz.ui.controls.DataTable.Column('[anno] ' + annoCol, annoCol, ColumnType.STRING, true)
+    var hidden = false;
+
+    if(viewCount <= 0) {
+      hidden = true;
+    }
+    viewCount--;
+    return new epiviz.ui.controls.DataTable.Column('[anno] ' + annoCol, annoCol, ColumnType.STRING, hidden)
   }));
 
   // Filter out measurements that don't match the given restrictions
