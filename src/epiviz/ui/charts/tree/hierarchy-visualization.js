@@ -240,7 +240,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
       self._selectedLevels["3"] = 2;
     }
     else {
-      self.selCutLevel = Object.keys(self._selectedLevels)[0];
+      self.selCutLevel = parseInt(Object.keys(self._selectedLevels)[0]);
     }
 
     Object.keys(self._selectedLevels).forEach(function(sel) {

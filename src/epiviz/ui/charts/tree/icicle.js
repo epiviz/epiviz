@@ -127,7 +127,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   //this._yScale = d3.scale.pow().exponent(1.25).range([0, height - this.margins().sumAxis(Axis.Y)]);
   this._yScale = d3.scale.linear().range([0, height - this.margins().sumAxis(Axis.Y)]);
   
-  this._drawAxes();
+  this._drawAxes(root);
 
   var itemsGroup = this._svg.select('.items');
   var defs = this._svg.select('.defs');
@@ -493,7 +493,7 @@ epiviz.ui.charts.tree.Icicle.prototype._updateLocation = function(start, width) 
                           width);
 };
 
-epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
+epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
 
   this._legend.selectAll("*").remove();
 
@@ -515,13 +515,13 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
 
       var move_level = parseInt(self.selCutLevel);
 
-      if(self._subtreeDepth < move_level) {
-          move_level = this._subtreeDepth - 1;
+      if(!(root.globalDepth <= move_level && (root.globalDepth + self._subtreeDepth - 1) >= move_level)) {
+          move_level = root.globalDepth + this._subtreeDepth - 1;
       }
 
       this._uiData.forEach(function(uiNode) {
 
-        if( (uiNode.depth) == move_level) {
+        if( (uiNode.globalDepth) == move_level) {
           if(  loc_start <= uiNode.start || (loc_start >= uiNode.start && loc_start < uiNode.end) ) {
             node_starts.push(uiNode.x);
             node_starts_val.push([uiNode.start, uiNode.end]);
