@@ -506,9 +506,15 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
       var node_starts = [], node_ends = [];
       var node_starts_val = [], node_ends_val = [];
 
+      var move_level = parseInt(self.selCutLevel);
+
+      if(self._subtreeDepth < move_level) {
+          move_level = this._subtreeDepth - 1;
+      }
+
       this._uiData.forEach(function(uiNode) {
 
-        if( (uiNode.depth) == self.selCutLevel) {
+        if( (uiNode.depth) == move_level) {
           if(  loc_start <= uiNode.start || (loc_start >= uiNode.start && loc_start < uiNode.end) ) {
             node_starts.push(uiNode.x);
             node_starts_val.push([uiNode.start, uiNode.end]);
@@ -969,7 +975,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function() {
             range_end = uiNode.end;
           }
 
-          if( (uiNode.depth) == self.selCutLevel) {
+          if( (uiNode.depth) == move_level) {
 
             if(loc_x >= uiNode.x && loc_x < (uiNode.x + uiNode.dx)) {
               node_starts.push(uiNode.start);
