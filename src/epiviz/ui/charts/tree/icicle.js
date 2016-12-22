@@ -495,6 +495,8 @@ epiviz.ui.charts.tree.Icicle.prototype._updateLocation = function(start, width) 
 
 epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
 
+  if(!root) {return;}
+
   this._legend.selectAll("*").remove();
 
   var self = this;
