@@ -113,6 +113,10 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
 
+  var aggLevel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AGG_LEVEL];
+  var nodeSel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.NODE_SEL];
+
+  //self.visualization().setCustomSettingsValues(settingsValues);
 
   var Axis = epiviz.ui.charts.Axis;
 
@@ -385,7 +389,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       var node = self._getNewNode(d);
       node.selectionType = d.selectionType;
       node.selectionType = self.selectNode(node);
+      self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
       d.selectionType = node.selectionType;
+      self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
       d3.event.stopPropagation();
     });
 
@@ -1211,6 +1217,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     })
     .on('click', function(d, i) {
       self.selectLevel(root.globalDepth + i);
+      self._customSettingsValues["aggLevel"] = root.globalDepth + i;
+      self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
       d3.event.stopPropagation();
     });
 };
