@@ -111,8 +111,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   var self = this;
 
-  self._lastRoot = root;
-
   var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
 
   var aggLevel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AGG_LEVEL];
@@ -125,6 +123,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   if (!root) {
     root = this._lastData;
   }
+
+  self._lastRoot = root;
 
   var width = this.width();
   var height = this.height();
