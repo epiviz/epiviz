@@ -24,7 +24,7 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
    * @type {Object.<string, epiviz.ui.charts.tree.NodeSelectionType>}
    * @private
    */
-  this._selectedNodes = {};
+  this._selectedNodes = JSON.parse(this._customSettingsValues["nodeSel"]) || {};
 
   /**
    * @type {Object.<number, number>}
@@ -122,7 +122,7 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
    */
   this._levelsTaxonomy = null;
 
-  this.selCutLevel = 3;
+  this.selCutLevel = parseInt(this._customSettingsValues["aggLevel"]) || 3;
 };
 
 /**
