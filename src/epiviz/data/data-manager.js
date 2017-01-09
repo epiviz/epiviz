@@ -144,6 +144,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._requestGetAvailableCharts = new epiviz.events.Event();
 
+  /**
+   * @type {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestLoadMeasurements = new epiviz.events.Event();
+
 
   /**
    * @type {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
@@ -170,6 +176,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderSetChartSettings();
   this._registerProviderGetAvailableCharts();
   this._registerProviderUiStatus();
+  this._registerProviderLoadMeasurements();
 };
 
 /**
@@ -181,6 +188,12 @@ epiviz.data.DataManager.prototype.onRequestAddMeasurements = function() { return
  * @returns {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataManager.prototype.onRequestRemoveMeasurements = function() { return this._requestRemoveMeasurements; };
+
+/**
+ * @returns {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestLoadMeasurements = function() { return this._requestLoadMeasurements; };
+
 
 /**
  * @returns {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
@@ -811,6 +824,19 @@ epiviz.data.DataManager.prototype._registerProviderRemoveMeasurements = function
     provider.onRequestRemoveMeasurements().addListener(new epiviz.events.EventListener(
       function(e) {
         self._requestRemoveMeasurements.notify(e);
+      }));
+  });
+};
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderLoadMeasurements = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestLoadMeasurements().addListener(new epiviz.events.EventListener(
+      function(e) {
+        self._requestLoadMeasurements.notify(e);
       }));
   });
 };

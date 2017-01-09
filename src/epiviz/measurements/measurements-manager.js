@@ -165,3 +165,12 @@ epiviz.measurements.MeasurementsManager.prototype.removeMeasurement = function(m
 
   this.removeMeasurements(measurements);
 };
+
+
+/**
+ * @param {epiviz.measurements.MeasurementSet} measurements
+ */
+epiviz.measurements.MeasurementsManager.prototype.getRemoteMeasurements = function() {
+  var self = this;
+  return this._measurements.remoteRaw();
+};

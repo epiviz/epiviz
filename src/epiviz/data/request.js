@@ -68,6 +68,7 @@ epiviz.data.Request.Action = {
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
   REMOVE_MEASUREMENTS: 'removeMeasurements',
+  LOAD_MEASUREMENTS: 'loadMeasurements',
   ADD_SEQINFOS: 'addSeqInfos',
   REMOVE_SEQNAMES: 'removeSeqNames',
   ADD_CHART: 'addChart',

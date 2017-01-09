@@ -118,6 +118,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   // Register for Data events
 
   this._registerDataAddMeasurements();
+  this._registerDataLoadMeasurements();
   this._registerDataRemoveMeasurements();
   this._registerDataAddChart();
   this._registerDataRemoveChart();
@@ -571,6 +572,25 @@ epiviz.EpiViz.prototype._registerDataRemoveMeasurements = function() {
       try {
         self._measurementsManager.removeMeasurements(e.measurements);
         e.result.success = true;
+      } catch (error) {
+        e.result.success = false;
+        e.result.errorMessage = error.toString();
+      }
+    }));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataLoadMeasurements = function() {
+  var self = this;
+  this._dataManager.onRequestLoadMeasurements().addListener(new epiviz.events.EventListener(
+    /** @param {{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}} e */
+    function(e) {
+      try {
+        var m = self._measurementsManager.getRemoteMeasurements();
+        e.result.success = true;
+        e.result.measurements = m;
       } catch (error) {
         e.result.success = false;
         e.result.errorMessage = error.toString();
