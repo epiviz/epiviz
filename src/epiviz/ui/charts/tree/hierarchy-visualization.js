@@ -123,6 +123,8 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
   this._levelsTaxonomy = null;
 
   this.selCutLevel = parseInt(this._customSettingsValues["aggLevel"]) || 3;
+
+  this._firstRun = 0;
 };
 
 /**
@@ -267,6 +269,12 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
         self._updateSelectionAttribute(self._uiDataMap[sel], self._selectedNodes[sel]);
       }
     });
+  }
+
+  if(this._firstRun == 0) {
+    this.selectLevel(this.selCutLevel);
+    //this.firePropagateHierarchyChanges();
+    this._firstRun++;
   }
 
   //this._drawLegend();

@@ -552,7 +552,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           var x1 = node_starts_val[0][0] - 1;
           var x2 = node_ends_val[node_ends_val.length-1][0];
           self._updateChartLocation(x1, x2 - x1);
-              self._drawAxes();
+              self._drawAxes(self._lastRoot);
         }        
       }
 
@@ -563,14 +563,14 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
             var x2 = node_starts_val[node_starts_val.length-1][1];
             // find the block right to the current position.
             self._updateChartLocation(x1, x2 - x1);
-                self._drawAxes();
+                self._drawAxes(self._lastRoot);
           }
           else if(node_ends_val.length > 0) {
               var x1 = node_ends_val[0][0];
               var x2 = node_ends_val[node_ends_val.length-1][1];
               // find the block right to the current position.
               self._updateChartLocation(x1, x2 - x1);
-                  self._drawAxes();
+                  self._drawAxes(self._lastRoot);
           }
         }
         else {
@@ -578,7 +578,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           var x1 = node_ends_val[0][0];
           // find the block right to the current position.
           self._updateChartLocation(x1, x2 - x1);
-              self._drawAxes();
+              self._drawAxes(self._lastRoot);
         }
       }
 
@@ -590,7 +590,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
             var x2 = node_ends_val[node_ends_val.length-1][1] + 1;
             // find the block right to the current position.
             self._updateChartLocation(x1, x2 - x1);
-                self._drawAxes();
+                self._drawAxes(self._lastRoot);
         }
       }
 
@@ -1017,7 +1017,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         }
 
         self._updateChartLocation(x1, x2 - x1);
-        self._drawAxes();
+        self._drawAxes(self._lastRoot);
 
       }
       }
