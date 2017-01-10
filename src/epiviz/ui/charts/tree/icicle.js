@@ -479,6 +479,12 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   this._drawRowControls(root);
 
+  if(this._firstRun == 0) {
+    this._firstRun++;
+    // this.selectLevel(this.selCutLevel);
+    this.firePropagateHierarchyChanges();
+  }
+
   return uiData;
 };
 
