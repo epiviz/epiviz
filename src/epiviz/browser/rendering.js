@@ -89,6 +89,7 @@ function loadMeasurements(datasource, input) {
         i++;
     }
     annotations = Object.keys(measurements[datasource][i].annotation);
+    annotations = annotations.sort(sortAlphaNum);
     annotations.forEach(function(text) {
         var item = document.createElement('div');
         var title = document.createElement('a');

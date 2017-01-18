@@ -221,16 +221,17 @@ function attachActions(measurements) {
             var total = parseInt($count.attr("data-total"));
 
             $(this).parent().toggleClass('checked');
+            $(this).parent().removeClass('hidden');
             $('#rightmenu').accordion('refresh');
             _.each(ids, function(value) {
+                var split = value.id.split('-');
                 if (checked) {
                     $(value).checkbox('set unchecked');
-                    delete selections[value.id.split('-')[1]];
+                    delete selections[split[1] + '-' + split[2] + '-' + split[3]];
                 } else if ($(value).parent().css('display') !== "none"){
-                    var split = value.id.split('-');
                     $(value).checkbox('set checked');
                     $(value).children().removeClass('hidden');
-                    selections[split[1] + '-' + split[3] + '-' + split[2]] = 0;
+                    selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
                 }
             });
             if (checked) {
@@ -249,11 +250,11 @@ function attachActions(measurements) {
 
             if (checked) {
                 $(this).parent().checkbox('set unchecked');
-                delete selections[split[1]];
+                delete selections[split[1] + '-' + split[2] + '-' + split[3]];
             } else {
                 $(this).parent().checkbox('set checked');
                 $(this).removeClass('hidden');
-                selections[split[1] + '-' + split[3] + '-' + split[2]] = 0;
+                selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
             }
             if (checked) {
                 selected = selected - 1;
@@ -264,21 +265,10 @@ function attachActions(measurements) {
                 $count.attr("data-selected", selected);
                 $count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
             }
-
-            if (selected > 0 && selected !== total) {
-                $('#source-' + split[3]).parent().checkbox('set indeterminate');
-                $('#source-' + split[3]).removeClass('hidden');
-
-            } else if (selected === total){
-                $('#source-' + split[3]).parent().checkbox('set checked');
-                $('#source-' + split[3]).removeClass('hidden');
-            } else if (selected === 0) {
-                $('#source-' + split[3]).parent().checkbox('set unchecked');
-                $('#source-' + split[3]).removeClass('hidden');
-            }
+            toggleParent(split[3]);
         }
     });
-    
+
     $('#rightmenu .field .checkbox label').mouseenter(function() {
         var parent = $(this).parent();
         var split = parent.attr('id').split('-');
@@ -332,6 +322,23 @@ function attachActions(measurements) {
             $(this).popup('show');     
         }   
     });
+}
+
+function toggleParent(source) {
+        var $count = $('#count-' + source);
+        var selected = parseInt($count.attr("data-selected"));
+        var total = parseInt($count.attr("data-total"));
+        if (selected > 0 && selected !== total) {
+            $('#source-' + source).parent().checkbox('set indeterminate');
+            $('#source-' + source).removeClass('hidden');
+
+        } else if (selected === total){
+            $('#source-' + source).parent().checkbox('set checked');
+            $('#source-' + source).removeClass('hidden');
+        } else if (selected === 0) {
+            $('#source-' + source).parent().checkbox('set unchecked');
+            $('#source-' + source).removeClass('hidden');
+        }
 }
 
 function filter(value, anno, filter, measurements) {
@@ -411,14 +418,27 @@ function filter(value, anno, filter, measurements) {
             if (hide) {
                 $('#' + data['id']).hide();
                 _.pull(new_list[source], data);
+                var checkbox = $('#' + data['id']).children();
+                if (checkbox.attr('class').indexOf('checked') !== -1) {
+                    var split = checkbox.attr('id').split('-');
+                    console.log(split);
+                    checkbox.checkbox('set unchecked');
+                    delete selections[split[1] + '-' + split[2] + '-' + split[3]];
+                }
             } else {
                 new_list[source].push(data);
                 $('#' + data['id']).show();
             }
-            console.log(new_list);
         });
+        console.log(selections.length);
+        var $count = $('#count-' + source);
+        $count.attr("data-selected", _.size(selections));
+        $count.attr("data-total", new_list[source].length);
+        $count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+        toggleParent(source);
     });
 }  
+
 function getRandom(max, min) {
     return Math.floor(Math.random() * (max - min)) + min;
 }

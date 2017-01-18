@@ -105,9 +105,7 @@ epiviz.ui.tutorials = function() {
                     $('#wizardDialog table tbody tr:eq(1)').toggleClass('DTTT_selected');
                     $('#wizardDialog table tbody tr:eq(2)').toggleClass('DTTT_selected');
                     $('#wisardDialog table tbdoy tr:eq(3)').toggleClass('DTTT_selected');
-                    $('#wizardDialog table tbody tr:eq(1)').trigger('click');
-                    $('#wizardDialog table tbody tr:eq(2)').trigger('click');
-                    $('#wizardDialog table tbody tr:eq(3)').trigger('click');
+                    
                 },
                 onHide: function(anno, $target, $annoElem, returnFromOnShow) {
                     var parent = $('#wizardDialog').parent().attr('id');
