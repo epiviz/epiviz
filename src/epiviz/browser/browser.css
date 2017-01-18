@@ -1,0 +1,67 @@
+
+#resultmodal {
+    max-height: 400px;
+}
+.ui.long.modal {
+    position: fixed;
+    top: 15%;
+    left: 40%;
+} 
+.bounds {
+    max-height: 100%;
+    overflow: scroll;
+}
+#button {
+    float: right;
+}
+.ui.input {
+    width: 100%;
+}
+#newmodal {
+    left: 50%;
+    top: 40%;
+    max-height: 400px !important;
+}
+.ui.grid {
+    padding: 0px;
+    max-height: inherit;
+}
+.content.m {
+    overflow: scroll;
+    max-height: 350px;
+    padding: 0px;
+}
+#rightmenu {
+    overflow: auto;
+    height: 100%;
+    max-height: inherit;
+}
+#leftmenu {
+    max-height: 100%;
+    overflow: auto;
+}
+.tab {
+    height: 80%;
+}
+#test {
+    position: absolute;
+    top:500px;
+}
+.ui.table {
+    font-size: .8em;
+}
+.ui.popup {
+    padding: 3px;
+    padding-left: 10px;
+}
+.ui.compact.table td {
+    padding: 0;
+    padding-right: .7em;
+}
+#sourcemodal {
+    width: auto;
+    left: 60%;
+}
+.ui.menu {
+    padding: 0;
+}

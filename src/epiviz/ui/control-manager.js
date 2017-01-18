@@ -515,46 +515,127 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
       visMenu.append(sprintf('<li><a href="javascript:void(0)" id="%s">Add New %s</a></li>', id, chartType.chartName()));
 
       $('#' + id).click(function() {
-        var wizardSteps = [];
-        if (chartType.isRestrictedToSameDatasourceGroup()) {
-          wizardSteps.push(new epiviz.ui.controls.DatasourceGroupWizardStep());
-        }
-        if (chartType.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
-          wizardSteps.push(new epiviz.ui.controls.MeaurementsWizardStep());
-        }
-
-        if (!wizardSteps.length) {
-          self._addChart.notify({
-            type: chartType,
-            visConfigSelection: new epiviz.ui.controls.VisConfigSelection(
-              self._measurementsManager.measurements().subset(chartType.measurementsFilter()))});
-          return;
-        }
-
-        var wizardMeasurements = self._measurementsManager.measurements().subset(chartType.measurementsFilter());
-        wizardMeasurements.addAll(self._measurementsManager.measurements()
+        var data = self._measurementsManager.measurements().subset(chartType.measurementsFilter());
+        data.addAll(self._measurementsManager.measurements()
           .map(function(m) { return m.datasource(); })
           .subset(chartType.measurementsFilter()));
-        var dialog = new epiviz.ui.controls.Wizard(
-          sprintf('Add new %s', chartType.chartName()),
-          {finish:
-            /** @param {epiviz.ui.controls.VisConfigSelection} data */
-            function(data) {
-              self._addChart.notify({type: chartType, visConfigSelection: data});
+        var datasourceGroups = {};
+        data.foreach(function(m) {
+          if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+          if (data.annotation) {
+            for (var key in data.annotation) {
+              if (!data.annotation.hasOwnProperty(key)) { continue; }
+              if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
             }
-          },
-          wizardSteps,
-          new epiviz.ui.controls.VisConfigSelection(
-            wizardMeasurements, // measurements
-            undefined, // datasource
-            undefined, // datasourceGroup
-            undefined, // dataprovider
-            undefined, // annotation
-            chartType.chartName(), // defaultChartType
-            chartType.minSelectedMeasurements()),
-          '750', undefined, // size of dialog
-          chartType.isRestrictedToSameDatasourceGroup()); // showTabs
-        dialog.show();
+          }       
+         datasourceGroups[m.datasourceGroup()] = true;
+        });
+        initialize(Object.keys(datasourceGroups));
+        $('#sourcemodal').modal({
+            closable: false,
+            selector: {
+                deny: '.ui.grey.button',
+                approve: '.ui.primary.button'
+            },
+            onDeny: function() {
+                $('#sourcemodal').modal('hide');
+                $('#newmodal').remove();
+            },
+            onHidden: function() {
+                $('#sourcemodal').remove();
+            },
+            onApprove: function() {
+                var source = $('#form').form('get value', 'radio');
+                if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+                    var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
+                    var vconfig = new epiviz.ui.controls.VisConfigSelection(
+                        measurements, // measurementas
+                        undefined, // datasource
+                        source, // datasourceGroup
+                        undefined, // dataprovider
+                        undefined, // annotation
+                        chartType.chartName(), // defaultChartType
+                        chartType.minSelectedMeasurements());
+                  self._addChart.notify({
+                    type: chartType,
+                    visConfigSelection: vconfig
+                  });
+                } else {
+                  var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
+                  showModal(source, measurements.raw(), function(selected) {
+                    var mSet = new epiviz.measurements.MeasurementSet();
+                    for (var i = 0; i < selected.length; i++) {
+                      var measurement = selected[i];
+                      mSet.add(new epiviz.measurements.Measurement(
+                              measurement.id,
+                              measurement.name,
+                              measurement.type,
+                              measurement.datasourceId,
+                              measurement.datasourceGroup,
+                              measurement.dataprovider,
+                              measurement.formula,
+                              measurement.defaultChartType,
+                              measurement.annotation,
+                              measurement.minValue,
+                              measurement.maxValue,
+                              measurement.metadata
+                          ));
+                    }
+                    var vconfig = new epiviz.ui.controls.VisConfigSelection(
+                        mSet, // measurements
+                        undefined, // datasource
+                        undefined, // datasourceGroup
+                        undefined, // dataprovider
+                        undefined, // annotation
+                        chartType.chartName(), // defaultChartType
+                        chartType.minSelectedMeasurements());
+                    self._addChart.notify({type: chartType, visConfigSelection: vconfig});
+                  });
+                }
+                $('#sourcemodal').modal('hide');
+            }
+        });
+        $('#sourcemodal').modal('show');
+        // var wizardSteps = [];
+        // if (chartType.isRestrictedToSameDatasourceGroup()) {
+        //   wizardSteps.push(new epiviz.ui.controls.DatasourceGroupWizardStep());
+        // }
+        // if (chartType.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+        //   wizardSteps.push(new epiviz.ui.controls.MeaurementsWizardStep());
+        // }
+
+        // if (!wizardSteps.length) {
+        //   self._addChart.notify({
+        //     type: chartType,
+        //     visConfigSelection: new epiviz.ui.controls.VisConfigSelection(
+        //       self._measurementsManager.measurements().subset(chartType.measurementsFilter()))});
+        //   return;
+        // }
+
+        // var wizardMeasurements = self._measurementsManager.measurements().subset(chartType.measurementsFilter());
+        // wizardMeasurements.addAll(self._measurementsManager.measurements()
+        //   .map(function(m) { return m.datasource(); })
+        //   .subset(chartType.measurementsFilter()));
+        // var dialog = new epiviz.ui.controls.Wizard(
+        //   sprintf('Add new %s', chartType.chartName()),
+        //   {finish:
+        //     /** @param {epiviz.ui.controls.VisConfigSelection} data */
+        //     function(data) {
+        //       self._addChart.notify({type: chartType, visConfigSelection: data});
+        //     }
+        //   },
+        //   wizardSteps,
+        //   new epiviz.ui.controls.VisConfigSelection(
+        //     wizardMeasurements, // measurements
+        //     undefined, // datasource
+        //     undefined, // datasourceGroup
+        //     undefined, // dataprovider
+        //     undefined, // annotation
+        //     chartType.chartName(), // defaultChartType
+        //     chartType.minSelectedMeasurements()),
+        //   '750', undefined, // size of dialog
+        //   chartType.isRestrictedToSameDatasourceGroup()); // showTabs
+        // dialog.show();
 
         visMenu.hide();
       });

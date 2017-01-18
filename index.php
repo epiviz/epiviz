@@ -464,6 +464,16 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/main.js"></script>
 
+    <link rel="stylesheet" href="src/epiviz/browser/semantic/dist/semantic.min.css">
+    <link rel="stylesheet" href="src/epiviz/browser/semantic-ui-range-master/range.css">
+    <link rel="stylesheet" href="src/epiviz/browser/browser.css">
+    <script src="src/epiviz/browser/semantic/dist/semantic.min.js"></script>
+    <script src="src/epiviz/browser/semantic-ui-range-master/range.js"></script>
+    <script src="src/epiviz/browser/lodash/dist/lodash.min.js"></script>
+    <script src="src/epiviz/browser/actions.js"></script>
+    <script src="src/epiviz/browser/rendering.js"></script>
+    <script src="src/epiviz/browser/tablesort.js"></script>
+
     <!-- Dynamic initializations -->
 
     <script>
