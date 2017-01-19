@@ -27,9 +27,12 @@
     max-height: inherit;
 }
 .content.m {
-    overflow: scroll;
+    overflow: hidden;
     max-height: 350px;
     padding: 0px;
+}
+.content {
+    overflow: scroll;
 }
 #rightmenu {
     overflow: auto;
