@@ -4,57 +4,6 @@ var graph;
 var selections = {};
 var store = {};
 
-window.onload = function() {
-    $(document).on('click', '#modalbutton', function() {
-        initialize(["msd16s", "1", "2"]);
-        $('#sourcemodal').modal({
-            closable: false,
-            selector: {
-                deny: '.ui.grey.button',
-                approve: '.ui.primary.button'
-            },
-            onDeny: function() {
-                $('#sourcemodal').modal('hide');
-                $('#newmodal').remove();
-            },
-            onHidden: function() {
-                $('#sourcemodal').remove();
-            },
-            onApprove: function() {
-                var source = $('#form').form('get value', 'radio');
-                showModal(source);
-                $('#sourcemodal').modal('hide');
-            }
-        });
-        $('#sourcemodal').modal('show');
-    });
-    $(document).on('click', '#epivizbutton', function() {
-        initialize();
-        $('#newmodal').modal({
-            observeChanges: true,
-            closable: false,
-            selector:  {
-                deny: '.ui.grey.button',
-                approve: '.ui.primary.button'
-            },
-            onDeny: function() {
-                $('#leftmenu').empty();
-                $('#rightmenu').empty();
-            },
-            onApprove: storeMeasurement,
-        });
-        $('#newmodal').modal('show');
-        epiviz_measurements();
-    });
-    $(document).on('click', '#item', function() {
-        graph = $(this).text().toLowerCase();
-        graph = graph.replace(" ", "-");
-        load();
-        $('#modal').modal();
-        $('#modal').modal('show');
-    });
-}
-
 function showModal(source, input, cb) {
     //measurements placeholder for callback
     var measurements = {};
@@ -112,6 +61,8 @@ function showModal(source, input, cb) {
             approve: '.ui.primary.button'
         },
         onDeny: function() {
+            console.log('hi');
+            $('#sourcemodal').modal('show');
             $('#leftmenu').empty();
             $('#rightmenu').empty();
         },
