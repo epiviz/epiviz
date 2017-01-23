@@ -541,9 +541,6 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
                 $('#sourcemodal').modal('hide');
                 $('#newmodal').remove();
             },
-            onHidden: function() {
-                $('#sourcemodal').remove();
-            },
             onApprove: function() {
                 var source = $('#form').form('get value', 'radio');
                 if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
@@ -592,7 +589,6 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
                     self._addChart.notify({type: chartType, visConfigSelection: vconfig});
                   });
                 }
-                $('#sourcemodal').modal('hide');
             }
         });
         $('#sourcemodal').modal('show');

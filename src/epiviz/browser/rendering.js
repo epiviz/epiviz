@@ -110,8 +110,8 @@ function loadMeasurements(datasource, input) {
         });
         values = values.sort(sortAlphaNum);
         console.log(parseInt(values[getRandom(0, values.length - 1)]));
-        console.log("values" + values.length);
         if (parseInt(values[getRandom(0, values.length - 1)]) && values.length > 5) {
+            console.log("values" + values.length);
             filters[text] = {values: [], type: "range"};
             var field = document.createElement('div');
             var range1 = document.createElement('div');
