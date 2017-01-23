@@ -404,6 +404,7 @@ function filter(value, anno, filter, measurements) {
                             hide = true;
                         }
                         else if (type === "range") {
+                            console.log(data['annotation'][anno])
                             if (data['annotation'][anno] < val[0] || data['annotation'][anno] > val[1]) {
                                 hide = true;
                             }
@@ -419,6 +420,7 @@ function filter(value, anno, filter, measurements) {
                 $('#' + data['id']).hide();
                 _.pull(new_list[source], data);
                 var checkbox = $('#' + data['id']).children();
+                console.log(data['id']);
                 if (checkbox.attr('class').indexOf('checked') !== -1) {
                     var split = checkbox.attr('id').split('-');
                     console.log(split);
