@@ -84,7 +84,6 @@ function loadMeasurements(datasource, input) {
     var i = 0;
     var measurements = {};
     measurements[datasource] = input;
-    console.log(measurements);
     while(measurements[datasource][i].annotation === null) {
         i++;
     }
@@ -111,6 +110,7 @@ function loadMeasurements(datasource, input) {
         });
         values = values.sort(sortAlphaNum);
         console.log(parseInt(values[getRandom(0, values.length - 1)]));
+        console.log("values" + values.length);
         if (parseInt(values[getRandom(0, values.length - 1)]) && values.length > 5) {
             filters[text] = {values: [], type: "range"};
             var field = document.createElement('div');
@@ -200,60 +200,4 @@ function loadMeasurements(datasource, input) {
     });
     rightAccordion(measurements);
     attachActions(measurements);
-}
-function load() {
-    $.getJSON("http://epiviz.cbcb.umd.edu/data/main.php?action=getMeasurements", function(data) {
-        var length = data.data.id.length;
-        var info = data.data;
-        measurements = [];
-        for (var i = 0; i < length; i++) {
-            var obj = {
-                "id": info.id[i],
-                "name": info.name[i],
-                "type": info.type[i],
-                "annotation": info.annotation[i],
-                "datasourcegroup": info.datasourceGroup[i],
-                "datasourceId": info.datasourceId[i],
-                "defaultChartType": info.defaultChartType[i],
-                "minValue": info.minValue[i],
-                "maxValue": info.maxValue[i],
-                "metadata": info.metadata[i],
-            }
-            measurements.push(obj);
-        }
-
-        var mlength = measurements.length;
-
-        $('#tablediv').append('<table id="modalTable" class="display"><thead><tr><th>Id</th><th>name</th><th>type</th><th>datasourcegroup</th><th>Index</th></tr></thead></table>');
-
-        tableString= '<tbody>';
-
-        for (var i=0; i< mlength; i++) {
-            tableString += '<tr><td>' 
-            + measurements[i].id + '</td><td>' + measurements[i].name + '</td><td>' + measurements[i].type + '</td><td>' + measurements[i].datasourcegroup+ '</td><td>' + i + '</td></tr>';
-        }
-
-        tableString += '</tbody>';
-        $('#modalTable').append(tableString);
-        table = $('#modalTable').DataTable({
-              aoColumns : [
-                { sWidth: '25%' },
-                { sWidth: '25%' },
-                { sWidth: '20%' },
-                { sWidth: '25%' },
-                { sWidth: '5%' },
-              ],
-            select: {style: 'os'},
-            buttons: [
-                {
-                    text: 'Finish',
-                    action: function ( e, dt, node, config ) {
-                        console.log('clicked');
-                    }
-                }
-            ]
-        });
-        console.log(table.rows('.selected').data());
-        console.log(table.rows( { selected: true } ).data());
-    });
 }

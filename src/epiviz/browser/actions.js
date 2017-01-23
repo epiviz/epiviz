@@ -1,4 +1,3 @@
-var table;
 var current_measurements;
 var filters = {};
 var graph;
@@ -250,7 +249,7 @@ function attachActions(measurements) {
             var t_body = document.createElement('tbody');
             popup.className = 'ui popup';
             popup.id = "popup-" + point.id + "-" + split[3];
-            table.className = 'ui compact table';
+            table.className = 'ui collapsing table';
             table.appendChild(t_body);
             //add columns to the grid
             for (var j = 0; j < contents.length; j++) {
@@ -288,7 +287,7 @@ function toggleParent(source) {
             $('#source-' + source).parent().checkbox('set indeterminate');
             $('#source-' + source).removeClass('hidden');
 
-        } else if (selected === total){
+        } else if (selected === total && total !== 0){
             $('#source-' + source).parent().checkbox('set checked');
             $('#source-' + source).removeClass('hidden');
         } else if (selected === 0) {
@@ -377,8 +376,8 @@ function filter(value, anno, filter, measurements) {
                 var checkbox = $('#' + data['id']).children();
                 if (checkbox.attr('class').indexOf('checked') !== -1) {
                     var split = checkbox.attr('id').split('-');
-                    console.log(split);
                     checkbox.checkbox('set unchecked');
+                    $(this).parent().removeClass('hidden');
                     delete selections[split[1] + '-' + split[2] + '-' + split[3]];
                 }
             } else {
@@ -391,6 +390,14 @@ function filter(value, anno, filter, measurements) {
         $count.attr("data-total", new_list[source].length);
         $count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
         toggleParent(source);
+        if ($count.attr('data-total') === "0") {
+            var text = '<span style="padding-left: 5%">No More Measurements</span>'
+            $('#' + source + ' .content').append(text);
+        } else {
+            if ($('#' + source + ' .content').children('span').length !== 0) {
+                $('#' + source + ' .content').children('span')[0].remove();
+            }
+        }
     });
 }  
 
@@ -418,7 +425,6 @@ function storeMeasurement(measurements, cb) {
     var new_list = []
     _.forEach(selections, function(val, index) {
         var tup = index.split('-');
-        console.log(tup);
         //tup contains [source, index] for easy indexing into measurements 
         new_list.push(measurements[tup[2]][tup[1]]);
     });
@@ -451,7 +457,6 @@ function resultTable(name, list, cb) {
         var d1 = document.createElement('td');
         var d2 = document.createElement('td');
         var d3 = document.createElement('td');
-        console.log(val);
         d1.innerHTML = val.id;
         d2.innerHTML = val.name;
         d3.innerHTML = val.datasourcegroup;
@@ -477,7 +482,6 @@ function resultTable(name, list, cb) {
             $('#leftmenu').empty();
             $('#rightmenu').empty();
             $('#resultTable').empty();
-            console.log(store);
             cb(store[name]);
         }
     });

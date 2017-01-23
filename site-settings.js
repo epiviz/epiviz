@@ -73,12 +73,10 @@ epiviz.Config.SETTINGS.dataProviders = [
       'api/',
       [],
       3,
-      {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
     ]
-
 ];
 
 // This sets up the UMD workspace server 
-// epiviz.Config.SETTINGS.workspacesDataProvider = sprintf('epiviz.data.WebServerDataProvider,%s,%s',
-//     'workspaces_provider',
-//     'http://metaviz.cbcb.umd.edu/data/main.php');
+ epiviz.Config.SETTINGS.workspacesDataProvider = sprintf('epiviz.data.WebServerDataProvider,%s,%s',
+     'workspaces_provider',
+     'http://metaviz.cbcb.umd.edu/data/main.php');

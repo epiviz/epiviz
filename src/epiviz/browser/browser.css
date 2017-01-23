@@ -59,7 +59,7 @@
     padding: 3px;
     padding-left: 10px;
 }
-.ui.compact.table td {
+.ui.collapsing.table td {
     padding: 0;
     padding-right: .7em;
 }
