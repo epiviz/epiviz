@@ -92,7 +92,7 @@ function showModal(source, input, cb) {
         </div>
     </div>
     <div id="resultmodal" class="ui modal">
-        <div class="content m">
+        <div class="content">
             <div class="bounds">
                 <table id="resultTable" class="ui sortable selectable striped table">
                 </table>
@@ -166,50 +166,6 @@ function initialize(sources) {
 }
 
 function attachActions(measurements) {
-    $('#test').range({
-        min: 0,
-        max: 10,
-        start:10,
-        onchange: function(value) {
-            $('#testdisplay').html("Value= " + value);
-        }
-    });
-    $('#button').click(function(e) {
-        console.log(table.rows( { selected: true } ).data());
-        var data = table.rows( { selected: true} ).data();
-        var env = document.createElement('epiviz-environment');
-        if (measurements) {
-            var json = '{';
-            for (var i = 0; i < data.length; i++) {
-                var m = measurements[data[i][4]];   
-
-                json += '"measurement' + i + '":{"id":"' + m["id"] + '"' +  
-                        ',"name":"' + m["name"] +  '"' + 
-                        ',"type":"' + m["type"] + '"' + 
-                        ',"datasourceId":"' + m["datasourceId"] + '"' + 
-                        ',"datasourceGroup":"' + m["datasourcegroup"] + '"' +
-                        ',"dataprovider":"' + 'umd' + '"' + 
-                        ',"formula":' + 'null' +
-                        ',"defaultChartType":' + 'null' + 
-                        ',"annotation":' + 'null' +
-                        ',"minValue":' + m["minValue"] +
-                        ',"maxValue":' + m["maxValue"] + '},';
-            }
-            json.substring(0, json.length-1);
-            json += '}';
-            env.measurements = json;
-            $('#polymercontainer').append(env);
-            //var chart = '<epiviz-' + graph + ' dim-s="' + "['" + "measurement0'," + "'measurement1']" + '"' + '></epiviz-' + graph + '>'
-            var chart = document.createElement('epiviz-' + graph);
-            chart.setAttribute("dim-s", '["measurement0", "measurement1"]');
-            var beforeNode = Polymer.dom($('epiviz-environment')).childNodes[0];
-            Polymer.dom($('epiviz-environment')).insertBefore(chart, beforeNode);
-            // Polymer.dom($('epiviz-environment').root).appendChild(chart);
-            // var chart = '<epiviz-' + graph + ' dim-s="[measurement0","measurement1"]"' + '></epiviz-' + graph + '>'
-            // $('epiviz-environment').append(chart);
-        }
-        $('.ui.modal').hide();
-    });
     $('.ui.checkbox input[type="checkbox"]').click(function(e) {
         var split = this.id.split('-');
         //this means that you selected the measurement checkbox
@@ -387,7 +343,6 @@ function filter(value, anno, filter, measurements) {
                                 hide = true;
                             }
                             else if (type === "range") {
-                                console.log(filters);
                                 if (data['annotation'][category] < val[0] || data['annotation'][category] > val[1]) {
                                     hide = true;
                                 }
@@ -405,7 +360,6 @@ function filter(value, anno, filter, measurements) {
                             hide = true;
                         }
                         else if (type === "range") {
-                            console.log(data['annotation'][anno])
                             if (data['annotation'][anno] < val[0] || data['annotation'][anno] > val[1]) {
                                 hide = true;
                             }
@@ -421,7 +375,6 @@ function filter(value, anno, filter, measurements) {
                 $('#' + data['id']).hide();
                 _.pull(new_list[source], data);
                 var checkbox = $('#' + data['id']).children();
-                console.log(data['id']);
                 if (checkbox.attr('class').indexOf('checked') !== -1) {
                     var split = checkbox.attr('id').split('-');
                     console.log(split);
@@ -433,7 +386,6 @@ function filter(value, anno, filter, measurements) {
                 $('#' + data['id']).show();
             }
         });
-        console.log(_.size(selections));
         var $count = $('#count-' + source);
         $count.attr("data-selected", _.size(selections));
         $count.attr("data-total", new_list[source].length);
@@ -466,17 +418,14 @@ function storeMeasurement(measurements, cb) {
     var new_list = []
     _.forEach(selections, function(val, index) {
         var tup = index.split('-');
+        console.log(tup);
         //tup contains [source, index] for easy indexing into measurements 
-        new_list.push(measurements[tup[1]][tup[2]]);
+        new_list.push(measurements[tup[2]][tup[1]]);
     });
     store[name] = new_list;
     resultTable(name, new_list, cb);
 }
 
-//get rid of special characters in ids to prevent JQuery from misinterpreting selections
-function sanitize() {
-
-}
 
 function resultTable(name, list, cb) {
     $('#resultTable').append()

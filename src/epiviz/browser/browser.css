@@ -33,6 +33,8 @@
 }
 .content {
     overflow: scroll;
+    max-height: 350px;
+    padding: 0px;
 }
 #rightmenu {
     overflow: auto;

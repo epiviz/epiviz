@@ -630,7 +630,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
         <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">
-          <ul id="vis-menu"></ul>
+          <ul id="vis-menu">Visualizations</ul>
         </div>
 
         <button style="display:none;" id="computed-measurements-button">Computed Measurements</button>
