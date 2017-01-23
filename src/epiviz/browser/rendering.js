@@ -115,15 +115,14 @@ function loadMeasurements(datasource, input) {
             filters[text] = {values: [], type: "range"};
             var field = document.createElement('div');
             var range1 = document.createElement('div');
-            var range2 = document.createElement('div');
             var display1 = document.createElement('span');
             var cont1 = document.createElement('p');
             var cont2 = document.createElement('p');
             field.className = "field";
             field.width = "inherit";
             range1.className = "ui range"
-            range1.id = sanitized + "-range1";
-            display1.id = sanitized + "-display1";
+            range1.id = sanitized + "-range";
+            display1.id = sanitized + "-display";
             fields.appendChild(field);
             field.appendChild(range1);
             cont1.appendChild(display1);
@@ -181,22 +180,20 @@ function loadMeasurements(datasource, input) {
     });
     //Right menu
     Object.keys(ranges).forEach(function(ids) {
-        if (ids.charAt(ids.length-1) == '1') {
-            $('#' + ids).range({
-                start: ranges[ids][0],
-                values: [ranges[ids][0], ranges[ids][ranges[ids].length-1]],
-                step: 1,
-                onChange: function(min, max) {
-                    $('#'+ ids.split('-')[0] + "-display" + ids.charAt(ids.length-1)).html("Min: " + min + " " + "Max:" + max);
-                }
+        $('#' + ids).range({
+            start: ranges[ids][0],
+            values: [ranges[ids][0], ranges[ids][ranges[ids].length-1]],
+            step: 1,
+            onChange: function(min, max) {
+                $('#'+ ids.split('-')[0] + "-display").html("Min: " + min + " " + "Max:" + max);
+            }
+        });
+        $('#' + ids + " .thumb").on('mousedown', function() {
+            $(document).on('mouseup', function() {
+                $('#' + ids).range('get value', function(val) {filter(val, ids.split('-')[0], true, measurements)});
+                $(document).off('mouseup');
             });
-            $('#' + ids + " .thumb").on('mousedown', function() {
-                $(document).on('mouseup', function() {
-                    $('#' + ids).range('get value', function(val) {filter(val, ids.split('-')[0], "range")});
-                    $(document).off('mouseup');
-                });
-            });
-        }
+        });
     });
     $('.active.content').each(function(index) {
         $('.active.content')[0].className = 'content';

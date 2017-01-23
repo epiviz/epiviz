@@ -387,6 +387,7 @@ function filter(value, anno, filter, measurements) {
                                 hide = true;
                             }
                             else if (type === "range") {
+                                console.log(filters);
                                 if (data['annotation'][category] < val[0] || data['annotation'][category] > val[1]) {
                                     hide = true;
                                 }
@@ -432,7 +433,7 @@ function filter(value, anno, filter, measurements) {
                 $('#' + data['id']).show();
             }
         });
-        console.log(selections.length);
+        console.log(_.size(selections));
         var $count = $('#count-' + source);
         $count.attr("data-selected", _.size(selections));
         $count.attr("data-total", new_list[source].length);
