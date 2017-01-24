@@ -6,10 +6,9 @@
 
 goog.provide('epiviz.data.WebServerDataProvider');
 
+goog.require('epiviz.utils');
 goog.require('epiviz.data.DataProvider');
 goog.require('epiviz.data.Response');
-goog.require('epiviz.Config');
-goog.require('epiviz.utils');
 
 /**
  * @param {string} [id]

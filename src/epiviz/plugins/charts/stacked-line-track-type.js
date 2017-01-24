@@ -11,7 +11,7 @@ goog.require('epiviz.plugins.charts.StackedLineTrack');
 goog.require('epiviz.ui.charts.TrackType');
 goog.require('epiviz.measurements.Measurement.Type');
 goog.require('epiviz.ui.charts.CustomSetting');
-goog.require('epiviz.ui.charts.Visualization.CustomSettings');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
