@@ -6,6 +6,13 @@
 
 goog.provide('epiviz.data.DataProviderFactory');
 
+goog.require('epiviz.events.EventListener');
+goog.require('epiviz.events.Event');
+goog.require('epiviz.data.EmptyResponseDataProvider');
+// goog.require('epiviz.utils.evaluateFullyQualifiedTypeName');
+// goog.require('epiviz.utils.applyConstructor');
+goog.require('epiviz.utils');
+
 /**
  * A factory containing all the registered active data providers
  * (like EpivizR connections or PHP servers)

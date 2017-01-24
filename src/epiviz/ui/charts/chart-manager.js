@@ -6,6 +6,16 @@
 
 goog.provide('epiviz.ui.charts.ChartManager');
 
+goog.require('epiviz.events.Event');
+goog.require('epiviz.ui.charts.markers.VisualizationMarker');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.ControlManager');
+goog.require('epiviz.ui.charts.VisualizationProperties');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.charts.VisualizationType');
+goog.require('epiviz.events.EventListener');
+goog.require('epiviz.ui.controls.SaveSvgAsImageDialog');
+
 /**
  * @param {epiviz.Config} config
  * @constructor

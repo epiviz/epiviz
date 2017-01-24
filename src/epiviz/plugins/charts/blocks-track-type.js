@@ -6,7 +6,10 @@
 
 goog.provide('epiviz.plugins.charts.BlocksTrackType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.BlocksTrack');
+goog.require('epiviz.ui.charts.TrackType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
 
 /**
  * @param {epiviz.Config} config
@@ -105,3 +108,5 @@ epiviz.plugins.charts.BlocksTrackType.CustomSettings = {
   BLOCK_COLOR_BY: 'blockColorBy',
   USE_COLOR_BY: 'useColorBy'
 };
+
+// goog.inherits(epiviz.plugins.charts.BlocksTrackType, epiviz.ui.charts.TrackType);

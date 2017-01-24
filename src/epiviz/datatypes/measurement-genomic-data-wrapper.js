@@ -6,6 +6,11 @@
 
 goog.provide('epiviz.datatypes.MeasurementGenomicDataWrapper');
 
+goog.require('epiviz.datatypes.MeasurementGenomicData');
+goog.require('epiviz.datatypes.GenomicData.ValueItem');
+goog.require('epiviz.measurements.Measurement.Type');
+
+
 /**
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.PartialSummarizedExperiment} container

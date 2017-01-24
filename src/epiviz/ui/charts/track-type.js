@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.TrackType');
 
+goog.require('epiviz.ui.charts.ChartType');
+goog.require('epiviz.ui.charts.VisualizationType');
+
 /**
  * @param {epiviz.Config} config
  * @extends {epiviz.ui.charts.ChartType}

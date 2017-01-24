@@ -6,14 +6,25 @@
 
 goog.provide('epiviz.ui.ControlManager');
 
+goog.require('epiviz.utils');
 goog.require('epiviz.Config');
 goog.require('epiviz.events.Event');
-goog.require('epiviz.ui.charts.Chart');
-goog.require('epiviz.ui.charts.ChartFactory');
-goog.require('epiviz.ui.charts.ChartManager');
-goog.require('epiviz.workspaces.WorkspaceManager');
+goog.require('epiviz.ui.controls.DatasourceGroupWizardStep');
 goog.require('epiviz.datatypes.GenomicRange');
-//goog.require('epiviz.ui.tutorials');
+goog.require('epiviz.ui.charts.VisualizationType');
+goog.require('epiviz.ui.controls.VisConfigSelection');
+goog.require('epiviz.ui.controls.MeaurementsWizardStep');
+goog.require('epiviz.ui.controls.Wizard');
+goog.require('epiviz.ui.controls.ComputedMeasurementsDialog');
+goog.require('epiviz.ui.tutorials');
+goog.require('epiviz.ui.PrintManager');
+goog.require('epiviz.ui.controls.MessageDialog');
+goog.require('epiviz.events.EventListener');
+
+// goog.require('epiviz.ui.charts.Chart');
+// goog.require('epiviz.ui.charts.ChartFactory');
+// goog.require('epiviz.ui.charts.ChartManager');
+// goog.require('epiviz.workspaces.WorkspaceManager');
 
 /**
  * @param {epiviz.Config} config

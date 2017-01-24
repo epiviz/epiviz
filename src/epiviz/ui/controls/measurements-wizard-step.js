@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.controls.MeaurementsWizardStep');
 
+goog.require('epiviz.ui.controls.DataTable');
+goog.require('epiviz.measurements.MeasurementSet');
+
 /**
  * @constructor
  * @implements {epiviz.ui.controls.Wizard.Step}

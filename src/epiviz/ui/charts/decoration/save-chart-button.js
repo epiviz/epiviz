@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.decoration.SaveChartButton');
 
+goog.require('epiviz.ui.charts.decoration.ChartOptionButton');
+goog.require('epiviz.ui.charts.VisEventArgs');
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]

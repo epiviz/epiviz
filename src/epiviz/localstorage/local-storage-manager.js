@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.localstorage.LocalStorageManager');
 
+goog.require('epiviz.workspaces.Workspace');
+
 /**
  * @constructor
  */

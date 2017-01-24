@@ -7,6 +7,8 @@
 goog.provide('epiviz.measurements.Measurement');
 goog.provide('epiviz.measurements.Measurement.Type');
 
+goog.require('epiviz.utils');
+
 /**
  * @param {string} id
  * @param {string} name

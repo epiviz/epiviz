@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.decoration.CodeButton');
 
+goog.require('epiviz.ui.charts.decoration.ChartOptionButton');
+goog.require('epiviz.ui.controls.CodeDialog');
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
@@ -120,3 +123,5 @@ epiviz.ui.charts.decoration.CodeButton.prototype._saveHandler = function() { ret
  * @private
  */
 epiviz.ui.charts.decoration.CodeButton.prototype._cancelHandler = function() { return null; };
+
+//goog.inherits(epiviz.ui.charts.decoration.CodeButton, epiviz.ui.charts.decoration.ChartOptionButton);

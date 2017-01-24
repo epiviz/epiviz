@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.WebArgsManager');
 
+goog.require('epiviz.utils');
+goog.require('epiviz.events.EventListener');
+
 /**
  * @param {epiviz.ui.LocationManager} locationManager
  * @param {epiviz.workspaces.WorkspaceManager} workspaceManager

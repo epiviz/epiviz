@@ -6,6 +6,20 @@
 
 goog.provide('epiviz.workspaces.Workspace');
 
+goog.require('epiviz.measurements.MeasurementSet');
+goog.require('epiviz.events.Event');
+goog.require('epiviz.Config');
+goog.require('epiviz.utils');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.ui.charts.markers.VisualizationMarker');
+goog.require('epiviz.ui.charts.VisualizationProperties');
+goog.require('epiviz.ui.charts.Visualization');
+goog.require('epiviz.ui.controls.VisConfigSelection');
+goog.require('epiviz.ui.charts.Margins');
+goog.require('epiviz.ui.charts.ColorPalette');
+goog.require('epiviz.datatypes.GenomicRange');
+
+
 /**
  * @param {?string} id
  * @param {string} name

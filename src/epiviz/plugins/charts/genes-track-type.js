@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.GenesTrackType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.GenesTrack');
+goog.require('epiviz.ui.charts.TrackType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+
 
 /**
  * @param {epiviz.Config} config
@@ -71,3 +75,5 @@ epiviz.plugins.charts.GenesTrackType.prototype.isRestrictedToRangeMeasurements =
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
 epiviz.plugins.charts.GenesTrackType.prototype.measurementsFilter = function() { return function(m) { return m.type() == epiviz.measurements.Measurement.Type.RANGE; }; };
+
+// goog.inherits(epiviz.plugins.charts.GenesTrackType, epiviz.ui.charts.TrackType);

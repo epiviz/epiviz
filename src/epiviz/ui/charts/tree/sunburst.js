@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.ui.charts.tree.Sunburst');
 
+goog.require('epiviz.ui.charts.Visualization');
+goog.require('epiviz.ui.charts.VisEventArgs');
+
+
 /**
  * @param {string} id
  * @param {jQuery} container

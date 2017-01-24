@@ -7,6 +7,11 @@
 goog.provide('epiviz.workspaces.WorkspaceManager');
 
 goog.require('epiviz.workspaces.Workspace');
+goog.require('epiviz.events.EventListener');
+goog.require('epiviz.events.Event');
+goog.require('epiviz.ui.WebArgsManager');
+goog.require('epiviz.datatypes.GenomicRange');
+
 
 /**
  * @param {epiviz.Config} config
