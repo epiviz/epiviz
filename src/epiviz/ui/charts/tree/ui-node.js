@@ -6,7 +6,7 @@
 
 goog.provide('epiviz.ui.charts.tree.UiNode');
 
-goog.provide('epiviz.ui.charts.tree.Node');
+goog.require('epiviz.ui.charts.tree.Node');
 
 
 /**

@@ -6,7 +6,7 @@
 
 goog.provide('epiviz.ui.charts.decoration.EditCodeButton');
 
-goog.require('epiviz.ui.controls.CodeButton');
+goog.require('epiviz.ui.charts.decoration.CodeButton');
 goog.require('epiviz.ui.controls.EditCodeControl');
 
 /**
