@@ -229,21 +229,21 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
       });
   }
 
-  if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
-    var mCount = 0;
-    //add measurements as a new datasource
-    var chartMs = visConfigSelection.measurements;
-    chartMs.foreach(function(m, i) {
-      if(m._datasourceGroup.indexOf('_plot-') == -1 ) {
-        m._datasourceGroup = m._datasourceGroup + "_" + chartId;
-        mCount++;
-      }
-    });
+  // if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+  //   var mCount = 0;
+  //   //add measurements as a new datasource
+  //   var chartMs = visConfigSelection.measurements;
+  //   chartMs.foreach(function(m, i) {
+  //     if(m._datasourceGroup.indexOf('_plot-') == -1 ) {
+  //       m._datasourceGroup = m._datasourceGroup + "_" + chartId;
+  //       mCount++;
+  //     }
+  //   });
 
-    if (mCount > 0) {
-      this._measurementsManager.addMeasurements(chartMs);
-    }
-  }
+  //   if (mCount > 0) {
+  //     this._measurementsManager.addMeasurements(chartMs);
+  //   }
+  // }
 
   return chartId;
 };
