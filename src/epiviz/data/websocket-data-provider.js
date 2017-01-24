@@ -6,10 +6,9 @@
 
 goog.provide('epiviz.data.WebsocketDataProvider');
 
+goog.require('epiviz.utils');
 goog.require('epiviz.data.DataProvider');
 goog.require('epiviz.data.Response');
-goog.require('epiviz.Config');
-goog.require('epiviz.utils');
 goog.require('epiviz.ui.WebArgsManager');
 goog.require('epiviz.data.MessageType');
 goog.require('epiviz.data.Request');
