@@ -12,7 +12,6 @@ goog.require('epiviz.ui.charts.CustomSetting');
 goog.require('epiviz.events.Event');
 goog.require('epiviz.ui.charts.VisEventArgs');
 goog.require('epiviz.ui.charts.Margins');
-goog.require('epiviz.ui.charts.ChartType');
 
 /**
  * Uses data of T type for drawing objects of a subtype of epiviz.ui.charts.VisObject

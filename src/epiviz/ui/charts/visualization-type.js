@@ -5,7 +5,7 @@
  */
 
 goog.provide('epiviz.ui.charts.VisualizationType');
-goog.provide('epiviz.ui.charts.VisualizationType.DisplayType');
+// goog.provide('epiviz.ui.charts.VisualizationType.DisplayType');
 
 goog.require('epiviz.ui.charts.Visualization');
 goog.require('epiviz.Config');

@@ -6,8 +6,6 @@
 
 goog.provide('epiviz.deferred.Deferred');
 
-goog.require('epiviz.deferred.Promise');
-
 /**
  * Wrapper around JQuery Deferred
  * @param {Deferred} [deferred]
