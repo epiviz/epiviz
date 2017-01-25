@@ -81,4 +81,4 @@ epiviz.main = function() {
   epivizHandler.start();
 };
 
-// goog.exportSymbol('epiviz.main', epiviz.main);
+goog.exportSymbol('epiviz', epiviz);
