@@ -116,6 +116,10 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var aggLevel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AGG_LEVEL];
   var nodeSel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.NODE_SEL];
 
+  // reset colors
+  self.colors()._keyIndices = {};
+  self.colors()._nKeys = 0;
+
   //self.visualization().setCustomSettingsValues(settingsValues);
 
   var Axis = epiviz.ui.charts.Axis;
