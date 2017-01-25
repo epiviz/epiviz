@@ -8,7 +8,7 @@ goog.provide('epiviz.ui.charts.markers.VisualizationMarker');
 
 goog.require('epiviz.utils');
 goog.require('epiviz.deferred.Deferred');
-goog.require('epiviz.caja.cajole');
+goog.require('epiviz.caja');
 
 /**
  * @param {epiviz.ui.charts.markers.VisualizationMarker.Type} type
