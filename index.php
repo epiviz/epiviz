@@ -286,22 +286,18 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/deferred/deferred.js"></script>
     <script src="src/epiviz/events/event-listener.js"></script>
-        <script src="src/epiviz/events/event.js"></script>
+    <script src="src/epiviz/events/event.js"></script>
     <script src="src/epiviz/events/event-result.js"></script>
 
     <script src="src/epiviz/utils/utils.js"></script>
     <script src="src/epiviz/utils/iterable.js"></script>
-        <script src="src/epiviz/utils/iterator.js"></script>
-
+    <script src="src/epiviz/utils/iterator.js"></script>
     <script src="src/epiviz/utils/iterable-array.js"></script>
-
     <script src="src/epiviz/measurements/measurement.js"></script>
     <script src="src/epiviz/measurements/measurement-set.js"></script>
     <script src="src/epiviz/measurements/measurement-hashtable.js"></script>
     <script src="src/epiviz/measurements/measurements-manager.js"></script>
-
     <script src="src/epiviz/data/request-stack.js"></script>
-
     <script src="src/epiviz/datatypes/genomic-range.js"></script>
     <script src="src/epiviz/datatypes/genomic-data.js"></script>
 
@@ -320,46 +316,28 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/datatypes/measurement-aggregated-genomic-data.js"></script>
 
     <script src="src/epiviz/data/cache.js"></script>
-
-
-
     <script src="src/epiviz/data/message-type.js"></script>
     <script src="src/epiviz/data/request.js"></script>
     <script src="src/epiviz/data/response.js"></script>
-
     <script src="src/epiviz/data/data-provider.js"></script>
-
     <script src="src/epiviz/data/empty-response-data-provider.js"></script>
-
     <script src="src/epiviz/data/data-provider-factory.js"></script>
     <script src="src/epiviz/data/data-manager.js"></script>
-
-
-
     <script src="src/epiviz/data/webserver-data-provider.js"></script>
     <script src="src/epiviz/data/metagenomics-data-provider.js"></script> <!-- TODO: Delete! -->
-
     <script src="src/epiviz/ui/charts/tree/node-selection-type.js"></script>
-
     <script src="src/epiviz/data/epiviz-api-data-provider.js"></script><!-- TODO: Move -->
-
     <script src="src/epiviz/caja/caja-standalone.js"></script>
     <script src="src/epiviz/utils/expression-parser.js"></script>
-
     <script src="src/epiviz/ui/web-args-manager.js"></script>
-        <script src="src/epiviz/ui/controls/vis-config-selection.js"></script>
+    <script src="src/epiviz/ui/controls/vis-config-selection.js"></script>
     <script src="src/epiviz/ui/charts/color-palette.js"></script>
-
     <script src="src/epiviz/data/websocket-data-provider.js"></script>
-
-
     <script src="src/epiviz/deferred/promise.js"></script>
-
     <script src="src/epiviz/config.js"></script>
 
     <script src="src/epiviz/ui/controls/control.js"></script>
     <script src="src/epiviz/ui/controls/dialog.js"></script>
-
     <script src="src/epiviz/ui/charts/transform/clustering/cluster-node.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/cluster-subtree.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/cluster-leaf.js"></script>
@@ -372,39 +350,31 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/clustering-algorithm-factory.js"></script>
-
     <script src="src/epiviz/ui/charts/markers/measurement-aggregator.js"></script>
     <script src="src/epiviz/ui/charts/markers/visualization-marker.js"></script>
     <script src="src/epiviz/ui/charts/axis.js"></script>
-
     <script src="src/epiviz/ui/charts/margins.js"></script>
     <script src="src/epiviz/ui/charts/custom-setting.js"></script>
-
     <script src="src/epiviz/ui/charts/vis-object.js"></script>
     <script src="src/epiviz/ui/charts/visualization-properties.js"></script>
     <script src="src/epiviz/ui/charts/vis-event-args.js"></script>
     <script src="src/epiviz/ui/charts/display-type.js"></script>
     <script src="src/epiviz/ui/charts/visualization.js"></script>
     <script src="src/epiviz/ui/charts/visualization-type.js"></script>
-
     <script src="src/epiviz/ui/charts/chart-type.js"></script>
-
     <script src="src/epiviz/ui/charts/chart-object.js"></script>
     <script src="src/epiviz/ui/charts/custom-charts-index.js"></script>
     <script src="src/epiviz/ui/charts/chart.js"></script>
     <script src="src/epiviz/ui/charts/track.js"></script>
     <script src="src/epiviz/ui/charts/plot.js"></script>
     <script src="src/epiviz/ui/charts/data-structure-visualization.js"></script>
-
     <script src="src/epiviz/ui/charts/tree/node.js"></script>
     <script src="src/epiviz/ui/charts/tree/ui-node.js"></script>
-
     <script src="src/epiviz/ui/charts/tree/hierarchy-visualization.js"></script>
     <script src="src/epiviz/ui/charts/track-type.js"></script>
     <script src="src/epiviz/ui/charts/plot-type.js"></script>
     <script src="src/epiviz/ui/charts/data-structure-visualization-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/hierarchy-visualization-type.js"></script>
-
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-track.js"></script>
@@ -427,36 +397,23 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
-
-
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
-
     <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/remove-chart-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/save-chart-button.js"></script>
-        <script src="src/epiviz/ui/controls/color-picker-dialog.js"></script>
-
+    <script src="src/epiviz/ui/controls/color-picker-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
     <script src="src/epiviz/ui/controls/message-dialog.js"></script>
-
-        <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
-
+    <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
-
-        <script src="src/epiviz/ui/controls/code-dialog.js"></script>
-
+    <script src="src/epiviz/ui/controls/code-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/code-button.js"></script>
-
-        <script src="src/epiviz/ui/controls/code-control.js"></script>
-
-        <script src="src/epiviz/ui/controls/edit-code-control.js"></script>
-
+    <script src="src/epiviz/ui/controls/code-control.js"></script>
+    <script src="src/epiviz/ui/controls/edit-code-control.js"></script>
     <script src="src/epiviz/ui/charts/decoration/edit-code-button.js"></script>
-
-        <script src="src/epiviz/ui/controls/marker-code-control.js"></script>
-
+    <script src="src/epiviz/ui/controls/marker-code-control.js"></script>
     <script src="src/epiviz/ui/charts/decoration/marker-code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-filter-code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/hierarchy-filter-code-button.js"></script>
@@ -464,11 +421,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/decoration/chart-order-by-measurements-code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-color-by-measurements-code-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-group-by-measurements-code-button.js"></script>
-
     <script src="src/epiviz/ui/charts/decoration/chart-resize.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-loader-animation.js"></script>
-
     <script src="src/epiviz/ui/controls/data-table.js"></script>
     <script src="src/epiviz/ui/controls/wizard.js"></script>
     <script src="src/epiviz/ui/controls/measurements-wizard-step.js"></script>
@@ -476,11 +431,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/controls/datasource-group-wizard-step.js"></script>
     <script src="src/epiviz/ui/controls/save-svg-as-image-dialog.js"></script>
     <script src="src/epiviz/ui/charts/tree/decoration/toggle-propagate-selection-button.js"></script>
-
     <script src="src/epiviz/ui/tutorial.js"></script>
-
     <script src="src/epiviz/ui/control-manager.js"></script>
-
     <script src="src/epiviz/ui/charts/chart-manager.js"></script>
 
     <script src="src/epiviz/workspaces/user-manager.js"></script>
@@ -489,12 +441,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/localstorage/local-storage-manager.js"></script>
 
-
     <script src="src/epiviz/ui/location-manager.js"></script>
 
     <script src="src/epiviz/epiviz.js"></script>
-
-
     <script src="src/epiviz/main.js"></script>
 
     <!-- Dynamic initializations -->
