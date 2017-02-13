@@ -159,7 +159,19 @@ epiviz.Config.SETTINGS = {
         'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton'
       ],
       colors: 'd3-category20b'
-    }
+    },
+    'epiviz.plugins.charts.CustomScatterPlot': {
+      margins: new epiviz.ui.charts.Margins(15, 50, 50, 15),
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+      ]
+     },
+    'epiviz.plugins.charts.DiversityScatterPlot': {
+      margins: new epiviz.ui.charts.Margins(15, 50, 50, 15),
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+      ]
+     }
   },
 
   chartCustomSettings: {
