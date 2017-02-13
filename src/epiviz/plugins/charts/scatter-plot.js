@@ -171,7 +171,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     .range([height - margins.sumAxis(Axis.Y), 0]);
 
   this._clearAxes(this._chartContent);
-  this._drawAxes(xScale, yScale, 15, 15, this._chartContent);
+  this._drawAxes(xScale, yScale, 5, 5, this._chartContent);
 
   var i, index;
   var indices = []; //epiviz.utils.range(nSeries * nItems);
