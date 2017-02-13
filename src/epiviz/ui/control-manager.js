@@ -465,11 +465,12 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
 
   $('#vis-menu-button')
     .button({
-      text: false,
+      label: 'Add Visualization',
       icons: {
         primary: 'ui-icon ui-icon-scatterplot', // 'ui-icon ui-icon-bookmark',
         secondary: "ui-icon-triangle-1-s"
-      }
+      },
+      iconPosition: { iconPositon: "end" }
     })
     .click(function() {
       var menu = visMenu;
