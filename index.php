@@ -623,7 +623,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
           <ul id="vis-menu"></ul>
         </div>
 
-        <button id="computed-measurements-button">Computed Measurements</button>
+        <button style="display:none;" id="computed-measurements-button">Computed Measurements</button>
 
         <span class="separator">|</span>
 
