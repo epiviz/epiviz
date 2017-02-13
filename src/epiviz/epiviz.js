@@ -951,7 +951,25 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
       // TODO: update pca plots for Hierarchy Changes
       // remove PCA & alphadiversity here
       for ( var mea in chartMeasurementsMap) {
-          if (mea.indexOf('pca_scatter') != -1 || mea.indexOf('diversity_scatter') != -1) {
+
+          var cMap = {};
+          cMap[mea] = chartMeasurementsMap[mea];
+
+          if (mea.indexOf('pca_scatter') != -1) {
+
+            self._dataManager.getPCA(e.newValue, cMap,
+              function(chartId, data) {
+                self._chartManager.updateCharts(e.newValue, data, [chartId]);
+            });
+
+            delete chartMeasurementsMap[mea];
+          }
+          else if (mea.indexOf('diversity_scatter') != -1) {
+            self._dataManager.getDiversity(e.newValue, cMap,
+              function(chartId, data) {
+                self._chartManager.updateCharts(e.newValue, data, [chartId]);
+            });
+
             delete chartMeasurementsMap[mea];
           }
       } 
@@ -959,7 +977,7 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
       self._dataManager.getData(e.newValue, chartMeasurementsMap,
         function(chartId, data) {
           self._chartManager.updateCharts(e.newValue, data, [chartId]);
-        });
+      });
 
       if(!self._chartManager.onChartPropogateIcicleLocationChanges().isFiring()) {
           self._chartManager.onChartIcicleLocationChanges().notify(new epiviz.ui.charts.VisEventArgs('1', {start: e.newValue._start, width: e.newValue._width}));
