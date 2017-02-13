@@ -188,6 +188,16 @@ epiviz.Config.SETTINGS = {
     },
     'epiviz.plugins.charts.StackedLinePlot': {
       colLabel: 'label'
+    },
+    'epiviz.plugins.charts.CustomScatterPlotType': {
+      xMin: -2,
+      xMax: 2,
+      yMin: -2,
+      yMax: 2
+    },
+    'epiviz.plugins.charts.DiversityScatterPlotType': {
+      yMin: 0,
+      yMax: 6
     }
   },
 
