@@ -10,7 +10,7 @@ $settings_file = (array_key_exists('settings', $_COOKIE)) ? $_COOKIE['settings']
 $curlopt_userpwd = '';
 
 // If the request does not contain a value for useCookie, default value will be true
-$useCookie = (array_key_exists('useCookie', $_REQUEST)) ? ($_REQUEST['useCookie'] === 'true' ? true : false) : true;
+$useCookie = (array_key_exists('useCookie', $_REQUEST)) ? ($_REQUEST['useCookie'] === 'true' ? true : false) : false;
 
 if(file_exists("token.txt")){
   $myfile = fopen("token.txt", "r");
