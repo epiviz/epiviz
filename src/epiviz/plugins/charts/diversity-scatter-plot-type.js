@@ -45,7 +45,7 @@ epiviz.plugins.charts.DiversityScatterPlotType.prototype.typeName = function() {
  * @returns {string}
  */
 epiviz.plugins.charts.DiversityScatterPlotType.prototype.chartName = function() {
-  return 'Diversity Scatter Plot';
+  return 'Diversity Box Plot';
 };
 
 /**
