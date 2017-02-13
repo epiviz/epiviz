@@ -212,7 +212,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
         }
     });
 
-    console.log(uniqueValues);
+    // console.log(uniqueValues);
     this.xTickValues = uniqueValues;
     data.forEach(function(n) {
         var index = uniqueValues.indexOf(n[dimx]);
@@ -267,7 +267,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
     //this._drawAxes(xScale, yScale, xTicks, yTicks, svg, width, height, margins, undefined, undefined,this.xTickValues, undefined, undefined)
     xLabelsPadded = [""];
     uniqueValues.forEach(function(n) {xLabelsPadded.push(n);});
-    console.log(xLabelsPadded);
+    // console.log(xLabelsPadded);
     this._drawAxes(xScale, yScale, xLabelsPadded.length, 15, this._chartContent, width, height, margins, undefined, undefined,xLabelsPadded, undefined, undefined)
 
     // var i, index;
@@ -357,7 +357,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
     var seriesIndex = 0; // Assume only 1 pair of datax and datay
     for (var i = 0; i < data.length; ++i) {
 
-        console.log(data[i]);
+        // console.log(data[i]);
         //index = indices[i] % nItems;
         //var globalIndex = index + firstGlobalIndex;
         //var seriesIndex = Math.floor(indices[i] / nItems);
@@ -409,7 +409,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
         items.push(uiObj);
     }
 
-    console.log("after loop");
+    // console.log("after loop");
 
 
     var itemsGroup = this._chartContent.select('.items');
@@ -515,8 +515,8 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
         //
         //})
         .on('click', function(d) {
-            console.log("click");
-            console.log(d);
+            // console.log("click");
+            // console.log(d);
             self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
             self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
             self._dispatch.click(self.id(), null);
@@ -593,16 +593,16 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
 
     var rectBox = itemsGroup;
     
-    console.log(uniqueValues);
+    // console.log(uniqueValues);
 
     rectBox.selectAll('.iqr-range').remove();
     rectBox.selectAll('.whisker').remove();
     for(i = 0; i < plotData.length; i++){
         var findIQR = plotData[i][1];
-        console.log(findIQR);
+        // console.log(findIQR);
         var lower_upper = [];
         lower_upper = quartiles(findIQR);
-        console.log(lower_upper);  
+        // console.log(lower_upper);  
         
         var iqr_result = lower_upper[1] - lower_upper[0];
         var iqr_15 = iqr_result * 1.5;
