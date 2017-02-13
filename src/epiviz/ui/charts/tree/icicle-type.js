@@ -43,7 +43,7 @@ epiviz.ui.charts.tree.IcicleType.prototype.typeName = function() {
  * @returns {string}
  */
 epiviz.ui.charts.tree.IcicleType.prototype.chartName = function() {
-  return 'Icicle';
+  return 'Navigation Control';
 };
 
 /**
