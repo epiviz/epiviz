@@ -189,13 +189,13 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.StackedLinePlot': {
       colLabel: 'label'
     },
-    'epiviz.plugins.charts.CustomScatterPlotType': {
+    'epiviz.plugins.charts.CustomScatterPlot': {
       xMin: -2,
       xMax: 2,
       yMin: -2,
       yMax: 2
     },
-    'epiviz.plugins.charts.DiversityScatterPlotType': {
+    'epiviz.plugins.charts.DiversityScatterPlot': {
       yMin: 0,
       yMax: 6
     }
@@ -209,7 +209,7 @@ epiviz.Config.SETTINGS = {
       range: {
         seqName: '',
         start: 1,
-        width: 1000
+        width: 100000
       },
 
       // The initial measurements loaded in the workspace
