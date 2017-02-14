@@ -117,28 +117,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype.draw = function() {
 
 epiviz.plugins.charts.CustomScatterPlot.prototype.drawScatter = function(range, data, key, dimx, dimy) {
 
-    // epiviz.ui.charts.Plot.prototype.draw.call(this, range, data);
-
-    // If data is defined, then the base class sets this._lastData to data.
-    // If it isn't, then we'll use the data from the last draw call
-    // data = this._lastData;
-    //range = this._lastRange;
-
-    // If data is not defined, there is nothing to draw
-    // if (!data || !range) {
-    //     return [];
-    // }
-
-    // group data by keys
-
-    // var keysList = Objects.keys(tempData);
-
-    // var groupData = d3.nest().key(function(d) { return d[key]; }).entries(data);
-
-    // collapse data points -> dataX, dataY (assume same length dataX, and dataY)
-
-    // joint dataX, dataY on common keys -> data (array of objects)
-
     return this._drawCircles(data, dimx, dimy, key);
 };
 
@@ -153,20 +131,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
     var Axis = epiviz.ui.charts.Axis;
     var circleRadius = Math.max(1, this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
     var gridSquareSize = Math.max(Math.floor(circleRadius), 1);
-    // var nSeries = Math.min(this._measurementsX.length, this._measurementsY.length);
-
-    // var firstGlobalIndex = data.firstSeries().globalStartIndex();
-    // var lastGlobalIndex = data.firstSeries().globalEndIndex();
-    // data.foreach(function(measurement, series) {
-
-    //     var firstIndex = series.globalStartIndex();
-    //     var lastIndex = series.globalEndIndex();
-
-    //     if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
-    //     if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
-    // });
-
-    // var nItems = lastGlobalIndex - firstGlobalIndex;
 
     var margins = this.margins();
     var width = this.width();
@@ -185,35 +149,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
     if (maxX == CustomSetting.DEFAULT) { maxX = this._measurementsX[0].maxValue(); }
     if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
 
-    // if (minX == CustomSetting.DEFAULT) {
-    //     minX = d3.min(data, function(d) {
-    //         return d[dimx];
-    //     });
-    // }
-    // if (minY == CustomSetting.DEFAULT) {
-    //     minY = d3.min(data, function(d) {
-    //         return d[dimy];
-    //     });
-    // }
-    // if (maxX == CustomSetting.DEFAULT) {
-    //     maxX = d3.max(data, function(d) {
-    //         return d[dimx];
-    //     });
-    // }
-    // if (maxY == CustomSetting.DEFAULT) {
-    //     maxY = d3.max(data, function(d) {
-    //         return d[dimy];
-    //     });
-    // }
-    
-    // var padding = 2*this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO];
-    // minX = minX - padding;
-    // maxX = maxX + padding;
-    // minY = minY - padding;
-    // maxY = maxY + padding;
-
-    // var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this._measurementsX[0].type());
-
     var xScale = d3.scale.linear()
         .domain([minX, maxX])
         .range([0, width - margins.sumAxis(Axis.X)])
@@ -226,100 +161,12 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
     this._clearAxes(this._chartContent);
     this._drawAxes(xScale, yScale, 15, 15, this._chartContent);
 
-    // var i, index;
-    // var indices = []; //epiviz.utils.range(nSeries * nItems);
-    // for (i = 0; i < nItems; ++i) {
-    //     index = i + firstGlobalIndex;
-    //     var item = data.getSeries(this._measurementsX[0]).getRowByGlobalIndex(index);
-    //     if (!item) {
-    //         continue;
-    //     }
-    //     if (!dataHasGenomicLocation ||
-    //         (range.start() == undefined || range.end() == undefined) ||
-    //         (item.start() < range.end() && item.end() > range.start())) {
-
-    //         for (var j = 0; j < nSeries; ++j) {
-    //             indices.push(j * nItems + i);
-    //         }
-    //     }
-    // }
-
-    // var grid = {};
-    // var items = [];
-    // var maxGroupItems = 1;
-    // for (i = 0; i < indices.length; ++i) {
-    //     index = indices[i] % nItems;
-    //     var globalIndex = index + firstGlobalIndex;
-    //     var seriesIndex = Math.floor(indices[i] / nItems);
-    //     var mX = self._measurementsX[seriesIndex];
-    //     var mY = self._measurementsY[seriesIndex];
-    //     var cellX = data.getSeries(mX).getByGlobalIndex(globalIndex);
-    //     var cellY = data.getSeries(mY).getByGlobalIndex(globalIndex);
-
-    //     if (!cellX || !cellY) {
-    //         continue;
-    //     }
-
-    //     var classes = sprintf('item data-series-%s', seriesIndex);
-
-    //     var x = xScale(cellX.value);
-    //     var y = yScale(cellY.value);
-    //     var gridX = Math.floor(x / gridSquareSize) * gridSquareSize;
-    //     var gridY = Math.floor(y / gridSquareSize) * gridSquareSize;
-
-    //     var uiObj = null;
-    //     if (grid[gridY] && grid[gridY][gridX]) {
-    //         uiObj = grid[gridY][gridX];
-    //         uiObj.id += '_' + cellX.globalIndex;
-    //         uiObj.start = Math.min(uiObj.start, cellX.rowItem.start());
-    //         uiObj.end = Math.max(uiObj.end, cellX.rowItem.end());
-    //         uiObj.values[0] = (uiObj.values[0] * uiObj.valueItems[0].length + cellX.value) / (uiObj.valueItems[0].length + 1);
-    //         uiObj.values[1] = (uiObj.values[1] * uiObj.valueItems[1].length + cellY.value) / (uiObj.valueItems[1].length + 1);
-    //         uiObj.valueItems[0].push(cellX);
-    //         uiObj.valueItems[1].push(cellY);
-
-    //         if (uiObj.valueItems[0].length > maxGroupItems) {
-    //             maxGroupItems = uiObj.valueItems[0].length;
-    //         }
-
-    //         continue;
-    //     }
-
-
-    //     uiObj = new epiviz.ui.charts.ChartObject(
-    //         sprintf('scatter_%s_%s', seriesIndex, cellX.globalIndex),
-    //         cellX.rowItem.start(),
-    //         cellX.rowItem.end(), [cellX.value, cellY.value],
-    //         seriesIndex, [
-    //             [cellX],
-    //             [cellY]
-    //         ], // valueItems one for each measurement
-    //         [mX, mY], // measurements
-    //         classes);
-
-    //     if (!grid[gridY]) { grid[gridY] = {}; }
-    //     grid[gridY][gridX] = uiObj;
-
-    //     items.push(uiObj);
-    // }
-
-
-
-
-
     var grid = {};
     var items = [];
     var maxGroupItems = 1;
     var seriesIndex = 0; // Assume only 1 pair of datax and datay
     for (var i = 0; i < data.length; ++i) {
 
-        //index = indices[i] % nItems;
-        //var globalIndex = index + firstGlobalIndex;
-        //var seriesIndex = Math.floor(indices[i] / nItems);
-        //var mX = self._measurementsX[seriesIndex];
-        //var mY = self._measurementsY[seriesIndex];
-        //var cellX = data.getSeries(mX).getByGlobalIndex(globalIndex);
-        //var cellY = data.getSeries(mY).getByGlobalIndex(globalIndex);
         var cellX = data[i][dimx];
         var cellY = data[i][dimy];
         if (!cellX || !cellY) {
@@ -377,34 +224,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
         return d.id;
     });
 
-    // selection
-    //     .enter()
-    //     .insert('circle', ':first-child')
-    //     .attr('id', function(d) {
-    //         return sprintf('%s-item-%s-%s', self.id(), d.seriesIndex, d.valueItems[0][0].globalIndex);
-    //     })
-    //     .style('opacity', 0)
-    //     .style('fill-opacity', 0)
-    //     .attr('r', 0);
-    // selection
-    //     .each(
-    //         /**
-    //          * @param {epiviz.ui.charts.ChartObject} d
-    //          */
-    //         function(d) {
-    //             var circle = d3.select(this);
-
-    //             var fill;
-    //             if (!self._globalIndexColorLabels) { fill = self.colors().get(d.seriesIndex); } else {
-    //                 fill = self.colors().getByKey(self._globalIndexColorLabels[d.valueItems[0][0].globalIndex]);
-    //             }
-    //             circle
-    //                 .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
-    //                 .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
-    //                 .attr('class', d.cssClasses)
-    //                 .style('fill', fill);
-    //         });
-
     selection
         .enter()
         .insert('circle', ':first-child')
@@ -422,14 +241,10 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
             function(d) {
                 var circle = d3.select(this);
 
-                //var fill = self.colors().get(d.seriesIndex);
                 var fill = self.colors().getByKey(d.valueItems[0][0][colorbylabel]);
                 if(self._globalIndexColorLabels != null && self._globalIndexColorLabels.indexOf(d.valueItems[0][0][colorbylabel]) == -1){
                     self._globalIndexColorLabels.push(d.valueItems[0][0][colorbylabel]);
                 }
-                // if (!self._globalIndexColorLabels) { fill = self.colors().get(d.seriesIndex); } else {
-                //     fill = self.colors().getByKey(self._globalIndexColorLabels[d.valueItems[0][0].globalIndex]);
-                // }
                 circle
                     .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
                     .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
@@ -442,7 +257,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
         .transition()
         .duration(1000)
         .style('fill-opacity', function(d) {
-            //return Math.max(0.3, d.valueItems[0].length / maxGroupItems);
             return Math.max(0.6, d.valueItems[0].length / maxGroupItems);
         })
         .style('opacity', null)
@@ -457,22 +271,10 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
         .remove();
 
     selection
-        //.on('mouseover', function(d) {
-        //    console.log("mouseover");
-        //    console.log(d);
-        //    self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
-        //    self._dispatch.hover(self.id(), d);
-        //})
-        //.on('mouseout', function() {
-        //    self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-        //    self._dispatch.hover(self.id(), null);
-        //
-        //})
         .on('click', function(d) {
             console.log("click");
             self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
             self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
-            // self._dispatch.click(self.id(), null);
 
             d3.event.stopPropagation();
         });
@@ -544,10 +346,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
         this._colorLabels = colors;
     }
     this._colorLabels = [];
-    //this._colorLabels = Object.keys(self.colors()._keyIndices);
-    
-    // Object.keys(self.colors()._keyIndices).forEach(function(m) {if (!(m == "undefined" || m == "Max")) {self._colorLabels.push(m)};})
-
     var colKeys = [];
     this.measurements().foreach(function(m, i){
         var tColKey  = m.annotation()[colorbylabel];
@@ -556,9 +354,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
         }
     });
 
-    // var colKeys = d3.map(this.measurements(), function(d) {return d.annotation()[key];});
-
-    //console.log(this._colorLabels);
     this._svg.selectAll('.chart-title').remove();
     this._svg.selectAll('.chart-title-color ').remove();
     var titleEntries = this._svg
