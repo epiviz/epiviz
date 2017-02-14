@@ -546,13 +546,24 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
     this._colorLabels = [];
     //this._colorLabels = Object.keys(self.colors()._keyIndices);
     
-    Object.keys(self.colors()._keyIndices).forEach(function(m) {if (!(m == "undefined" || m == "Max")) {self._colorLabels.push(m)};})
+    // Object.keys(self.colors()._keyIndices).forEach(function(m) {if (!(m == "undefined" || m == "Max")) {self._colorLabels.push(m)};})
+
+    var colKeys = [];
+    this.measurements().foreach(function(m, i){
+        var tColKey  = m.annotation()[colorbylabel];
+        if(colKeys.indexOf(tColKey) === -1) {
+            colKeys.push(tColKey);
+        }
+    });
+
+    // var colKeys = d3.map(this.measurements(), function(d) {return d.annotation()[key];});
+
     //console.log(this._colorLabels);
     this._svg.selectAll('.chart-title').remove();
     this._svg.selectAll('.chart-title-color ').remove();
     var titleEntries = this._svg
       .selectAll('.chart-title')
-      .data(this._colorLabels);
+      .data(colKeys);
     titleEntries
       .enter()
       .append('text')
@@ -579,7 +590,7 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
 
     var colorEntries = this._svg
       .selectAll('.chart-title-color')
-      .data(this._colorLabels)
+      .data(colKeys)
       .enter()
       .append('circle')
       .attr('class', 'chart-title-color')
@@ -592,9 +603,6 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
         return self.colors().getByKey(label);
       })
       .style('stroke-width', 0)
-
-    var title = '';
-
 
     return items;
 };
