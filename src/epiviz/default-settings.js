@@ -128,7 +128,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlot': {
       width: 800,
       height: 400,
-      margins: new epiviz.ui.charts.Margins(80, 120, 40, 40),
+      margins: new epiviz.ui.charts.Margins(120, 60, 20, 40),
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton',
@@ -161,13 +161,13 @@ epiviz.Config.SETTINGS = {
       colors: 'd3-category20b'
     },
     'epiviz.plugins.charts.CustomScatterPlot': {
-      margins: new epiviz.ui.charts.Margins(15, 50, 50, 15),
+      margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
       decorations: [
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
       ]
      },
     'epiviz.plugins.charts.DiversityScatterPlot': {
-      margins: new epiviz.ui.charts.Margins(15, 50, 50, 15),
+      margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
       decorations: [
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
       ]
