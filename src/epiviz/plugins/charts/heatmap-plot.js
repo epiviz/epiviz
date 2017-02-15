@@ -92,13 +92,21 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
 
   var cluster = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER];
 
-  var pair = this._applyClustering(range, data);
+  var logTransform = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.LOG_TRANSFORM];
 
-  /** @type {epiviz.datatypes.GenomicData} */
-  var orderedData = pair.data;
-  var colOrder = pair.columnOrder;
+  var self = this;
 
-  return this._drawCells(range, orderedData, colOrder);
+  if(logTransform) {
+    this._applyLogTransformation(data, function(transformed) {
+        var pair = self._applyClustering(range, transformed);
+
+        /** @type {epiviz.datatypes.GenomicData} */
+        var orderedData = pair.data;
+        var colOrder = pair.columnOrder;
+
+        return self._drawCells(range, orderedData, colOrder);
+    });
+  }
 };
 
 /**
@@ -851,4 +859,38 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
  */
 epiviz.plugins.charts.HeatmapPlot.prototype.colorLabels = function() {
   return this._colorLabels;
+};
+
+epiviz.plugins.charts.HeatmapPlot.prototype._applyLogTransformation = function(lData, callback) {
+
+  var self = this;
+  var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+  var counter = 0;
+
+  lData.foreach(function(measurement, series, seriesIndex) {
+    if(counter == 0) {
+      var rowData = series._container.rowData(measurement);
+      sumExp._rowData = rowData;
+      counter++;
+    }
+
+    var featureValues = series._container.values(measurement);
+    featureValues._values.forEach(function(val, i) {
+      featureValues._values[i] = Math.log2(val + 1); 
+    });
+
+    sumExp.addValues(featureValues);
+  });
+
+  var msDataMap = new epiviz.measurements.MeasurementHashtable();
+
+  lData.foreach(function(m) {
+    m._maxValue = Math.log2(m._maxValue + 1);
+    m._minValue = Math.log2(m._minValue + 1);
+    var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
+    msDataMap.put(m, msData);
+  });
+
+  var genomicData = new epiviz.datatypes.MapGenomicData(msDataMap);
+  callback(genomicData);
 };

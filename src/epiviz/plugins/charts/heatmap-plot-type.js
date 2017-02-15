@@ -154,7 +154,13 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
-      'Show Dendrogram')
+      'Show Dendrogram'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.HeatmapPlotType.CustomSettings.LOG_TRANSFORM,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Log Transform count data')
   ]);
 };
 
@@ -181,5 +187,6 @@ epiviz.plugins.charts.HeatmapPlotType.CustomSettings = {
   //DENDROGRAM_RATIO: 'dendrogramRatio',
   //SHOW_DENDROGRAM_LABELS: 'showDendrogramLabels',
   SHOW_DENDROGRAM: 'showDendrogram',
-  SHOW_COLORS_FOR_ROW_LABELS: 'showColorsForRowLabels'
+  SHOW_COLORS_FOR_ROW_LABELS: 'showColorsForRowLabels',
+  LOG_TRANSFORM: 'logTransform'
 };
