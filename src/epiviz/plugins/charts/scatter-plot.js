@@ -115,7 +115,15 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
   // If data is not defined, there is nothing to draw
   if (!data || !range) { return []; }
 
-  return this._drawCircles(range, data);
+  var logTransform = this.customSettingsValues()[epiviz.plugins.charts.ScatterPlotType.CustomSettings.LOG_TRANSFORM];
+
+  var self = this;
+
+  if(logTransform) {
+    this._applyLogTransformation(data, function(transformed) {
+      return self._drawCircles(range, transformed);
+    });
+  }
 };
 
 /**
@@ -517,4 +525,39 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
       return self._globalIndexColorLabels ?
         "#ffffff" : self.colors().get(i);
     });
+};
+
+
+epiviz.plugins.charts.ScatterPlot.prototype._applyLogTransformation = function(lData, callback) {
+
+  var self = this;
+  var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+  var counter = 0;
+
+  lData.foreach(function(measurement, series, seriesIndex) {
+    if(counter == 0) {
+      var rowData = series._container.rowData(measurement);
+      sumExp._rowData = rowData;
+      counter++;
+    }
+
+    var featureValues = series._container.values(measurement);
+    featureValues._values.forEach(function(val, i) {
+      featureValues._values[i] = Math.log2(val + 1); 
+    });
+
+    sumExp.addValues(featureValues);
+  });
+
+  var msDataMap = new epiviz.measurements.MeasurementHashtable();
+
+  lData.foreach(function(m) {
+    m._maxValue = Math.log2(m._maxValue + 1);
+    m._minValue = Math.log2(m._minValue + 1);
+    var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
+    msDataMap.put(m, msData);
+  });
+
+  var genomicData = new epiviz.datatypes.MapGenomicData(msDataMap);
+  callback(genomicData);
 };
