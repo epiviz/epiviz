@@ -107,6 +107,15 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
         return self._drawCells(range, orderedData, colOrder);
     });
   }
+  else {
+        var pair = self._applyClustering(range, data);
+
+        /** @type {epiviz.datatypes.GenomicData} */
+        var orderedData = pair.data;
+        var colOrder = pair.columnOrder;
+
+        return self._drawCells(range, orderedData, colOrder);
+  }
 };
 
 /**
@@ -875,11 +884,15 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyLogTransformation = function(l
     }
 
     var featureValues = series._container.values(measurement);
+    var valData = [];
+
     featureValues._values.forEach(function(val, i) {
-      featureValues._values[i] = Math.log2(val + 1); 
+      valData[i] = Math.log2(val + 1); 
     });
 
-    sumExp.addValues(featureValues);
+    var newValueData = new epiviz.datatypes.FeatureValueArray(measurement, featureValues._boundaries, featureValues._globalStartIndex, valData);
+
+    sumExp.addValues(newValueData);
   });
 
   var msDataMap = new epiviz.measurements.MeasurementHashtable();

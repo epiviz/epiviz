@@ -124,6 +124,9 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
       return self._drawCircles(range, transformed);
     });
   }
+  else {
+    return self._drawCircles(range, data);
+  }
 };
 
 /**
@@ -542,11 +545,14 @@ epiviz.plugins.charts.ScatterPlot.prototype._applyLogTransformation = function(l
     }
 
     var featureValues = series._container.values(measurement);
+    var valData = [];
+
     featureValues._values.forEach(function(val, i) {
-      featureValues._values[i] = Math.log2(val + 1); 
+      valData[i] = Math.log2(val + 1); 
     });
 
-    sumExp.addValues(featureValues);
+    var newValueData = new epiviz.datatypes.FeatureValueArray(measurement, featureValues._boundaries, featureValues._globalStartIndex, valData);
+    sumExp.addValues(newValueData);
   });
 
   var msDataMap = new epiviz.measurements.MeasurementHashtable();
