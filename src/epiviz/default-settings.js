@@ -220,7 +220,7 @@ epiviz.Config.SETTINGS = {
       // This is the selected chromosome, start and end locations
       range: {
         seqName: '',
-        start: 1,
+        start: 0,
         width: 100000
       },
 
