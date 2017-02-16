@@ -390,8 +390,18 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
   this._min = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
   this._max = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
   var CustomSetting = epiviz.ui.charts.CustomSetting;
-  if (this._min == CustomSetting.DEFAULT) { this._min = data.measurements()[0].minValue(); }
-  if (this._max == CustomSetting.DEFAULT) { this._max = data.measurements()[0].maxValue(); }
+
+  var dataMin = 100000, dataMax = -100000;
+  data.foreach(function(m, series) {
+    var featureValues = series._container.values(m);
+    var valData = featureValues._values;
+    var fMin = Math.min.apply(null, valData), fMax = Math.max.apply(null, valData);
+
+    if (fMin < dataMin) { dataMin = fMin;} 
+    if (fMax > dataMax) { dataMax = fMax;}
+  });
+  if (this._min == CustomSetting.DEFAULT) { this._min = dataMin; }
+  if (this._max == CustomSetting.DEFAULT) { this._max = dataMax; }
   if (this._globalIndexColorLabels) {
     colorLabelsMap = {};
     for (var j = firstGlobalIndex; j < lastGlobalIndex; ++j) {
