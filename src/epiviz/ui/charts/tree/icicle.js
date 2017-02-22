@@ -490,12 +490,13 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   if(this._firstRun == 0) {
     this._firstRun++;
     // this.selectLevel(this.selCutLevel);
-    this.firePropagateHierarchyChanges();
 
     self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
       self.id(),
       new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, icicleRoot))
     );
+
+    this.firePropagateHierarchyChanges();
   }
 
   return uiData;
