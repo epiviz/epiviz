@@ -189,7 +189,7 @@ epiviz.ui.PrintManager.prototype.print = function() {
             }
 
             //TODO: save workspace if user is not signed in and get workspace id
-            var s_url ="http://epiviz.cbcb.umd.edu/4/?ws=" + self._workspaceId;
+            var s_url ="http://metaviz.cbcb.umd.edu/?ws=" + self._workspaceId;
 
             /*      toDataUrl(window.location.href + '/img/epiviz_4_logo_medium.png', function(imgData) {
              jsdoc.addImage(imgData, 'PNG', 20, 20, 100, 21);
