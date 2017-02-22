@@ -209,8 +209,8 @@ epiviz.ui.PrintManager.prototype.print = function() {
              jsdoc.text(350, 45, s_url);
             }
 
-            jsdoc.setFontSize(14);
-            jsdoc.text(350, 40, $('#save-workspace-text').val());
+            // jsdoc.setFontSize(14);
+            // jsdoc.text(350, 40, $('#save-workspace-text').val());
             jsdoc.addImage(image, 'PNG', 15, 55);
             jsdoc.save(filename);
 

@@ -686,7 +686,7 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
     self._saveWorkspace.notify({name: name, id: name == self._activeWorkspaceInfo.name ? self._activeWorkspaceInfo.id : null});
 
     savePageButton.append(sprintf('<div id="loading" title="printing workspace">' +
-        '<p>Save/Print the existing EpiViz workspace.</p>' +
+        '<p>Save/Print the existing MetaViz workspace.</p>' +
         '<div style="position:absolute; right:15px;">' +
         '<select class="screenshot-file-format">' +
           '<option value="pdf" selected="selected">PDF</option>' +
@@ -709,7 +709,7 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
           var timestamp = Math.floor($.now() / 1000);
 
           var workspace_id = self._activeWorkspaceInfo.id;
-          var pm = new epiviz.ui.PrintManager('pagemain', "epiviz_" + timestamp, format, workspace_id);
+          var pm = new epiviz.ui.PrintManager('pagemain', "metaviz_" + timestamp, format, workspace_id);
           pm.print();
 
           $(this).dialog('destroy').remove();
