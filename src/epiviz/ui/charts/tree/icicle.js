@@ -112,9 +112,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var self = this;
 
   var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
-
   var aggLevel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AGG_LEVEL];
   var nodeSel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.NODE_SEL];
+  var icicleRoot = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.ICICLE_ROOT];
 
   // reset colors
   self.colors()._keyIndices = {};
@@ -289,6 +289,10 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         var node = self._getNewNode(d);
         d.selectionType = node.selectionType = self.selectNode(node);
       } else {
+
+        self._customSettingsValues["icicleRoot"] = d.id;
+        self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+
         self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
           self.id(),
           new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, d.id)));
@@ -487,6 +491,11 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     this._firstRun++;
     // this.selectLevel(this.selCutLevel);
     this.firePropagateHierarchyChanges();
+
+    self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
+      self.id(),
+      new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, icicleRoot))
+    );
   }
 
   return uiData;
@@ -1076,8 +1085,8 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
     .style('opacity', 0)
     .attr('class', function(d, i) {
 
-      if((root.globalDepth + i) == Object.keys(self._selectedLevels)[0]) {
-        return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[self._selectedLevels[root.globalDepth + i]];
+      if((root.globalDepth + i) >= Object.keys(self._selectedLevels)[0]) {
+        return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[2];
       }
 
       return 'row-ctrl ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[1];
