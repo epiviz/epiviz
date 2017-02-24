@@ -535,14 +535,15 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
             closable: false,
             selector: {
                 deny: '.ui.grey.button',
-                approve: '.ui.primary.button'
+                approve: '.ui.blue.submit.button'
             },
             onDeny: function() {
                 $('#sourcemodal').modal('hide');
+                $('form').empty();
                 $('#newmodal').remove();
             },
             onApprove: function() {
-                var source = $('#form').form('get value', 'radio');
+                var source = $('#form').form('get value', 'source');
                 if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
                     var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
                     var vconfig = new epiviz.ui.controls.VisConfigSelection(

@@ -35,7 +35,7 @@ function rightAccordion(measurements) {
             var input = document.createElement('input');
             var label = document.createElement('label');
             var span1 = document.createElement('span');
-            var sanitized = point.id.replace(/[-#.]/g, '');
+            var sanitized = point.id.replace(/[^a-zA-Z0-9]/g, '');
 
             fields.className = "grouped fields";
             field.className = "field";
@@ -61,8 +61,13 @@ function rightAccordion(measurements) {
         title.appendChild(icon);
         titlecheckbox.appendChild(checkboxinput);
         titlecheckbox.appendChild(checkboxlabel);
-        content.appendChild(fields);    
+        content.appendChild(fields);
         $('#rightmenu').append(item);
+        $(titlecheckbox).unbind("click");
+        //for some reason this fixes my checkbox issue
+        $($(titlecheckbox).children()[0]).click(function() {
+            console.log('hi');
+        })
     });
     $('#rightmenu').accordion({
         exclusive : false,
@@ -71,10 +76,6 @@ function rightAccordion(measurements) {
         },
         verbose : true
     });
-}
-function overlay() {
-    el = document.getElementById("overlay");
-    el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
 }
 
 function loadMeasurements(datasource, input) {
@@ -87,6 +88,7 @@ function loadMeasurements(datasource, input) {
     while(measurements[datasource][i].annotation === null) {
         i++;
     }
+    measurements[datasource] = _.sortBy(measurements[datasource], [function(o) {return o.id}])
     annotations = Object.keys(measurements[datasource][i].annotation);
     annotations = annotations.sort(sortAlphaNum);
     annotations.forEach(function(text) {
@@ -96,8 +98,7 @@ function loadMeasurements(datasource, input) {
         var content = document.createElement('div');
         var form = document.createElement('div');
         var fields = document.createElement('div');
-        var sanitized = text.replace(/[#-.]/g, '');
-
+        var sanitized = text.replace(/[^a-zA-Z0-9]/g, '');
         values = [];
         _.forEach(measurements, function(value, data_source) {
             values = _.chain(value).map(function(id) {
@@ -135,7 +136,7 @@ function loadMeasurements(datasource, input) {
                 var checkbox = document.createElement('div');
                 var input = document.createElement('input');
                 var label = document.createElement('label'); 
-                var s_anno = anno.replace(/[#-.]/g, ''); 
+                var s_anno = anno.replace(/[^a-zA-Z0-9]/g, ''); 
                 field.className = "field";
                 checkbox.className = "ui checkbox";
                 checkbox.id = "checkbox" + checkboxIndex;
@@ -167,6 +168,7 @@ function loadMeasurements(datasource, input) {
     });
     for (var i = 0; i < checkboxIndex; i++) {
         $('#checkbox' + i).checkbox({
+
             onChecked: function() {
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], true, measurements);
             },
@@ -178,7 +180,7 @@ function loadMeasurements(datasource, input) {
     $('#leftmenu').accordion({
         exclusive: false
     });
-    //Right menu
+
     Object.keys(ranges).forEach(function(ids) {
         $('#' + ids).range({
             start: ranges[ids][0],

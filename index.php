@@ -467,7 +467,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/main.js"></script>
 
-    <script src="src/epiviz/browser/semantic/dist/semantic.min.js"></script>
+    <script src="src/epiviz/browser/semantic/dist/semantic.js"></script>
     <script src="src/epiviz/browser/semantic-ui-range-master/range.js"></script>
     <script src="src/epiviz/browser/lodash/dist/lodash.min.js"></script>
     <script src="src/epiviz/browser/actions.js"></script>
@@ -630,7 +630,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
         <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">
-          <ul id="vis-menu">Visualizations</ul>
+          <ul id="vis-menu"></ul>
         </div>
 
         <button style="display:none;" id="computed-measurements-button">Computed Measurements</button>

@@ -1,4 +1,6 @@
-
+.ui.grid .row {
+    padding:2px;
+}
 #resultmodal {
     max-height: 400px;
 }
@@ -28,13 +30,13 @@
 }
 .content.m {
     overflow: hidden;
-    max-height: 350px;
+    max-height: 400px;
     padding: 0px;
 }
 .content {
-    overflow: scroll;
+    overflow: scroll !important;
     max-height: 350px;
-    padding: 0px;
+    padding: 0px; 
 }
 #rightmenu {
     overflow: auto;
