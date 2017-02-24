@@ -64,10 +64,10 @@ function rightAccordion(measurements) {
         content.appendChild(fields);
         $('#rightmenu').append(item);
         $(titlecheckbox).unbind("click");
+
         //for some reason this fixes my checkbox issue
         $($(titlecheckbox).children()[0]).click(function() {
-            console.log('hi');
-        })
+        });
     });
     $('#rightmenu').accordion({
         exclusive : false,
@@ -85,7 +85,7 @@ function loadMeasurements(datasource, input) {
     var i = 0;
     var measurements = {};
     measurements[datasource] = input;
-    while(measurements[datasource][i].annotation === null) {
+    while(i < input.length && measurements[datasource][i].annotation === null) {
         i++;
     }
     measurements[datasource] = _.sortBy(measurements[datasource], [function(o) {return o.id}])

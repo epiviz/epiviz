@@ -4,6 +4,28 @@ var graph;
 var selections = {};
 var store = {};
 
+
+function initialize_dropdown() {
+	$('#select-type').dropdown({
+		allowTab : false,
+		onChange : function(value, text, $choice) {
+			if (text === "Auto") {
+				$('#sample-type').removeClass("disabled");
+				$('#sample-size').removeClass("disabled");
+			} else {
+				$('#sample-type').addClass("disabled");
+				$('#sample-size').addClass("disabled");
+			}
+		}
+	});
+	$('#sample-type').dropdown({
+		allowTab : false,
+	});
+	$('#sample_size').dropdown({
+		allowTab : false,
+	});
+}
+
 function showModal(source, input, cb) {
 	//measurements placeholder for callback
 	var measurements = {};
@@ -18,18 +40,18 @@ function showModal(source, input, cb) {
 					<div class="six wide column">
 					</div>
 					<div class="four wide column">
-						<div class="ui labeled fluid selection dropdown">
+						<div class="ui labeled fluid selection dropdown" id="select-type">
 						  	<input type="hidden" name="gender">
 						  	<i class="dropdown icon"></i>
-						  	<span class="text">Selection Type</span>
+						  	<div class="text">Manual</div>
 						  	<div class="menu">
 						    	<div class="item" data-value="1">Auto</div>
-						    	<div class="item" data-value="0">Manual</div>
+						    	<div class="item" data-value="default">Manual</div>
 						  	</div>
 						</div>
 					</div>
 					<div class="three wide column">
-						<div class="ui labeled fluid selection dropdown">
+						<div class="ui disabled labeled fluid selection dropdown" id="sample-type">
 						  	<input type="hidden" name="gender">
 						  	<i class="dropdown icon"></i>
 						  	<span class="text">Sample</span>
@@ -40,7 +62,7 @@ function showModal(source, input, cb) {
 						</div>
 					</div>
 					<div class="three wide column">
-						<div class="ui labeled fluid selection dropdown">
+						<div class="ui disabled labeled fluid selection dropdown" id="sample-size">
 						  	<input type="hidden" name="gender">
 						  	<i class="dropdown icon"></i>
 						  	<span class="text">Sample Size</span>
@@ -83,7 +105,7 @@ function showModal(source, input, cb) {
 	</div>`
 	measurements[source] = input;
 	$('body').append(modal);
-	$('.ui.dropdown').dropdown();
+	initialize_dropdown();
 	$('#newmodal').modal({
 		observeChanges: true,
 		closable: false,
@@ -95,6 +117,8 @@ function showModal(source, input, cb) {
 			$('#sourcemodal').modal('show');
 			$('#leftmenu').empty();
 			$('#rightmenu').empty();
+			$('#resultmodal').remove();
+
 		},
 		onApprove: function() {
 			storeMeasurement(measurements, cb)
@@ -278,6 +302,9 @@ function toggleParent(source) {
 			$('#source-' + source).parent().checkbox('set unchecked');
 			$('#source-' + source).removeClass('hidden');
 		}
+		//fixing click issues
+		$('#source-' + source).parent().unbind("click");
+        $($('#source-' + source).children()[0]).click(function() {});
 }
 
 function filter(value, anno, filter, measurements) {
