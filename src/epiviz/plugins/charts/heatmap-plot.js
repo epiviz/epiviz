@@ -896,9 +896,14 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyLogTransformation = function(l
     var featureValues = series._container.values(measurement);
     var valData = [];
 
-    featureValues._values.forEach(function(val, i) {
-      valData[i] = Math.log2(val + 1); 
-    });
+    if(featureValues._values != undefined) {
+      featureValues._values.forEach(function(val, i) {
+        valData[i] = Math.log2(val + 1); 
+      });
+    }
+    else {
+      valData = undefined;
+    }
 
     var newValueData = new epiviz.datatypes.FeatureValueArray(measurement, featureValues._boundaries, featureValues._globalStartIndex, valData);
 
