@@ -5,16 +5,22 @@ var selections = {};
 var store = {};
 
 
-function initialize_dropdown() {
+function initialize_dropdown(source) {
 	$('#select-type').dropdown({
 		allowTab : false,
 		onChange : function(value, text, $choice) {
 			if (text === "Auto") {
 				$('#sample-type').removeClass("disabled");
 				$('#sample-size').removeClass("disabled");
+				$('#rightmenu .checkbox').checkbox('set disabled');
 			} else {
 				$('#sample-type').addClass("disabled");
 				$('#sample-size').addClass("disabled");
+				$('#rightmenu .checkbox').checkbox('set enabled');
+				$('#rightmenu .checkbox').checkbox('set unchecked');
+				//fixing click issues
+				$($('#source-' + source).parent().children()[1]).unbind("click");
+		        $($('#source-' + source).children()[0]).click(function() {});
 			}
 		}
 	});
@@ -105,7 +111,7 @@ function showModal(source, input, cb) {
 	</div>`
 	measurements[source] = input;
 	$('body').append(modal);
-	initialize_dropdown();
+	initialize_dropdown(source);
 	$('#newmodal').modal({
 		observeChanges: true,
 		closable: false,
@@ -172,6 +178,7 @@ function attachActions(measurements) {
 
 	$('.ui.checkbox input[type="checkbox"]').click(function(e) {
 		var split = this.id.split('-');
+		console.log('source clicked');
 		//this means that you selected the measurement checkbox
 		if (split[0] === "source") {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
