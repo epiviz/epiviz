@@ -80,7 +80,8 @@ epiviz.data.Request.Action = {
   WRITE_DEBUG_MSG: 'writeMsg',
   PRINT_WORKSPACE: 'printWorkspace',
   LOAD_WORKSPACE: 'loadWorkspace',
-  REGISTER_CHART_TYPES: 'registerChartTypes'
+  REGISTER_CHART_TYPES: 'registerChartTypes',
+  UI_STATUS: 'uiStatus'
 };
 
 /**

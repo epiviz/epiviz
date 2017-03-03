@@ -131,6 +131,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerDataSetChartSettings();
   this._registerDataGetChartSettings();
   this._registerDataGetAvailableCharts();
+  this._registerDataUiStatus();
 
   // Register for Workspace events
 
@@ -968,4 +969,30 @@ epiviz.EpiViz.prototype._registerChartPropogateIcicleLocationChange = function()
       }
     }
   ));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataUiStatus = function() {
+  var self = this;
+  this._dataManager.onRequestUiStatus().addListener(new epiviz.events.EventListener(
+      /**
+       * @param {{id: string, settings: Array, result: epiviz.events.EventResult}} e
+       */
+      function(e) {
+        try {
+          var status = true;
+          while(status) {
+            if(this._workspaceManager.activeWorkspace().range() != null) {
+              status = false;
+            }
+          }
+          e.result.success = true;
+        } catch(error) {
+          e.result.success = false;
+          e.result.errorMessage = error.toString();
+        }
+      })
+  );
 };

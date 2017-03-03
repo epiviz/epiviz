@@ -114,6 +114,12 @@ epiviz.data.DataProvider = function(id) {
    */
   this._requestLoadWorkspace = new epiviz.events.Event();
 
+    /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestUiStatus = new epiviz.events.Event();
+
 };
 
 /**
@@ -216,3 +222,9 @@ epiviz.data.DataProvider.prototype.onRequestGetAvailableCharts = function() { re
  * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataProvider.prototype.onRequestLoadWorkspace = function() { return this._requestLoadWorkspace; };
+
+
+/**
+ * @returns {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataProvider.prototype.onRequestUiStatus = function() { return this._requestUiStatus; };

@@ -195,6 +195,9 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
       case Action.LOAD_WORKSPACE:
         this._loadWorkspace(request);
         break;
+      case Action.UI_STATUS:
+        this._uiStatus(request);
+        break;
     }
   }
 };
@@ -654,6 +657,22 @@ epiviz.data.WebsocketDataProvider.prototype._loadWorkspace = function (request) 
   var result = new epiviz.events.EventResult();
   this._fireEvent(this.onRequestLoadWorkspace(), {
     workspace: workspaceId
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._uiStatus = function (request) {
+  var result = new epiviz.events.EventResult();
+
+  this._fireEvent(this.onRequestUiStatus(), {
+    result: result
   });
 
   var response = new epiviz.data.Response(request.id(), result);

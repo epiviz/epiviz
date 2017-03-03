@@ -145,6 +145,14 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._requestGetAvailableCharts = new epiviz.events.Event();
 
 
+  /**
+   * @type {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestUiStatus = new epiviz.events.Event();
+
+
+
   this._registerProviderAddMeasurements();
   this._registerProviderRemoveMeasurements();
   this._registerProviderAddChart();
@@ -161,7 +169,7 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderGetChartSettings();
   this._registerProviderSetChartSettings();
   this._registerProviderGetAvailableCharts();
-
+  this._registerProviderUiStatus();
 };
 
 /**
@@ -244,6 +252,11 @@ epiviz.data.DataManager.prototype.onRequestSetChartSettings = function() { retur
  * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataManager.prototype.onRequestGetAvailableCharts = function() { return this._requestGetAvailableCharts; };
+
+/**
+ * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestUiStatus = function() { return this._requestUiStatus; };
 
 
 /**
@@ -989,6 +1002,20 @@ epiviz.data.DataManager.prototype._registerProviderGetAvailableCharts = function
     provider.onRequestGetChartSettings().addListener(new epiviz.events.EventListener(
         function(e) {
           self._requestGetAvailableCharts.notify(e);
+        }));
+  });
+};
+
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderUiStatus = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestUiStatus().addListener(new epiviz.events.EventListener(
+        function(e) {
+          self._requestUiStatus.notify(e);
         }));
   });
 };
