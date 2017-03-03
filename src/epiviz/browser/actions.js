@@ -3,17 +3,22 @@ var filters = {};
 var graph;
 var selections = {};
 var store = {};
-
+var measurements = {};
+var selectionCount = 0;
+var selectionType = "Random";
+var selectionAuto = false;
 
 function initialize_dropdown(source) {
 	$('#select-type').dropdown({
 		allowTab : false,
 		onChange : function(value, text, $choice) {
 			if (text === "Auto") {
+				selectionAuto = true;
 				$('#sample-type').removeClass("disabled");
 				$('#sample-size').removeClass("disabled");
 				$('#rightmenu .checkbox').checkbox('set disabled');
 			} else {
+				selectionAuto = false;
 				$('#sample-type').addClass("disabled");
 				$('#sample-size').addClass("disabled");
 				$('#rightmenu .checkbox').checkbox('set enabled');
@@ -26,15 +31,51 @@ function initialize_dropdown(source) {
 	});
 	$('#sample-type').dropdown({
 		allowTab : false,
+		onChange: function(value, text, $choice) {
+			selectionType = text;
+			selectSamples();
+		}
 	});
-	$('#sample_size').dropdown({
-		allowTab : false,
+	$('#sample-size').range({
+		start: selectionCount,
+		min: 0,
+		max: 100,
+		step: 1,
+		value: selectionCount,
+		onChange: function(min, max) {
+			selectionCount = min;
+			// TODO: not on change but when the drag ends.
+			selectSamples();
+		}
 	});
+}
+
+function selectSamples() {
+	if(selectionAuto && selectionCount > 0) {
+		var checkboxes = $('.ui.checkbox input[type="checkbox"]');
+		var count = Math.round((checkboxes.length*selectionCount)/100);
+
+		//TODO: clear selections
+
+		switch(selectionType) {
+			case 'Random':
+				// var indices  = _.range(checkboxes.length);
+				var randomSamples = _.sampleSize(checkboxes, count);
+				_.each(randomSamples, function(rs) {
+					$(rs).click();
+				});
+				break;
+			case 'Top':
+				_.each(_.initial(checkboxes, count), function(rs) {
+					$(rs).click();
+				});
+				break;
+		}
+	}
 }
 
 function showModal(source, input, cb) {
 	//measurements placeholder for callback
-	var measurements = {};
 	var modal = 
 	`<div id ="newmodal" class="ui long modal">
 		<div class="header">
@@ -60,7 +101,7 @@ function showModal(source, input, cb) {
 						<div class="ui disabled labeled fluid selection dropdown" id="sample-type">
 						  	<input type="hidden" name="gender">
 						  	<i class="dropdown icon"></i>
-						  	<span class="text">Sample</span>
+						  	<span class="text">Random</span>
 						  	<div class="menu">
 						    	<div class="item" data-value="1">Random</div>
 						    	<div class="item" data-value="0">Top</div>
@@ -68,16 +109,7 @@ function showModal(source, input, cb) {
 						</div>
 					</div>
 					<div class="three wide column">
-						<div class="ui disabled labeled fluid selection dropdown" id="sample-size">
-						  	<input type="hidden" name="gender">
-						  	<i class="dropdown icon"></i>
-						  	<span class="text">Sample Size</span>
-						  	<div class="menu">
-						    	<div class="item" data-value="1">Random</div>
-						    	<div class="item" data-value="0">Top</div>
-						    	<div class="item" data-value="2">Bottom</div>
-						  	</div>
-						</div>
+						<div class="ui range" id="sample-size"></div>
 					</div>
 				</div>
 				<div class="row">
