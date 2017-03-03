@@ -154,6 +154,8 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];
 
+  var absLine = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL];
+
   var self = this;
 
   var invXScale = d3.scale.linear()

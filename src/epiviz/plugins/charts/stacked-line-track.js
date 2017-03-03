@@ -86,6 +86,8 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   /** @type {string} */
   var offset = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.OFFSET];
 
+  var absLine = this.customSettingsValues()[epiviz.plugins.charts.StackedLineTrackType.CustomSettings.ABS_LINE_VAL];
+
   var self = this;
 
   var invXScale = d3.scale.linear()
