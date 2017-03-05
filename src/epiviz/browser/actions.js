@@ -7,6 +7,9 @@ var measurements = {};
 var selectionCount = 0;
 var selectionType = "Random";
 var selectionAuto = false;
+var selectionDrag = false;
+var selectionDown = false;
+var currentSource = null;
 
 function initialize_dropdown(source) {
 	$('#select-type').dropdown({
@@ -44,33 +47,75 @@ function initialize_dropdown(source) {
 		value: selectionCount,
 		onChange: function(min, max) {
 			selectionCount = min;
-			// TODO: not on change but when the drag ends.
-			selectSamples();
+			if((selectionDrag && selectionDown)) {
+				// return;
+				selectSamples();
+			}
 		}
+	});
+
+	$('#sample-size').on("mousemove", function(event) {
+		selectionDrag = true;
+		event.preventDefault();
+	});
+	$('#sample-size').on("mouseup", function(event) {
+		selectionDrag = false;
+		selectionDown = false;
+		$(document).off('mousemove');
+		$(document).off('mouseup');
+		event.preventDefault();
+	});
+
+	$('#sample-size').on("mousedown", function(event) {
+		selectionDown = true;
+		event.preventDefault();
 	});
 }
 
 function selectSamples() {
+	console.log(selectionCount);
 	if(selectionAuto && selectionCount > 0) {
-		var checkboxes = $('.ui.checkbox input[type="checkbox"]');
+		
+		var checkboxes = $('#rightmenu .content .ui.checkbox input[type="checkbox"]');
 		var count = Math.round((checkboxes.length*selectionCount)/100);
 
-		//TODO: clear selections
+		// clear Selections
+		selections = {};
+		_.each(checkboxes, function(cb) {
+			$(cb).parent().checkbox('set unchecked');
+		});
 
 		switch(selectionType) {
 			case 'Random':
-				// var indices  = _.range(checkboxes.length);
 				var randomSamples = _.sampleSize(checkboxes, count);
 				_.each(randomSamples, function(rs) {
-					$(rs).click();
+					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
+						if($(rs).parent().prop('id') != undefined) {
+							var split = $(rs).parent().prop('id').split('-');
+							$(rs).parent().checkbox('set checked');
+							selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
+							// $(rs).click();
+						}
+					}
 				});
 				break;
 			case 'Top':
-				_.each(_.initial(checkboxes, count), function(rs) {
-					$(rs).click();
+				_.each(_.slice(checkboxes,0, count), function(rs) {
+					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
+						if($(rs).parent().prop('id') != undefined) {
+							var split = $(rs).parent().prop('id').split('-');
+							$(rs).parent().checkbox('set checked');
+							selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
+							// $(rs).click();
+						}
+					}
 				});
 				break;
 		}
+
+		var countUpdate = $('#count-' + currentSource);
+		countUpdate.attr("data-selected", count);
+		countUpdate.html(" (" + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
 	}
 }
 
@@ -141,6 +186,7 @@ function showModal(source, input, cb) {
 			<div class="ui primary button" id="ok">Ok</div>
 		</div>
 	</div>`
+	currentSource = source;
 	measurements[source] = input;
 	$('body').append(modal);
 	initialize_dropdown(source);
@@ -210,7 +256,7 @@ function attachActions(measurements) {
 
 	$('.ui.checkbox input[type="checkbox"]').click(function(e) {
 		var split = this.id.split('-');
-		console.log('source clicked');
+		// console.log('source clicked');
 		//this means that you selected the measurement checkbox
 		if (split[0] === "source") {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
@@ -328,16 +374,16 @@ function toggleParent(source) {
 		var selected = parseInt($count.attr("data-selected"));
 		var total = parseInt($count.attr("data-total"));
 		if (selected > 0 && selected !== total) {
-			console.log('hi1');
+			// console.log('hi1');
 			$('#source-' + source).parent().checkbox('set indeterminate');
 			$('#source-' + source).removeClass('hidden');
 
 		} else if (selected === total && total !== 0){
-			console.log('hi2');
+			// console.log('hi2');
 			$('#source-' + source).parent().checkbox('set checked');
 			$('#source-' + source).removeClass('hidden');
 		} else if (selected === 0) {
-			console.log('hi3');
+			// console.log('hi3');
 			$('#source-' + source).parent().checkbox('set unchecked');
 			$('#source-' + source).removeClass('hidden');
 		}
