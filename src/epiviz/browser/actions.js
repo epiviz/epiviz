@@ -47,6 +47,7 @@ function initialize_dropdown(source) {
 		value: selectionCount,
 		onChange: function(min, max) {
 			selectionCount = min;
+			$('#sampleSizeValue').text(min + "%");
 			if((selectionDrag && selectionDown)) {
 				// return;
 				selectSamples();
@@ -155,9 +156,9 @@ function showModal(source, input, cb) {
 				<div class="row">
 					<div class="six wide column">
 					</div>
-					<div class="four wide column">
-						<div class="ui labeled fluid selection dropdown" id="select-type">
-						  	<input type="hidden" name="gender">
+					<div class="three wide column inline">
+						<label> Selection Type: </label>
+						<div class="ui labeled compact selection dropdown" id="select-type">
 						  	<i class="dropdown icon"></i>
 						  	<div class="text">Manual</div>
 						  	<div class="menu">
@@ -166,9 +167,9 @@ function showModal(source, input, cb) {
 						  	</div>
 						</div>
 					</div>
-					<div class="three wide column">
-						<div class="ui disabled labeled fluid selection dropdown" id="sample-type">
-						  	<input type="hidden" name="gender">
+					<div class="three wide column inline">
+						<label> Sampling Type: </label>
+						<div class="ui labeled disabled compact selection dropdown" id="sample-type">
 						  	<i class="dropdown icon"></i>
 						  	<span class="text">Random</span>
 						  	<div class="menu">
@@ -177,8 +178,9 @@ function showModal(source, input, cb) {
 						  	</div>
 						</div>
 					</div>
-					<div class="three wide column">
-						<div class="ui range" id="sample-size"></div>
+					<div class="three wide column inline">
+						<label id="sampleSizeValue"> %: </label>
+						<div class="ui range disabled" id="sample-size"></div>
 					</div>
 				</div>
 				<div class="row">
