@@ -1,5 +1,8 @@
 function rightAccordion(measurements) {
     _.forEach(measurements, function(value, source) {
+
+        var currAnnos = Object.keys(value[0].annotation);
+
         var item = document.createElement('div');
         var title = document.createElement('a');
         var titlecheckbox = document.createElement('div');
@@ -29,6 +32,29 @@ function rightAccordion(measurements) {
         icon.className = "dropdown icon";
         content.className = "content";
         form.className = "ui form";
+        var table = document.createElement("table");
+        table.className = "ui celled table";
+        var tableBody = document.createElement("tbody");
+
+        var thead = document.createElement("thead");
+        var tr = document.createElement("tr");
+
+        var th = document.createElement("th");
+        th.innerHTML = "Sample ID";
+        tr.appendChild(th);
+        var th = document.createElement("th");
+        th.innerHTML = currAnnos[0];
+        tr.appendChild(th);
+        var th = document.createElement("th");
+        th.innerHTML = currAnnos[1];
+        tr.appendChild(th);
+        var th = document.createElement("th");
+        th.innerHTML = currAnnos[2];
+        tr.appendChild(th);
+
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
         _.forEach(value, function(point, index) {
             var field = document.createElement('div');
             var checkbox = document.createElement('div');
@@ -50,10 +76,26 @@ function rightAccordion(measurements) {
             span1.innerHTML = point.id;
 
             label.appendChild(span1);
-            fields.appendChild(field);
+            // fields.appendChild(field);
             field.appendChild(checkbox);
             checkbox.appendChild(input);
             checkbox.appendChild(label);
+
+            var tr = document.createElement("tr");
+            tr.id = "table-" + point.id;
+            var td = document.createElement("td");
+            td.appendChild(field);
+            tr.appendChild(td);
+            var td = document.createElement("td");
+            td.innerHTML = point.annotation[currAnnos[0]];
+            tr.appendChild(td);
+            var td = document.createElement("td");
+            td.innerHTML = point.annotation[currAnnos[1]];
+            tr.appendChild(td);
+            var td = document.createElement("td");
+            td.innerHTML = point.annotation[currAnnos[2]];
+            tr.appendChild(td);
+            tableBody.appendChild(tr);
         });
         item.appendChild(title);
         item.appendChild(content);
@@ -61,7 +103,10 @@ function rightAccordion(measurements) {
         title.appendChild(icon);
         titlecheckbox.appendChild(checkboxinput);
         titlecheckbox.appendChild(checkboxlabel);
-        content.appendChild(fields);
+        // content.appendChild(fields);
+
+        table.appendChild(tableBody);
+        content.appendChild(table);
         $('#rightmenu').append(item);
         $(titlecheckbox).unbind("click");
 
@@ -196,7 +241,24 @@ function loadMeasurements(datasource, input) {
                 $(document).off('mouseup');
             });
         });
+
+        $('#' + ids).on("mousemove", function(event) {
+            event.preventDefault();
+            // $(document).off('mousemove');
+        });
+        $('#' + ids).on("mouseup", function(event) {
+            // $(document).off('mousemove');
+            // $(document).off('mouseup');
+            event.preventDefault();
+        });
+
+        $('#' + ids).on("mousedown", function(event) {
+            // $(document).off('mousedown');
+            event.preventDefault();
+        });
+
     });
+
     $('.active.content').each(function(index) {
         $('.active.content')[0].className = 'content';
     });
