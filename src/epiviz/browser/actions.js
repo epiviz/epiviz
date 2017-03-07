@@ -12,6 +12,7 @@ var selectionDown = false;
 var currentSource = null;
 
 function initialize_dropdown(source) {
+
 	$('#select-type').dropdown({
 		allowTab : false,
 		onChange : function(value, text, $choice) {
@@ -32,12 +33,12 @@ function initialize_dropdown(source) {
 				//fixing click issues
 				$($('#source-' + source).parent().children()[1]).unbind("click");
 		        $($('#source-' + source).children()[0]).click(function() {});
-
-				selections = {};
-				var countUpdate = $('#count-' + currentSource);
-				countUpdate.attr("data-selected", 0);
-				countUpdate.html(" (" + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
 			}
+
+			selections = {};
+			var countUpdate = $('#count-' + currentSource);
+			countUpdate.attr("data-selected", 0);
+			countUpdate.html(" (" + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
 		}
 	});
 	$('#sample-type').dropdown({
@@ -155,6 +156,8 @@ function selectSamples() {
 		var countUpdate = $('#count-' + currentSource);
 		countUpdate.attr("data-selected", count);
 		countUpdate.html(" (" + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
+
+		toggleParent(currentSource);
 	}
 }
 
@@ -256,6 +259,22 @@ function showModal(source, input, cb) {
 }
 
 function initialize(sources) {
+
+	current_measurements;
+	filters = {};
+	graph;
+	selections = {};
+	store = {};
+	measurements = {};
+	selectionCount = 0;
+	selectionType = "Random";
+	selectionAuto = false;
+	selectionDrag = false;
+	selectionDown = false;
+	currentSource = null;
+
+	$('#sourcemodal').remove();
+
 	var form =     
 	`<div class="ui small modal" id="sourcemodal">
 		<div class="header">
@@ -602,7 +621,7 @@ function resultTable(name, list, cb) {
 		var d3 = document.createElement('td');
 		d1.innerHTML = val.id;
 		d2.innerHTML = val.name;
-		d3.innerHTML = val.datasourcegroup;
+		d3.innerHTML = val.datasourceGroup;
 		row.appendChild(d1);
 		row.appendChild(d2);
 		row.appendChild(d3);

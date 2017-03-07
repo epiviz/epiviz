@@ -30,10 +30,10 @@ function rightAccordion(measurements) {
         checkboxlabel.appendChild(checkboxcount);
 
         icon.className = "dropdown icon";
-        content.className = "content";
+        content.className = "content active";
         form.className = "ui form";
         var table = document.createElement("table");
-        table.className = "ui celled table";
+        table.className = "ui celled table sortable compact";
         var tableBody = document.createElement("tbody");
 
         var thead = document.createElement("thead");
@@ -42,15 +42,11 @@ function rightAccordion(measurements) {
         var th = document.createElement("th");
         th.innerHTML = "Sample ID";
         tr.appendChild(th);
-        var th = document.createElement("th");
-        th.innerHTML = currAnnos[0];
-        tr.appendChild(th);
-        var th = document.createElement("th");
-        th.innerHTML = currAnnos[1];
-        tr.appendChild(th);
-        var th = document.createElement("th");
-        th.innerHTML = currAnnos[2];
-        tr.appendChild(th);
+        _.each(currAnnos, function(ca) {
+            var th = document.createElement("th");
+            th.innerHTML = ca;
+            tr.appendChild(th);
+        });
 
         thead.appendChild(tr);
         table.appendChild(thead);
@@ -86,15 +82,13 @@ function rightAccordion(measurements) {
             var td = document.createElement("td");
             td.appendChild(field);
             tr.appendChild(td);
-            var td = document.createElement("td");
-            td.innerHTML = point.annotation[currAnnos[0]];
-            tr.appendChild(td);
-            var td = document.createElement("td");
-            td.innerHTML = point.annotation[currAnnos[1]];
-            tr.appendChild(td);
-            var td = document.createElement("td");
-            td.innerHTML = point.annotation[currAnnos[2]];
-            tr.appendChild(td);
+
+            _.each(currAnnos, function(ca) {
+                var td = document.createElement("td");
+                td.innerHTML = point.annotation[ca];
+                tr.appendChild(td);
+            });
+
             tableBody.appendChild(tr);
         });
         item.appendChild(title);
@@ -107,6 +101,9 @@ function rightAccordion(measurements) {
 
         table.appendChild(tableBody);
         content.appendChild(table);
+
+        // $(table).tablesort();
+
         $('#rightmenu').append(item);
         $(titlecheckbox).unbind("click");
 
