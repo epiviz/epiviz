@@ -218,7 +218,7 @@ $.fn.range = function(parameters) {
 
 				rangeMousedown: function(mdEvent, isTouch, originalEvent, ctrl) {
 					if( !$(element).hasClass('disabled') ) {
-						// mdEvent.preventDefault();
+						mdEvent.preventDefault();
 						var left = $(inner).offset().left;
 						var right = left + $(inner).width();
 						var pageX;
@@ -238,7 +238,7 @@ $.fn.range = function(parameters) {
 							module.setValue(value);
 						}
 						var rangeMousemove = function(mmEvent) {
-							// mmEvent.preventDefault();
+							mmEvent.preventDefault();
 							if(isTouch) {
 								pageX = mmEvent.originalEvent.touches[0].pageX;
 							} else {

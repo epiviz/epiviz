@@ -19,16 +19,24 @@ function initialize_dropdown(source) {
 				selectionAuto = true;
 				$('#sample-type').removeClass("disabled");
 				$('#sample-size').removeClass("disabled");
+				$('#sample-size-dropdown').removeClass("disabled");
 				$('#rightmenu .checkbox').checkbox('set disabled');
+				selectSamples();
 			} else {
 				selectionAuto = false;
 				$('#sample-type').addClass("disabled");
 				$('#sample-size').addClass("disabled");
+				$('#sample-size-dropdown').addClass("disabled");
 				$('#rightmenu .checkbox').checkbox('set enabled');
 				$('#rightmenu .checkbox').checkbox('set unchecked');
 				//fixing click issues
 				$($('#source-' + source).parent().children()[1]).unbind("click");
 		        $($('#source-' + source).children()[0]).click(function() {});
+
+				selections = {};
+				var countUpdate = $('#count-' + currentSource);
+				countUpdate.attr("data-selected", 0);
+				countUpdate.html(" (" + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
 			}
 		}
 	});
@@ -36,6 +44,13 @@ function initialize_dropdown(source) {
 		allowTab : false,
 		onChange: function(value, text, $choice) {
 			selectionType = text;
+			selectSamples();
+		}
+	});
+	$('#sample-size-dropdown').dropdown({
+		allowTab : false,
+		action: 'select',
+		onHide: function() {
 			selectSamples();
 		}
 	});
@@ -47,35 +62,34 @@ function initialize_dropdown(source) {
 		value: selectionCount,
 		onChange: function(min, max) {
 			selectionCount = min;
-			$('#sampleSizeValue').text(min + "%");
-			if((selectionDrag && selectionDown)) {
-				// return;
-				selectSamples();
-			}
+			$('#sampleSizeValue').text(min + "% samples");
+			// if((selectionDrag && selectionDown)) {
+			// 	// return;
+			// 	selectSamples();
+			// }
 		}
 	});
 
-	$('#sample-size').on("mousemove", function(event) {
-		selectionDrag = true;
-		event.preventDefault();
-		// $(document).off('mousemove');
-	});
-	$('#sample-size').on("mouseup", function(event) {
-		selectionDrag = false;
-		selectionDown = false;
-		// $(document).off('mousemove');
-		// $(document).off('mouseup');
-		event.preventDefault();
-	});
+	// $('#sample-size').on("mousemove", function(event) {
+	// 	selectionDrag = true;
+	// 	event.preventDefault();
+	// 	// $(document).off('mousemove');
+	// });
+	// $('#sample-size').on("mouseup", function(event) {
+	// 	selectionDrag = false;
+	// 	selectionDown = false;
+	// 	// $(document).off('mousemove');
+	// 	// $(document).off('mouseup');
+	// 	event.preventDefault();
+	// });
 
-	$('#sample-size').on("mousedown", function(event) {
-		selectionDown = true;
-		event.preventDefault();
-	});
+	// $('#sample-size').on("mousedown", function(event) {
+	// 	selectionDown = true;
+	// 	event.preventDefault();
+	// });
 }
 
 function selectSamples() {
-	console.log(selectionCount);
 	if(selectionAuto && selectionCount > 0) {
 		
 		var checkboxes = $('#rightmenu .content .ui.checkbox input[type="checkbox"]').filter(function() {
@@ -156,9 +170,9 @@ function showModal(source, input, cb) {
 				<div class="row">
 					<div class="six wide column">
 					</div>
-					<div class="three wide column inline">
-						<label> Selection Type: </label>
-						<div class="ui labeled compact selection dropdown" id="select-type">
+					<div class="ten wide column inline">
+						selection type: 
+						<div class="ui compact selection dropdown" id="select-type">
 						  	<i class="dropdown icon"></i>
 						  	<div class="text">Manual</div>
 						  	<div class="menu">
@@ -166,10 +180,8 @@ function showModal(source, input, cb) {
 						    	<div class="item" data-value="default">Manual</div>
 						  	</div>
 						</div>
-					</div>
-					<div class="three wide column inline">
-						<label> Sampling Type: </label>
-						<div class="ui labeled disabled compact selection dropdown" id="sample-type">
+						select: 
+						<div class="ui disabled compact selection dropdown" id="sample-type">
 						  	<i class="dropdown icon"></i>
 						  	<span class="text">Random</span>
 						  	<div class="menu">
@@ -177,10 +189,15 @@ function showModal(source, input, cb) {
 						    	<div class="item" data-value="0">Top</div>
 						  	</div>
 						</div>
-					</div>
-					<div class="three wide column inline">
-						<label id="sampleSizeValue"> %: </label>
-						<div class="ui range disabled" id="sample-size"></div>
+						<div class="ui disabled compact dropdown" id="sample-size-dropdown">
+						  	<i class="dropdown icon"></i>
+						  	<span class="text" id="sampleSizeValue">0%: samples</span>
+						  	<div class="menu">
+							  <div class="item">
+								<div class="ui range disabled inline" style="width: 75px;"id="sample-size"></div>
+								</div>
+						  	</div>
+						</div>
 					</div>
 				</div>
 				<div class="row">
@@ -523,6 +540,8 @@ function filter(value, anno, filter, measurements) {
 			}
 		}
 	});
+
+	selectSamples();
 }  
 
 function getRandom(max, min) {
