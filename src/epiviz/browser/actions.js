@@ -324,6 +324,9 @@ function initialize(sources) {
 		input.type = "radio";
 		input.name = "source";
 		input.value = value;
+		if(sources[value][1]) {
+			input.checked = "checked";
+		}
 		field.className = "field";
 		
 		checkbox.appendChild(input);
@@ -337,7 +340,7 @@ function initialize(sources) {
 		tr.appendChild(td);
 
 		var td = document.createElement("td");
-		td.innerHTML = sources[value];
+		td.innerHTML = sources[value][0];
 		tr.appendChild(td);
 		tableBody.appendChild(tr);
 

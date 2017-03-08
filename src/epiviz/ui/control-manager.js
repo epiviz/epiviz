@@ -520,6 +520,33 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           .map(function(m) { return m.datasource(); })
           .subset(chartType.measurementsFilter()));
         var datasourceGroups = {};
+
+        var iciclePlot, icicleMeasurements;
+        for (var chartId in self._chartManager._charts) {
+            if (!self._chartManager._charts.hasOwnProperty(chartId)) { continue; }
+            if (self._chartManager._charts[chartId].displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { 
+              iciclePlot = self._chartManager._charts[chartId]; 
+              icicleMeasurements = self._chartManager._charts[chartId].measurements();
+            } 
+        }
+
+        var datasourceGroup;
+
+        if(icicleMeasurements) {
+            var chart = iciclePlot;
+            var visConfigSelection = chart._properties.visConfigSelection;
+            datasourceGroup = visConfigSelection.datasourceGroup;
+            if(!datasourceGroup) {
+                visConfigSelection.measurements.foreach(function(m) {
+                if (m.datasourceGroup()) {
+                  datasourceGroup = m.datasourceGroup();
+                  return true;
+                }
+                return false;
+              });
+            }
+        }
+
         data.foreach(function(m) {
           if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
           if (data.annotation) {
@@ -528,8 +555,15 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
               if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
             }
           }
-          if(m._description) {datasourceGroups[m.datasourceGroup()] = m._description;}       
+          if(m._description) {
+            var workspaceDSG = false;
+            if(m.datasourceGroup() == datasourceGroup) {
+              workspaceDSG = true;
+            }
+            datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG];
+          }       
         });
+
         initialize(datasourceGroups);
         $('#sourcemodal').modal({
             closable: false,
