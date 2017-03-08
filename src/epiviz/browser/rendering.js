@@ -234,9 +234,9 @@ function loadMeasurements(datasource, input) {
             }
         });
         $('#' + ids + " .thumb").on('mousedown', function() {
-            $(document).on('mouseup', function() {
+            $('#' + ids).on('mouseup', function() {
                 $('#' + ids).range('get value', function(val) {filter(val, ids.split('-')[0], true, measurements)});
-                $(document).off('mouseup');
+                $('#' + ids).off('mouseup');
             });
         });
 

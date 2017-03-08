@@ -353,7 +353,7 @@ function initialize(sources) {
 
 function attachActions(measurements) {
 
-	$('.ui.checkbox input[type="checkbox"]').click(function(e) {
+	$('#rightmenu .ui.checkbox input[type="checkbox"]').click(function(e) {
 		var split = this.id.split('-');
 		split[1] = _.join(_.slice(split, 1), separator="-");
 		// console.log('source clicked');
