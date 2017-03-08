@@ -527,10 +527,10 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
               if (!data.annotation.hasOwnProperty(key)) { continue; }
               if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
             }
-          }       
-         datasourceGroups[m.datasourceGroup()] = true;
+          }
+          if(m._description) {datasourceGroups[m.datasourceGroup()] = m._description;}       
         });
-        initialize(Object.keys(datasourceGroups));
+        initialize(datasourceGroups);
         $('#sourcemodal').modal({
             closable: false,
             selector: {
@@ -576,7 +576,8 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
                               measurement.annotation,
                               measurement.minValue,
                               measurement.maxValue,
-                              measurement.metadata
+                              measurement.metadata,
+                              measurement.description
                           ));
                     }
                     var vconfig = new epiviz.ui.controls.VisConfigSelection(
