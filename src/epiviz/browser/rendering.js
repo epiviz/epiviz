@@ -32,6 +32,7 @@ function rightAccordion(measurements) {
         icon.className = "dropdown icon";
         content.className = "content active";
         form.className = "ui form";
+        
         var table = document.createElement("table");
         table.className = "ui celled table sortable compact";
         var tableBody = document.createElement("tbody");

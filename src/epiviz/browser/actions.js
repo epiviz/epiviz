@@ -123,6 +123,7 @@ function selectSamples() {
 						if($(rs).parent().prop('id') != undefined) {
 							var split = $(rs).parent().prop('id').split('-');
 							$(rs).parent().checkbox('set checked');
+							split[3] = _.join(_.slice(split, 3), separator="-");
 							selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
 							// $(rs).click();
 						}
@@ -145,6 +146,7 @@ function selectSamples() {
 						if($(rs).parent().prop('id') != undefined) {
 							var split = $(rs).parent().prop('id').split('-');
 							$(rs).parent().checkbox('set checked');
+							split[3] = _.join(_.slice(split, 3), separator="-");
 							selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
 							// $(rs).click();
 						}
@@ -290,10 +292,29 @@ function initialize(sources) {
 		</div>
 	</div>`
 	$('body').append(form);
-	sources = sources.sort(sortAlphaNum);
+	// sources = sources.sort(sortAlphaNum);
 	var fields = document.createElement('div');
 	fields.className = "grouped fields";
-	sources.forEach(function(value) {
+
+    var table = document.createElement("table");
+    table.className = "ui celled table compact";
+    var tableBody = document.createElement("tbody");
+
+	var thead = document.createElement("thead");
+	var tr = document.createElement("tr");
+
+	var th = document.createElement("th");
+	th.innerHTML = "Data Source ID";
+	tr.appendChild(th);
+
+	var th = document.createElement("th");
+	th.innerHTML = "Description";
+	tr.appendChild(th);
+
+	thead.appendChild(tr);
+    table.appendChild(thead);
+
+	Object.keys(sources).forEach(function(value) {
 		var field = document.createElement('div');
 		var checkbox = document.createElement('div');
 		var input = document.createElement('input');
@@ -308,9 +329,22 @@ function initialize(sources) {
 		checkbox.appendChild(input);
 		checkbox.appendChild(label);
 		field.appendChild(checkbox);
-		fields.appendChild(field);
+		// fields.appendChild(field);
+
+		var tr = document.createElement("tr");
+		var td = document.createElement("td");
+		td.appendChild(field);
+		tr.appendChild(td);
+
+		var td = document.createElement("td");
+		td.innerHTML = sources[value];
+		tr.appendChild(td);
+		tableBody.appendChild(tr);
+
 	});
-	$('#form').append(fields);
+	table.appendChild(tableBody);
+	$('form').append(table);
+	// $('#form').append(fields);
 	$('#form').form();
 }
 
@@ -318,6 +352,7 @@ function attachActions(measurements) {
 
 	$('.ui.checkbox input[type="checkbox"]').click(function(e) {
 		var split = this.id.split('-');
+		split[1] = _.join(_.slice(split, 1), separator="-");
 		// console.log('source clicked');
 		//this means that you selected the measurement checkbox
 		if (split[0] === "source") {
@@ -332,6 +367,7 @@ function attachActions(measurements) {
 			$('#rightmenu').accordion('refresh');
 			_.each(ids, function(value) {
 				var split = value.id.split('-');
+				split[3] = _.join(_.slice(split, 3), separator="-");
 				if (checked) {
 					$(value).checkbox('set unchecked');
 					delete selections[split[1] + '-' + split[2] + '-' + split[3]];
@@ -351,6 +387,7 @@ function attachActions(measurements) {
 		} else {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
 			var split = $(this).parent().prop('id').split('-');
+			split[3] = _.join(_.slice(split, 3), separator="-");
 			var $count = $('#count-' + split[3]);
 			var selected = parseInt($count.attr("data-selected"));
 			var total = parseInt($count.attr('data-total'));
@@ -536,6 +573,7 @@ function filter(value, anno, filter, measurements) {
 				var checkbox = $('#' + data['id']).children();
 				if (checkbox.attr('class').indexOf('checked') !== -1) {
 					var split = checkbox.attr('id').split('-');
+					split[3] = _.join(_.slice(split, 3), separator="-");
 					checkbox.checkbox('set unchecked');
 					$(this).parent().removeClass('hidden');
 					delete selections[split[1] + '-' + split[2] + '-' + split[3]];
@@ -588,11 +626,17 @@ function storeMeasurement(measurements, cb) {
 	var new_list = []
 	_.forEach(selections, function(val, index) {
 		var tup = index.split('-');
+		tup[2] = _.join(_.slice(tup, 2), separator="-");
 		//tup contains [source, index] for easy indexing into measurements 
 		new_list.push(measurements[tup[2]][tup[1]]);
 	});
 	store[name] = new_list;
-	resultTable(name, new_list, cb);
+	$('#leftmenu').empty();
+	$('#rightmenu').empty();
+	$('#resultTable').empty();
+	$('#sourcemodal').remove();
+	cb(store[name]);
+	// resultTable(name, new_list, cb);
 }
 
 
