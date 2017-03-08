@@ -174,6 +174,12 @@ function showModal(source, input, cb) {
 			<div class="ui grid">
 				<div class="row">
 					<div class="six wide column">
+						<div id="warning-message" class="ui negative message" style="display:none;">
+							<i class="close icon"></i>
+							<div class="header">
+								No measurements selected
+							</div>
+						</div>
 					</div>
 					<div class="ten wide column inline">
 						selection type: 
@@ -253,7 +259,14 @@ function showModal(source, input, cb) {
 
 		},
 		onApprove: function() {
-			storeMeasurement(measurements, cb)
+			var countValue = $('#count-' + currentSource).attr("data-selected");
+			if(countValue ==0) {
+				$('#warning-message').show();
+				return false;
+			}
+			else {
+				storeMeasurement(measurements, cb);
+			}
 		},
 	});
 	$('#newmodal').modal('show');
