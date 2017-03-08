@@ -380,6 +380,7 @@ function attachActions(measurements) {
 		var parent = $(this).parent();
 		var split = parent.attr('id').split('-');
 		split[1] = split[1].replace(/[^a-zA-Z0-9]/g,'');
+		split[3] = _.join(_.slice(split, 3), separator="-");
 		var popup_id = "popup-" + split[1] + "-" + split[3];
 		if ($("#" + popup_id).length === 0) {
 			var point = measurements[split[3]][split[2]];
