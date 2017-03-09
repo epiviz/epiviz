@@ -981,17 +981,16 @@ epiviz.EpiViz.prototype._registerDataUiStatus = function() {
        * @param {{id: string, settings: Array, result: epiviz.events.EventResult}} e
        */
       function(e) {
-        try {
-          var status = true;
-          while(status) {
-            if(this._workspaceManager.activeWorkspace().range() != null) {
-              status = false;
-            }
-          }
-          e.result.success = true;
-        } catch(error) {
-          e.result.success = false;
-          e.result.errorMessage = error.toString();
+
+        if(self._workspaceManager._activeWorkspace == null) {
+            self._workspaceManager.onActiveWorkspaceChanged().addListener(new epiviz.events.EventListener(
+              function(e1) {
+                e.result.success = true;
+            })
+          );
+        }
+        else {
+                e.result.success = true;
         }
       })
   );
