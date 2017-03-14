@@ -153,9 +153,9 @@ function loadMeasurements(datasource, input) {
             }).value();
         });
         values = values.sort(sortAlphaNum);
-        console.log(parseInt(values[getRandom(0, values.length - 1)]));
+        // console.log(parseInt(values[getRandom(0, values.length - 1)]));
         if (parseInt(values[getRandom(0, values.length - 1)]) && values.length > 5) {
-            console.log("values" + values.length);
+            // console.log("values" + values.length);
             filters[text] = {values: [], type: "range"};
             var field = document.createElement('div');
             var range1 = document.createElement('div');

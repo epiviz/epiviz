@@ -22,23 +22,9 @@ epiviz.Config.SETTINGS.dataProviders = [
       {3: epiviz.ui.charts.tree.NodeSelectionType.NODE, 4: epiviz.ui.charts.tree.NodeSelectionType.NODE}
     ],
     [
-      // dataprovider Class Name 
-      'epiviz.data.EpivizApiDataProvider',
-      // datasource name
-      'msd16s',
-      //dataserver location, where api requests go to.
-      'api/',
-      // measurement annotations
-      [],
-      // initial depth of icicle
-      3,
-      // initial aggregation level
-      {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
-    ],
-    [
       'epiviz.data.EpivizApiDataProvider',
       'etec16s',
-      'api/',
+      'http://metaviz.cbcb.umd.edu/api',
       [],
       3,
       {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
@@ -46,7 +32,7 @@ epiviz.Config.SETTINGS.dataProviders = [
     [
       'epiviz.data.EpivizApiDataProvider',
       'tbi_mouse',
-      'api/',
+      'http://metaviz.cbcb.umd.edu/api',
       [],
       3,
       {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
@@ -54,7 +40,7 @@ epiviz.Config.SETTINGS.dataProviders = [
     [
       'epiviz.data.EpivizApiDataProvider',
       'hmp',
-      'api/',
+      'http://metaviz.cbcb.umd.edu/api',
       [],
       3,
       {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
@@ -62,17 +48,10 @@ epiviz.Config.SETTINGS.dataProviders = [
     [
       'epiviz.data.EpivizApiDataProvider',
       'igs_test',
-      'api/',
+      'http://metaviz.cbcb.umd.edu/api',
       [],
       3,
       {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
-    ],
-    [
-      'epiviz.data.EpivizApiDataProvider',
-      'ihmp_data',
-      'api/',
-      [],
-      3,
     ]
 ];
 
