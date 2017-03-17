@@ -77,6 +77,8 @@ epiviz.ui.charts.tree.Icicle = function(id, container, properties) {
    */
   this._rowCtrlWidth = 50;
 
+  this._rowAllLevelWidth = 50;
+
   this._legendX = null;
 
   this._initialize();
@@ -133,7 +135,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var width = this.width();
   var height = this.height();
 
-  this._xScale = d3.scale.linear().range([this._rowCtrlWidth, width - this.margins().sumAxis(Axis.X)]);
+  this._xScale = d3.scale.linear().range([this._rowCtrlWidth, width - this.margins().sumAxis(Axis.X) - this._rowAllLevelWidth]);
   //this._yScale = d3.scale.pow().exponent(1.25).range([0, height - this.margins().sumAxis(Axis.Y)]);
   this._yScale = d3.scale.linear().range([0, height - this.margins().sumAxis(Axis.Y)]);
   
@@ -647,7 +649,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         this._legend.append("svg:line")
           .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
           .attr("y1", navbar_y + (navbar_height/2))
-          .attr("x2", self.width() - self.margins().left() - 5)
+          .attr("x2", self.width() - self.margins().left() - 5 - self._rowAllLevelWidth)
           .attr("y2", navbar_y + (navbar_height/2))
           .attr("fill-opacity", .5)
           .style("stroke", "grey")
@@ -675,11 +677,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           .style("stroke-width", 2)  
           .style("stroke-linejoin", "round")
           .attr("fill-opacity", .5)
-          .attr("points", (Math.round(self.width() - self.margins().left() - 5) - 5 ) + 
+          .attr("points", (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) - 5 ) + 
                           "," + (navbar_y + (navbar_height/2) - 7) +
-                          " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                          " " + (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) +
                           "," + (navbar_y + (navbar_height/2)) + 
-                          " " +  (Math.round(self.width() - self.margins().left() - 5) - 5) + 
+                          " " +  (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) - 5) + 
                           "," + (navbar_y + (navbar_height/2) + 7)
                           ); 
       }
@@ -717,7 +719,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         this._legend.append("svg:line")
           .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
           .attr("y1", navbar_y + (navbar_height/2))
-          .attr("x2", self.width() - self.margins().left() - 5)
+          .attr("x2", self.width() - self.margins().left() - 5 - self._rowAllLevelWidth)
           .attr("y2", navbar_y + (navbar_height/2))
           .attr("fill-opacity", .5)
           .style("stroke", "grey")
@@ -745,11 +747,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           .style("stroke-width", 2)  
           .style("stroke-linejoin", "round")
           .attr("fill-opacity", .5)
-          .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) + 
+          .attr("points", (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) + 
                           "," + (navbar_y + (navbar_height/2) - 7) +
-                          " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                          " " + (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) +
                           "," + (navbar_y + (navbar_height/2)) + 
-                          " " +  (Math.round(self.width() - self.margins().left() - 5) + 3) + 
+                          " " +  (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) + 
                           "," + (navbar_y + (navbar_height/2)  + 7)
                           ); 
 
@@ -873,7 +875,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
       this._legend.append("line")
                 .attr("x1", self._rowCtrlWidth + self.margins().left() + 5)
                 .attr("y1", navbar_y + (navbar_height/2))
-                .attr("x2", self.width() - self.margins().left() - 5)
+                .attr("x2", self.width() - self.margins().left() - 5 - self._rowAllLevelWidth)
                 .attr("y2", navbar_y + (navbar_height/2))
                 .attr("fill-opacity", .5)
                 .style("stroke", "grey")
@@ -900,11 +902,11 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
                 .style("stroke-width", 2)
                 .style("stroke-linejoin", "round")
                 .attr("fill-opacity", .5)
-                .attr("points", (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                .attr("points", (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) +
                     "," + (navbar_y + (navbar_height/2) - 7) +
-                    " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                    " " + (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) +
                     "," + (navbar_y + (navbar_height/2)) +
-                    " " + (Math.round(self.width() - self.margins().left() - 5) + 3) +
+                    " " + (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) +
                     "," + (navbar_y + (navbar_height/2) + 7)
                 );
 
@@ -947,7 +949,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
 
       function dragmove(d) {
         dragrect
-            .attr("x", d.x = Math.max(self._rowCtrlWidth + self.margins().left(), Math.min(self.width() - self.margins().left() - bar_width, d3.event.x)));
+            .attr("x", d.x = Math.max(self._rowCtrlWidth + self.margins().left(), Math.min(self.width() - self.margins().left() - bar_width - self._rowAllLevelWidth, d3.event.x)));
 
         dragbarleft 
             .attr("x", function(d) { return d.x - (extend_bar_width/2);});
@@ -975,7 +977,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
       }
 
       function rdragresize(d) {
-          var dragx = Math.max(d.x + (extend_bar_width/2), Math.min(self.width() - self.margins().left(), d.x + bar_width + d3.event.dx));
+          var dragx = Math.max(d.x + (extend_bar_width/2), Math.min(self.width() - self.margins().left() - self._rowAllLevelWidth, d.x + bar_width + d3.event.dx));
           bar_width = dragx - d.x;
 
           dragbarright
@@ -1243,6 +1245,97 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
       self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
       d3.event.stopPropagation();
     });
+
+    var height = self.height();
+    var nAllLevels = self._allLevels.length;
+    var calcHeight = function(d, i) { return self._yScale((i + 1) / nAllLevels) - self._yScale(i / nAllLevels) - 2; };
+    var calcWidth = function(d, i) { return self._rowCtrlWidth - 2; };
+    var calcY = function(d, i) { return self._yScale((nAllLevels - i - 1) / nAllLevels) + 1; };
+    var calcX = function(d, i) { return 1; };
+    var calcR = function(d, i) {
+      var height = calcHeight(d, i) - 3;
+      var width = calcWidth(d, i) - 3;
+      return Math.min(height, width) / 2 - 5;
+    };
+
+    var rowCtrlGroup = this._svg.select('.row-ctrls-levels');
+
+    if (rowCtrlGroup.empty()) {
+      rowCtrlGroup = this._svg.append('g')
+        .attr('class', 'row-ctrls-levels');
+    }
+
+    rowCtrlGroup
+      .attr('transform', sprintf('translate(%s,%s)', this.width() - this.margins().left() - this._rowAllLevelWidth, this.margins().top()));
+
+    rowCtrlGroup.selectAll('.row-ctrl-level').remove();
+
+    var levelsTaxonomy = this._allLevels;
+    var nLevels = levelsTaxonomy.length;
+    var rowCtrls = rowCtrlGroup.selectAll('.row-ctrl-level')
+      .data(levelsTaxonomy);
+
+    var newCtrls = rowCtrls
+      .enter().append('g')
+      .style('opacity', 0)
+      .attr('class', 'row-ctrl-level custom-select');;
+
+    newCtrls
+      .transition().duration(this._animationDelay)
+      .style('opacity', function(d) {
+        // return 0;
+        if(self.levelsTaxonomy().indexOf(d) != -1) {
+          return 1;
+        } 
+        return 0.2;
+      });
+
+    rowCtrls.exit()
+      .transition().duration(this._animationDelay)
+      .style('opacity', function(d) {
+        // return 0;
+        if(self.levelsTaxonomy().indexOf(d) != -1) {
+          return 1;
+        } 
+        return 0.5;
+      })
+      .remove();
+    
+    newCtrls
+      .append('rect')
+      .style('fill', function(label) { return self.colors().getByKey(label); });
+
+    rowCtrlGroup.selectAll('.row-ctrl-level').select('rect')
+      .attr('x', calcX)
+      .attr('width', calcWidth)
+      .attr('rx', 5)
+      .attr('ry', 5)
+      .transition().duration(this._animationDelay)
+      .attr('y', calcY)
+      .attr('height', calcHeight)
+      .style('fill', function(label) { return self.colors().getByKey(label); });
+
+    var textFields2 = newCtrls.append('text')
+      .attr("class", "rotatetext-rowCtrl")
+      .text(function(d){return d.charAt(0).toUpperCase();})
+      .style("font-size", 17)
+      .attr("text-anchor", "middle")
+      .style("font-weight", "bolder")
+      .attr("transform" , function(d, i) {
+        var x = calcWidth(d, i) / 2 + 1;
+        var y = calcY(d, i) + (calcHeight(d, i)* 2 / 3);
+
+        return "translate(" + x + "," + y + ") ";
+      });
+
+    rowCtrlGroup.selectAll('.icon-container')
+      .style('visibility', function(d, i) {
+        return (calcR(d, i) * 2 + 13 < calcWidth(d, i)) ?
+          'hidden' : 'visible';
+      })
+      .transition().duration(this._animationDelay)
+      .attr('x', function(d, i) { return calcX(d, i) + calcWidth(d, i) / 2 - calcR(d, i) + 5; })
+      .attr('y', function(d, i) { return  calcY(d, i) + (calcHeight(d, i)* 7 / 12) - calcR(d, i) + 5; });
 };
 
 /**
