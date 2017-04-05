@@ -680,7 +680,8 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
     text:false
   })
   .click( function() {
-
+    
+    var name = $('#save-workspace-text').val();
     self._saveWorkspace.notify({name: name, id: name == self._activeWorkspaceInfo.name ? self._activeWorkspaceInfo.id : null});
 
     savePageButton.append(sprintf('<div id="loading" title="printing workspace">' +
