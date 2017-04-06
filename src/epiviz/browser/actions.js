@@ -429,60 +429,60 @@ function attachActions(measurements) {
 		}
 	});
 
-	$('#rightmenu .field .checkbox label').mouseenter(function() {
-		var parent = $(this).parent();
-		var split = parent.attr('id').split('-');
-		split[1] = split[1].replace(/[^a-zA-Z0-9]/g,'');
-		split[3] = _.join(_.slice(split, 3), separator="-");
-		var popup_id = "popup-" + split[1] + "-" + split[3];
-		if ($("#" + popup_id).length === 0) {
-			var point = measurements[split[3]][split[2]];
-			var headers = ['id', 'name', 'datasourcegroup'];
-			var contents = [point.id, point.name, point.datasourcegroup];
-			if (point.annotation != null) {
-				Object.keys(point.annotation).forEach(function(val) {
-					headers.push(val);
-					contents.push(point.annotation[val]);
-				});
-			}
+	// $('#rightmenu .field .checkbox label').mouseenter(function() {
+	// 	var parent = $(this).parent();
+	// 	var split = parent.attr('id').split('-');
+	// 	split[1] = split[1].replace(/[^a-zA-Z0-9]/g,'');
+	// 	split[3] = _.join(_.slice(split, 3), separator="-");
+	// 	var popup_id = "popup-" + split[1] + "-" + split[3];
+	// 	if ($("#" + popup_id).length === 0) {
+	// 		var point = measurements[split[3]][split[2]];
+	// 		var headers = ['id', 'name', 'datasourcegroup'];
+	// 		var contents = [point.id, point.name, point.datasourcegroup];
+	// 		if (point.annotation != null) {
+	// 			Object.keys(point.annotation).forEach(function(val) {
+	// 				headers.push(val);
+	// 				contents.push(point.annotation[val]);
+	// 			});
+	// 		}
 
-			//sanitize id for any periods or pound signs
-			point.id = point.id.replace(/[^a-zA-Z0-9]/g,'');
+	// 		//sanitize id for any periods or pound signs
+	// 		point.id = point.id.replace(/[^a-zA-Z0-9]/g,'');
 
-			//creating popup as seperate div to give it columns
-			var popup = document.createElement('div');
-			var table = document.createElement('table');
-			var t_body = document.createElement('tbody');
-			popup.className = 'ui popup';
-			popup.id = "popup-" + point.id + "-" + split[3];
-			table.className = 'ui collapsing table';
-			table.appendChild(t_body);
-			//add columns to the grid
-			for (var j = 0; j < contents.length; j++) {
-				var row = document.createElement('tr');
-				var col1 = document.createElement('td');
-				var col2 = document.createElement('td');
-				row.appendChild(col1);
-				row.appendChild(col2);
-				col1.innerHTML = headers[j];
-				col2.innerHTML = contents[j];
-				t_body.appendChild(row);
-			}
-			popup.appendChild(table);
-			$('body').append(popup);
-			$(this).popup({
-				popup: '#' + popup.id,
-				position: 'right center',
-				lastResort: 'right center', 
-				hoverable: true,
-				delay: {
-					show: 50,
-					hide: 100,
-				}
-			});      
-			$(this).popup('show');     
-		}   
-	});
+	// 		//creating popup as seperate div to give it columns
+	// 		var popup = document.createElement('div');
+	// 		var table = document.createElement('table');
+	// 		var t_body = document.createElement('tbody');
+	// 		popup.className = 'ui popup';
+	// 		popup.id = "popup-" + point.id + "-" + split[3];
+	// 		table.className = 'ui collapsing table';
+	// 		table.appendChild(t_body);
+	// 		//add columns to the grid
+	// 		for (var j = 0; j < contents.length; j++) {
+	// 			var row = document.createElement('tr');
+	// 			var col1 = document.createElement('td');
+	// 			var col2 = document.createElement('td');
+	// 			row.appendChild(col1);
+	// 			row.appendChild(col2);
+	// 			col1.innerHTML = headers[j];
+	// 			col2.innerHTML = contents[j];
+	// 			t_body.appendChild(row);
+	// 		}
+	// 		popup.appendChild(table);
+	// 		$('body').append(popup);
+	// 		$(this).popup({
+	// 			popup: '#' + popup.id,
+	// 			position: 'right center',
+	// 			lastResort: 'right center', 
+	// 			hoverable: true,
+	// 			delay: {
+	// 				show: 50,
+	// 				hide: 100,
+	// 			}
+	// 		});      
+	// 		$(this).popup('show');     
+	// 	}   
+	// });
 }
 
 function toggleParent(source) {
