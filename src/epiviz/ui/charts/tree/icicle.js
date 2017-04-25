@@ -359,34 +359,39 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       return "visible";
     })
     .text(function(d) {
-      var w = calcOldWidth(d);
-      var maxChars = w / self._charWidth;
-      if (maxChars < d.name.length - 3) {
-        return d.name.substring(0, maxChars) + '...';
+      if (d.id == root.id) {
+          return self._rootLineageLabel;
       }
-      return d.name;
+      else {
+        var w = calcOldWidth(d);
+        var maxChars = w / self._charWidth;
+        if (maxChars < d.name.length - 3) {
+          return d.name.substring(0, maxChars) + '...';
+        }
+        return d.name;
+      }
     })
     .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
     .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.5; });
 
-    newItems.selectAll("node-label-lineage").remove();
-    var lineageLabel = newItems.append('text')
-    .style("visibility", function(d) {
-      if (d.id != root.id) {
-          return "hidden";
-      }
-      return "visible";
-    })
-    .style("font-size", 11)
-    .attr("text-anchor", "middle")
-    .style("font-weight", "normal")
-    .attr('class', 'unselectable-text node-label-lineage')
-    .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
-    .text(function(d) {
-      return "lineage: " + self._rootLineageLabel;
-    })
-    .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
-    .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.7; });
+    // newItems.selectAll("node-label-lineage").remove();
+    // var lineageLabel = newItems.append('text')
+    // .style("visibility", function(d) {
+    //   if (d.id != root.id) {
+    //       return "hidden";
+    //   }
+    //   return "visible";
+    // })
+    // .style("font-size", 11)
+    // .attr("text-anchor", "middle")
+    // .style("font-weight", "normal")
+    // .attr('class', 'unselectable-text node-label-lineage')
+    // .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
+    // .text(function(d) {
+    //   return "lineage: " + self._rootLineageLabel;
+    // })
+    // .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
+    // .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.7; });
 
   var newIconsBg = newItems.append('circle')
     .attr('class', 'icon-bg')
@@ -466,34 +471,41 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .tween('text', function(d) {
       var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
       return function(t) {
-        var maxChars = Math.round(w(t) / self._charWidth);
-        if (maxChars < d.name.length - 3) {
-          this.textContent = d.name.substring(0, maxChars) + '...';
-          return;
+
+        if (d.id == root.id) {
+            this.textContent = self._rootLineageLabel;
         }
-        this.textContent = d.name;
+        else {
+          var maxChars = Math.round(w(t) / self._charWidth);
+          if (maxChars < d.name.length - 3) {
+            this.textContent = d.name.substring(0, maxChars) + '...';
+            return;
+          }
+          this.textContent = d.name;
+        }
+
       };
     });
 
-  itemsGroup.selectAll('.item').selectAll('.node-label-lineage')
-    .transition().duration(this._animationDelay)
-    .style("visibility", function(d) {
-      if (d.id != root.id) {
-          return "hidden";
-      }
-      return "visible";
-    })
-    .style("font-size", 11)
-    .attr("text-anchor", "middle")
-    .style("font-weight", "normal")    
-    .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
-    .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.7; })
-    .tween('text', function(d) {
-      var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
-      return function(t) {
-        this.textContent = "lineage: " + self._rootLineageLabel;
-      };
-    });
+  // itemsGroup.selectAll('.item').selectAll('.node-label-lineage')
+  //   .transition().duration(this._animationDelay)
+  //   .style("visibility", function(d) {
+  //     if (d.id != root.id) {
+  //         return "hidden";
+  //     }
+  //     return "visible";
+  //   })
+  //   .style("font-size", 11)
+  //   .attr("text-anchor", "middle")
+  //   .style("font-weight", "normal")    
+  //   .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
+  //   .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.7; })
+  //   .tween('text', function(d) {
+  //     var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
+  //     return function(t) {
+  //       this.textContent = "lineage: " + self._rootLineageLabel;
+  //     };
+  //   });
 
   itemsGroup.selectAll('.item').selectAll('.icon-bg')
     .transition().duration(this._animationDelay)
@@ -1193,36 +1205,14 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
         var polyFactor = 5/7;
 
         var lineData = [];
-
         y = y+2;
 
-      if(i == 0 && root.globalDepth + i > 0) {
-        lineData.push({'x': x, 'y': y});
-        lineData.push({'x': x, 'y': (y + (height*polyFactor))});
-        lineData.push({'x': x + (width/2), 'y': y + height});
-        lineData.push({'x': x + width, 'y': (y + (height*polyFactor))});
-        lineData.push({'x': x + width, 'y': y});
-        lineData.push({'x': x, 'y': y});
-        return lineFunction(lineData)
-      }
-      else if(i == nLevels-1 && levelsTaxonomy[nLevels-1] != "OTU") {
-        lineData.push({'x': x + (width/2), 'y': y});
-        lineData.push({'x': x, 'y': (y + (height*(1-polyFactor)))});
-        lineData.push({'x': x, 'y': y + height});
-        lineData.push({'x': x + width, 'y': y + height});
-        lineData.push({'x': x + width, 'y': (y + (height*(1-polyFactor)))});
-        lineData.push({'x': x + (width/2), 'y': y});
-        return lineFunction(lineData)
-      }
-      else {
         lineData.push({'x': x, 'y': y});
         lineData.push({'x': x, 'y': y + height});
         lineData.push({'x': x + width, 'y': y + height});
         lineData.push({'x': x + width, 'y': y});
         lineData.push({'x': x, 'y': y});
-        return lineFunction(lineData)
-      }
-
+        return lineFunction(lineData);
     })
     .attr("stroke", "none");
 
