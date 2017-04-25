@@ -213,7 +213,10 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
   else if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     var chartVisConfigSelectionMap = {};
     chartVisConfigSelectionMap[chartId] = visConfigSelection;
-    var range = this._workspaceManager.activeWorkspace().range();
+    // var range = this._workspaceManager.activeWorkspace().range();
+    var seqInfo = this._locationManager._seqInfos[visConfigSelection.datasourceGroup];
+    var range = new epiviz.datatypes.GenomicRange(seqInfo.seqName, seqInfo.min, seqInfo.max);
+    this._locationManager.changeCurrentLocation(range);
     this._dataManager.getHierarchy(chartVisConfigSelectionMap,
       function(chartId, hierarchy) {
         self._chartManager.updateCharts(range, hierarchy, [chartId]);
