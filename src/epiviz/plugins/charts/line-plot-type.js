@@ -133,7 +133,7 @@ epiviz.plugins.charts.LinePlotType.prototype.customSettingsDefs = function() {
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.LinePlotType.CustomSettings.ABS_LINE_VAL,
-      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
       epiviz.ui.charts.CustomSetting.DEFAULT,
       'Draw abline')
   ]);

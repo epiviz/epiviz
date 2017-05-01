@@ -398,16 +398,19 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
 // show baseline
 if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
 
-  graph.selectAll('.abLine').remove();
-
-  graph.append("svg:line")
-        .attr("class", "abLine")
-        .attr("x1", 0)
-        .attr("x2", self.width() - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
-        .attr("y1", yScale(absLine))
-        .attr("y2", yScale(absLine))
-        .style("stroke", "black")
-        .style("stroke-dasharray", ("5, 5")) ;
+    var abVals = JSON.parse("[" + absLine + "]");
+    graph.selectAll('.abLine').remove();
+    
+    abVals.forEach(function(aVal) {  
+      graph.append("svg:line")
+            .attr("class", "abLine")
+            .attr("x1", 0)
+            .attr("x2", self.width() - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
+            .attr("y1", yScale(aVal))
+            .attr("y2", yScale(aVal))
+            .style("stroke", "black")
+            .style("stroke-dasharray", ("5, 5")) ;
+    }
 }
 
   return lineItems;
