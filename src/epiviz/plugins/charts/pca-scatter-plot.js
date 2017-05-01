@@ -136,6 +136,8 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
     var width = this.width();
     var height = this.height();
 
+    var abLine = this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.AB_LINE];
+
     var CustomSetting = epiviz.ui.charts.CustomSetting;
     var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
     var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
@@ -397,7 +399,25 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
       .attr('fill', function(label, i) {
         return self.colors().getByKey(label);
       })
-      .style('stroke-width', 0)
+      .style('stroke-width', 0);
+
+
+    if(abLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
+
+        var abVals = JSON.parse("[" + abLine + "]");
+        itemsGroup.selectAll('.abLine').remove();
+        
+        abVals.forEach(function(aVal) {    
+            itemsGroup.append("svg:line")
+                .attr("class", "abLine")
+                .attr("x1", margins.left())
+                .attr("x2", margins.left() + (width - margins.sumAxis(Axis.X)))
+                .attr("y1", height - margins.bottom() - ((aVal - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+                .attr("y2", height - margins.bottom() - ((aVal - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+                .style("stroke", "black")
+                .style("stroke-dasharray", ("5, 5"));
+        });
+    }   
 
     return items;
 };

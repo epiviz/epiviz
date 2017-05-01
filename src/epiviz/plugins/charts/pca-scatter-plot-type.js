@@ -112,7 +112,13 @@ epiviz.plugins.charts.CustomScatterPlotType.prototype.customSettingsDefs = funct
       epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.COLOR_BY,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
       'name',
-      'Color By')
+      'Color By'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.AB_LINE,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Draw Abline')
   ]);
 };
 
@@ -121,5 +127,6 @@ epiviz.plugins.charts.CustomScatterPlotType.prototype.customSettingsDefs = funct
  */
 epiviz.plugins.charts.CustomScatterPlotType.CustomSettings = {
   CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
-  COLOR_BY: 'colorBy'
+  COLOR_BY: 'colorBy',
+  AB_LINE: 'abLine'
 };
