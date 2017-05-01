@@ -214,7 +214,7 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
     var chartVisConfigSelectionMap = {};
     chartVisConfigSelectionMap[chartId] = visConfigSelection;
     // var range = this._workspaceManager.activeWorkspace().range();
-    var seqInfo = this._locationManager._seqInfos[visConfigSelection.datasourceGroup];
+    var seqInfo = this._locationManager._seqInfos[visConfigSelection.datasourceGroup] || this._locationManager._seqInfos["metavizr"];
     var range = new epiviz.datatypes.GenomicRange(seqInfo.seqName, seqInfo.min, seqInfo.max);
     this._locationManager.changeCurrentLocation(range);
     this._dataManager.getHierarchy(chartVisConfigSelectionMap,
