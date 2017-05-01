@@ -238,15 +238,32 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
     var lines = graph.selectAll('.line-series')
       .data(lineItems, function(d) { return d.id; });
 
+    var hoverOpacity = 0.8;
+
     lines
       .enter()
       .insert('g', ':first-child').attr('class', 'line-series item')
       .style('opacity', '0')
       .on('mouseover', function(d) {
         self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+
+        self._svg.selectAll("g.lines.items").selectAll(".item")
+          .style("opacity", 1 - hoverOpacity);
+        self._svg.selectAll("g.lines.items").selectAll("g.hovered .item")
+          .style("opacity", hoverOpacity);;
+
       })
       .on('mouseout', function () {
         self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+
+          self._svg.selectAll("g.lines.items").selectAll(".item")
+            .style("opacity", 0.7);
+
+          // lines.selectAll(".item")
+          //   .style("opacity", 1 - hoverOpacity);
+
+          // lines.selectAll(".hovered .item")
+          //   .style("opacity", hoverOpacity);
       })
       .each(function(d) {
         d3.select(this)
@@ -410,7 +427,7 @@ if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
             .attr("y2", yScale(aVal))
             .style("stroke", "black")
             .style("stroke-dasharray", ("5, 5")) ;
-    }
+    });
 }
 
   return lineItems;
@@ -425,4 +442,51 @@ epiviz.plugins.charts.LinePlot.prototype.colorLabels = function() {
     labels.push('Color ' + (i + 1));
   }
   return labels;
+};
+
+epiviz.plugins.charts.LinePlot.prototype.doHover = function(selectedObject) {
+
+  var hoverOpacity = 0.7;
+
+  var itemsGroup = this._container.find('.items');
+  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
+  var selectedGroup = itemsGroup.find('> .selected');
+  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+
+  var filter = function() {
+    return selectedObject.overlapsWith(d3.select(this).data()[0]);
+  };
+  var selectItems = itemsGroup.find('> .item').filter(filter);
+  unselectedHoveredGroup.append(selectItems);
+
+  selectItems = selectedGroup.find('> .item').filter(filter);
+  selectedHoveredGroup.append(selectItems);
+
+  this._svg.selectAll(".item")
+      .style("opacity", 1 - hoverOpacity);
+
+  this._svg.selectAll(".hovered .item")
+      .style("opacity", hoverOpacity);
+};
+
+/**
+ */
+epiviz.plugins.charts.LinePlot.prototype.doUnhover = function() {
+
+  var hoverOpacity = 0.7;
+
+  var itemsGroup = this._container.find('.items');
+  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
+  var selectedGroup = itemsGroup.find('> .selected');
+  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+
+  itemsGroup.prepend(unselectedHoveredGroup.children());
+
+  selectedGroup.prepend(selectedHoveredGroup.children());
+
+    this._svg.selectAll(".item")
+      .style("opacity", 1);
+
+    this._svg.selectAll(".hovered .item")
+      .style("opacity", 1);
 };
