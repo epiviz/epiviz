@@ -4,7 +4,7 @@
  * Time: 11:55 PM
  */
 
-goog.provide('epiviz.plugins.charts.CustomScatterPlot');
+goog.provide('epiviz.plugins.charts.PCAScatterPlot');
 
 /**
  * @param {string} id
@@ -13,7 +13,7 @@ goog.provide('epiviz.plugins.charts.CustomScatterPlot');
  * @extends {epiviz.ui.charts.Plot}
  * @constructor
  */
-epiviz.plugins.charts.CustomScatterPlot = function(id, container, properties) {
+epiviz.plugins.charts.PCAScatterPlot = function(id, container, properties) {
     // Call superclass constructor
     epiviz.ui.charts.Plot.call(this, id, container, properties);
 
@@ -83,13 +83,13 @@ epiviz.plugins.charts.CustomScatterPlot = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.plugins.charts.CustomScatterPlot.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Plot.prototype);
-epiviz.plugins.charts.CustomScatterPlot.constructor = epiviz.plugins.charts.CustomScatterPlot;
+epiviz.plugins.charts.PCAScatterPlot.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Plot.prototype);
+epiviz.plugins.charts.PCAScatterPlot.constructor = epiviz.plugins.charts.PCAScatterPlot;
 
 /**
  * @protected
  */
-epiviz.plugins.charts.CustomScatterPlot.prototype._initialize = function() {
+epiviz.plugins.charts.PCAScatterPlot.prototype._initialize = function() {
     // Call super
     epiviz.ui.charts.Plot.prototype._initialize.call(this);
 
@@ -105,7 +105,7 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._initialize = function() {
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
 
-epiviz.plugins.charts.CustomScatterPlot.prototype.draw = function() {
+epiviz.plugins.charts.PCAScatterPlot.prototype.draw = function() {
     epiviz.ui.charts.Plot.prototype.draw.call(this, undefined, undefined);
     var self = this;
     self._variance_labels = self._lastData.pca_variance_explained;
@@ -115,7 +115,7 @@ epiviz.plugins.charts.CustomScatterPlot.prototype.draw = function() {
 
 
 
-epiviz.plugins.charts.CustomScatterPlot.prototype.drawScatter = function(range, data, key, dimx, dimy) {
+epiviz.plugins.charts.PCAScatterPlot.prototype.drawScatter = function(range, data, key, dimx, dimy) {
 
     return this._drawCircles(data, dimx, dimy, key);
 };
@@ -126,17 +126,17 @@ epiviz.plugins.charts.CustomScatterPlot.prototype.drawScatter = function(range, 
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
-epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, dimx, dimy, key) {
+epiviz.plugins.charts.PCAScatterPlot.prototype._drawCircles = function(data, dimx, dimy, key) {
     var self = this;
     var Axis = epiviz.ui.charts.Axis;
-    var circleRadius = Math.max(1, this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
+    var circleRadius = Math.max(1, this.customSettingsValues()[epiviz.plugins.charts.PCAScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
     var gridSquareSize = Math.max(Math.floor(circleRadius), 1);
 
     var margins = this.margins();
     var width = this.width();
     var height = this.height();
 
-    var abLine = this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.AB_LINE];
+    var abLine = this.customSettingsValues()[epiviz.plugins.charts.PCAScatterPlotType.CustomSettings.AB_LINE];
 
     var CustomSetting = epiviz.ui.charts.CustomSetting;
     var minY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
@@ -144,7 +144,7 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
     var minX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN];
     var maxX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 
-    var colorbylabel = this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.COLOR_BY];
+    var colorbylabel = this.customSettingsValues()[epiviz.plugins.charts.PCAScatterPlotType.CustomSettings.COLOR_BY];
 
     if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
     if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
@@ -425,7 +425,7 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles = function(data, 
 /**
  * @returns {Array.<{name: string, color: string}>}
  */
-epiviz.plugins.charts.CustomScatterPlot.prototype.colorLabels = function() {
+epiviz.plugins.charts.PCAScatterPlot.prototype.colorLabels = function() {
     return this._colorLabels;
 };
 
@@ -440,7 +440,7 @@ epiviz.plugins.charts.CustomScatterPlot.prototype.colorLabels = function() {
  * @param {epiviz.ui.charts.Margins} [margins]
  * @protected
  */
-epiviz.plugins.charts.CustomScatterPlot.prototype._drawAxes = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
+epiviz.plugins.charts.PCAScatterPlot.prototype._drawAxes = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
     epiviz.ui.charts.Plot.prototype._drawAxes.call(this, xScale, yScale, xTicks, yTicks, svg, width, height, margins);
     var self = this;
     this._legend.selectAll('text').remove();
@@ -514,7 +514,7 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._drawAxes = function(xScale, y
     });
 };
 
-epiviz.plugins.charts.CustomScatterPlot.prototype.transformData = function(range, data) {
+epiviz.plugins.charts.PCAScatterPlot.prototype.transformData = function(range, data) {
   var lastRange = this._lastRange;
 
   if (range != undefined) {

@@ -192,7 +192,7 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
   chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties);
   var self = this;
   // TODO: Maybe later implement hierarchical display type (see display-type.js for the start of the idea)
-  if (type.typeName() == 'epiviz.plugins.charts.CustomScatterPlot'){
+  if (type.typeName() == 'epiviz.plugins.charts.PCAScatterPlot'){
     var range = null;
     var chartMeasurementsMap = {};
     chartMeasurementsMap[chartId] = visConfigSelection.measurements;
