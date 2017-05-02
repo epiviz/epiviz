@@ -242,6 +242,7 @@ function showModal(source, input, cb) {
 	</div>`
 	currentSource = source;
 	measurements[source] = input;
+	measurements[source] = _.sortBy(measurements[source], [function(o) {return o.id}])
 	$('body').append(modal);
 	initialize_dropdown(source);
 	$('#newmodal').modal({
