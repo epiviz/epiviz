@@ -434,6 +434,11 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
         var dsData = data[datasourceId];
         var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
 
+        var noSampleData = [];
+        for(var ecount =0; ecount < dsData.cols[Object.keys(dsData.cols)[0]].length; ecount++) {         
+          noSampleData[ecount] = 0;       
+        }
+
         var globalStartIndex = dsData.globalStartIndex;
 
         if(isNaN(range._start)) {
@@ -449,7 +454,7 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
         sumExp.addRowData(rowData);
 
         dsMs.foreach(function(m) {
-          var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols[m.id()]);
+          var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols[m.id()] || noSampleData );
           sumExp.addValues(valueData);
         });
 
