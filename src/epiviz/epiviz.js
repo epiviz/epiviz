@@ -162,13 +162,13 @@ epiviz.EpiViz.VERSION = '4';
 epiviz.EpiViz.prototype.start = function() {
   this._cookieManager.initialize();
 
+  this._locationManager.initialize();
+
   this._controlManager.initialize();
   
   this._workspaceManager.initialize();
 
   this._measurementsManager.initialize();
-
-  this._locationManager.initialize();
 };
 
 /**
@@ -213,9 +213,12 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
   else if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     var chartVisConfigSelectionMap = {};
     chartVisConfigSelectionMap[chartId] = visConfigSelection;
-    // var range = this._workspaceManager.activeWorkspace().range();
+    var range = this._workspaceManager.activeWorkspace().range();
     var seqInfo = this._locationManager._seqInfos[visConfigSelection.datasourceGroup] || this._locationManager._seqInfos["metavizr"];
-    var range = new epiviz.datatypes.GenomicRange(seqInfo.seqName, seqInfo.min, seqInfo.max);
+    // var range = new epiviz.datatypes.GenomicRange(seqInfo.seqName, seqInfo.min, seqInfo.max);
+    if(seqInfo) {
+      range = new epiviz.datatypes.GenomicRange(seqInfo.seqName, seqInfo.min, seqInfo.max);
+    }
     this._locationManager.changeCurrentLocation(range);
     this._dataManager.getHierarchy(chartVisConfigSelectionMap,
       function(chartId, hierarchy) {
@@ -232,21 +235,21 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
       });
   }
 
-  if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
-    var mCount = 0;
-    //add measurements as a new datasource
-    var chartMs = visConfigSelection.measurements;
-    chartMs.foreach(function(m, i) {
-      if(m._datasourceGroup.indexOf('_plot-') == -1 ) {
-        m._datasourceGroup = m._datasourceGroup + "_" + chartId;
-        mCount++;
-      }
-    });
+  // if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+  //   var mCount = 0;
+  //   //add measurements as a new datasource
+  //   var chartMs = visConfigSelection.measurements;
+  //   chartMs.foreach(function(m, i) {
+  //     if(m._datasourceGroup.indexOf('_plot-') == -1 ) {
+  //       m._datasourceGroup = m._datasourceGroup + "_" + chartId;
+  //       mCount++;
+  //     }
+  //   });
 
-    if (mCount > 0) {
-      this._measurementsManager.addMeasurements(chartMs);
-    }
-  }
+  //   if (mCount > 0) {
+  //     this._measurementsManager.addMeasurements(chartMs);
+  //   }
+  // }
 
   return chartId;
 };
