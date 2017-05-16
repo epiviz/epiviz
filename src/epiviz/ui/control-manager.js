@@ -555,13 +555,16 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
               if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
             }
           }
-          if(m._description) {
-            var workspaceDSG = false;
-            if(m.datasourceGroup() == datasourceGroup) {
+
+          if(!m._description) {
+            m._description = "description not available";
+          }
+
+          var workspaceDSG = false;
+          if(m.datasourceGroup() == datasourceGroup) {
               workspaceDSG = true;
-            }
-            datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG];
-          }       
+          }
+          datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG];       
         });
 
         initialize(datasourceGroups);
