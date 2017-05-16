@@ -128,9 +128,9 @@ function loadMeasurements(datasource, input) {
     var i = 0;
     var measurements = {};
     measurements[datasource] = input;
-    while(i < input.length && measurements[datasource][i].annotation === null) {
-        i++;
-    }
+    // while(i < input.length && measurements[datasource][i].annotation === null) {
+    //     i++;
+    // }
     measurements[datasource] = _.sortBy(measurements[datasource], [function(o) {return o.id}])
     annotations = Object.keys(measurements[datasource][i].annotation);
     annotations = annotations.sort(sortAlphaNum);
@@ -179,7 +179,7 @@ function loadMeasurements(datasource, input) {
                 var checkbox = document.createElement('div');
                 var input = document.createElement('input');
                 var label = document.createElement('label'); 
-                var s_anno = anno.replace(/[^a-zA-Z0-9]/g, ''); 
+                var s_anno = String(anno).replace(/[^a-zA-Z0-9]/g, ''); 
                 field.className = "field";
                 checkbox.className = "ui checkbox";
                 checkbox.id = "checkbox" + checkboxIndex;

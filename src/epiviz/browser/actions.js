@@ -626,11 +626,11 @@ function getRandom(max, min) {
 function sortAlphaNum(a,b) {
 	var reA = /[^a-zA-Z]/g;
 	var reN = /[^0-9]/g;
-	var aA = a.replace(reA, "");
-	var bA = b.replace(reA, "");
+	var aA = String(a).replace(reA, "");
+	var bA = String(b).replace(reA, "");
 	if(aA === bA) {
-		var aN = parseInt(a.replace(reN, ""), 10);
-		var bN = parseInt(b.replace(reN, ""), 10);
+		var aN = parseInt(String(a).replace(reN, ""), 10);
+		var bN = parseInt(String(b).replace(reN, ""), 10);
 		return aN === bN ? 0 : aN > bN ? 1 : -1;
 	} else {
 		return aA > bA ? 1 : -1;
