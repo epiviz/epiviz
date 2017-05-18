@@ -628,6 +628,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
         <span style="display:none;" class="separator">|</span>
 
+        <button id="data-source-button">Start Here</button>
+
         <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">
           <ul id="vis-menu"></ul>

@@ -616,7 +616,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
             node_starts_val.push([uiNode.start, uiNode.end]);
           }
 
-          if( loc_end > uiNode.end || (loc_end > uiNode.start && loc_end <= uiNode.end) ) {
+          if( loc_end >= uiNode.end || (loc_end > uiNode.start && loc_end <= uiNode.end) ) {
             node_ends.push(uiNode.x + uiNode.dx);
             node_ends_val.push([uiNode.start, uiNode.end]);
           }

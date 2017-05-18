@@ -1,4 +1,4 @@
-.ui.grid .row {
+/*.ui.grid .row {
     padding:2px;
 }
 #resultmodal {
@@ -35,14 +35,19 @@
 }
 .content {
     overflow: scroll !important;
-    max-height: 350px;
+    max-height: 280px;
     padding: 0px; 
 }
 #rightmenu {
     overflow: auto;
-    height: 100%;
+    height: 82%;
     max-height: inherit;
 }
+
+#rightmenu.item {
+    display: inline-block;
+}
+
 #leftmenu {
     max-height: 100%;
     overflow: auto;
@@ -71,4 +76,57 @@
 }
 .ui.menu {
     padding: 0;
+}*/
+
+.ui.grid {
+    padding: 0px;
+    max-height: inherit;
+}
+
+#titleRow {
+    padding: 0;
+}
+
+#sourcemodal {
+    width: auto;
+    left: 60%;
+}
+
+#newmodal {
+        left: 50%;
+    top: 40%
+    max-height: 400px;
+}
+
+#leftRightRow {
+    height: 350px;
+}
+
+#leftmenu {
+    height: 335px;
+    overflow: auto;
+}
+
+#rightmenu {
+    height: 335px;
+}
+
+#rightmenu .content {
+    overflow: auto;
+    height: 290px;
+}
+
+#titleRow {
+    height: 30px;
+}
+
+#titleRow div.four {
+    vertical-align: middle;
+    height: 30px;
+    line-height: 30px;
+}
+
+#titleRow div.twelve {
+    height: 30px;
+    line-height: 30px;
 }

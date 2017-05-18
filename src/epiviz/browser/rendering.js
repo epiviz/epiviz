@@ -205,13 +205,13 @@ function loadMeasurements(datasource, input) {
         item.className = "item";
         item.id = sanitized;
         title.className = "title";
-        if(fieldType == "category") {
-            title.innerHTML = text + "<div class=\"ui mini circular horizontal label\"> filtered: <span class=\"data-count\">0</span> of " + fieldCount + "</div>";
-        }
-        else {
-            title.innerHTML = text + "<div class=\"ui mini circular horizontal label\">" + fieldCount + "</div>";
+        // if(fieldType == "category") {
+        //     title.innerHTML = text + "<div class=\"ui mini circular horizontal label\"> filtered: <span class=\"data-count\">0</span> of " + fieldCount + "</div>";
+        // }
+        // else {
+            title.innerHTML = text;
 
-        }
+        // }
         icon.className = "dropdown icon";
         content.className = "active content";
         form.className = "ui form";
@@ -227,11 +227,11 @@ function loadMeasurements(datasource, input) {
         $('#checkbox' + i).checkbox({
 
             onChecked: function() {
-                $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) + parseInt($(this).parent().find("div.label").text()) );
+                // $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) + parseInt($(this).parent().find("div.label").text()) );
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], true, measurements);
             },
             onUnchecked: function() {
-                $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) - parseInt($(this).parent().find("div.label").text()) );
+                // $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) - parseInt($(this).parent().find("div.label").text()) );
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], false, measurements);
             }
         });

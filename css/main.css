@@ -391,3 +391,8 @@ tfoot th input { width: 80% }
 .ui-state-disabled {
   display: none;
 }
+
+#data-source-button {
+  background: #c2222c;
+  color: white;
+}

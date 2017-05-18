@@ -1,4 +1,4 @@
-var current_measurements;
+var current_measurements = undefined;
 var filters = {};
 var graph;
 var selections = {};
@@ -39,6 +39,7 @@ function initialize_dropdown(source) {
 			var countUpdate = $('#count-' + currentSource);
 			countUpdate.attr("data-selected", 0);
 			countUpdate.html(" (Selected: " + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
+			$("#leftMenuCount span.data-count").text(countUpdate.attr('data-total'));
 		}
 	});
 	$('#sample-type').dropdown({
@@ -158,13 +159,13 @@ function selectSamples() {
 		var countUpdate = $('#count-' + currentSource);
 		countUpdate.attr("data-selected", count);
 		countUpdate.html(" (Selected: " + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
-
+		$("#leftMenuCount span.data-count").text(countUpdate.attr('data-total'));
 		toggleParent(currentSource);
 	}
 }
 
 function showModal(source, input, cb) {
-	current_measurements;
+	current_measurements = undefined;
 	filters = {};
 	graph;
 	selections = {};
@@ -177,25 +178,29 @@ function showModal(source, input, cb) {
 	selectionDown = false;
 	currentSource = null;
 
+	$('#newmodal').remove();
+	$('#resultmodal').remove();
+
 	//measurements placeholder for callback
 	var modal = 
 	`<div id ="newmodal" class="ui long modal">
 		<div class="header">
 			Choose measurements from: ` + source + `
+			<div id="warning-message" class="ui negative message" style="display:none;">
+				<i class="close icon"></i>
+				<div class="header">
+					No measurements selected
+				</div>
+			</div>
 		</div>
 		<div class="content m">
 			<div class="ui grid">
-				<div class="row">
-					<div class="six wide column">
-						<div id="warning-message" class="ui negative message" style="display:none;">
-							<i class="close icon"></i>
-							<div class="header">
-								No measurements selected
-							</div>
-						</div>
+				<div id="titleRow" class="row">
+					<div class="four wide column">
+						Filter Samples <div id=\"leftMenuCount\" class=\"ui mini circular horizontal label\"> <span class=\"data-count\">0</span> of ` + input.length + `</div>
 					</div>
-					<div class="ten wide column inline">
-						selection type: 
+					<div class="twelve wide column">
+						Sample selection type: 
 						<div class="ui compact selection dropdown" id="select-type">
 						  	<i class="dropdown icon"></i>
 						  	<div class="text">Manual</div>
@@ -224,7 +229,7 @@ function showModal(source, input, cb) {
 						</div>
 					</div>
 				</div>
-				<div class="row">
+				<div id="leftRightRow" class="row">
 					<div class="four wide column">
 						<div id="leftmenu" class="ui vertical scrolling accordion menu"> 
 						</div>
@@ -249,7 +254,7 @@ function showModal(source, input, cb) {
 			</div>
 		</div>
 		<div class="actions">
-			<div class="ui grey back button" id="cancel">Back</div>
+			<div class="ui grey back button" id="cancel">Cancel</div>
 			<div class="ui primary button" id="ok">Ok</div>
 		</div>
 	</div>`
@@ -266,7 +271,7 @@ function showModal(source, input, cb) {
 			approve: '.ui.primary.button'
 		},
 		onDeny: function() {
-			$('#sourcemodal').modal('show');
+			// $('#sourcemodal').modal('show');
 			$('#leftmenu').empty();
 			$('#rightmenu').empty();
 			$('#resultmodal').remove();
@@ -289,7 +294,7 @@ function showModal(source, input, cb) {
 
 function initialize(sources) {
 
-	current_measurements;
+	current_measurements = undefined;
 	filters = {};
 	graph;
 	selections = {};
@@ -303,6 +308,7 @@ function initialize(sources) {
 	currentSource = null;
 
 	$('#sourcemodal').remove();
+	$('#resultmodal').remove();
 
 	var form =     
 	`<div class="ui small modal" id="sourcemodal">
@@ -410,9 +416,11 @@ function attachActions(measurements) {
 			if (checked) {
 				$count.attr("data-selected", 0)
 				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 			} else {
 				$count.attr("data-selected", total);
 				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 			}
 		} else {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
@@ -434,10 +442,12 @@ function attachActions(measurements) {
 				selected = selected - 1;
 				$count.attr("data-selected", selected)
 				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 			} else {
 				selected = selected + 1;
 				$count.attr("data-selected", selected);
 				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 			}
 			toggleParent(split[3]);
 		}
@@ -618,6 +628,7 @@ function filter(value, anno, filter, measurements) {
 		$count.attr("data-selected", _.size(selections));
 		$count.attr("data-total", new_list[source].length);
 		$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+		$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 		toggleParent(source);
 		if ($count.attr('data-total') === "0") {
 			var text = '<span style="padding-left: 5%">No More Measurements</span>'
