@@ -26,7 +26,7 @@ function rightAccordion(measurements) {
         $count.attr('id', "count-" + source);
         $count.attr('data-selected', "0");
         $count.attr('data-total', value.length);
-        $count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+        $count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
         checkboxlabel.appendChild(checkboxcount);
 
         icon.className = "dropdown icon";
@@ -143,14 +143,21 @@ function loadMeasurements(datasource, input) {
         var fields = document.createElement('div');
         var sanitized = text.replace(/[^a-zA-Z0-9]/g, '');
         values = [];
+        var allCounts = {};
+        var fieldCount = 0;
+        var fieldType = null;
+
         _.forEach(measurements, function(value, data_source) {
-            values = _.chain(value).map(function(id) {
+            allValues = _.chain(value).map(function(id) {
                 if (id.annotation != null && text in id.annotation) {
                     return id.annotation[text];
                 }
-            }).concat(values).uniq().filter(function (d) {
+            }).concat(values).value();
+            fieldCount = allValues.length;
+            allCounts = _.countBy(allValues);
+            values = _.uniq(allValues).filter(function (d) {
                 return d != undefined;
-            }).value();
+            });
         });
         values = values.sort(sortAlphaNum);
         // console.log(parseInt(values[getRandom(0, values.length - 1)]));
@@ -174,6 +181,7 @@ function loadMeasurements(datasource, input) {
             ranges[range1.id] = values;
         } else {
             filters[text] = {values: [], type: "normal"};
+            fieldType = "category";
             values.forEach(function(anno) {
                 var field = document.createElement('div');
                 var checkbox = document.createElement('div');
@@ -186,7 +194,7 @@ function loadMeasurements(datasource, input) {
                 input.type = "checkbox"
                 input.name = s_anno;
                 input.value = sanitized + "-" + s_anno;
-                label.innerHTML = anno; 
+                label.innerHTML = anno + "<div class=\"ui mini circular horizontal label\"> " + allCounts[anno] + "</div>"; 
                 fields.appendChild(field);
                 field.appendChild(checkbox);
                 checkbox.appendChild(input);
@@ -197,7 +205,13 @@ function loadMeasurements(datasource, input) {
         item.className = "item";
         item.id = sanitized;
         title.className = "title";
-        title.innerHTML = text;
+        if(fieldType == "category") {
+            title.innerHTML = text + "<div class=\"ui mini circular horizontal label\"> filtered: <span class=\"data-count\">0</span> of " + fieldCount + "</div>";
+        }
+        else {
+            title.innerHTML = text + "<div class=\"ui mini circular horizontal label\">" + fieldCount + "</div>";
+
+        }
         icon.className = "dropdown icon";
         content.className = "active content";
         form.className = "ui form";
@@ -213,9 +227,11 @@ function loadMeasurements(datasource, input) {
         $('#checkbox' + i).checkbox({
 
             onChecked: function() {
+                $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) + parseInt($(this).parent().find("div.label").text()) );
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], true, measurements);
             },
             onUnchecked: function() {
+                $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) - parseInt($(this).parent().find("div.label").text()) );
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], false, measurements);
             }
         });

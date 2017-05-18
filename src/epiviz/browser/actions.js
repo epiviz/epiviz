@@ -38,7 +38,7 @@ function initialize_dropdown(source) {
 			selections = {};
 			var countUpdate = $('#count-' + currentSource);
 			countUpdate.attr("data-selected", 0);
-			countUpdate.html(" (" + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
+			countUpdate.html(" (Selected: " + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
 		}
 	});
 	$('#sample-type').dropdown({
@@ -157,7 +157,7 @@ function selectSamples() {
 
 		var countUpdate = $('#count-' + currentSource);
 		countUpdate.attr("data-selected", count);
-		countUpdate.html(" (" + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
+		countUpdate.html(" (Selected: " + countUpdate.attr("data-selected") + " of " + countUpdate.attr('data-total') + ")");
 
 		toggleParent(currentSource);
 	}
@@ -396,10 +396,10 @@ function attachActions(measurements) {
 			});
 			if (checked) {
 				$count.attr("data-selected", 0)
-				$count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 			} else {
 				$count.attr("data-selected", total);
-				$count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 			}
 		} else {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
@@ -420,11 +420,11 @@ function attachActions(measurements) {
 			if (checked) {
 				selected = selected - 1;
 				$count.attr("data-selected", selected)
-				$count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 			} else {
 				selected = selected + 1;
 				$count.attr("data-selected", selected);
-				$count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 			}
 			toggleParent(split[3]);
 		}
@@ -604,7 +604,7 @@ function filter(value, anno, filter, measurements) {
 		var $count = $('#count-' + source);
 		$count.attr("data-selected", _.size(selections));
 		$count.attr("data-total", new_list[source].length);
-		$count.html(" (" + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
+		$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 		toggleParent(source);
 		if ($count.attr('data-total') === "0") {
 			var text = '<span style="padding-left: 5%">No More Measurements</span>'
