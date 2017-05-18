@@ -164,6 +164,19 @@ function selectSamples() {
 }
 
 function showModal(source, input, cb) {
+	current_measurements;
+	filters = {};
+	graph;
+	selections = {};
+	store = {};
+	measurements = {};
+	selectionCount = 0;
+	selectionType = "Random";
+	selectionAuto = false;
+	selectionDrag = false;
+	selectionDown = false;
+	currentSource = null;
+
 	//measurements placeholder for callback
 	var modal = 
 	`<div id ="newmodal" class="ui long modal">
