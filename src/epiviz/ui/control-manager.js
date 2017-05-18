@@ -564,7 +564,10 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           if(m.datasourceGroup() == datasourceGroup) {
               workspaceDSG = true;
           }
-          datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG];       
+
+          if(!(datasourceGroups[m.datasourceGroup()] && datasourceGroups[m.datasourceGroup()][0] != "description not available")) {
+             datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG];
+          }     
         });
 
         initialize(datasourceGroups);
