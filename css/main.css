@@ -393,6 +393,7 @@ tfoot th input { width: 80% }
 }
 
 #data-source-button {
-  background: #c2222c;
+  /*background: #c2222c;*/
+  background: #1d5aa9;
   color: white;
 }
