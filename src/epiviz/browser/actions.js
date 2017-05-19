@@ -242,7 +242,7 @@ function showModal(source, input, cb) {
 			</div>
 		</div>
 		<div class="actions">
-			<div class="ui grey button" id="cancel">Back</div>
+			<div class="ui grey button" id="cancel">Cancel</div>
 			<div class="ui primary button" id="ok">Ok</div>
 		</div>
 	</div>
