@@ -239,6 +239,23 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   if (!(chartType.chartDisplayType() in this._chartsOrder)) { this._chartsOrder[chartType.chartDisplayType()] = []; }
   this._chartsOrder[chartType.chartDisplayType()].push(id);
 
+  var chartKeys = Object.keys(this._charts);
+  var dsExists = false;
+
+  chartKeys.forEach(function(cm) {
+    if(cm.indexOf("data-structure") != -1) {
+      dsExists = true;
+    }
+  });
+  
+  if(dsExists) {
+    $("#data-source-button").hide();
+  }
+  else {
+    $("#data-source-button").show();
+  }
+
+
   this._chartAdded.notify(new epiviz.ui.charts.VisEventArgs(id, {
       type: chartType,
       properties: chartProperties,
@@ -263,6 +280,22 @@ epiviz.ui.charts.ChartManager.prototype.removeChart = function(id) {
   var chartsContainer = chartsAccordion.find('.vis-container');
   if (chartsContainer.children().length == 0) {
     chartDisplayTypeContainer.empty();
+  }
+
+  var chartKeys = Object.keys(this._charts);
+  var dsExists = false;
+
+  chartKeys.forEach(function(cm) {
+    if(cm.indexOf("data-structure") != -1) {
+      dsExists = true;
+    }
+  });
+  
+  if(dsExists) {
+    $("#data-source-button").hide();
+  }
+  else {
+    $("#data-source-button").show();
   }
 
   this._chartRemoved.notify(new epiviz.ui.charts.VisEventArgs(id, this._chartsOrder));
