@@ -197,6 +197,10 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     chartMarkers
   );
 
+  if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    chartProperties.customSettingsValues.title = visConfigSelection.datasourceGroup;
+  }
+
   var chart = chartType.createNew(id, container, chartProperties);
   this._charts[id] = chart;
 

@@ -588,7 +588,7 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
 
   var self = this;
 
-  var navbar_y = 27;
+  var navbar_y = self.margins().top() - 23;
   var navbar_height = 17;
 
   //var location =  $('#text-location').val();
