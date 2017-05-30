@@ -130,3 +130,12 @@
     height: 30px;
     line-height: 30px;
 }
+
+#startScreenApp {
+    height: 250px;
+}
+
+#startScreenApp > div.content.m > div {
+    overflow: scroll;
+    height: 180px;
+}

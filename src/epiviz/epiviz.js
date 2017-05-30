@@ -140,6 +140,9 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerActiveWorkspaceContentChanged();
   this._registerLocationChanged();
 
+  // Register Loading App events
+  this._registerLoadingAppScreen();
+
   /*
    * Prevent closing if workspace has changed
    */
@@ -160,15 +163,13 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
 epiviz.EpiViz.VERSION = '4';
 
 epiviz.EpiViz.prototype.start = function() {
-  this._cookieManager.initialize();
-
-  this._locationManager.initialize();
-
-  this._controlManager.initialize();
-  
-  this._workspaceManager.initialize();
 
   this._measurementsManager.initialize();
+  this._controlManager.startApp();
+  this._cookieManager.initialize();
+  this._locationManager.initialize();
+  this._controlManager.initialize();
+  this._workspaceManager.initialize();
 };
 
 /**
@@ -1005,6 +1006,19 @@ epiviz.EpiViz.prototype._registerChartPropogateIcicleLocationChange = function()
               e.start, 
               e.width));
       }
+    }
+  ));
+};
+
+// loading current data set for app screen
+epiviz.EpiViz.prototype._registerLoadingAppScreen = function() {
+  var self = this;
+
+  self._dataManager._loadingCurrentDataSet.addListener(new epiviz.events.EventListener(
+    function(e) {
+
+      //console.log(e);
+      self._controlManager.updateLoadingScreen(e);
     }
   ));
 };

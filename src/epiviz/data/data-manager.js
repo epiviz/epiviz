@@ -144,6 +144,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._requestGetAvailableCharts = new epiviz.events.Event();
 
+   /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._loadingCurrentDataSet = new epiviz.events.Event();
+
 
   this._registerProviderAddMeasurements();
   this._registerProviderRemoveMeasurements();
@@ -349,6 +355,8 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
        */
       function(response) {
         var jsondata = response.data();
+
+        self._loadingCurrentDataSet.notify({"dataset": provider.id(), "count": nResponses, "size": self._dataProviderFactory.size(), "sampleSize": jsondata['id'].length});
 
         if (jsondata) {
           var n = jsondata['id'] ? (jsondata['id'].length || 0) : 0;

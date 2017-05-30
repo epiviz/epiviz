@@ -1134,3 +1134,88 @@ epiviz.ui.ControlManager.prototype._registerSeqInfosUpdated = function() {
     self._updateSeqNames(seqNames);
   }));
 };
+
+
+/**
+ * Start screen modal
+ */
+epiviz.ui.ControlManager.prototype.startApp = function() {
+  var self = this;
+
+	var modal = 
+        `<div id ="startScreenApp" class="ui small modal">
+          <div class="header">
+            <div class="ui grid">
+              <div class="row">
+                <div class="four wide column">
+                  <img src="img/metaviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />
+                </div>
+                <div class="three wide column">
+                </div>
+                <div class="nine wide column">
+                  Metaviz
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="content m">
+            <p>The following data sets are loaded into the browser. </p>
+            <div class="ui segment">
+              <div id="loaderScreenApp" class="ui tiny active inverted dimmer">
+                <div class="ui text loader">
+                  Loading data sets and sample annotations..
+                </div>
+              </div>
+              <p>
+                <table id="sourceLoaderList" class="ui very basic table">
+                  <thead>
+                    <tr><th> Dataset</th>
+                    <th> Sample Count</th>
+                  </tr></thead>
+                  <tbody id="listScreenApp" style="overflow:auto">
+                  </tbody>
+                </table>
+              </p>
+            </div>
+          </div>
+          <div class="actions">
+            <div class="ui primary button disabled" id="okScreenApp">Start App</div>
+          </div>
+        </div>`;
+
+    $("body").append(modal);
+
+    $("#startScreenApp").modal({
+      closable: false
+    });
+
+    $("#startScreenApp").modal("show");
+
+    $("#okScreenApp").click(function(e) {
+        $("#startScreenApp").modal("hide");
+        $("#data-source-button").trigger("click");
+    });
+};
+
+
+epiviz.ui.ControlManager.prototype.updateLoadingScreen = function(e) {
+  var self = this;
+
+  if(e.dataset != "empty") {
+    var item = `
+        <tr>
+          <td>` + e.dataset + `</td>
+          <td>` + e.sampleSize + `</td>
+        </tr>
+        `;
+
+    $("#listScreenApp").append(item);
+
+    if( (e.count + 1) == e.size ) {
+      $("#loaderScreenApp").removeClass("active");
+      $("#loaderScreenApp").addClass("disabled");
+      $("#okScreenApp").removeClass("disabled");
+    }
+  }
+};
+
