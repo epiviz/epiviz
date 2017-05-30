@@ -93,7 +93,7 @@ epiviz.Config.SETTINGS = {
     'data-structure': {
       width: 800,
       height: 350,
-      margins: new epiviz.ui.charts.Margins(70, 10, 10, 10),
+      margins: new epiviz.ui.charts.Margins(55, 10, 10, 10),
       colors: 'd3-category20',
       decorations: [
         'epiviz.ui.charts.tree.decoration.TogglePropagateSelectionButton',
