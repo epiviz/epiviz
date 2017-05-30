@@ -678,7 +678,9 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
             var elem = filterBrowser[f];
 
             if(elem.type == "range") {
-              filterText.push(f + " IN [" + elem.values.join(", ") + "]");
+              if(elem.values.length > 1) {
+                filterText.push(f + " IN [" + elem.values.join(", ") + "]");
+              }
             }
             else {
               if(elem.values.length > 1) {
