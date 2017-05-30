@@ -140,7 +140,7 @@ epiviz.ui.charts.ChartManager = function(config) {
  * @param {epiviz.ui.charts.VisualizationProperties} [chartProperties]
  * @returns {string} The id of the newly created chart
  */
-epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfigSelection, id, chartProperties) {
+epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfigSelection, id, chartProperties, chartTitle) {
   id = id || sprintf('%s-%s-%s', chartType.chartDisplayType(), chartType.chartHtmlAttributeName(), epiviz.utils.generatePseudoGUID(5));
   var css = chartType.cssClass();
 
@@ -199,6 +199,9 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
 
   if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     chartProperties.customSettingsValues.title = visConfigSelection.datasourceGroup;
+  }
+  else if (chartTitle) {
+    chartProperties.customSettingsValues.title = chartTitle;
   }
 
   var chart = chartType.createNew(id, container, chartProperties);

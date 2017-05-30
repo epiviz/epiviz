@@ -644,7 +644,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
         });
 
         var measurements = data.subset(function(m) { return m.datasourceGroup() === datasourceGroup });
-        showModal(datasourceGroup, measurements.raw(), function(selected) {
+        showModal(datasourceGroup, measurements.raw(), function(selected, filterBrowser) {
           var mSet = new epiviz.measurements.MeasurementSet();
           for (var i = 0; i < selected.length; i++) {
             var measurement = selected[i];
@@ -672,7 +672,26 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
               undefined, // annotation
               chartType.chartName(), // defaultChartType
               chartType.minSelectedMeasurements());
-          self._addChart.notify({type: chartType, visConfigSelection: vconfig});
+
+          var filterText = [];
+          for (var f in filterBrowser) {
+            var elem = filterBrowser[f];
+
+            if(elem.type == "range") {
+              filterText.push(f + " IN [" + elem.values.join(", ") + "]");
+            }
+            else {
+              if(elem.values.length > 1) {
+                filterText.push(f + " IN (" + elem.values.join(" | ") + ")");
+              }
+              else if(elem.values.length == 1){
+                filterText.push(f + " = " + elem.values[0]);
+              }
+            }
+          }
+
+          filterText = filterText.join(" AND ");
+          self._addChart.notify({type: chartType, visConfigSelection: vconfig, title: filterText});
 
           $('#resultmodal').remove();
           $('#newmodal').remove();

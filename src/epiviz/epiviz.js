@@ -189,8 +189,8 @@ epiviz.EpiViz.prototype.config = function() {
  * @returns {string} the id of the chart just created
  * @private
  */
-epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, chartProperties) {
-  chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties);
+epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, chartProperties, chartTitle) {
+  chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties, chartTitle);
   var self = this;
   // TODO: Maybe later implement hierarchical display type (see display-type.js for the start of the idea)
   if (type.typeName() == 'epiviz.plugins.charts.PCAScatterPlot'){
@@ -346,7 +346,7 @@ epiviz.EpiViz.prototype._registerUiAddChart = function() {
   this._controlManager.onAddChart().addListener(new epiviz.events.EventListener(
     /** @param {{type: epiviz.ui.charts.ChartType, visConfigSelection: epiviz.ui.controls.VisConfigSelection}} e */
     function(e) {
-      self._addChart(e.type, e.visConfigSelection);
+      self._addChart(e.type, e.visConfigSelection, undefined, undefined, e.title);
     }));
 };
 

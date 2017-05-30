@@ -682,7 +682,7 @@ function storeMeasurement(measurements, cb) {
 	$('#rightmenu').empty();
 	$('#resultTable').empty();
 	$('#sourcemodal').remove();
-	cb(store[name]);
+	cb(store[name], filters);
 	// resultTable(name, new_list, cb);
 }
 
