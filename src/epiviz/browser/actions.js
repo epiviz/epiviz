@@ -330,7 +330,7 @@ function initialize(sources) {
 	fields.className = "grouped fields";
 
     var table = document.createElement("table");
-    table.className = "ui celled table compact";
+    table.className = "ui selectable celled table compact";
     var tableBody = document.createElement("tbody");
 
 	var thead = document.createElement("thead");
@@ -346,6 +346,9 @@ function initialize(sources) {
 
 	thead.appendChild(tr);
     table.appendChild(thead);
+
+	table.appendChild(tableBody);
+	$('form').append(table);
 
 	Object.keys(sources).forEach(function(value) {
 		var field = document.createElement('div');
@@ -371,15 +374,18 @@ function initialize(sources) {
 		var td = document.createElement("td");
 		td.appendChild(field);
 		tr.appendChild(td);
+		tr.id = value;
 
 		var td = document.createElement("td");
 		td.innerHTML = sources[value][0];
 		tr.appendChild(td);
 		tableBody.appendChild(tr);
 
+		$("#" + value).click(function() {
+			$("#"+value).find(".ui.checkbox").checkbox("check");
+		});
+
 	});
-	table.appendChild(tableBody);
-	$('form').append(table);
 	// $('#form').append(fields);
 	$('#form').form();
 }
