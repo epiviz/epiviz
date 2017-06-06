@@ -46,10 +46,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.GenesTrackType',
     'epiviz.plugins.charts.HeatmapPlotType',
     'epiviz.plugins.charts.LinePlotType',
-    'epiviz.plugins.charts.StackedLinePlotType',
-    'epiviz.ui.charts.tree.IcicleType',
-    'epiviz.plugins.charts.CustomScatterPlotType',
-    'epiviz.plugins.charts.DiversityScatterPlotType'
+    'epiviz.plugins.charts.StackedLinePlotType'
   ],
 
   // Chart default settings
