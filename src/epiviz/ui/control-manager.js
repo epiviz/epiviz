@@ -585,7 +585,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
     $(sprintf('<li class="ui-widget-header">%s</li>', displayTypeLabels[displayType])).appendTo(visMenu);
     chartsByDisplayType[displayType].forEach(function(chartType, i) {
       var id = sprintf('%s-menu-add-%s', chartType.chartDisplayType(), chartType.chartHtmlAttributeName());
-      visMenu.append(sprintf('<li><a href="javascript:void(0)" id="%s">Add New %s</a></li>', id, chartType.chartName()));
+      visMenu.append(sprintf('<li><a href="javascript:void(0)" id="%s">%s</a></li>', id, chartType.chartName()));
 
       $('#' + id).click(function() {
         var data = self._measurementsManager.measurements().subset(chartType.measurementsFilter());
@@ -698,46 +698,6 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           $('#resultmodal').remove();
           $('#newmodal').remove();
         });
-        // var wizardSteps = [];
-        // if (chartType.isRestrictedToSameDatasourceGroup()) {
-        //   wizardSteps.push(new epiviz.ui.controls.DatasourceGroupWizardStep());
-        // }
-        // if (chartType.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
-        //   wizardSteps.push(new epiviz.ui.controls.MeaurementsWizardStep());
-        // }
-
-        // if (!wizardSteps.length) {
-        //   self._addChart.notify({
-        //     type: chartType,
-        //     visConfigSelection: new epiviz.ui.controls.VisConfigSelection(
-        //       self._measurementsManager.measurements().subset(chartType.measurementsFilter()))});
-        //   return;
-        // }
-
-        // var wizardMeasurements = self._measurementsManager.measurements().subset(chartType.measurementsFilter());
-        // wizardMeasurements.addAll(self._measurementsManager.measurements()
-        //   .map(function(m) { return m.datasource(); })
-        //   .subset(chartType.measurementsFilter()));
-        // var dialog = new epiviz.ui.controls.Wizard(
-        //   sprintf('Add new %s', chartType.chartName()),
-        //   {finish:
-        //     /** @param {epiviz.ui.controls.VisConfigSelection} data */
-        //     function(data) {
-        //       self._addChart.notify({type: chartType, visConfigSelection: data});
-        //     }
-        //   },
-        //   wizardSteps,
-        //   new epiviz.ui.controls.VisConfigSelection(
-        //     wizardMeasurements, // measurements
-        //     undefined, // datasource
-        //     undefined, // datasourceGroup
-        //     undefined, // dataprovider
-        //     undefined, // annotation
-        //     chartType.chartName(), // defaultChartType
-        //     chartType.minSelectedMeasurements()),
-        //   '750', undefined, // size of dialog
-        //   chartType.isRestrictedToSameDatasourceGroup()); // showTabs
-        // dialog.show();
 
         visMenu.hide();
       });
@@ -1164,45 +1124,43 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
   var self = this;
 
 	var modal = 
-        `<div id ="startScreenApp" class="ui small modal">
-          <div class="header">
-            <div class="ui grid">
-              <div class="row">
-                <div class="four wide column">
-                  <img src="img/metaviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />
-                </div>
-                <div class="three wide column">
-                </div>
-                <div class="nine wide column">
-                  Metaviz
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="content m">
-            <p>The following data sets are loaded into the browser. </p>
-            <div class="ui segment">
-              <div id="loaderScreenApp" class="ui tiny active inverted dimmer">
-                <div class="ui text loader">
-                  Loading data sets and sample annotations..
-                </div>
-              </div>
-              <p>
-                <table id="sourceLoaderList" class="ui very basic table">
-                  <thead>
-                    <tr><th> Dataset</th>
-                    <th> Sample Count</th>
-                  </tr></thead>
-                  <tbody id="listScreenApp" style="overflow:auto">
-                  </tbody>
-                </table>
-              </p>
-            </div>
-          </div>
-          <div class="actions">
-            <div class="ui primary button disabled" id="okScreenApp">Start App</div>
-          </div>
-        </div>`;
+        '<div id ="startScreenApp" class="ui small modal">' +
+          '<div class="header">'+
+            '<div class="ui grid">'+
+              '<div class="row">'+
+                '<div class="four wide column">'+
+                  '<img src="img/metaviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />'+
+                '</div>'+
+                '<div class="one wide column">'+
+                '</div>'+
+                '<div class="eleven wide column">'+
+                 ' UMD Metagenome Browser'+
+                '</div>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="content m">'+
+            '<p> <span class="sampleCount">0</span> Samples from <span class="dataCount">0</span> datasets are available.</p>'+
+            '<div class="ui segment">'+
+              '<div id="loaderScreenApp" class="ui tiny active inverted dimmer">'+
+                '<div class="ui text loader">'+
+                  'Loading data sets and sample annotations..'+
+                '</div>'+
+              '</div>'+
+              '<table id="sourceLoaderList" class="ui very basic table">'+
+                '<thead>'+
+                  '<tr><th> Dataset</th>'+
+                  '<th> Sample Count</th>'+
+                '</tr></thead>'+
+                '<tbody id="listScreenApp" style="overflow:auto">'+
+                '</tbody>'+
+              '</table>'+
+            '</div>'+
+          '</div>'+
+          '<div class="actions">'+
+            '<div class="ui primary button disabled" id="okScreenApp">Start App</div>'+
+          '</div>'+
+        '</div>';
 
     $("body").append(modal);
 
@@ -1223,12 +1181,17 @@ epiviz.ui.ControlManager.prototype.updateLoadingScreen = function(e) {
   var self = this;
 
   if(e.dataset != "empty") {
-    var item = `
-        <tr>
-          <td>` + e.dataset + `</td>
-          <td>` + e.sampleSize + `</td>
-        </tr>
-        `;
+
+    var currCount = parseInt($("#startScreenApp").find(".sampleCount").text());
+    var currSize = parseInt($("#startScreenApp").find(".dataCount").text());
+
+    $("#startScreenApp").find(".sampleCount").text(currCount + e.sampleSize);
+    $("#startScreenApp").find(".dataCount").text(currSize + 1);
+
+    var item = '<tr>' +
+          '<td>' + e.dataset + '</td>'+
+          '<td>' + e.sampleSize + '</td>'+
+        '</tr>';
 
     $("#listScreenApp").append(item);
 
