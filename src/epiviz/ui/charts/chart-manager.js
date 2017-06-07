@@ -197,6 +197,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     chartMarkers
   );
 
+  chartProperties.customSettingsValues.title = "";
+
   if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     chartProperties.customSettingsValues.title = visConfigSelection.datasourceGroup;
   }
