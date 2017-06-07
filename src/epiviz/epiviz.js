@@ -165,7 +165,9 @@ epiviz.EpiViz.VERSION = '4';
 epiviz.EpiViz.prototype.start = function() {
 
   this._measurementsManager.initialize();
-  this._controlManager.startApp();
+  if (this._config.configType == "default") {
+    this._controlManager.startApp();
+  }
   this._cookieManager.initialize();
   this._locationManager.initialize();
   this._controlManager.initialize();
