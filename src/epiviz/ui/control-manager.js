@@ -1158,6 +1158,7 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
             '</div>'+
           '</div>'+
           '<div class="actions">'+
+            '<div class="ui grey back button" id="cancel">Close</div>'+
             '<div class="ui primary button disabled" id="okScreenApp">Start App</div>'+
           '</div>'+
         '</div>';
@@ -1165,7 +1166,10 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
     $("body").append(modal);
 
     $("#startScreenApp").modal({
-      closable: false
+      closable: false,
+      selector:  {
+        deny: '.ui.grey.button'
+      }
     });
 
     $("#startScreenApp").modal("show");
