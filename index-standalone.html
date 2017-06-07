@@ -9,6 +9,12 @@
 
     <!-- CSS -->
     <link href="css/fa/css/font-awesome.css" rel="stylesheet"/>
+
+    <!--Semantic-->
+    <link rel="stylesheet" href="src/epiviz/browser/semantic/dist/semantic.min.css">
+    <link rel="stylesheet" href="src/epiviz/browser/semantic-ui-range-master/range.css">
+    <link rel="stylesheet" href="src/epiviz/browser/browser.css">
+
     <!-- Icons -->
     <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
 
@@ -266,6 +272,13 @@
 
     <script src="src/epiviz/ui/charts/tree/decoration/toggle-propagate-selection-button.js"></script>
 
+    <script src="src/epiviz/browser/semantic/dist/semantic.js"></script>
+    <script src="src/epiviz/browser/semantic-ui-range-master/range.js"></script>
+    <script src="src/epiviz/browser/lodash/dist/lodash.min.js"></script>
+    <script src="src/epiviz/browser/actions.js"></script>
+    <script src="src/epiviz/browser/rendering.js"></script>
+    <script src="src/epiviz/browser/tablesort.js"></script>
+
     <script src="src/epiviz/main.js"></script>
     <script src="src/epiviz/standalone-settings.js"></script>
 
@@ -312,6 +325,8 @@
         </div>
 
         <span style="display:none;" class="separator">|</span>
+
+        <button id="data-source-button">Start Here</button>
 
         <button id="vis-menu-button">Visualizations</button>
         <div class="dropdown-menu">
