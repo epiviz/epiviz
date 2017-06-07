@@ -181,7 +181,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="Epiviz is a scientific information visualization tool for genetic and epigenetic data, used to aid in the exploration and understanding of correlations between various genome features.">
+    <meta name="description" content="Metaviz is a scientific information visualization tool for metagenomic data, used to aid in the exploration of the hierarchical taxonomy and abundance matrix.">
     <title>Metaviz</title>
 
     <base href="<?php echo getenv('base_location');?>">

@@ -46,6 +46,19 @@ epiviz.Config.SETTINGS = {
 
   // Chart default settings
 
+  chartTypes: [
+    'epiviz.plugins.charts.ScatterPlotType',
+    'epiviz.plugins.charts.HeatmapPlotType',
+    'epiviz.plugins.charts.LinePlotType',
+    'epiviz.plugins.charts.StackedLinePlotType',
+    'epiviz.ui.charts.tree.IcicleType',
+    'epiviz.plugins.charts.PCAScatterPlotType',
+    'epiviz.plugins.charts.DiversityScatterPlotType'
+  ],
+
+  // Chart default settings
+
+  // Se decorations for individual charts or for groups of charts here
   chartSettings: {
     default: {
       colors: 'd3-category10',
@@ -87,9 +100,9 @@ epiviz.Config.SETTINGS = {
 
     'data-structure': {
       width: 800,
-      height: 300,
-      margins: new epiviz.ui.charts.Margins(50, 10, 10, 10),
-      colors: 'epiviz-v2-medium',
+      height: 350,
+      margins: new epiviz.ui.charts.Margins(55, 10, 10, 10),
+      colors: 'd3-category20',
       decorations: [
         'epiviz.ui.charts.tree.decoration.TogglePropagateSelectionButton',
         'epiviz.ui.charts.decoration.HierarchyFilterCodeButton'
@@ -102,8 +115,7 @@ epiviz.Config.SETTINGS = {
     },
 
     'epiviz.plugins.charts.LineTrack': {
-      height: 300,
-      margins: new epiviz.ui.charts.Margins(50, 20, 23, 10),
+      colors: 'epiviz-v2-bright',
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartColorByMeasurementsCodeButton'
@@ -124,13 +136,13 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlot': {
       width: 800,
       height: 400,
-      margins: new epiviz.ui.charts.Margins(160, 140, 10, 20),
+      margins: new epiviz.ui.charts.Margins(120, 60, 20, 40),
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
       ],
-      colors: 'alternative-5'
+      colors: 'heatmap-default'
     },
 
     'epiviz.plugins.charts.LinePlot': {
@@ -146,62 +158,89 @@ epiviz.Config.SETTINGS = {
     },
 
     'epiviz.plugins.charts.StackedLinePlot': {
-      width: 940,
-      height: 230,
-      margins: new epiviz.ui.charts.Margins(20, 10, 45, 10),
+      width: 800,
+      height: 400,
+      margins: new epiviz.ui.charts.Margins(30, 30, 50, 15),
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton',
         'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton'
       ],
-      colors: 'd3-category20'
-    }
+      colors: 'd3-category20b'
+    },
+    'epiviz.plugins.charts.PCAScatterPlot': {
+      margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+      ]
+     },
+    'epiviz.plugins.charts.DiversityScatterPlot': {
+      margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+      ]
+     }
   },
 
   chartCustomSettings: {
     'epiviz.plugins.charts.BlocksTrack': {
-      minBlockDistance: 3
+      minBlockDistance: 3,
+      useColorBy: false,
+      blockColorBy: 'label'
     },
     'epiviz.plugins.charts.GenesTrack': {
 
     },
     'epiviz.plugins.charts.LineTrack': {
-      step: 200,
-      interpolation: 'basis',
-      showPoints: true,
+      step: 1,
+      showPoints: false,
       showLines: true,
-      pointRadius: 3,
-      lineThickness: 2,
-      measurementGroupsAggregator: 'quartiles'
+      pointRadius: 1,
+      lineThickness: 2
     },
     'epiviz.plugins.charts.ScatterPlot': {
       circleRadiusRatio: 0.01
     },
     'epiviz.plugins.charts.HeatmapPlot': {
-      maxColumns: 150,
-      showDendrogramLabels: false,
-      dendrogramRatio: 0,
-      showColorsForRowLabels: true,
-      rowLabel: "AgeStatus",
-      clusteringAlg: "agglomerative"
+      colLabel: 'label',
+      maxColumns: 120,
+      clusteringAlg: 'agglomerative'
+    },
+    'epiviz.plugins.charts.StackedLinePlot': {
+      colLabel: 'label'
+    },
+    'epiviz.plugins.charts.PCAScatterPlot': {
+      xMin: -2,
+      xMax: 2,
+      yMin: -2,
+      yMax: 2
+    },
+    'epiviz.plugins.charts.DiversityScatterPlot': {
+      yMin: 0,
+      yMax: 6
     }
   },
 
+  // When loading Epiviz for the first time, this is what it will show:
   defaultWorkspaceSettings: {
-    name: 'Standalone',
+    name: epiviz.Config.DEFAULT_WORKSPACE_NAME,
     content: {
+      // This is the selected chromosome, start and end locations
       range: {
       },
-      measurements: [
-      ],
+
+      // The initial measurements loaded in the workspace
+      measurements: [],
+
+      // The initial charts on the initial workspace
       charts: {
-        track: [
-        ],
+        track: [],
         plot: []
       }
     }
   },
 
+  // For the heatmap clustering, register algorithms here:
   clustering: {
     algorithms: [
       'epiviz.ui.charts.transform.clustering.NoneClustering',
@@ -212,29 +251,6 @@ epiviz.Config.SETTINGS = {
   },
 
   colorPalettes: [
-    new epiviz.ui.charts.ColorPalette(
-      ['#3182bd','#3182bd','#e6550d','#6baed6','#fd8d3c','#9ecae1','#fdae6b','#c6dbef','#fdd0a2'],
-      'Alternative', 'alternative'),
-    new epiviz.ui.charts.ColorPalette(
-      ['#3182bd','#e6550d','#6baed6','#fd8d3c','#9ecae1','#fdae6b','#c6dbef','#fdd0a2', '#3182bd','#e6550d'],
-      'Alternative (2)', 'alternative-2'),
-    new epiviz.ui.charts.ColorPalette(
-      ['#3182bd','#6baed6','#9ecae1','#c6dbef', '#3182bd',
-      '#e6550d','#fd8d3c','#fdae6b','#fdd0a2', '#e6550d'],
-      'Alternative (3)', 'alternative-3'),
-    new epiviz.ui.charts.ColorPalette(
-      ['#1f77b4', '#1f77b4', '#67b1e4', '#ff7f0e', '#f4bc8b', '#2ca02c', '#a3e6a3', '#d62728', '#ecacac', '#9467bd', '#cdbade'],
-      'Alternative (4)', 'alternative-4'),
-    new epiviz.ui.charts.ColorPalette(
-      ['#1f77b4', 
-      '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-      '#67b1e4', '#f4bc8b', '#a3e6a3', '#ecacac', '#cdbade'],
-      'Alternative (5)', 'alternative-5'),
-    new epiviz.ui.charts.ColorPalette(
-      ['#1f77b4', 
-      '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-      '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'],
-      'Alternative (6)', 'alternative-6'),
     new epiviz.ui.charts.ColorPalette(
       ['#025167', '#e7003e', '#ffcd00', '#057d9f', '#970026', '#ffe373', '#ff8100'],
       'Epiviz v1.0 Colors', 'epiviz-v1'),
@@ -263,7 +279,8 @@ epiviz.Config.SETTINGS = {
       ['#f9a65a', '#599ad3', '#79c36a', '#f1595f', '#727272', '#cd7058', '#d77fb3'],
       'Genes Default', 'genes-default'),
     new epiviz.ui.charts.ColorPalette(
-      ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
+      //['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
+      ['#1859a9', '#ff7f0e', '#2ca02c', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
       'Heatmap Default', 'heatmap-default'),
     new epiviz.ui.charts.ColorPalette(
       ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"],

@@ -356,7 +356,9 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
       function(response) {
         var jsondata = response.data();
 
-        self._loadingCurrentDataSet.notify({"dataset": provider.id(), "count": nResponses, "size": self._dataProviderFactory.size(), "sampleSize": jsondata['id'].length});
+        if(self._config.configType == "default") {
+          self._loadingCurrentDataSet.notify({"dataset": provider.id(), "count": nResponses, "size": self._dataProviderFactory.size(), "sampleSize": jsondata['id'].length});
+        }
 
         if (jsondata) {
           var n = jsondata['id'] ? (jsondata['id'].length || 0) : 0;
