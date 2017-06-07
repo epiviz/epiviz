@@ -653,7 +653,7 @@ epiviz.data.WebsocketDataProvider.prototype._loadWorkspace = function (request) 
   var workspaceId = request.get('workspaceId');
   var result = new epiviz.events.EventResult();
   this._fireEvent(this.onRequestLoadWorkspace(), {
-    workspace: workspaceId,
+    workspace: workspaceId
   });
 
   var response = new epiviz.data.Response(request.id(), result);
