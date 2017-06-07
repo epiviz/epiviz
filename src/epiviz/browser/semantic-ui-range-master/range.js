@@ -310,7 +310,7 @@ $.fn.range = function(parameters) {
 							}
 							break;
 					}
-				},
+				}
 			
 			};
 			
@@ -343,7 +343,7 @@ $.fn.range.settings = {
 	values 		 : false,
 	input        : false,
 	
-	onChange     : function(value){},
+	onChange     : function(value){}
 
 };
 

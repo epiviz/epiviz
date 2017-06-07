@@ -255,22 +255,6 @@ function loadMeasurements(datasource, input) {
                 $('#' + ids).off('mouseup');
             });
         });
-
-        // $('#' + ids).on("mousemove", function(event) {
-        //     event.preventDefault();
-        //     // $(document).off('mousemove');
-        // });
-        // $('#' + ids).on("mouseup", function(event) {
-        //     // $(document).off('mousemove');
-        //     // $(document).off('mouseup');
-        //     event.preventDefault();
-        // });
-
-        // $('#' + ids).on("mousedown", function(event) {
-        //     // $(document).off('mousedown');
-        //     event.preventDefault();
-        // });
-
     });
 
     $('.active.content').each(function(index) {

@@ -65,30 +65,8 @@ function initialize_dropdown(source) {
 		onChange: function(min, max) {
 			selectionCount = min;
 			$('#sampleSizeValue').text(min + "% samples");
-			// if((selectionDrag && selectionDown)) {
-			// 	// return;
-			// 	selectSamples();
-			// }
 		}
 	});
-
-	// $('#sample-size').on("mousemove", function(event) {
-	// 	selectionDrag = true;
-	// 	event.preventDefault();
-	// 	// $(document).off('mousemove');
-	// });
-	// $('#sample-size').on("mouseup", function(event) {
-	// 	selectionDrag = false;
-	// 	selectionDown = false;
-	// 	// $(document).off('mousemove');
-	// 	// $(document).off('mouseup');
-	// 	event.preventDefault();
-	// });
-
-	// $('#sample-size').on("mousedown", function(event) {
-	// 	selectionDown = true;
-	// 	event.preventDefault();
-	// });
 }
 
 function selectSamples() {
@@ -108,17 +86,6 @@ function selectSamples() {
 		switch(selectionType) {
 			case 'Random':
 				var randomSamples = _.sampleSize(checkboxes, count);
-				// randomSamples.forEach(function(rs) {
-					// console.log(rs);
-				// 	if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
-				// 		if($(rs).parent().prop('id') != undefined) {
-				// 			var split = $(rs).parent().prop('id').split('-');
-				// 			$(rs).parent().checkbox('set checked');
-				// 			selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
-				// 			// $(rs).click();
-				// 		}
-				// 	}
-				// });
 				_.each(randomSamples, function(rs) {
 					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
 						if($(rs).parent().prop('id') != undefined) {
@@ -132,16 +99,6 @@ function selectSamples() {
 				});
 				break;
 			case 'Top':
-				// _.slice(checkboxes,0, count).forEach(function(rs) {
-				// 	if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
-				// 		if($(rs).parent().prop('id') != undefined) {
-				// 			var split = $(rs).parent().prop('id').split('-');
-				// 			$(rs).parent().checkbox('set checked');
-				// 			selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
-				// 			// $(rs).click();
-				// 		}
-				// 	}
-				// });
 				_.each(_.slice(checkboxes,0, count), function(rs) {
 					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
 						if($(rs).parent().prop('id') != undefined) {
@@ -183,81 +140,81 @@ function showModal(source, input, cb) {
 
 	//measurements placeholder for callback
 	var modal = 
-	`<div id ="newmodal" class="ui long modal">
-		<div class="header">
-			Choose measurements from: ` + source + `
-			<div id="warning-message" class="ui negative message" style="display:none;">
-				<i class="close icon"></i>
-				<div class="header">
-					No measurements selected
-				</div>
-			</div>
-		</div>
-		<div class="content m">
-			<div class="ui grid">
-				<div id="titleRow" class="row">
-					<div class="four wide column">
-						Filter Samples <div id=\"leftMenuCount\" class=\"ui mini circular horizontal label\"> <span class=\"data-count\">0</span> of ` + input.length + `</div>
-					</div>
-					<div class="twelve wide column">
-						Sample selection type: 
-						<div class="ui compact selection dropdown" id="select-type">
-						  	<i class="dropdown icon"></i>
-						  	<div class="text">Manual</div>
-						  	<div class="menu">
-						    	<div class="item" data-value="1">Auto</div>
-						    	<div class="item" data-value="default">Manual</div>
-						  	</div>
-						</div>
-						select: 
-						<div class="ui disabled compact selection dropdown" id="sample-type">
-						  	<i class="dropdown icon"></i>
-						  	<span class="text">Random</span>
-						  	<div class="menu">
-						    	<div class="item" data-value="1">Random</div>
-						    	<div class="item" data-value="0">Top</div>
-						  	</div>
-						</div>
-						<div class="ui disabled compact dropdown" id="sample-size-dropdown">
-						  	<i class="dropdown icon"></i>
-						  	<span class="text" id="sampleSizeValue">0%: samples</span>
-						  	<div class="menu">
-							  <div class="item">
-								<div class="ui range disabled inline" style="width: 75px;"id="sample-size"></div>
-								</div>
-						  	</div>
-						</div>
-					</div>
-				</div>
-				<div id="leftRightRow" class="row">
-					<div class="four wide column">
-						<div id="leftmenu" class="ui vertical scrolling accordion menu"> 
-						</div>
-					</div>
-					<div class="twelve wide column">
-						<div id="rightmenu" class="ui vertical fluid accordion menu">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="actions">
-			<div class="ui grey button" id="cancel">Cancel</div>
-			<div class="ui primary button" id="ok">Ok</div>
-		</div>
-	</div>
-	<div id="resultmodal" class="ui modal">
-		<div class="content">
-			<div class="bounds">
-				<table id="resultTable" class="ui sortable selectable striped table">
-				</table>
-			</div>
-		</div>
-		<div class="actions">
-			<div class="ui grey back button" id="cancel">Cancel</div>
-			<div class="ui primary button" id="ok">Ok</div>
-		</div>
-	</div>`
+	'<div id ="newmodal" class="ui long modal">' +
+		'<div class="header">'+
+			'Choose measurements from: ' + source +
+			'<div id="warning-message" class="ui negative message" style="display:none;">'+
+				'<i class="close icon"></i>'+
+				'<div class="header">'+
+					'No measurements selected'+
+				'</div>'+
+			'</div>'+
+		'</div>'+
+		'<div class="content m">'+
+			'<div class="ui grid">'+
+				'<div id="titleRow" class="row">'+
+					'<div class="four wide column">'+
+						'Filter Samples <div id=\"leftMenuCount\" class=\"ui mini circular horizontal label\"> <span class=\"data-count\">0</span> of ' + input.length + '</div>'+
+					'</div>'+
+					'<div class="twelve wide column">'+
+						'Sample selection type: '+
+						'<div class="ui compact selection dropdown" id="select-type">'+
+						  	'<i class="dropdown icon"></i>'+
+						  	'<div class="text">Manual</div>'+
+						  	'<div class="menu">'+
+						    	'<div class="item" data-value="1">Auto</div>'+
+						    	'<div class="item" data-value="default">Manual</div>'+
+						  	'</div>'+
+						'</div>'+
+						'select: '+
+						'<div class="ui disabled compact selection dropdown" id="sample-type">'+
+						  	'<i class="dropdown icon"></i>'+
+						  	'<span class="text">Random</span>'+
+						  	'<div class="menu">'+
+						    	'<div class="item" data-value="1">Random</div>'+
+						    	'<div class="item" data-value="0">Top</div>'+
+						  	'</div>'+
+						'</div>'+
+						'<div class="ui disabled compact dropdown" id="sample-size-dropdown">'+
+						  	'<i class="dropdown icon"></i>'+
+						  	'<span class="text" id="sampleSizeValue">0%: samples</span>'+
+						  	'<div class="menu">'+
+							  '<div class="item">'+
+								'<div class="ui range disabled inline" style="width: 75px;"id="sample-size"></div>'+
+								'</div>'+
+						  	'</div>'+
+						'</div>'+
+					'</div>'+
+				'</div>'+
+				'<div id="leftRightRow" class="row">'+
+					'<div class="four wide column">'+
+						'<div id="leftmenu" class="ui vertical scrolling accordion menu"> '+
+						'</div>'+
+					'</div>'+
+					'<div class="twelve wide column">'+
+						'<div id="rightmenu" class="ui vertical fluid accordion menu">'+
+						'</div>'+
+					'</div>'+
+				'</div>'+
+			'</div>'+
+		'</div>'+
+		'<div class="actions">'+
+			'<div class="ui grey button" id="cancel">Cancel</div>'+
+			'<div class="ui primary button" id="ok">Ok</div>'+
+		'</div>'+
+	'</div>'+
+	'<div id="resultmodal" class="ui modal">'+
+		'<div class="content">'+
+			'<div class="bounds">'+
+				'<table id="resultTable" class="ui sortable selectable striped table">'+
+				'</table>'+
+			'</div>'+
+		'</div>'+
+		'<div class="actions">'+
+			'<div class="ui grey back button" id="cancel">Cancel</div>'+
+			'<div class="ui primary button" id="ok">Ok</div>'+
+		'</div>' +
+	'</div>';
 	currentSource = source;
 	measurements[source] = input;
 	measurements[source] = _.sortBy(measurements[source], [function(o) {return o.id}])
@@ -286,7 +243,7 @@ function showModal(source, input, cb) {
 			else {
 				storeMeasurement(measurements, cb);
 			}
-		},
+		}
 	});
 	$('#newmodal').modal('show');
 	loadMeasurements(source, input);
@@ -311,19 +268,19 @@ function initialize(sources) {
 	$('#resultmodal').remove();
 
 	var form =     
-	`<div class="ui small modal" id="sourcemodal">
-		<div class="header">
-			Select Data Source
-		</div>
-		<div class="content">
-			<form class="ui form" id="form">
-			</form>
-		</div>
-		<div class="actions">
-			<div class="ui grey button" id="cancel">Cancel</div>
-			<div class="ui blue submit button" id="ok">Ok</div>
-		</div>
-	</div>`
+	'<div class="ui small modal" id="sourcemodal">' +
+		'<div class="header">'+
+			'Select Data Source'+
+		'</div>'+
+		'<div class="content">'+
+			'<form class="ui form" id="form">'+
+			'</form>'+
+		'</div>'+
+		'<div class="actions">'+
+			'<div class="ui grey button" id="cancel">Cancel</div>'+
+			'<div class="ui blue submit button" id="ok">Ok</div>'+
+		'</div>'+
+	'</div>';
 	$('body').append(form);
 	// sources = sources.sort(sortAlphaNum);
 	var fields = document.createElement('div');
@@ -458,61 +415,6 @@ function attachActions(measurements) {
 			toggleParent(split[3]);
 		}
 	});
-
-	// $('#rightmenu .field .checkbox label').mouseenter(function() {
-	// 	var parent = $(this).parent();
-	// 	var split = parent.attr('id').split('-');
-	// 	split[1] = split[1].replace(/[^a-zA-Z0-9]/g,'');
-	// 	split[3] = _.join(_.slice(split, 3), separator="-");
-	// 	var popup_id = "popup-" + split[1] + "-" + split[3];
-	// 	if ($("#" + popup_id).length === 0) {
-	// 		var point = measurements[split[3]][split[2]];
-	// 		var headers = ['id', 'name', 'datasourcegroup'];
-	// 		var contents = [point.id, point.name, point.datasourcegroup];
-	// 		if (point.annotation != null) {
-	// 			Object.keys(point.annotation).forEach(function(val) {
-	// 				headers.push(val);
-	// 				contents.push(point.annotation[val]);
-	// 			});
-	// 		}
-
-	// 		//sanitize id for any periods or pound signs
-	// 		point.id = point.id.replace(/[^a-zA-Z0-9]/g,'');
-
-	// 		//creating popup as seperate div to give it columns
-	// 		var popup = document.createElement('div');
-	// 		var table = document.createElement('table');
-	// 		var t_body = document.createElement('tbody');
-	// 		popup.className = 'ui popup';
-	// 		popup.id = "popup-" + point.id + "-" + split[3];
-	// 		table.className = 'ui collapsing table';
-	// 		table.appendChild(t_body);
-	// 		//add columns to the grid
-	// 		for (var j = 0; j < contents.length; j++) {
-	// 			var row = document.createElement('tr');
-	// 			var col1 = document.createElement('td');
-	// 			var col2 = document.createElement('td');
-	// 			row.appendChild(col1);
-	// 			row.appendChild(col2);
-	// 			col1.innerHTML = headers[j];
-	// 			col2.innerHTML = contents[j];
-	// 			t_body.appendChild(row);
-	// 		}
-	// 		popup.appendChild(table);
-	// 		$('body').append(popup);
-	// 		$(this).popup({
-	// 			popup: '#' + popup.id,
-	// 			position: 'right center',
-	// 			lastResort: 'right center', 
-	// 			hoverable: true,
-	// 			delay: {
-	// 				show: 50,
-	// 				hide: 100,
-	// 			}
-	// 		});      
-	// 		$(this).popup('show');     
-	// 	}   
-	// });
 }
 
 function toggleParent(source) {

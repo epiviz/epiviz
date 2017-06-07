@@ -2420,7 +2420,7 @@ $.fn.accordion = function(parameters) {
                 .removeAttr('style')
               ;
             }
-          },
+          }
 
         },
 
@@ -11097,7 +11097,7 @@ $.fn.popup = function(parameters) {
             $scrollContext
               .off(elementNamespace)
             ;
-          },
+          }
         },
 
         has: {
@@ -11883,7 +11883,7 @@ $.fn.progress = function(parameters) {
               module.update.toNextValue();
               module.remove.progressPoll();
             }, module.get.updateInterval());
-          },
+          }
         },
 
         is: {
@@ -13438,7 +13438,7 @@ $.fn.search = function(parameters) {
               result = module.search.object(value, results, lookupFields)[0];
             }
             return result || false;
-          },
+          }
         },
 
         select: {
@@ -16614,7 +16614,7 @@ $.fn.sticky = function(parameters) {
               element = {
                 margin: {
                   top    : parseInt($module.css('margin-top'), 10),
-                  bottom : parseInt($module.css('margin-bottom'), 10),
+                  bottom : parseInt($module.css('margin-bottom'), 10)
                 },
                 offset : $module.offset(),
                 width  : $module.outerWidth(),
@@ -20483,7 +20483,7 @@ $.api.settings = {
 
   regExp  : {
     required : /\{\$*[A-z0-9]+\}/g,
-    optional : /\{\/\$*[A-z0-9]+\}/g,
+    optional : /\{\/\$*[A-z0-9]+\}/g
   },
 
   className: {
@@ -21180,7 +21180,7 @@ $.fn.state.settings = {
     button: {
       disabled : true,
       loading  : true,
-      active   : true,
+      active   : true
     },
     progress: {
       active   : true,
@@ -21442,7 +21442,7 @@ $.fn.visibility = function(parameters) {
           // subscribes to scrollchange
           scrollchange: function(event, scrollPosition) {
             module.checkVisibility(scrollPosition);
-          },
+          }
         },
 
         precache: function(images, callback) {
@@ -21498,7 +21498,7 @@ $.fn.visibility = function(parameters) {
             module.cache = {
               occurred : {},
               screen   : {},
-              element  : {},
+              element  : {}
             };
           },
           image: function() {
