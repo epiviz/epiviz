@@ -79,7 +79,7 @@ function rightAccordion(measurements) {
             checkbox.appendChild(label);
 
             var tr = document.createElement("tr");
-            tr.id = "table-" + point.id;
+            tr.id = "table-" + sanitized;
             var td = document.createElement("td");
             td.appendChild(field);
             tr.appendChild(td);

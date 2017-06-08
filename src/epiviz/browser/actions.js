@@ -474,9 +474,9 @@ function filter(value, anno, filter, measurements) {
 	});
 	_.forEach(list, function(val, source) {
 		list[source].forEach(function(data) {
-			data.id = data.id.replace(/[^a-zA-Z0-9]/g, '');
+			var sanitizedId = data.id.replace(/[^a-zA-Z0-9]/g, '');
 			var hide = false;
-			if (!(all_empty && $('#' + data['id']).css('display') === 'none')) {
+			if (!(all_empty && $('#' + sanitizedId).css('display') === 'none')) {
 				if (recalc) {
 					Object.keys(filters).forEach(function(category) {
 						var val = filters[category].values;
@@ -515,10 +515,10 @@ function filter(value, anno, filter, measurements) {
 			}
 			current_measurements = new_list;
 			if (hide) {
-				$('#' + data['id']).hide();
-				$('#table-' + data['id']).hide();
+				$('#' + sanitizedId).hide();
+				$('#table-' + sanitizedId).hide();
 				_.pull(new_list[source], data);
-				var checkbox = $('#' + data['id']).children();
+				var checkbox = $('#' + sanitizedId).children();
 				if (checkbox.attr('class').indexOf('checked') !== -1) {
 					var split = checkbox.attr('id').split('-');
 					split[3] = _.join(_.slice(split, 3), separator="-");
@@ -528,8 +528,8 @@ function filter(value, anno, filter, measurements) {
 				}
 			} else {
 				new_list[source].push(data);
-				$('#' + data['id']).show();
-				$('#table-' + data['id']).show();
+				$('#' + sanitizedId).show();
+				$('#table-' + sanitizedId).show();
 			}
 		});
 		var $count = $('#count-' + source);
