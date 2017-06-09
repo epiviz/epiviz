@@ -696,7 +696,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           self._addChart.notify({type: chartType, visConfigSelection: vconfig, title: filterText});
 
           $('#resultmodal').remove();
-          $('#newmodal').remove();
+          // $('#newmodal').remove();
         });
 
         visMenu.hide();
