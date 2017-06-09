@@ -203,7 +203,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     chartProperties.customSettingsValues.title = visConfigSelection.datasourceGroup;
   }
   else if (chartTitle) {
-    chartProperties.customSettingsValues.title = chartTitle;
+    // chartProperties.customSettingsValues.title = chartTitle;
   }
 
   var chart = chartType.createNew(id, container, chartProperties);
