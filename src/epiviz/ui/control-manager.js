@@ -1134,7 +1134,7 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
                 '<div class="one wide column">'+
                 '</div>'+
                 '<div class="eleven wide column">'+
-                 ' UMD Metagenome Browser'+
+                 self._config.appTitle +
                 '</div>'+
               '</div>'+
             '</div>'+

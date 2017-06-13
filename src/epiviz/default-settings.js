@@ -11,6 +11,8 @@ epiviz.Config.SETTINGS = {
 
   configType: 'default',
 
+  appTitle: location.hostname == "metaviz.cbcb.umd.edu" ? 'UMD Metagenome Browser' : 'Metaviz',
+
   // Navigation settings
 
   zoominRatio: 0.8,

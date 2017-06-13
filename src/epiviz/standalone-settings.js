@@ -16,6 +16,8 @@ epiviz.Config.SETTINGS = {
   chartSaverLocation: 'src/chart_saving/save_svg.php',
   configType: 'standalone',
 
+  appTitle: 'Metaviz',
+
   // Navigation settings
 
   zoominRatio: 0.8,
