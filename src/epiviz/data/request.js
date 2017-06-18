@@ -60,6 +60,7 @@ epiviz.data.Request.Action = {
 
   GET_PCA: 'getPCA',
   GET_DIVERSITY: 'getDiversity',
+  GET_FEATURE_DATA: 'getFeatureData',
 
   GET_CHART_SETTINGS: 'getChartSettings',
   SET_CHART_SETTINGS: 'setChartSettings',
@@ -411,4 +412,28 @@ epiviz.data.Request.getDiversity = function(measurementsByDatasource, range) {
   });
 };
 
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getFeatureData = function(measurementsByDatasource, chartSettings, range) {
+  var rawMsByDs = {};
+  for (var ds in measurementsByDatasource) {
+    if (!measurementsByDatasource.hasOwnProperty(ds)) { continue; }
+    rawMsByDs[ds] = (function() {
+      var ms = [];
+      measurementsByDatasource[ds].foreach(function(m) {
+        ms.push(m.id());
+      });
+      return ms;
+    })();
+  }
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_FEATURE_DATA,
+    measurements: rawMsByDs,
+    feature: chartSettings.featureId
+  });
+};
 

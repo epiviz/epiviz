@@ -142,6 +142,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
 
   // Register Loading App events
   this._registerLoadingAppScreen();
+  this._registerChartRequestFeature();
 
   /*
    * Prevent closing if workspace has changed
@@ -227,7 +228,21 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
       function(chartId, hierarchy) {
         self._chartManager.updateCharts(range, hierarchy, [chartId]);
       });
-  } else {
+  } 
+  else if (type.typeName() == "epiviz.plugins.charts.FeatureScatterPlot")  {
+    var range = null;
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    var properties = type.customSettingsValues();
+    if(chartProperties) {
+      properties = chartProperties.customSettingsValues();
+    }
+    this._dataManager.getFeatureData(range, chartMeasurementsMap, properties,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  } 
+  else {
     var range = this._workspaceManager.activeWorkspace().range();
     this._chartManager.dataWaitStart(chartId);
     var chartMeasurementsMap = {};
@@ -518,6 +533,26 @@ epiviz.EpiViz.prototype._registerUiSearch = function() {
       }
 
     }));
+
+  this._chartManager._chartFeatureSearchEvent.addListener(new epiviz.events.EventListener(
+    function(e) {
+      console.log(e);
+      // find current icicle on the workspace
+      var iciclePlot, icicleMeasuremens;
+      for (var chartId in self._chartManager._charts) {
+          if (!self._chartManager._charts.hasOwnProperty(chartId)) { continue; }
+          if (self._chartManager._charts[chartId].displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { 
+            iciclePlot = self._chartManager._charts[chartId]; 
+            // icicleMeasuremens = self._chartManager._charts[chartId].measurements();
+          } 
+        }
+
+      if(iciclePlot != null || iciclePlot != undefined) {
+        self._dataManager.search(function(results) {
+          e.callback(results);
+        }, e.searchTerm, iciclePlot);
+      }
+  }));
 };
 
 /**
@@ -531,6 +566,22 @@ epiviz.EpiViz.prototype._registerChartRequestHierarchy = function() {
     self._dataManager.getHierarchy(map, function(chartId, data) {
       self._chartManager.updateCharts(undefined, data, [chartId]);
     })
+  }));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerChartRequestFeature = function() {
+  var self = this;
+  self._chartManager._chartFeatureGetDataEvent.addListener(new epiviz.events.EventListener(function(e) {
+    var chart = self._chartManager._charts[e.chartId];
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[e.chartId] = chart._properties.visConfigSelection.measurements;
+    self._dataManager.getFeatureData(null, chartMeasurementsMap, chart.customSettingsValues(),
+      function(chartId, data) {
+        self._chartManager.updateCharts(null, data, [chartId]);
+      });
   }));
 };
 
