@@ -517,16 +517,16 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     rectBox.selectAll('.whisker').remove();
     for(i = 0; i < plotData.length; i++){
         var findIQR = plotData[i][1];
-        var lower_upper = [];
-        lower_upper = quartiles(findIQR);
+        var lower_median_upper = [];
+        lower_median_upper = quartiles(findIQR);
         
-        var iqr_result = lower_upper[1] - lower_upper[0];
+        var iqr_result = lower_median_upper[2] - lower_median_upper[0];
         var iqr_15 = iqr_result * 1.5;
 
         var whisker_lower_index = 0;
         var whisker_upper_index = findIQR.length-1;
         for(j = 0; j < findIQR.length; j++){
-            if(findIQR[j] < lower_upper[0] - iqr_15) {
+            if(findIQR[j] < lower_median_upper[0] - iqr_15) {
                 whisker_lower_index = j;
             }
             else {
@@ -534,29 +534,31 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
             }
         }
         for(k = findIQR.length-1; k > 0; k--){
-            if(findIQR[k] > (lower_upper[1] + iqr_15)) {
+            if(findIQR[k] > (lower_median_upper[2] + iqr_15)) {
                 whisker_upper_index = k;
             }
             else {
                 break;
             }
         }
+
+        
     rectBox.append("rect")
     .attr('id', "0")
     .attr('class', 'iqr-range')
     .style('opacity', 1)
     .style('fill-opacity', 0.2)
     .attr('x', margins.left() + (0.6 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
-    .attr('y', height - margins.bottom() - ((lower_upper[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+    .attr('y', height - margins.bottom() - ((lower_median_upper[2] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
     .attr('width', xScale(.8))
-    .attr('height', Math.abs((yScale(lower_upper[1])-yScale(lower_upper[0]))))
+    .attr('height', Math.abs((yScale(lower_median_upper[2])-yScale(lower_median_upper[0]))))
     .attr('fill', '#1E90FF');
 
      rectBox.append("line")
     .style("stroke", "gray")
     .attr('class', 'whisker')
     .attr("x1", margins.left() + (1 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
-    .attr('y1', height - margins.bottom() - ((lower_upper[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+    .attr('y1', height - margins.bottom() - ((lower_median_upper[2] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
     .attr("x2", margins.left() + (1 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
     .attr('y2', (height - margins.bottom() - ((findIQR[whisker_upper_index] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY))));
 
@@ -564,7 +566,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     .style("stroke", "gray")
     .attr('class', 'whisker')
     .attr("x1", margins.left() + (1 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
-    .attr('y1', height - margins.bottom() - ((lower_upper[0] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+    .attr('y1', height - margins.bottom() - ((lower_median_upper[0] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
     .attr("x2", margins.left() + (1 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
     .attr('y2', (height - margins.bottom() - ((findIQR[whisker_lower_index] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY))));
 
@@ -584,13 +586,22 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     .attr("x2", margins.left() + (1.4 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
     .attr('y2', (height - margins.bottom() - ((findIQR[whisker_lower_index] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY))));
 
+    // Add median line
+    rectBox.append("line")
+    .style("stroke", "gray")
+    .attr('class', 'whisker')
+    .attr("x1", margins.left() + (0.6 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
+    .attr('y1', height - margins.bottom() - ((lower_median_upper[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+    .attr("x2", margins.left() + (1.4 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
+    .attr('y2', (height - margins.bottom() - ((lower_median_upper[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY))));
 }
 
     function quartiles(d) {
         d.sort(d3.ascending);
         var q1 = d3.quantile(d, .25);
+        var q2 = d3.quantile(d, .5);
         var q3 = d3.quantile(d, .75);
-        return [q1, q3];
+        return [q1, q2, q3];
     };
 
     return items;
