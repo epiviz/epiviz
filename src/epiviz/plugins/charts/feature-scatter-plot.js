@@ -155,6 +155,21 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawNavigation = function(fN
     sBox = $('#search-box-' + self.id());
     sBox.val(self.customSettingsValues()['featureName']);
     sBox.watermark('Find a taxonomic feature');
+    self._hoveritem = new epiviz.ui.charts.tree.UiNode(
+        self.customSettingsValues()['featureId'], self.customSettingsValues()['featureName'], [], 
+        null, null,
+        null, 0, null, 
+        null, null, null, 
+        null, null, null, null, null, 
+        null, 0, 100000);
+
+    sBox.on("mouseover", function() {
+        self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), self._hoveritem));
+    });
+
+    sBox.on("mouseout", function() {
+        self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+    });
 
     sBox.autocomplete({
         source: function(request, callback) {
@@ -173,7 +188,9 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawNavigation = function(fN
                             html: sprintf('<b>%s</b>, [%s]', results[i].gene, results[i].level),
                             range: epiviz.datatypes.GenomicRange.fromStartEnd(results[i].seqName, results[i].start, results[i].end),
                             level: results[i].level || null,
-                            node: results[i].nodeId || null
+                            node: results[i].nodeId || null,
+                            nodeStart: results[i].start || null,
+                            nodeEnd: results[i].end || null
                         });
                     }
 
@@ -186,6 +203,14 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawNavigation = function(fN
             var vals = self.customSettingsValues();
             vals.featureId = ui.item.node;
             vals.featureName = ui.item.value;
+            var d = ui.item;
+            self._hoveritem = new epiviz.ui.charts.tree.UiNode(
+                d.node, d.label, [], 
+                null, null,
+                null, 0, null, 
+                null, null, null, 
+                null, null, null, null, null, 
+                null, d.nodeStart, d.nodeEnd);
 
             // self.setCustomSettingsValues(vals);
 
