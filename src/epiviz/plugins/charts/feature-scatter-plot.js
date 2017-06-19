@@ -259,7 +259,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     } );
 
     var count= 0;
-    // minY = 100000; 
+    minY = 100000; 
     maxY = 0;
     var plotData = [];
     uniqueValues.forEach(function(m) {
@@ -272,14 +272,17 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
 
     data.forEach(function(d) {
         var ind = uniqueValues.indexOf(d[dimx]);
-        // if(d[dimy] < minY) {
-        //     minY = d[dimy];
-        // }
-        if(d[dimy] < maxY) {
+        if(d[dimy] < minY) {
+            minY = d[dimy];
+        }
+        if(d[dimy] > maxY) {
             maxY = d[dimy];
         }
         plotData[ind][1].push(d[dimy]);
     });
+
+    maxY += 10;
+    minY -= 10;
 
     if (minX == CustomSetting.DEFAULT) {
         minX = 0;

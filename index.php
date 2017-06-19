@@ -193,7 +193,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- Icons -->
     <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
     <!--Semantic-->
-    <link rel="stylesheet" href="src/epiviz/browser/semantic/dist/semantic.min.css">
+    <link rel="stylesheet" href="src/epiviz/browser/semantic/dist/semantic.css">
     <link rel="stylesheet" href="src/epiviz/browser/semantic-ui-range-master/range.css">
     <link rel="stylesheet" href="src/epiviz/browser/browser.css">
     <!-- JQuery UI -->
@@ -455,6 +455,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script>  
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-scatter-plot-type.js"></script>
 
     <script src="src/epiviz/ui/charts/tree/node-selection-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/node.js"></script>
