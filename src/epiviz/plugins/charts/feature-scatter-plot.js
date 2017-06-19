@@ -297,13 +297,13 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
 
     data.forEach(function(d) {
         var ind = uniqueValues.indexOf(d[dimx]);
-        if(d[dimy] < minY) {
-            minY = d[dimy];
+        if(Math.log2(d[dimy]+1) < minY) {
+            minY = Math.log2(d[dimy]+1);
         }
-        if(d[dimy] > maxY) {
-            maxY = d[dimy];
+        if(Math.log2(d[dimy]+1) > maxY) {
+            maxY = Math.log2(d[dimy]+1);
         }
-        plotData[ind][1].push(d[dimy]);
+        plotData[ind][1].push(Math.log2(d[dimy]+1));
     });
 
     maxY += 10;
@@ -331,6 +331,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     var grid = {};
     var items = [];
     var maxGroupItems = 1;
+    
     var seriesIndex = 0; // Assume only 1 pair of datax and datay
     for (var i = 0; i < data.length; ++i) {
 
@@ -510,7 +511,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
 
         this._colorLabels = colors;
     }
-
+    
     var rectBox = itemsGroup;
 
     rectBox.selectAll('.iqr-range').remove();
