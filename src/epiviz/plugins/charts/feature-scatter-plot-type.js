@@ -124,7 +124,20 @@ epiviz.plugins.charts.FeatureScatterPlotType.prototype.customSettingsDefs = func
       epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.FEATURE_ID,
       epiviz.ui.charts.CustomSetting.Type.STRING,
       "1-0",
-      'Feature ID')
+      'Feature ID'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.LOG_TRANSFORM,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Log Transform count data'),
+    
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.SHOW_POINTS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Show points on box plot')
+
   ]);
 };
 
@@ -134,5 +147,7 @@ epiviz.plugins.charts.FeatureScatterPlotType.prototype.customSettingsDefs = func
 epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings = {
   CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
   FEATURE_NAME: 'featureName',
-  FEATURE_ID: 'featureId'
+  FEATURE_ID: 'featureId',
+  LOG_TRANSFORM: 'logTransform',
+  SHOW_POINTS: 'showPoints'
 };
