@@ -306,8 +306,8 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
         plotData[ind][1].push(Math.log2(d[dimy]+1));
     });
 
-    maxY += 10;
-    minY -= 10;
+    //maxY += 10;
+    //minY -= 10;
 
     if (minX == CustomSetting.DEFAULT) {
         minX = 0;
@@ -415,7 +415,8 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
                     .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
                     .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
                     .attr('class', d.cssClasses)
-                    .style('fill', fill);
+                    .style('fill', 'none')
+                    .style('stroke', 'none');
             });
 
 
@@ -595,7 +596,32 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     .attr('y1', height - margins.bottom() - ((lower_median_upper[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
     .attr("x2", margins.left() + (1.4 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
     .attr('y2', (height - margins.bottom() - ((lower_median_upper[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY))));
-}
+
+    var selectionOutliers = itemsGroup.selectAll('circle').data(items, function(d) {
+        return d.id;
+    });
+
+    selectionOutliers
+        .each(
+            /**
+             * @param {epiviz.ui.charts.ChartObject} d
+             */
+            function(d) {
+                var circle = d3.select(this);
+
+                var fill = self.colors().get(d.seriesIndex);
+                if (d.values[1] < findIQR[whisker_lower_index] || d.values[1] > findIQR[whisker_upper_index]){
+                circle
+                    .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
+                    .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+                    .attr('class', d.cssClasses)
+                    .style('fill', fill);
+                }
+            });
+
+    }
+
+
 
     function quartiles(d) {
         d.sort(d3.ascending);
