@@ -260,6 +260,14 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     var maxY = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
     var minX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN];
     var maxX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
+    var showPoints = this.customSettingsValues()[epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.SHOW_POINTS];
+    var logTransform = this.customSettingsValues()[epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.LOG_TRANSFORM];
+
+    if (logTransform){
+        data.forEach(function(m){
+            m[dimy] = Math.log2(m[dimy] + 1);
+        });
+    }
 
     // if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
     if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
@@ -283,6 +291,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
         n._xVal = index+1;
     } );
 
+
     var count= 0;
     minY = 100000; 
     maxY = 0;
@@ -295,35 +304,18 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
 
     });
     
-    var showPoints = this.customSettingsValues()[epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.SHOW_POINTS];
-    var logTransform = this.customSettingsValues()[epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.LOG_TRANSFORM];
-
-    if (logTransform){
-        data.forEach(function(d) {
-            var ind = uniqueValues.indexOf(d[dimx]);
-            if(Math.log2(d[dimy]+1) < minY) {
-                minY = Math.log2(d[dimy]+1);
-            }
-            if(Math.log2(d[dimy]+1) > maxY) {
-                maxY = Math.log2(d[dimy]+1);
-            }
-            plotData[ind][1].push(Math.log2(d[dimy]+1));
-        });
-
-    }    else{
-        data.forEach(function(d) {
-            var ind = uniqueValues.indexOf(d[dimx]);
-            if(d[dimy] < minY) {
-                minY = d[dimy];
-            }
-            if(d[dimy] > maxY) {
-                maxY = d[dimy];
-            }
-            plotData[ind][1].push(d[dimy]);
-        });   
-    }
+    data.forEach(function(d) {
+        var ind = uniqueValues.indexOf(d[dimx]);
+        if(d[dimy] < minY) {
+            minY = d[dimy];
+        }
+        if(d[dimy] > maxY) {
+            maxY = d[dimy];
+        }
+        plotData[ind][1].push(d[dimy]);
+    });   
     
-    maxY += 10;
+    maxY += 1;
     minY -= 1;
     if (minX == CustomSetting.DEFAULT) {
         minX = 0;
@@ -353,6 +345,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
 
         var cellX = data[i]["_xVal"];
         var cellY = data[i][dimy];
+        
         if (!cellX || !cellY) {
             continue;
         }
@@ -564,11 +557,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
                 break;
             }
         }
-
-        
-    console.log(i);
-    console.log(lower_median_upper);
-
+     
     rectBox.append("rect")
     .attr('id', "0")
     .attr('class', 'iqr-range')
