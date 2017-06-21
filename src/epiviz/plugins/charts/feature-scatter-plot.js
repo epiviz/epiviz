@@ -124,7 +124,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype.draw = function() {
     epiviz.ui.charts.Plot.prototype.draw.call(this, undefined, undefined);
     var self = this;
 
-    self.drawScatter(self._lastRange, self._lastData.data, "sample_id", self._xLabel, "count");
+    return self.drawScatter(self._lastRange, self._lastData.data, "sample_id", self._xLabel, "count");
 };
 
 epiviz.plugins.charts.FeatureScatterPlot.prototype.drawScatter = function(range, data, key, dimx, dimy) {
@@ -148,9 +148,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawNavigation = function(fN
 
     var self = this;
 
-    console.log(self);
-
-    $('#' + self.id()).prepend('<div style="text-align:center;padding-top:30px">Find a taxonomic feature <input id="search-box-' + self.id() + '" class="feature-search-box ui-widget-content ui-corner-all" type="text"/></div>');
+    $('#' + self.id()).prepend('<div><input id="search-box-' + self.id() + '" class="feature-search-box ui-widget-content ui-corner-all" type="text"/></div>');
 
     sBox = $('#search-box-' + self.id());
     sBox.val(self.customSettingsValues()['featureName']);
@@ -237,7 +235,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawNavigation = function(fN
     };
 };
 
-epiviz.plugins.charts.FeatureScatterPlot.prototype.displayType = function() { return 'featureScatterPlot'; };
+epiviz.plugins.charts.FeatureScatterPlot.prototype.displayTypeName = function() { return 'featureScatterPlot'; };
 
 /**
  * @param {epiviz.datatypes.GenomicRange} range
@@ -245,7 +243,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype.displayType = function() { re
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
-epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data, dimx, dimy, key) {
+epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(originalData, dimx, dimy, key) {
     var self = this;
     var Axis = epiviz.ui.charts.Axis;
     var circleRadius = Math.max(1, this.customSettingsValues()[epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO] * Math.min(this.width(), this.height()));
@@ -262,6 +260,8 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     var maxX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
     var showPoints = this.customSettingsValues()[epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.SHOW_POINTS];
     var logTransform = this.customSettingsValues()[epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.LOG_TRANSFORM];
+
+    var data = JSON.parse(JSON.stringify(originalData));
 
     if (logTransform){
         data.forEach(function(m){
@@ -650,139 +650,11 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(data,
     return items;
 };
 
-
-
 /**
  * @returns {Array.<{name: string, color: string}>}
  */
 epiviz.plugins.charts.FeatureScatterPlot.prototype.colorLabels = function() {
     return this._colorLabels;
-};
-
-/**
- * @param xScale D3 linear scale for the x axis
- * @param yScale D3 linear scale for the y axis
- * @param {number} [xTicks]
- * @param {number} [yTicks]
- * @param [svg] D3 svg container for the axes
- * @param {number} [width]
- * @param {number} [height]
- * @param {epiviz.ui.charts.Margins} [margins]
- * @protected
- */
-epiviz.plugins.charts.FeatureScatterPlot.prototype._drawAxesOld = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
-    epiviz.ui.charts.Visualization.prototype._drawAxes(xScale, yScale, xTicks, yTicks,
-    svg, width, height, margins, undefined, undefined,
-    this.xTickValues, undefined, undefined);
-    //epiviz.ui.charts.Plot.prototype._drawAxes.call(this, xScale, yScale, xTicks, yTicks, svg, width, height, margins);
-
-    this._legend.selectAll('text').remove();
-
-    var xMeasurements = this._measurementsX;
-    var self = this;
-    this._legend.selectAll('.x-measurement').remove();
-    this._legend.selectAll('.x-measurement-color').remove();
-
-    var xEntries = this._legend
-        .selectAll('.x-measurement')
-        .data(xMeasurements)
-        .enter()
-        .append('text')
-        .attr('class', 'x-measurement')
-        .attr('font-weight', 'bold')
-        .attr('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#000000" : self.colors().get(i);
-        })
-        .attr('y', (this.height() - this.margins().bottom() + 35))
-        .text(function(m, i) {
-            return m.name();
-        });
-
-    var xTextLength = 0;
-    var xTitleEntriesStartPosition = [];
-
-    $('#' + this.id() + ' .x-measurement')
-        .each(function(i) {
-            xTitleEntriesStartPosition.push(xTextLength);
-            xTextLength += this.getBBox().width + 15;
-        });
-
-    xEntries.attr('x', function(column, i) {
-        return (self.width() - xTextLength) * 0.5 + 7 + xTitleEntriesStartPosition[i];
-    });
-
-    var xColorEntries = this._legend
-        .selectAll('.x-measurement-color')
-        .data(xMeasurements)
-        .enter()
-        .append('circle')
-        .attr('class', 'x-measurement-color')
-        .attr('cx', function(column, i) {
-            return (self.width() - xTextLength) * 0.5 + 1 + xTitleEntriesStartPosition[i];
-        })
-        .attr('cy', (this.height() - this.margins().bottom() + 31))
-        .attr('r', 4)
-        .style('shape-rendering', 'auto')
-        .style('stroke-width', '0')
-        .style('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#ffffff" : self.colors().get(i);
-        });
-
-
-    var yMeasurements = ['count'];
-    this._legend.selectAll('.y-measurement').remove();
-    this._legend.selectAll('.y-measurement-color').remove();
-
-    var yEntries = this._legend
-        .selectAll('.y-measurement')
-        .data(yMeasurements)
-        .enter()
-        .append('text')
-        .attr('class', 'y-measurement')
-        .attr('font-weight', 'bold')
-        .attr('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#000000" : self.colors().get(i);
-        })
-        .attr('y', (this.margins().left() - 35))
-        .attr('transform', 'rotate(-90)')
-        .text(function(m, i) {
-            return m;
-        });
-
-    var yTextLength = 0;
-    var yTitleEntriesStartPosition = [];
-
-    $('#' + this.id() + ' .y-measurement')
-        .each(function(i) {
-            yTitleEntriesStartPosition.push(yTextLength);
-            yTextLength += this.getBBox().width + 15;
-        });
-
-    yEntries.attr('x', function(column, i) {
-        return -self.height() + (self.height() - yTextLength) * 0.5 + 12 + self.margins().top() + yTitleEntriesStartPosition[i];
-    });
-
-    var yColorEntries = this._legend
-        .selectAll('.y-measurement-color')
-        .data(yMeasurements)
-        .enter()
-        .append('circle')
-        .attr('class', 'y-measurement-color')
-        .attr('cx', function(column, i) {
-            return -self.height() + (self.height() - yTextLength) * 0.5 + 6 + self.margins().top() + yTitleEntriesStartPosition[i];
-        })
-        .attr('cy', (this.margins().left() - 39))
-        .attr('transform', 'rotate(-90)')
-        .attr('r', 4)
-        .style('shape-rendering', 'auto')
-        .style('stroke-width', '0')
-        .style('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#ffffff" : self.colors().get(i);
-        });
 };
 
 epiviz.plugins.charts.FeatureScatterPlot.prototype.transformData = function(range, data) {
@@ -799,56 +671,4 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype.transformData = function(rang
   var deferred = new epiviz.deferred.Deferred();
   deferred.resolve();
   return deferred;
-};
-
-/**
- * @param {Object.<string, *>} settingsValues
- */
-epiviz.plugins.charts.FeatureScatterPlot.prototype.setCustomSettingsValues = function(settingsValues) {
-  if (this._customSettingsValues == settingsValues || !settingsValues || epiviz.utils.mapEquals(this._customSettingsValues, settingsValues)) {
-    return;
-  }
-  var CustomSettings = epiviz.ui.charts.Visualization.CustomSettings;
-
-  var currentTitle = this._customSettingsValues[CustomSettings.TITLE] || '';
-  var newTitle = settingsValues[CustomSettings.TITLE] || '';
-
-  var currentLen = currentTitle.trim().length;
-  var newLen = newTitle.trim().length;
-
-  // Check if either both titles are undefined or both are defined
-  if (!(currentLen * newLen) && (currentLen + newLen)) {
-    var marginDelta = epiviz.utils.sign(newLen - currentLen) * 20;
-    var top = settingsValues[CustomSettings.MARGIN_TOP] || this._properties.margins.top();
-    var left = settingsValues[CustomSettings.MARGIN_LEFT] || this._properties.margins.left();
-    var right = settingsValues[CustomSettings.MARGIN_RIGHT] || this._properties.margins.right();
-    var bottom = settingsValues[CustomSettings.MARGIN_BOTTOM] || this._properties.margins.bottom();
-    settingsValues[CustomSettings.MARGIN_TOP] = top + marginDelta;
-    settingsValues[CustomSettings.MARGIN_LEFT] = left;
-    settingsValues[CustomSettings.MARGIN_RIGHT] = right;
-    settingsValues[CustomSettings.MARGIN_BOTTOM] = bottom;
-  }
-
-  // FIXME: This is a property specific to Chart and not Visualization; move this portion of the code in Chart
-  var currentMeasurementAggregator = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR];
-  var newMeasurementAggregator = settingsValues[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR];
-
-  this._customSettingsValues = settingsValues;
-
-  if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
-    this._properties.margins = new epiviz.ui.charts.Margins(settingsValues[CustomSettings.MARGIN_TOP], settingsValues[CustomSettings.MARGIN_LEFT], settingsValues[CustomSettings.MARGIN_BOTTOM], settingsValues[CustomSettings.MARGIN_RIGHT]);
-    this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
-  }
-
-  if (currentMeasurementAggregator != newMeasurementAggregator) {
-    var self = this;
-    self._registerFeatureGetData.notify({
-        chartId: self.id(), 
-        feature: settingsValues.featureId
-    })
-  } else {
-    this.draw();
-  }
-
-  this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsValues));
 };
