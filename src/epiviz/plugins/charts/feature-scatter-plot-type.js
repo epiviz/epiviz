@@ -123,7 +123,7 @@ epiviz.plugins.charts.FeatureScatterPlotType.prototype.customSettingsDefs = func
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.FeatureScatterPlotType.CustomSettings.FEATURE_ID,
       epiviz.ui.charts.CustomSetting.Type.STRING,
-      "1-0",
+      "0-0",
       'Feature ID'),
 
     new epiviz.ui.charts.CustomSetting(

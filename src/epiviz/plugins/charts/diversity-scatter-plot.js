@@ -17,7 +17,7 @@ epiviz.plugins.charts.DiversityScatterPlot = function(id, container, properties)
     // Call superclass constructor
     epiviz.ui.charts.Plot.call(this, id, container, properties);
 
-    this._dispatch = d3.dispatch("hover", "click");
+    // this._dispatch = d3.dispatch("hover", "click");
 
     /**
      * D3 chart container
@@ -109,7 +109,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype.draw = function() {
     epiviz.ui.charts.Plot.prototype.draw.call(this, undefined, undefined);
     var self = this;
 
-    self.drawScatter(self._lastRange, self._lastData.data, "sample_id", self._xLabel, "alphaDiversity");
+    return self.drawScatter(self._lastRange, self._lastData.data, "sample_id", self._xLabel, "alphaDiversity");
 };
 
 epiviz.plugins.charts.DiversityScatterPlot.prototype.drawScatter = function(range, data, key, dimx, dimy) {
@@ -472,139 +472,11 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
     return items;
 };
 
-
-
 /**
  * @returns {Array.<{name: string, color: string}>}
  */
 epiviz.plugins.charts.DiversityScatterPlot.prototype.colorLabels = function() {
     return this._colorLabels;
-};
-
-/**
- * @param xScale D3 linear scale for the x axis
- * @param yScale D3 linear scale for the y axis
- * @param {number} [xTicks]
- * @param {number} [yTicks]
- * @param [svg] D3 svg container for the axes
- * @param {number} [width]
- * @param {number} [height]
- * @param {epiviz.ui.charts.Margins} [margins]
- * @protected
- */
-epiviz.plugins.charts.DiversityScatterPlot.prototype._drawAxesOld = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
-    epiviz.ui.charts.Visualization.prototype._drawAxes(xScale, yScale, xTicks, yTicks,
-    svg, width, height, margins, undefined, undefined,
-    this.xTickValues, undefined, undefined);
-    //epiviz.ui.charts.Plot.prototype._drawAxes.call(this, xScale, yScale, xTicks, yTicks, svg, width, height, margins);
-
-    this._legend.selectAll('text').remove();
-
-    var xMeasurements = this._measurementsX;
-    var self = this;
-    this._legend.selectAll('.x-measurement').remove();
-    this._legend.selectAll('.x-measurement-color').remove();
-
-    var xEntries = this._legend
-        .selectAll('.x-measurement')
-        .data(xMeasurements)
-        .enter()
-        .append('text')
-        .attr('class', 'x-measurement')
-        .attr('font-weight', 'bold')
-        .attr('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#000000" : self.colors().get(i);
-        })
-        .attr('y', (this.height() - this.margins().bottom() + 35))
-        .text(function(m, i) {
-            return m.name();
-        });
-
-    var xTextLength = 0;
-    var xTitleEntriesStartPosition = [];
-
-    $('#' + this.id() + ' .x-measurement')
-        .each(function(i) {
-            xTitleEntriesStartPosition.push(xTextLength);
-            xTextLength += this.getBBox().width + 15;
-        });
-
-    xEntries.attr('x', function(column, i) {
-        return (self.width() - xTextLength) * 0.5 + 7 + xTitleEntriesStartPosition[i];
-    });
-
-    var xColorEntries = this._legend
-        .selectAll('.x-measurement-color')
-        .data(xMeasurements)
-        .enter()
-        .append('circle')
-        .attr('class', 'x-measurement-color')
-        .attr('cx', function(column, i) {
-            return (self.width() - xTextLength) * 0.5 + 1 + xTitleEntriesStartPosition[i];
-        })
-        .attr('cy', (this.height() - this.margins().bottom() + 31))
-        .attr('r', 4)
-        .style('shape-rendering', 'auto')
-        .style('stroke-width', '0')
-        .style('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#ffffff" : self.colors().get(i);
-        });
-
-
-    var yMeasurements = ['alphaDiversity'];
-    this._legend.selectAll('.y-measurement').remove();
-    this._legend.selectAll('.y-measurement-color').remove();
-
-    var yEntries = this._legend
-        .selectAll('.y-measurement')
-        .data(yMeasurements)
-        .enter()
-        .append('text')
-        .attr('class', 'y-measurement')
-        .attr('font-weight', 'bold')
-        .attr('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#000000" : self.colors().get(i);
-        })
-        .attr('y', (this.margins().left() - 35))
-        .attr('transform', 'rotate(-90)')
-        .text(function(m, i) {
-            return m;
-        });
-
-    var yTextLength = 0;
-    var yTitleEntriesStartPosition = [];
-
-    $('#' + this.id() + ' .y-measurement')
-        .each(function(i) {
-            yTitleEntriesStartPosition.push(yTextLength);
-            yTextLength += this.getBBox().width + 15;
-        });
-
-    yEntries.attr('x', function(column, i) {
-        return -self.height() + (self.height() - yTextLength) * 0.5 + 12 + self.margins().top() + yTitleEntriesStartPosition[i];
-    });
-
-    var yColorEntries = this._legend
-        .selectAll('.y-measurement-color')
-        .data(yMeasurements)
-        .enter()
-        .append('circle')
-        .attr('class', 'y-measurement-color')
-        .attr('cx', function(column, i) {
-            return -self.height() + (self.height() - yTextLength) * 0.5 + 6 + self.margins().top() + yTitleEntriesStartPosition[i];
-        })
-        .attr('cy', (this.margins().left() - 39))
-        .attr('transform', 'rotate(-90)')
-        .attr('r', 4)
-        .style('shape-rendering', 'auto')
-        .style('stroke-width', '0')
-        .style('fill', function(m, i) {
-            return self._globalIndexColorLabels ?
-                "#ffffff" : self.colors().get(i);
-        });
 };
 
 epiviz.plugins.charts.DiversityScatterPlot.prototype.transformData = function(range, data) {

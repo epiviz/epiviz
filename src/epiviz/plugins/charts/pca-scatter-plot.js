@@ -110,7 +110,7 @@ epiviz.plugins.charts.PCAScatterPlot.prototype.draw = function() {
     var self = this;
     self._variance_labels = self._lastData.pca_variance_explained;
     // self._variance_labels = [0.9, 0.1];
-    self.drawScatter(self._lastRange, self._lastData.data, "sample_id", "PC1", "PC2");
+    return self.drawScatter(self._lastRange, self._lastData.data, "sample_id", "PC1", "PC2");
 };
 
 
