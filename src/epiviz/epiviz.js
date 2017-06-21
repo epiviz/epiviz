@@ -1032,6 +1032,14 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
 
             delete chartMeasurementsMap[mea];
           }
+          else if(mea.indexOf('feature_scatter') != -1) {
+            // // self._dataManager.getFeatureData(e.newValue, cMap,
+            //   function(chartId, data) {
+            //     self._chartManager.updateCharts(e.newValue, data, [chartId]);
+            // });
+
+            delete chartMeasurementsMap[mea];
+          }
       } 
 
       self._dataManager.getData(e.newValue, chartMeasurementsMap,
