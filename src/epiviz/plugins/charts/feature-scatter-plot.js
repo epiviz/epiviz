@@ -535,25 +535,25 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
         var findIQR = plotData[i][1];
         var lower_median_upper = [];
         lower_median_upper = quartiles(findIQR);
+        findIQR = findIQR.sort(d3.ascending);
         
         var iqr_result = lower_median_upper[2] - lower_median_upper[0];
         var iqr_15 = iqr_result * 1.5;
 
         var whisker_lower_index = 0;
         var whisker_upper_index = findIQR.length-1;
+        var bottom_whisker_bound = lower_median_upper[0] - iqr_15;
+        var upper_whisker_bound = lower_median_upper[2] + iqr_15;
+
         for(j = 0; j < findIQR.length; j++){
-            if(findIQR[j] < lower_median_upper[0] - iqr_15) {
-                whisker_lower_index = j;
-            }
-            else {
+            whisker_lower_index = j;
+            if(findIQR[j] > bottom_whisker_bound) {
                 break;
             }
         }
         for(k = findIQR.length-1; k > 0; k--){
-            if(findIQR[k] > (lower_median_upper[2] + iqr_15)) {
-                whisker_upper_index = k;
-            }
-            else {
+            whisker_upper_index = k;
+            if(findIQR[k] < upper_whisker_bound) {
                 break;
             }
         }
@@ -626,7 +626,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
                 var circle = d3.select(this);
 
                 var fill = self.colors().get(d.seriesIndex);
-                if (d.values[1] < findIQR[whisker_lower_index] || d.values[1] > findIQR[whisker_upper_index]){
+                if (d.values[1] < (findIQR[whisker_lower_index] - minY) || d.values[1] > (findIQR[whisker_upper_index] - minY)){
                 circle
                     .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
                     .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
