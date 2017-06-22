@@ -548,7 +548,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
                 var source = $('#form').form('get value', 'source');
                 var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
                 var vconfig = new epiviz.ui.controls.VisConfigSelection(
-                    measurements, // measurementas
+                    measurements, // measurements
                     undefined, // datasource
                     source, // datasourceGroup
                     undefined, // dataprovider

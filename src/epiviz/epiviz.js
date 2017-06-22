@@ -143,6 +143,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   // Register Loading App events
   this._registerLoadingAppScreen();
   this._registerChartRequestFeature();
+  this._registerHierarchyChartRequestAddFeature();
 
   /*
    * Prevent closing if workspace has changed
@@ -235,7 +236,7 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
     chartMeasurementsMap[chartId] = visConfigSelection.measurements;
     var properties = type.customSettingsValues();
     if(chartProperties) {
-      properties = chartProperties.customSettingsValues();
+      properties = chartProperties.customSettingsValues;
     }
     this._dataManager.getFeatureData(range, chartMeasurementsMap, properties,
       function(chartId, data) {
@@ -582,6 +583,45 @@ epiviz.EpiViz.prototype._registerChartRequestFeature = function() {
       function(chartId, data) {
         self._chartManager.updateCharts(null, data, [chartId]);
       });
+  }));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerHierarchyChartRequestAddFeature = function() {
+  var self = this;
+  self._chartManager._heatmapAddFeatureChartEvent.addListener(new epiviz.events.EventListener(function(e) {
+    console.log(e);
+    console.log(self);
+    var chartType = self._chartFactory._types["epiviz.plugins.charts.FeatureScatterPlot"];
+
+    var vconfig = new epiviz.ui.controls.VisConfigSelection(
+      e.measurements, // measurements
+      undefined, // datasource
+      undefined, // datasourceGroup
+      undefined, // dataprovider
+      undefined, // annotation
+      chartType.chartName(), // defaultChartType
+      chartType.minSelectedMeasurements());
+
+    var chartProperties = new epiviz.ui.charts.VisualizationProperties(
+      chartType.defaultWidth(), // width
+      chartType.defaultHeight(), // height
+      chartType.defaultMargins(), // margins
+      vconfig, // configuration of measurements and other information selected by the user
+      chartType.defaultColors(), // colors
+      null, // modified methods
+      chartType.customSettingsValues(),
+      chartType.customSettingsDefs(),
+      []
+    );
+
+    chartProperties.customSettingsValues.featureId = e.featureId;
+    chartProperties.customSettingsValues.featureName = e.featureName;
+
+    self._addChart(chartType, vconfig, undefined, chartProperties, "");
+
   }));
 };
 

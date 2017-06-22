@@ -133,6 +133,8 @@ epiviz.ui.charts.ChartManager = function(config) {
 
   this._chartFeatureGetDataEvent = new epiviz.events.Event();
 
+  this._heatmapAddFeatureChartEvent = new epiviz.events.Event();
+
   this._registerWindowResize();
 };
 
@@ -232,6 +234,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartIcicleLocationChanges(chart);
   this._registerChartSearchFeature(chart);
   this._registerChartFeatureGetData(chart);
+  this._registerHeatmapAddFeatureChart(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -729,6 +732,17 @@ epiviz.ui.charts.ChartManager.prototype._registerChartSearchFeature = function(c
     chart._searchFeatureChart.addListener(new epiviz.events.EventListener(function(e) {
       console.log(e);
       self._chartFeatureSearchEvent.notify(e);
+    }));
+  }
+}; 
+
+epiviz.ui.charts.ChartManager.prototype._registerHeatmapAddFeatureChart = function(chart) {
+  var self = this;
+
+  if (chart._featureType == 'heatmapPlot') {
+    chart._addFeaturePlot.addListener(new epiviz.events.EventListener(function(e) {
+      console.log(e);
+      self._heatmapAddFeatureChartEvent.notify(e);
     }));
   }
 }; 

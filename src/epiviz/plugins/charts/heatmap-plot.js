@@ -54,6 +54,9 @@ epiviz.plugins.charts.HeatmapPlot = function(id, container, properties) {
    */
   this._dendrogramRatio = 0.1;
 
+  this._addFeaturePlot = new epiviz.events.Event();
+  this._featureType = "heatmapPlot";
+
   this._initialize();
 };
 
@@ -301,6 +304,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
 
   var globalIndices = [];
   var colnames = [];
+  var colids = [];
   var i, globalIndex;
 
   for (i = 0; i < nEntries; ++i) {
@@ -321,6 +325,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
       globalIndices.push(globalIndex);
       var label = item.metadata(colLabel) || '' + item.id();
       colnames.push(label);
+      colids.push(item.metadata("id"));
     }
   }
 
@@ -493,7 +498,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
       d3.event.stopPropagation();
     });
 
-  this._drawLabels(itemsGroup, colnames, globalIndices, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width);
+  this._drawLabels(itemsGroup, colnames, colids, globalIndices, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width);
 
   return items;
 };
@@ -610,7 +615,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogram = function(svg, n
  * @param {number} width
  * @private
  */
-epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, colnames, columnMap, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width) {
+epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, colnames, colids, columnMap, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width) {
 
   var self = this;
 
@@ -658,7 +663,17 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
       .attr('transform', function(d, i){
         return 'translate(' + (mapCol(i, true))  + ',' + (-5) + ')rotate(-60)';
       })
-      .text(function(d){ return d; });
+      .text(function(d){ return d; })
+      .style("text-decoration", "underline")
+      .on("mouseover", function(d) {d3.select(this).style("cursor", "pointer");})
+      .on("mouseout", function(d) {d3.select(this).style("cursor", "default");})
+      .on('click', function(d,i) {
+        self._addFeaturePlot.notify({
+          featureName: colnames[i],
+          featureId: colids[i],
+          measurements: self.measurements()
+        });
+      });
 
     colSelection
       .transition()
