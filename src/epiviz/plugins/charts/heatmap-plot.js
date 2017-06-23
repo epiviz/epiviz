@@ -671,7 +671,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
         self._addFeaturePlot.notify({
           featureName: colnames[i],
           featureId: colids[i],
-          measurements: self.measurements()
+          measurements: self.measurements(),
+          rowLabel: self.customSettingsValues()['rowLabel']
         });
       });
 

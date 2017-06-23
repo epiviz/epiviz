@@ -67,6 +67,13 @@ body {
   text-align: left;
 }
 
+.feature-search-box {
+  height: 20px;
+  font-size: 13px;
+  font-weight: bolder;
+  margin:2px;
+}
+
 .ui-autocomplete-loading {
   background: white url('theme/images/ui-anim_basic_16x16.gif') right center no-repeat;
 }

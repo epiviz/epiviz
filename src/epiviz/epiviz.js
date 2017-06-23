@@ -537,7 +537,6 @@ epiviz.EpiViz.prototype._registerUiSearch = function() {
 
   this._chartManager._chartFeatureSearchEvent.addListener(new epiviz.events.EventListener(
     function(e) {
-      console.log(e);
       // find current icicle on the workspace
       var iciclePlot, icicleMeasuremens;
       for (var chartId in self._chartManager._charts) {
@@ -592,36 +591,53 @@ epiviz.EpiViz.prototype._registerChartRequestFeature = function() {
 epiviz.EpiViz.prototype._registerHierarchyChartRequestAddFeature = function() {
   var self = this;
   self._chartManager._heatmapAddFeatureChartEvent.addListener(new epiviz.events.EventListener(function(e) {
-    console.log(e);
-    console.log(self);
-    var chartType = self._chartFactory._types["epiviz.plugins.charts.FeatureScatterPlot"];
+    var currentFeaturePlot = null, currentFeatureChartId = null;
+    for (var chartId in self._chartManager._charts) {
+      if (!self._chartManager._charts.hasOwnProperty(chartId)) { continue; }
+      if (self._chartManager._charts[chartId]._featureType == "featureScatterPlot") { 
+        currentFeaturePlot = self._chartManager._charts[chartId]; 
+        currentFeatureChartId = chartId;
+        // icicleMeasuremens = self._chartManager._charts[chartId].measurements();
+      } 
+    }
 
-    var vconfig = new epiviz.ui.controls.VisConfigSelection(
-      e.measurements, // measurements
-      undefined, // datasource
-      undefined, // datasourceGroup
-      undefined, // dataprovider
-      undefined, // annotation
-      chartType.chartName(), // defaultChartType
-      chartType.minSelectedMeasurements());
+    if(currentFeaturePlot) {
+      var vals = currentFeaturePlot.customSettingsValues();
+      vals.featureId = e.featureId;
+      vals.featureName = e.featureName;
+      vals.rowLabel = e.rowLabel;
+      self._chartManager._chartFeatureGetDataEvent.notify({"chartId": currentFeatureChartId});
+    }
+    else {
+      var chartType = self._chartFactory._types["epiviz.plugins.charts.FeatureScatterPlot"];
 
-    var chartProperties = new epiviz.ui.charts.VisualizationProperties(
-      chartType.defaultWidth(), // width
-      chartType.defaultHeight(), // height
-      chartType.defaultMargins(), // margins
-      vconfig, // configuration of measurements and other information selected by the user
-      chartType.defaultColors(), // colors
-      null, // modified methods
-      chartType.customSettingsValues(),
-      chartType.customSettingsDefs(),
-      []
-    );
+      var vconfig = new epiviz.ui.controls.VisConfigSelection(
+        e.measurements, // measurements
+        undefined, // datasource
+        undefined, // datasourceGroup
+        undefined, // dataprovider
+        undefined, // annotation
+        chartType.chartName(), // defaultChartType
+        chartType.minSelectedMeasurements());
 
-    chartProperties.customSettingsValues.featureId = e.featureId;
-    chartProperties.customSettingsValues.featureName = e.featureName;
+      var chartProperties = new epiviz.ui.charts.VisualizationProperties(
+        chartType.defaultWidth(), // width
+        chartType.defaultHeight(), // height
+        chartType.defaultMargins(), // margins
+        vconfig, // configuration of measurements and other information selected by the user
+        chartType.defaultColors(), // colors
+        null, // modified methods
+        chartType.customSettingsValues(),
+        chartType.customSettingsDefs(),
+        []
+      );
 
-    self._addChart(chartType, vconfig, undefined, chartProperties, "");
+      chartProperties.customSettingsValues.featureId = e.featureId;
+      chartProperties.customSettingsValues.featureName = e.featureName;
+      chartProperties.customSettingsValues.rowLabel = e.rowLabel;
 
+      self._addChart(chartType, vconfig, undefined, chartProperties, "");
+    }
   }));
 };
 
@@ -1098,8 +1114,6 @@ epiviz.EpiViz.prototype._registerChartPropogateIcicleLocationChange = function()
 
   self._chartManager.onChartPropogateIcicleLocationChanges().addListener(new epiviz.events.EventListener(
     function(e) {
-
-      //console.log(e);
       var currentLocation = self._locationManager.currentLocation();
       if(currentLocation != null) {
         self._locationManager.changeCurrentLocation(
@@ -1117,8 +1131,6 @@ epiviz.EpiViz.prototype._registerLoadingAppScreen = function() {
 
   self._dataManager._loadingCurrentDataSet.addListener(new epiviz.events.EventListener(
     function(e) {
-
-      //console.log(e);
       self._controlManager.updateLoadingScreen(e);
     }
   ));

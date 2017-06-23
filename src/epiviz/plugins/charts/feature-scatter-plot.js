@@ -124,6 +124,8 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype.draw = function() {
     epiviz.ui.charts.Plot.prototype.draw.call(this, undefined, undefined);
     var self = this;
 
+    var sBox = $('#search-box-' + self.id());
+    sBox.val(self.customSettingsValues()['featureName']);
     return self.drawScatter(self._lastRange, self._lastData.data, "sample_id", self._xLabel, "count");
 };
 
@@ -148,9 +150,9 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawNavigation = function(fN
 
     var self = this;
 
-    $('#' + self.id()).prepend('<div><input id="search-box-' + self.id() + '" class="feature-search-box ui-widget-content ui-corner-all" type="text"/></div>');
+    $('#' + self.id()).prepend('<div style="position:absolute;"><input id="search-box-' + self.id() + '" class="feature-search-box ui-widget-content ui-corner-all" type="text"/></div>');
 
-    sBox = $('#search-box-' + self.id());
+    var sBox = $('#search-box-' + self.id());
     sBox.val(self.customSettingsValues()['featureName']);
     sBox.watermark('Find a taxonomic feature');
     self._hoveritem = new epiviz.ui.charts.tree.UiNode(

@@ -274,7 +274,6 @@ epiviz.plugins.charts.PCAScatterPlot.prototype._drawCircles = function(data, dim
 
     selection
         .on('click', function(d) {
-            console.log("click");
             self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
             self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
 

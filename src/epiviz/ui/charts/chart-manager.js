@@ -730,7 +730,6 @@ epiviz.ui.charts.ChartManager.prototype._registerChartSearchFeature = function(c
 
   if (chart._featureType == 'featureScatterPlot') {
     chart._searchFeatureChart.addListener(new epiviz.events.EventListener(function(e) {
-      console.log(e);
       self._chartFeatureSearchEvent.notify(e);
     }));
   }
@@ -741,7 +740,6 @@ epiviz.ui.charts.ChartManager.prototype._registerHeatmapAddFeatureChart = functi
 
   if (chart._featureType == 'heatmapPlot') {
     chart._addFeaturePlot.addListener(new epiviz.events.EventListener(function(e) {
-      console.log(e);
       self._heatmapAddFeatureChartEvent.notify(e);
     }));
   }
@@ -752,7 +750,6 @@ epiviz.ui.charts.ChartManager.prototype._registerChartFeatureGetData = function(
 
   if (chart._featureType == 'featureScatterPlot') {
     chart._registerFeatureGetData.addListener(new epiviz.events.EventListener(function(e) {
-      console.log(e);
       self._chartFeatureGetDataEvent.notify(e);
     }));
   }
