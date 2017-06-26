@@ -265,60 +265,45 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
 
     var data = JSON.parse(JSON.stringify(originalData));
 
-    if (logTransform){
-        data.forEach(function(m){
+    var allValues = [];
+    var uniqueValues = [];
+    var count= 0;
+    minYdata = 100000; 
+    maxYdata = 0;
+    var plotData = [];
+    data.forEach(function(m){
+        if(logTransform) {
             m[dimy] = Math.log2(m[dimy] + 1);
-        });
-    }
+        }
+        allValues.push(m[dimx]);
+
+        if(uniqueValues.indexOf(m[dimx]) == -1) {
+            uniqueValues.push(m[dimx]);
+            plotData[count] = [];
+            plotData[count][0] = count;
+            plotData[count][1] = [];
+            count++;
+        }
+
+        var index = uniqueValues.indexOf(m[dimx]);
+        m._xVal = index+1;
+        if(m[dimy] < minYdata) {
+            minYdata = m[dimy];
+        }
+        if(m[dimy] > maxYdata) {
+            maxYdata = m[dimy];
+        }
+        plotData[index][1].push(m[dimy]);
+
+    });
 
     // if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
-    if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
+    if (minY == CustomSetting.DEFAULT) { minY = minYdata - 1;}
     // if (maxX == CustomSetting.DEFAULT) { maxX = this._measurementsX[0].maxValue(); }
-    if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
-
-    var allValues = []
-    data.forEach(function(m) { allValues.push(m[dimx]);});
-
-    var uniqueValues = [];
-
-    allValues.forEach(function(m) {
-        if(uniqueValues.indexOf(m) == -1) {
-            uniqueValues.push(m);
-        }
-    });
+    if (maxY == CustomSetting.DEFAULT) { maxY = maxYdata + 1;}
 
     this.xTickValues = uniqueValues;
-    data.forEach(function(n) {
-        var index = uniqueValues.indexOf(n[dimx]);
-        n._xVal = index+1;
-    } );
-
-
-    var count= 0;
-    minY = 100000; 
-    maxY = 0;
-    var plotData = [];
-    uniqueValues.forEach(function(m) {
-        plotData[count] = [];
-        plotData[count][0] = count;
-        plotData[count][1] = [];
-        count++;
-
-    });
     
-    data.forEach(function(d) {
-        var ind = uniqueValues.indexOf(d[dimx]);
-        if(d[dimy] < minY) {
-            minY = d[dimy];
-        }
-        if(d[dimy] > maxY) {
-            maxY = d[dimy];
-        }
-        plotData[ind][1].push(d[dimy]);
-    });   
-    
-    maxY += 1;
-    minY -= 1;
     if (minX == CustomSetting.DEFAULT) {
         minX = 0;
     }
@@ -399,6 +384,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
         selectedGroup.append('g').attr('class', 'hovered');
     }
 
+    itemsGroup.selectAll('circle').remove();
     var selection = itemsGroup.selectAll('circle').data(items, function(d) {
         return d.id;
     });
@@ -412,29 +398,23 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
         .style('opacity', 0)
         .style('fill-opacity', 0)
         .attr('r', 0);
-    selection
-        .each(
+
+    if(showPoints) {
+        selection.each(
             /**
              * @param {epiviz.ui.charts.ChartObject} d
              */
             function(d) {
                 var circle = d3.select(this);
-
                 var fill = self.colors().get(d.seriesIndex);
-                if(showPoints){
-                    fill = fill;
-                }
-                else{
-                    fill = 'none';
-                }
-                
                 circle
                     .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
                     .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
                     .attr('class', d.cssClasses)
                     .style('fill', fill);
-            });
-
+            }
+        );
+    }        
 
     selection
         .transition()
@@ -533,6 +513,15 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
 
     rectBox.selectAll('.iqr-range').remove();
     rectBox.selectAll('.whisker').remove();
+
+    function quartiles(d) {
+        d.sort(d3.ascending);
+        var q1 = d3.quantile(d, .25);
+        var q2 = d3.quantile(d, .5);
+        var q3 = d3.quantile(d, .75);
+        return [q1, q2, q3];
+    };
+
     for(i = 0; i < plotData.length; i++){
         var findIQR = plotData[i][1];
         var lower_median_upper = [];
@@ -612,9 +601,7 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
     .attr("x2", margins.left() + (1.4 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
     .attr('y2', (height - margins.bottom() - ((lower_median_upper[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY))));
 
-
-
-    if(!showPoints){
+    if(showPoints){
          var selectionOutliers = itemsGroup.selectAll('circle').data(items, function(d) {
             return d.id;
          });
@@ -629,25 +616,15 @@ epiviz.plugins.charts.FeatureScatterPlot.prototype._drawCircles = function(origi
 
                 var fill = self.colors().get(d.seriesIndex);
                 if (d.values[1] < (findIQR[whisker_lower_index] - minY) || d.values[1] > (findIQR[whisker_upper_index] - minY)){
-                circle
-                    .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
-                    .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
-                    .attr('class', d.cssClasses)
-                    .style('fill', fill);
+                    circle
+                        .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
+                        .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+                        .attr('class', d.cssClasses)
+                        .style('fill', fill);
                 }
             });
         }
     }
-
-
-
-    function quartiles(d) {
-        d.sort(d3.ascending);
-        var q1 = d3.quantile(d, .25);
-        var q2 = d3.quantile(d, .5);
-        var q3 = d3.quantile(d, .75);
-        return [q1, q2, q3];
-    };
 
     return items;
 };
