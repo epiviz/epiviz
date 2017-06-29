@@ -314,6 +314,8 @@ function initialize(sources) {
 	table.appendChild(tableBody);
 	$('form').append(table);
 
+	var old_ds;
+
 	Object.keys(sources).forEach(function(value) {
 		var field = document.createElement('div');
 		var checkbox = document.createElement('div');
@@ -321,6 +323,7 @@ function initialize(sources) {
 		var label = document.createElement('label');
 		label.innerHTML = value;
 		checkbox.className = "ui radio checkbox";
+		
 		input.type = "radio";
 		input.name = "source";
 		input.value = value;
@@ -328,9 +331,10 @@ function initialize(sources) {
 			input.checked = "checked";
 		}
 		field.className = "field";
+		checkbox.style.display = "none";
 		
 		checkbox.appendChild(input);
-		checkbox.appendChild(label);
+		field.appendChild(label);
 		field.appendChild(checkbox);
 		// fields.appendChild(field);
 
@@ -347,8 +351,13 @@ function initialize(sources) {
 
 		$("#" + value).click(function() {
 			$("#"+value).find(".ui.checkbox").checkbox("check");
+			$("#"+value).addClass("active");
+			console.log(old_ds);
+			if(old_ds) {
+				$("#"+old_ds).removeClass("active");
+			}
+			old_ds = value;
 		});
-
 	});
 	// $('#form').append(fields);
 	$('#form').form();
