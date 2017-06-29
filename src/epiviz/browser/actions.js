@@ -42,6 +42,13 @@ function initialize_dropdown(source) {
 			$("#leftMenuCount span.data-count").text(countUpdate.attr('data-total'));
 		}
 	});
+
+	$("#autoClickSelect").click(function() {
+		if($("#sample-type").hasClass("disabled")) {
+			$("#select-type").dropdown("set selected", "Auto");
+		}
+	});	
+
 	$('#sample-type').dropdown({
 		allowTab : false,
 		onChange: function(value, text, $choice) {
@@ -156,7 +163,7 @@ function showModal(source, input, cb) {
 					'<div class="four wide column">'+
 						'Filter Samples <div id=\"leftMenuCount\" class=\"ui mini circular horizontal label\"> <span class=\"data-count\">0</span> of ' + input.length + '</div>'+
 					'</div>'+
-					'<div class="twelve wide column">'+
+					'<div id="autoClickSelect" class="twelve wide column">'+
 						'Sample selection type: '+
 						'<div class="ui compact selection dropdown" id="select-type">'+
 						  	'<i class="dropdown icon"></i>'+
