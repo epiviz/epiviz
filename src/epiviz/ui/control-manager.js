@@ -23,7 +23,7 @@ goog.require('epiviz.datatypes.GenomicRange');
  * @param {epiviz.ui.LocationManager} locationManager
  * @constructor
  */
-epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurementsManager, locationManager) {
+epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurementsManager, locationManager, workspaceManager) {
 
   /**
    * @type {epiviz.Config}
@@ -54,6 +54,8 @@ epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurem
    * @private
    */
   this._locationManager = locationManager;
+
+  this._workspaceManager = workspaceManager;
 
   // Events
 
@@ -171,6 +173,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   this._initializeWorkspaceSaving();
   this._initializeTutorials();
   this._initializeScreenshotMenu();
+  this._initializeManifestUploadMenu();
 
   /*
    * Log in/out
@@ -875,17 +878,12 @@ epiviz.ui.ControlManager.prototype._initializeManifestUploadMenu = function() {
     text:true
   })
   .click( function() {
-
-    var name = $('#manifest-upload-text').val();
-
     uploadManifestButton.append(sprintf('<div id="loading_manifest" title="Uploading Manifest">' +
         '<p>Upload/Upload Manifest File.</p>' +
         '<div style="position:absolute; right:15px;">' +
-        '<input type="text" id = "manifestPath">' +
+        '<input type="file" id = "manifestPath">' +
         '</div>' +
         '</div>'));
-
-
 
     uploadManifestButton.find("#loading_manifest").dialog({
       resizable: false,
@@ -893,42 +891,112 @@ epiviz.ui.ControlManager.prototype._initializeManifestUploadMenu = function() {
       title: "Upload Manifest",
       buttons: {
         "Upload": function () {
-		  var location = $('#manifestPath').val();
+          var location = document.getElementById('manifestPath');
 
-		  console.log(location);
+          var reader = new FileReader();
+          reader.onload = function () {
+              var data = d3.tsv.parseRows(reader.result);
 
-          $(this).dialog('close');
+              var urls = data.map(function(x) {console.log(x); return x[3];});
+              var samples = data.map(function(x) {return x[4];});
+              urls = urls.slice(1);
+              samples = samples.slice(1);
 
-		  var urlList = [];
-		  \\https://github.com/d3/d3-request/blob/master/README.md#tsv
-		  d3.tsv(location, function(data){
-			for(i = 0; i < data.length; i++){
-				urlList.push(data[i]['urls'].slice(0, data[i]['urls'].indexOf(",")));	
-			}
-		  });
+              var datasources = [];
+              var ids = [];
+              for(var i = 0; i < urls.length; i++){
+                var url_sub = urls[i].slice(0, urls[i].indexOf(","));
+                var ds = url_sub.split("/");
+                datasources.push(ds[4]);
+                var biom = ds[ds.length - 1];
+                ids.push(biom.slice(0, biom.indexOf(".biom")));
+              }
 
-		  console.log(urlList);
-		  var datasources = [];
-		  var ids = [];
-		  for(j = 0; j < urlList.length; j++){
-			  console.log(urlList[j]);
-			  console.log(urlList[j].slice(urlList[j].lastIndexOf("/"), urlList[j].indexOf(".biom")));
-			  var tempDS = urlList[j].split("/");
-			  console.log(tempDS);
-			  datasources.push(tempDS[4]);
-		  	  ids.push(urlList[j].slice(urlList[j].lastIndexOf("/"), urlList[j].indexOf(".biom")));
-		  }
+              // Create Workspace
+              // var workspace = {};
+              var measurements = [];
+              var mid = [];
 
-  		  console.log(ids);
-		  console.log(datasources);
-		  //ws[0] is datasource
-		  //ws[1] is sample name
-		  //resTemplate = {"range":{"seqName":ws[0],"start":0,"width":953},
-		  //"measurements":[{"id":ws[1],"name":ws[1],"type":"feature","datasourceId":ws[0],"datasourceGroup":ws[0],"dataprovider":ws[0],"formula":None,"defaultChartType":None,"annotation":rowdf['s'][0],"minValue":0.0577300543,"maxValue":161571.428571433,"metadata":["label","id","taxonomy1","taxonomy2","taxonomy3","taxonomy4","taxonomy5","taxonomy6","taxonomy7","lineage"],"description":"ihmp test data"},
-		  //{"id":"ESM5GEZ8","name":"ESM5GEZ8","type":"feature","datasourceId":ws[0],"datasourceGroup":ws[0],"dataprovider":ws[0],"formula":None,"defaultChartType":None,"annotation":rowdf['s'][0],"minValue":0.4278795615226172,"maxValue":1.201675165902977,"metadata":["label","id","taxonomy1","taxonomy2","taxonomy3","taxonomy4","taxonomy5","taxonomy6","taxonomy7","lineage"],"description":"ihmp test data"}],
-		  //"charts":{"data-structure":[{"id":"data-structure-icicle-Kc08V","type":"epiviz.ui.charts.tree.Icicle","properties":{"width":800,"height":350,"margins":{"top":50,"left":10,"bottom":10,"right":10},"visConfigSelection":{"measurements":[0],"datasourceGroup":ws[0],"annotation":{},"defaultChartType":"Navigation Control","minSelectedMeasurements":1},"colors":{"id":"d3-category20"},"modifiedMethods":{},"customSettings":{},"chartMarkers":[]}}],
-		  //"plot":[{"id":"plot-heatmap-XhHot","type":"epiviz.plugins.charts.HeatmapPlot","properties":{"width":800,"height":400,"margins":{"top":120,"left":60,"bottom":20,"right":40},"visConfigSelection":{"measurements":[1],"annotation":{},"defaultChartType":"Heatmap","minSelectedMeasurements":1},"colors":{"id":"heatmap-default"},"modifiedMethods":{},"customSettings":{"colLabel":"label","maxColumns":120,"clusteringAlg":"agglomerative"},"chartMarkers":[]}}]}}
-		  
+              for(var i=0; i < datasources.length; i++) {
+                var dsi = datasources[i];
+                var idi = ids[i];
+                measurements.push({
+                  "id":idi,
+                  "name":idi,
+                  "type":"feature",
+                  "datasourceId":dsi,
+                  "datasourceGroup":dsi,
+                  "dataprovider":dsi,
+                  "formula":null,
+                  "defaultChartType":null,
+                  "annotation":{},
+                  "minValue":0,
+                  "maxValue":20000,
+                  "metadata":["label","id","taxonomy1","taxonomy2",
+                              "taxonomy3","taxonomy4","taxonomy5",
+                              "taxonomy6","taxonomy7","lineage"],
+                  "description": dsi
+                });
+
+                mid.push(i);
+              }
+
+              var workspace = {
+                "range":{"seqName":datasources[0],"start":0,"width":10000},
+                "measurements":measurements,
+                "charts":{
+                  "data-structure":[{
+                    "id":"data-structure-icicle-Kc08V",
+                    "type":"epiviz.ui.charts.tree.Icicle",
+                    "properties":{
+                      "width":800,"height":350,
+                      "margins":{"top":50,"left":10,"bottom":10,"right":10},
+                      "visConfigSelection":{
+                        "measurements":[0],
+                        "datasourceGroup":datasources[0],
+                        "annotation":{},
+                        "defaultChartType":"Navigation Control",
+                        "minSelectedMeasurements":1
+                      },
+                      "colors":{
+                        "id":"d3-category20"
+                      },
+                      "modifiedMethods":{},
+                      "customSettings":{},
+                      "chartMarkers":[]
+                    }
+                  }],
+                  "plot":[{
+                    "id":"plot-heatmap-XhHot",
+                    "type":"epiviz.plugins.charts.HeatmapPlot",
+                    "properties":{
+                      "width":800,"height":400,
+                      "margins":{"top":120,"left":60,"bottom":20,"right":40},
+                      "visConfigSelection":{
+                        "measurements":mid,
+                        "annotation":{},
+                        "defaultChartType":"Heatmap",
+                        "minSelectedMeasurements":1
+                      },
+                      "colors":{"id":"heatmap-default"},
+                      "modifiedMethods":{},
+                      "customSettings":{
+                        "colLabel":"label",
+                        "maxColumns":120,
+                        "clusteringAlg":"agglomerative"
+                      },
+                        "chartMarkers":[]
+                      }
+                    }
+                  ]
+                }
+              }
+
+              var workspaceTemp = epiviz.workspaces.Workspace.fromRawObject({"id": "ihmp_auto", "name":"ihmp_auto", "content": workspace}, self._chartFactory, self._config);              
+              self._workspaceManager.changeActiveWorkspace(workspaceTemp.id(), workspaceTemp);
+          };
+
+          reader.readAsBinaryString(location.files[0]);          
           $(this).dialog('destroy').remove();
         },
         "cancel": function () {
