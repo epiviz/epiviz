@@ -31,8 +31,11 @@ epiviz.main = function() {
   /** @type {epiviz.ui.charts.ChartManager} */
   var chartManager = new epiviz.ui.charts.ChartManager(config);
 
+  /** @type {epiviz.workspaces.WorkspaceManager} */
+  var workspaceManager = new epiviz.workspaces.WorkspaceManager(config, locationManager, measurementsManager, chartManager, chartFactory);
+  
   /** @type {epiviz.ui.ControlManager} */
-  var controlManager = new epiviz.ui.ControlManager(config, chartFactory, chartManager, measurementsManager, locationManager);
+  var controlManager = new epiviz.ui.ControlManager(config, chartFactory, chartManager, measurementsManager, locationManager, workspaceManager);
 
   /** @type {epiviz.data.DataProviderFactory} */
   var dataProviderFactory = new epiviz.data.DataProviderFactory(config);
@@ -53,9 +56,6 @@ epiviz.main = function() {
   else {
     localStorageManager = new epiviz.localstorage.LocalStorageManager(epiviz.localstorage.LocalStorageManager.MODE.COOKIE_MODE);
   }
-
-  /** @type {epiviz.workspaces.WorkspaceManager} */
-  var workspaceManager = new epiviz.workspaces.WorkspaceManager(config, locationManager, measurementsManager, chartManager, chartFactory);
 
   /** @type {epiviz.workspaces.UserManager} */
   var userManager = new epiviz.workspaces.UserManager(config);
