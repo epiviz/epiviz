@@ -657,6 +657,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         <button id="help-button">Help</button>
         <button id="help-tutorials">Tutorials</button>
         <button id="save-page">Screenshot</button>
+        <button id="manifest-upload">Upload</button>
       </div>
     </div>
 
