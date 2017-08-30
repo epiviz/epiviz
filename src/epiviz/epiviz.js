@@ -167,13 +167,18 @@ epiviz.EpiViz.VERSION = '4';
 epiviz.EpiViz.prototype.start = function() {
 
   this._measurementsManager.initialize();
-  if (this._config.configType == "default") {
-    this._controlManager.startApp();
-  }
   this._cookieManager.initialize();
   this._locationManager.initialize();
   this._controlManager.initialize();
   this._workspaceManager.initialize();
+
+  var requestWorkspaceId = epiviz.ui.WebArgsManager.WEB_ARGS['ws'] ||
+  epiviz.ui.WebArgsManager.WEB_ARGS['workspace'] ||
+  null;
+
+  if (requestWorkspaceId == null) {
+    this._controlManager.startApp();
+  }
 };
 
 /**

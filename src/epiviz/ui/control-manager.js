@@ -1308,7 +1308,7 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
     $("body").append(modal);
 
     $("#startScreenApp").modal({
-      closable: false,
+      closable: true,
       selector:  {
         deny: '.ui.grey.button'
       }
