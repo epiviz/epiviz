@@ -308,6 +308,10 @@ function initialize(sources) {
 	th.innerHTML = "Description";
 	tr.appendChild(th);
 
+	var th = document.createElement("th");
+	th.innerHTML = "Samples";
+	tr.appendChild(th);
+
 	thead.appendChild(tr);
     table.appendChild(thead);
 
@@ -347,6 +351,11 @@ function initialize(sources) {
 		var td = document.createElement("td");
 		td.innerHTML = sources[value][0];
 		tr.appendChild(td);
+		
+		var td = document.createElement("td");
+		td.innerHTML = sources[value][2];
+		tr.appendChild(td);
+
 		tableBody.appendChild(tr);
 
 		$("#" + value).click(function() {
