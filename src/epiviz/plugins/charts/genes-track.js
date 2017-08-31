@@ -117,7 +117,8 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
       0,
       [[cell]],
       [series.measurement()],
-      classes);
+      classes,
+      item.seqName());
   });
 
   if (zoom) {

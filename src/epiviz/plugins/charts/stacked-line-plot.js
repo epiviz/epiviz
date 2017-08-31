@@ -290,7 +290,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
       index,
       measurements.map(function(m, i) { return [data.getByGlobalIndex(m, index)]; }), // valueItems one for each measurement
       measurements, // measurements
-      '');
+      '',
+      rowItem.seqName());
   });
 
   var seriesAreas = indices.map(function(index) { return valuesForIndex(index); });

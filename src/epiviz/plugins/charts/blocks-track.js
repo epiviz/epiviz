@@ -151,7 +151,8 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
         i, // seriesIndex
         [[cell]], // valueItems
         [m], // measurements
-        classes));
+        classes,
+        cell.rowItem.seqName()));
     }
 
     blocks = blocks.concat(seriesBlocks);

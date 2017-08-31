@@ -133,7 +133,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
 
     for (var k = 0; k < indices.length; ++k) {
       var cell = series.getByGlobalIndex(indices[k]);
-      items.push(new epiviz.ui.charts.ChartObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i)));
+      items.push(new epiviz.ui.charts.ChartObject(sprintf('line_%s_%s', i, cell.globalIndex), cell.rowItem.start(), cell.rowItem.end(), [cell.value], i, [[cell]], [m], sprintf('item data-series-%s', i), cell.rowItem.seqName()));
     }
 
     var x = function(j) {

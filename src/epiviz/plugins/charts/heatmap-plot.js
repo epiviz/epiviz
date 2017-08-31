@@ -343,7 +343,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
           seriesIndex,
           [[cell]], // valueItems one for each measurement
           [m], // measurements
-          classes);
+          classes,
+          cell.rowItem.seqName());
         items.push(uiObj);
 
         nextCellsPerCol = Math.ceil((colnames.length - i) / colsLeft);

@@ -155,8 +155,9 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
     .range([this._lastRange.start(), this._lastRange.end()]);
   var start = inverseXScale(d3.mouse(this._background[0][0])[0]) - this._binSize / 2;
   var end = start + this._binSize;
+  var seqName = this._lastRange.seqName();
 
-  var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this.id()), start, end);
+  var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this.id()), start, end, null, null, null, null, null, seqName);
   this._hover.notify(new epiviz.ui.charts.VisEventArgs(this.id(), selectedObject));
 };
 

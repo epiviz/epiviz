@@ -233,7 +233,8 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
         index,
         data.measurements().map(function(m, i) { return [data.getByGlobalIndex(m, index)]; }), // valueItems one for each measurement
         data.measurements(), // measurements
-        '');
+        '',
+        rowItem.seqName());
     });
     var lines = graph.selectAll('.line-series')
       .data(lineItems, function(d) { return d.id; });

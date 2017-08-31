@@ -236,7 +236,8 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
       seriesIndex,
       [[cellX], [cellY]], // valueItems one for each measurement
       [mX, mY], // measurements
-      classes);
+      classes,
+      cellX.rowItem.seqName());
 
     if (!grid[gridY]) { grid[gridY] = {}; }
     grid[gridY][gridX] = uiObj;

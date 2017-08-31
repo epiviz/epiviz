@@ -39,6 +39,15 @@ epiviz.ui.charts.VisObject.prototype.getMetadata = function(i, j, metadataCol) {
  * @param {number} j
  * @returns {number}
  */
+epiviz.ui.charts.VisObject.prototype.getSeqName= function(i, j) {
+    return null; };
+
+/**
+ * Measurement i, object j
+ * @param {number} i
+ * @param {number} j
+ * @returns {number}
+ */
 epiviz.ui.charts.VisObject.prototype.getStart = function(i, j) {
     return null; };
 
@@ -81,6 +90,11 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
         return true; }
 
     var i, j, k;
+
+
+    if(this.getSeqName() != other.getSeqName()) {
+        return false;
+    }
 
     // If this is a generic selection with no cells inside, then check its start and end against
     // the other object's cells/location
