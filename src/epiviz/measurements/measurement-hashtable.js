@@ -270,3 +270,23 @@ epiviz.measurements.MeasurementHashtable.Iterator.prototype.next = function() {
   this._lastIndex = this._parent._order.length;
   return null;
 };
+
+
+/**
+ * @param {function(epiviz.measurements.Measurement): number|string} criterion
+ * @returns {Object.<string, epiviz.measurements.MeasurementSet>}
+ */
+epiviz.measurements.MeasurementHashtable.prototype.split = function(criterion) {
+  var ret = {};
+  this.foreach(function(m, i) {
+    var key = criterion(m);
+    var group = ret[key];
+    if (group == undefined) {
+      group = new epiviz.measurements.MeasurementSet();
+      ret[key] = group;
+    }
+    group.add(m);
+  });
+
+  return ret;
+};

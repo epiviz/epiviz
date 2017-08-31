@@ -131,7 +131,8 @@ epiviz.ui.WebArgsManager.prototype._registerLocationChanged = function() {
       epiviz.ui.WebArgsManager.WEB_ARGS['seqName'] = e.newValue.seqName();
       epiviz.ui.WebArgsManager.WEB_ARGS['start'] = e.newValue.start();
       epiviz.ui.WebArgsManager.WEB_ARGS['end'] = e.newValue.end();
-
+      epiviz.ui.WebArgsManager.WEB_ARGS['genome'] = e.newValue.genome();
+      
       self._updateUrl();
     }));
 };

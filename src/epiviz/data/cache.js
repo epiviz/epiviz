@@ -71,7 +71,8 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
   this._lastRequest = epiviz.datatypes.GenomicRange.fromStartEnd(
     range.seqName(),
     range.start() - range.width(),
-    range.end() + range.width());
+    range.end() + range.width(),
+    range.genome());
 
   if (this._config.cacheUpdateIntervalMilliseconds > 0) {
     window.clearInterval(this._intervalId);
@@ -87,8 +88,8 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
 
   var requestRanges = [
     range,
-    epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName(), Math.max(range.start() - range.width(), 0), range.start()),
-    new epiviz.datatypes.GenomicRange(range.seqName(), range.end(), range.width())
+    epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName(), Math.max(range.start() - range.width(), 0), range.start(), range.genome()),
+    new epiviz.datatypes.GenomicRange(range.seqName(), range.end(), range.width(), range.genome())
   ];
 
   /**
@@ -453,7 +454,7 @@ epiviz.data.Cache.prototype._updateComputedMeasurementsData = function(computedM
           size = values.size();
           end = values.boundaries().end();
         }
-        boundaries = GenomicRange.fromStartEnd(boundaries.seqName(), start, end);
+        boundaries = GenomicRange.fromStartEnd(boundaries.seqName(), start, end, boundaries.genome());
       } else {
         var newSize = values.size() - globalStartIndex + values.globalStartIndex();
         if (size > newSize) {
@@ -463,7 +464,7 @@ epiviz.data.Cache.prototype._updateComputedMeasurementsData = function(computedM
             return true;
           }
           boundaries = GenomicRange.fromStartEnd(
-            boundaries.seqName(), boundaries.start(), values.boundaries().end());
+            boundaries.seqName(), boundaries.start(), values.boundaries().end(), boundaries.genome());
         }
       }
 
@@ -506,7 +507,8 @@ epiviz.data.Cache.prototype._updateComputedMeasurementsData = function(computedM
       values = new epiviz.datatypes.FeatureValueArray(cm,
         GenomicRange.fromStartEnd(boundaries.seqName(), boundaries.start(), existingValues.boundaries().start()),
         globalStartIndex,
-        cm.evaluateArr(compMsVals));
+        cm.evaluateArr(compMsVals),
+        boundaries.genome());
 
 
       self._mergeData(cm, values);
@@ -525,7 +527,7 @@ epiviz.data.Cache.prototype._updateComputedMeasurementsData = function(computedM
       });
 
       values = new epiviz.datatypes.FeatureValueArray(cm,
-        GenomicRange.fromStartEnd(boundaries.seqName(), existingValues.boundaries().end(), boundaries.end()),
+        GenomicRange.fromStartEnd(boundaries.seqName(), existingValues.boundaries().end(), boundaries.end(), boundaries.genome()),
         existingValues.globalStartIndex() + existingValues.size(),
         cm.evaluateArr(compMsVals));
 

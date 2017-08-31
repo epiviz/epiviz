@@ -214,12 +214,13 @@ epiviz.workspaces.WorkspaceManager.prototype.updateWorkspaces = function(workspa
 
   var webArgs = epiviz.ui.WebArgsManager.WEB_ARGS;
 
+  var genome = (webArgs['genome'] != undefined) ? webArgs['genome'] : this._activeWorkspace.range().genome();
   var seqName = (webArgs['seqName'] != undefined) ? webArgs['seqName'] : this._activeWorkspace.range().seqName();
   var start = null, end = null;
   if (webArgs['start'] != 'undefined') { start = parseInt(webArgs['start']) || this._activeWorkspace.range().start(); }
   if (webArgs['end'] != 'undefined') { end = parseInt(webArgs['end']) || this._activeWorkspace.range().end(); }
 
-  this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end));
+  this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end, genome));
 
   this._workspacesLoaded.notify({
     activeWorkspace: this._activeWorkspace,
@@ -264,11 +265,12 @@ epiviz.workspaces.WorkspaceManager.prototype.deleteActiveWorkspace = function() 
   this._activeWorkspace = newActiveWorkspace;
   this._unchangedActiveWorkspace = newActiveWorkspace ? newActiveWorkspace.copy(newActiveWorkspace.name(), newActiveWorkspace.id()) : null;
 
+  var genome = activeWorkspace.range().genome();
   var seqName = activeWorkspace.range().seqName();
   var start = activeWorkspace.range().start();
   var end = activeWorkspace.range().end();
 
-  this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end));
+  this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end, genome));
 
   this._activeWorkspaceChanged.notify({
     oldValue: activeWorkspace,
@@ -283,13 +285,14 @@ epiviz.workspaces.WorkspaceManager.prototype.revertActiveWorkspace = function() 
   if (!this._unchangedActiveWorkspace) { return; }
   var oldActiveWorkspace = this._activeWorkspace;
 
+  var genome = oldActiveWorkspace.range().genome();
   var seqName = oldActiveWorkspace.range().seqName();
   var start = oldActiveWorkspace.range().start();
   var end = oldActiveWorkspace.range().end();
 
   this._activeWorkspace = this._unchangedActiveWorkspace.copy(this._unchangedActiveWorkspace.name(), this._unchangedActiveWorkspace.id());
 
-  this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end));
+  this._activeWorkspace.locationChanged(epiviz.datatypes.GenomicRange.fromStartEnd(seqName, start, end, genome));
 
   this._activeWorkspaceChanged.notify({
     oldValue: null,

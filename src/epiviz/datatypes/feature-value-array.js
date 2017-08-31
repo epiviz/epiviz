@@ -118,7 +118,7 @@ epiviz.datatypes.FeatureValueArray.prototype.trim = function(range, globalStartI
   var start = Math.max(this.boundaries().start(), range.start());
   var end = Math.min(this.boundaries().end(), range.end());
   if (end <= start) { return null; }
-  range = epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName(), start, end);
+  range = epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName(), start, end, range.genome());
 
   var startIndex = Math.max(globalStartIndex, this.globalStartIndex()) - this.globalStartIndex();
   var endIndex = Math.min(globalStartIndex + length, this.globalStartIndex() + this.size()) - this.globalStartIndex();

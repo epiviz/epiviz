@@ -292,21 +292,36 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
        */
       function(response) {
         var seqs = response.data();
-        if (seqs) {
-          if(!Array.isArray(seqs)) {
-            var keys = Object.keys(seqs);
-            for (var i=0; i<keys.length; i++) {
-              if (!(keys[i] in existingSeqNames)) {
-                result.push(epiviz.datatypes.SeqInfo.fromRawObject([keys[i], seqs[keys[i]][0], seqs[keys[i]][1]]));
-                existingSeqNames[keys[i]] = true;
+
+        if (epiviz.EpiViz.VERSION == 5){
+          if (seqs) {
+            if(!Array.isArray(seqs)) {
+              var keys = Object.keys(seqs);
+              for (var i=0; i<keys.length; i++) {
+                for (var j=0; j<seqs[keys[i]].length; j++) {
+                  result.push(epiviz.datatypes.SeqInfo.fromRawObject([seqs[keys[i]][j][0]  , seqs[keys[i]][j][1], seqs[keys[i]][j][2], keys[i]]));                  
+                }
               }
             }
           }
-          else {
-            for (var i = 0; i < seqs.length; ++i) {
-              if (!(seqs[i][0] in existingSeqNames)) {
-                result.push(epiviz.datatypes.SeqInfo.fromRawObject(seqs[i]));
-                existingSeqNames[seqs[i][0]] = true;
+        }
+        else {
+          if (seqs) {
+            if(!Array.isArray(seqs)) {
+              var keys = Object.keys(seqs);
+              for (var i=0; i<keys.length; i++) {
+                if (!(keys[i] in existingSeqNames)) {
+                  result.push(epiviz.datatypes.SeqInfo.fromRawObject([keys[i], seqs[keys[i]][0], seqs[keys[i]][1]]));
+                  existingSeqNames[keys[i]] = true;
+                }
+              }
+            }
+            else {
+              for (var i = 0; i < seqs.length; ++i) {
+                if (!(seqs[i][0] in existingSeqNames)) {
+                  result.push(epiviz.datatypes.SeqInfo.fromRawObject(seqs[i]));
+                  existingSeqNames[seqs[i][0]] = true;
+                }
               }
             }
           }
@@ -391,7 +406,8 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
               jsondata['annotation'][i],
               $.isArray(jsondata['minValue']) ? jsondata['minValue'][i] : jsondata['minValue'],
               $.isArray(jsondata['maxValue']) ? jsondata['maxValue'][i] : jsondata['maxValue'],
-              ($.isArray(jsondata['metadata']) && $.isArray(jsondata['metadata'][0])) ? jsondata['metadata'][i] : jsondata['metadata']
+              //($.isArray(jsondata['metadata']) && $.isArray(jsondata['metadata'][0])) ? jsondata['metadata'][i] : jsondata['metadata']
+              eval(jsondata['metadata'][i])
             ));
           }
         }

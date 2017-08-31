@@ -203,7 +203,8 @@ epiviz.Config.SETTINGS = {
       range: {
         seqName: 'chr11',
         start: 101407173,
-        width: 103922435
+        width: 103922435,
+        genome: 'hg18'
       },
 
       // The initial measurements loaded in the workspace
