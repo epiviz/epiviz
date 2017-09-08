@@ -172,6 +172,18 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(range, data, sl
       self._drawGene(this, d, xScale);
     });
 
+  // enable drag behavior
+  var drag = d3.behavior.drag()
+    .on("drag", function(d) {
+      var movePercent = d3.event.dx;
+      var newStart = Math.round(range.start() + ((movePercent/width) * range.start()));
+      var newRange = new epiviz.datatypes.GenomicRange(range.seqName(), newStart, range.width(), range.genome());
+      if(newRange) {
+        self._propagateNavigationChanges.notify({"id": self.id(), "range": newRange});        
+      }
+    });
+  self._svg.call(drag);
+
   if (delta) {
     selection.each(function(d) {
       self._translateGene(this, d, delta);

@@ -141,7 +141,7 @@ epiviz.datatypes.GenomicRangeArray.prototype.concatValues = function(second, sec
     id = this._id ? this._id.concat(second._id.slice(secondIndex)) : null,
     start = this._start.concat(second._start.slice(secondIndex)),
     end = this._end ? this._end.concat(second._end.slice(secondIndex)) : null,
-    seqName = this._seqName.concat(second._seqName.slice(secondIndex));
+    seqName = this._seqName ? this._seqName.concat(second._seqName.slice(secondIndex)) : null;
 
   // Concatenate metadata values. We assume that both structures have the same columns
   var metadata = {};

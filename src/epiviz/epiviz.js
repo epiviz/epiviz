@@ -113,6 +113,8 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
 
   this._registerChartPropogateIcicleLocationChange();
 
+  this._registerChartPropagateNavigationChanges();
+
   this._registerUiSettingsChanged();
 
   // Register for Data events
@@ -526,6 +528,15 @@ epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
   }));
 };
 
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerChartPropagateNavigationChanges = function() {
+  var self = this;
+  this._chartManager.onChartPropagateNavigationChanges().addListener(new epiviz.events.EventListener(function(e) {
+    self._locationManager.changeCurrentLocation(e.range);
+  }));
+};
 
 /**
  * @private

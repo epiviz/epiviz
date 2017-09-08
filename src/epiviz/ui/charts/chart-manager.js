@@ -129,6 +129,8 @@ epiviz.ui.charts.ChartManager = function(config) {
 
   this._chartIcicleLocationChanges = new epiviz.events.Event();
 
+  this._chartPropagateNavigationChanges = new epiviz.events.Event();
+  
   this._registerWindowResize();
 };
 
@@ -217,6 +219,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartPropagateHierarchyChanges(chart);
   this._registerChartPropogateIcicleLocationChanges(chart);
   this._registerChartIcicleLocationChanges(chart);
+  this._registerChartPropagateNavigationChanges(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -427,6 +430,7 @@ epiviz.ui.charts.ChartManager.prototype.onChartPropogateIcicleLocationChanges = 
 
 epiviz.ui.charts.ChartManager.prototype.onChartIcicleLocationChanges = function() { return this._chartIcicleLocationChanges; };
 
+epiviz.ui.charts.ChartManager.prototype.onChartPropagateNavigationChanges = function() { return this._chartPropagateNavigationChanges; };
 
 /**
  * @private
@@ -672,6 +676,17 @@ epiviz.ui.charts.ChartManager.prototype._registerChartIcicleLocationChanges = fu
         chart._drawAxes(chart._lastRoot);
       }
    }));
+}; 
+
+
+epiviz.ui.charts.ChartManager.prototype._registerChartPropagateNavigationChanges = function(chart) {
+  var self = this;
+
+  if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.TRACK) {
+    chart._propagateNavigationChanges.addListener(new epiviz.events.EventListener(function(e) {
+      self._chartPropagateNavigationChanges.notify(e);
+    }));
+  }
 }; 
 
 epiviz.ui.charts.ChartManager.prototype.getChartSettings = function(id) {

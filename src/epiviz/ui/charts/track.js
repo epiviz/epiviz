@@ -30,6 +30,11 @@ epiviz.ui.charts.Track = function(id, container, properties) {
    * @protected
    */
   this._highlightGroup = null;
+
+  /**
+   * Notify navigation drag events
+   */
+  this._propagateNavigationChanges = new epiviz.events.Event();
 };
 
 /*
