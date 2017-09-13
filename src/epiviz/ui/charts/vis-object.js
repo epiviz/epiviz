@@ -24,6 +24,12 @@ epiviz.ui.charts.VisObject.prototype.regionEnd = function() {
     return null; };
 
 /**
+ * @returns {string}
+ */
+epiviz.ui.charts.VisObject.prototype.regionSeqName = function() {
+    return null; };
+
+/**
  * Measurement i, object j
  * @param {number} i
  * @param {number} j
@@ -92,7 +98,7 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
     var i, j, k;
 
 
-    if(this.getSeqName() != other.getSeqName()) {
+    if(this.regionSeqName() != other.regionSeqName()) {
         return false;
     }
 

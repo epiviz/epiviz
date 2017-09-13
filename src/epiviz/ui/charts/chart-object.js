@@ -88,6 +88,11 @@ epiviz.ui.charts.ChartObject.prototype.regionStart = function() { return this.st
 epiviz.ui.charts.ChartObject.prototype.regionEnd = function() { return this.end; };
 
 /**
+ * @returns {string}
+ */
+epiviz.ui.charts.ChartObject.prototype.regionSeqName = function() { return this.seqName; };
+
+/**
  * @param {number} i
  * @param {number} j
  * @param {string} metadataCol
@@ -108,6 +113,10 @@ epiviz.ui.charts.ChartObject.prototype.getMetadata = function(i, j, metadataCol)
  * @returns {number}
  */
 epiviz.ui.charts.ChartObject.prototype.getStart = function(i, j) { return this.valueItems[i][j].rowItem.start(); };
+
+epiviz.ui.charts.ChartObject.prototype.getSeqName = function(i, j) { return this.seqName | this.valueItems[i][j].rowItem.seqName() ; };
+
+
 
 /**
  * Measurement i, object j
