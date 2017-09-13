@@ -931,7 +931,21 @@ epiviz.ui.charts.Visualization.prototype.doHover = function(selectedObject) {
   var selectedHoveredGroup = selectedGroup.find('> .hovered');
 
   var filter = function() {
-    return selectedObject.overlapsWith(d3.select(this).data()[0]);
+    if(Array.isArray(selectedObject)) {
+      var match = false;
+
+      for(var sIndex = 0; sIndex < selectedObject.length; sIndex++) {
+        var sel = selectedObject[sIndex];
+        if (sel.overlapsWith(d3.select(this).data()[0])) {
+          match = true;
+        }
+      }
+
+      return match;
+    }
+    else {
+      return selectedObject.overlapsWith(d3.select(this).data()[0]);
+    }
   };
   var selectItems = itemsGroup.find('> .item').filter(filter);
   unselectedHoveredGroup.append(selectItems);
