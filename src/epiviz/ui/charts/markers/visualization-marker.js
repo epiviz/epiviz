@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.ui.charts.markers.VisualizationMarker');
 
+goog.require('epiviz.utils');
+goog.require('epiviz.deferred.Deferred');
+goog.require('epiviz.caja.cajole');
+
 /**
  * @param {epiviz.ui.charts.markers.VisualizationMarker.Type} type
  * @param {string} [id]

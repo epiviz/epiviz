@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.DataStructureVisualizationType');
 
+goog.require('epiviz.ui.charts.VisualizationType');
+
+
 /**
  * @param {epiviz.Config} config
  * @extends {epiviz.ui.charts.VisualizationType}

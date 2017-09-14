@@ -7,6 +7,11 @@
 goog.provide('caja');
 goog.provide('epiviz.caja');
 
+goog.require('epiviz.deferred.Deferred');
+// goog.require('epiviz.utils.fillArray');
+goog.require('epiviz.utils');
+
+
 caja.initialize = function() {};
 
 /**

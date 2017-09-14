@@ -6,6 +6,11 @@
 
 goog.provide('epiviz.ui.controls.CustomSettingsDialog');
 
+goog.require('epiviz.ui.controls.Dialog');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.controls.MessageDialog');
+
 /**
  * @param {string} title
  * @param {{ok: function(Object.<string, *>), cancel: function()}} handlers

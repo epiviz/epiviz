@@ -4,11 +4,40 @@
  * Time: 11:19 AM
  */
 
-goog.provide('epiviz.utils.capitalizeFirstLetter');
-goog.provide('epiviz.utils.fillArray');
-goog.provide('epiviz.utils.mapCopy');
-goog.provide('epiviz.utils.evaluateFullyQualifiedTypeName');
-goog.provide('epiviz.utils.generatePseudoGUID');
+goog.provide('epiviz.utils');
+// goog.provide('epiviz.utils.capitalizeFirstLetter');
+// goog.provide('epiviz.utils.fillArray');
+// goog.provide('epiviz.utils.mapCopy');
+// goog.provide('epiviz.utils.evaluateFullyQualifiedTypeName');
+// goog.provide('epiviz.utils.generatePseudoGUID');
+// goog.provide('epiviz.utils.stringContains');
+// goog.provide('epiviz.utils.stringStartsWith');
+// goog.provide('epiviz.utils.stringEndsWith');
+// goog.provide('epiviz.utils.indexOf');
+// goog.provide('epiviz.utils.arraysEqual');
+// goog.provide('epiviz.utils.elementsEqual');
+// goog.provide('epiviz.utils.range');
+// goog.provide('epiviz.utils.arrayAppend');
+// goog.provide('epiviz.utils.arrayFlip');
+// goog.provide('epiviz.utils.indexOfMin');
+// goog.provide('epiviz.utils.arrayIntersection');
+// goog.provide('epiviz.utils.asyncFor');
+// goog.provide('epiviz.utils.deferredFor');
+// goog.provide('epiviz.utils.mapEquals');
+// goog.provide('epiviz.utils.mapCombine');
+// goog.provide('epiviz.utils.mapJoin');
+// goog.provide('epiviz.utils.mapKeyIntersection');
+// goog.provide('epiviz.utils.forEach');
+// goog.provide('epiviz.utils.applyConstructor');
+// goog.provide('epiviz.utils.getInternetExplorerVersion');
+// goog.provide('epiviz.utils.colorize');
+// goog.provide('epiviz.utils.colorizeBinary');
+// goog.provide('epiviz.utils.sign');
+
+goog.require('epiviz.deferred.Deferred');
+
+
+epiviz.utils = function() {};
 
 // String
 

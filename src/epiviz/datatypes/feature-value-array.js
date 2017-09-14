@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.datatypes.FeatureValueArray');
 
+goog.require('epiviz.datatypes.GenomicArray');
+goog.require('epiviz.datatypes.GenomicRange');
+goog.require('epiviz.utils');
+
 /**
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.GenomicRange} boundaries
@@ -159,3 +163,5 @@ epiviz.datatypes.FeatureValueArray.prototype.toString = function() {
 
   return [header, idx, val].join('\n');
 };
+
+// goog.inherits(epiviz.datatypes.FeatureValueArray, epiviz.datatypes.GenomicArray);

@@ -6,12 +6,11 @@
 
 goog.provide('epiviz.EpiViz');
 
-goog.require('epiviz.Config');
-goog.require('epiviz.data.DataProviderFactory');
-goog.require('epiviz.data.DataManager');
-goog.require('epiviz.data.DataProvider');
-goog.require('epiviz.ui.PrintManager');
-
+goog.require('epiviz.ui.charts.VisualizationType');
+goog.require('epiviz.workspaces.Workspace');
+goog.require('epiviz.events.EventListener');
+goog.require('epiviz.ui.controls.MessageDialog');
+goog.require('epiviz.datatypes.GenomicRange');
 
 /**
  * @param {epiviz.Config} config

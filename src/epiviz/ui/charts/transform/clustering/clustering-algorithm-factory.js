@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory');
 
+goog.require('epiviz.utils');
+
 /**
  * @param {epiviz.Config} config
  * @constructor

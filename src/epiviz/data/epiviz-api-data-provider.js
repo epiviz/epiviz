@@ -7,6 +7,12 @@
 goog.provide('epiviz.data.EpivizApiDataProvider');
 goog.provide('epiviz.data.EpivizApiDataProvider.Request');
 
+goog.require('epiviz.data.DataProvider');
+goog.require('epiviz.data.Response');
+goog.require('epiviz.ui.charts.tree.NodeSelectionType');
+goog.require('epiviz.utils');
+
+
 /**
  * @param {string} id
  * @param {string} serverEndpoint
@@ -342,3 +348,5 @@ epiviz.data.EpivizApiDataProvider.Response = function(id, error, result) {
 
   this.result = result;
 };
+
+// goog.inherits(epiviz.data.EpivizApiDataProvider, epiviz.data.DataProvider);

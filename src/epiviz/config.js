@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.Config');
 
+goog.require('epiviz.ui.WebArgsManager');
+goog.require('epiviz.data.WebsocketDataProvider');
+goog.require('epiviz.data.WebServerDataProvider');
+
 /**
  * @param {*} [settingsMap] A map of settings to override the default settings for the config.
  * @constructor

@@ -6,6 +6,18 @@
 
 goog.provide('epiviz.ui.charts.Chart');
 
+goog.require('epiviz.ui.charts.Visualization');
+goog.require('epiviz.measurements.Measurement');
+goog.require('epiviz.deferred.Deferred');
+goog.require('epiviz.ui.charts.markers.MeasurementAggregator');
+goog.require('epiviz.ui.charts.ChartType');
+goog.require('epiviz.datatypes.MeasurementAggregatedGenomicData');
+goog.require('epiviz.ui.charts.markers.VisualizationMarker');
+goog.require('epiviz.datatypes.ItemFilteredGenomicData');
+goog.require('epiviz.datatypes.MeasurementOrderedGenomicData');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.ui.charts.VisEventArgs');
+
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn

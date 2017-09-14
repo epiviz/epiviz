@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.measurements.MeasurementSet');
 
+goog.require('epiviz.utils.Iterable');
+goog.require('epiviz.utils.Iterator');
+
+
 /**
  * A collection of measurements, where each item is stored only once,
  * and iteration is done in the insertion order.

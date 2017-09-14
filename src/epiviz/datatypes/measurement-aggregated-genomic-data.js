@@ -6,6 +6,15 @@
 
 goog.provide('epiviz.datatypes.MeasurementAggregatedGenomicData');
 
+goog.require('epiviz.datatypes.MapGenomicData');
+goog.require('epiviz.deferred.Deferred');
+goog.require('epiviz.measurements.Measurement');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.utils');
+goog.require('epiviz.datatypes.MeasurementGenomicDataArrayWrapper');
+goog.require('epiviz.datatypes.GenomicData.ValueItem');
+goog.require('epiviz.datatypes.RowItemImpl');
+
 /**
  * @param {epiviz.datatypes.GenomicData} data
  * @param {epiviz.ui.charts.markers.VisualizationMarker.<epiviz.datatypes.GenomicData, *, epiviz.measurements.Measurement, string>} groupByMarker
@@ -175,3 +184,5 @@ epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize = functi
 
   return this._deferredInit;
 };
+
+// goog.inherits(epiviz.datatypes.MeasurementAggregatedGenomicData, epiviz.datatypes.MapGenomicData);
