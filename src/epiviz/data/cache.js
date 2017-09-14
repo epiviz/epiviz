@@ -11,6 +11,7 @@ goog.require('epiviz.measurements.MeasurementHashtable');
 goog.require('epiviz.datatypes.MeasurementGenomicDataArrayWrapper');
 goog.require('epiviz.datatypes.MapGenomicData');
 goog.require('epiviz.measurements.MeasurementSet');
+goog.require('epiviz.datatypes.PartialSummarizedExperiment');
 
 /**
  * @param {epiviz.Config} config
