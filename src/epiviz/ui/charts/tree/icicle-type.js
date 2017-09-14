@@ -6,7 +6,7 @@
 
 goog.provide('epiviz.ui.charts.tree.IcicleType');
 
-goog.require('epiviz.ui.charts.DataStructureVisualizationType');
+goog.require('epiviz.ui.charts.tree.HierarchyVisualizationType');
 goog.require('epiviz.ui.charts.CustomSetting');
 
 /**
@@ -16,7 +16,7 @@ goog.require('epiviz.ui.charts.CustomSetting');
  */
 epiviz.ui.charts.tree.IcicleType = function(config) {
   // Call superclass constructor
-  epiviz.ui.charts.DataStructureVisualizationType.call(this, config);
+  epiviz.ui.charts.tree.HierarchyVisualizationType.call(this, config);
 };
 
 /*
@@ -60,7 +60,7 @@ epiviz.ui.charts.tree.IcicleType.prototype.chartHtmlAttributeName = function() {
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}
  */
 epiviz.ui.charts.tree.IcicleType.prototype.customSettingsDefs = function() {
-  return epiviz.ui.charts.DataStructureVisualizationType.prototype.customSettingsDefs.call(this).concat([
+  return epiviz.ui.charts.tree.HierarchyVisualizationType.prototype.customSettingsDefs.call(this).concat([
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY,

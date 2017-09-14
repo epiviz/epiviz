@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.utils.IterableArray');
 
+goog.require('epiviz.utils.Iterable');
+
+
 /**
  * @param {Array.<T>} array
  * @constructor
