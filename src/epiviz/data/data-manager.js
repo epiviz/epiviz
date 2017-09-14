@@ -18,6 +18,7 @@ goog.require('epiviz.datatypes.GenomicRangeArray');
 goog.require('epiviz.datatypes.FeatureValueArray');
 goog.require('epiviz.datatypes.MeasurementGenomicData');
 goog.require('epiviz.datatypes.MeasurementGenomicDataWrapper');
+goog.require('epiviz.datatypes.SeqInfo');
 goog.require('epiviz.events.EventResult');
 // goog.require('epiviz.utils.arrayAppend');
 // goog.require('epiviz.utils.forEach');

@@ -6,6 +6,7 @@
 
 goog.provide('epiviz.main');
 
+goog.require('epiviz.utils');
 goog.require('epiviz.Config');
 goog.require('epiviz.ui.LocationManager');
 goog.require('epiviz.measurements.MeasurementsManager');
@@ -80,4 +81,4 @@ epiviz.main = function() {
   epivizHandler.start();
 };
 
-goog.exportSymbol('epiviz.main', epiviz.main);
+// goog.exportSymbol('epiviz.main', epiviz.main);
