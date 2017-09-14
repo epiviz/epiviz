@@ -7,6 +7,12 @@
 
 goog.provide('epiviz.ui.charts.tree.HierarchyVisualization');
 
+goog.require('epiviz.ui.charts.DataStructureVisualization');
+goog.require('epiviz.ui.charts.tree.NodeSelectionType');
+goog.require('epiviz.ui.charts.tree.Node');
+goog.require('epiviz.ui.charts.tree.UiNode');
+goog.require('epiviz.ui.charts.VisEventArgs');
+
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn

@@ -6,6 +6,7 @@
 
 goog.provide('epiviz.ui.controls.Dialog');
 
+goog.require('epiviz.utils');
 /**
  * @param {string} title
  * @param {Object.<string, function>} handlers

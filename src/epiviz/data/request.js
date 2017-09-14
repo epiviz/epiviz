@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.data.Request');
 
+goog.require('epiviz.data.MessageType');
+goog.require('epiviz.utils');
+
 /**
  * @param {number} id
  * @param {Object.<string, string>} args

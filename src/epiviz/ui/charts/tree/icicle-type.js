@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.tree.IcicleType');
 
+goog.require('epiviz.ui.charts.DataStructureVisualizationType');
+goog.require('epiviz.ui.charts.CustomSetting');
+
 /**
  * @param {epiviz.Config} config
  * @extends {epiviz.ui.charts.tree.HierarchyVisualizationType}

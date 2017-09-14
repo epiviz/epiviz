@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.decoration.ChartTooltip');
 
+goog.require('epiviz.ui.charts.decoration.VisualizationDecoration');
+goog.require('epiviz.ui.charts.decoration.ToggleTooltipButton');
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]

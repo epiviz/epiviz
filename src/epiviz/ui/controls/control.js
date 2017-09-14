@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.controls.Control');
 
+goog.require('epiviz.utils');
+
 /**
  * @param {jQuery} container
  * @param {string} [title]

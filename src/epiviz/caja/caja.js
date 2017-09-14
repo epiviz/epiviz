@@ -6,6 +6,11 @@
 
 goog.provide('epiviz.caja.cajole');
 
+goog.require('epiviz.deferred.Deferred');
+// goog.require('epiviz.utils.fillArray');
+goog.require('epiviz.utils');
+
+
 /**
  * @param {string} funcStr
  * @param {Object.<string, *>} [args]

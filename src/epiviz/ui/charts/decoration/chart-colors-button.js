@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.ui.charts.decoration.ChartColorsButton');
 
+goog.require('epiviz.ui.charts.decoration.ChartOptionButton');
+goog.require('epiviz.ui.controls.ColorPickerDialog');
+
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
@@ -62,3 +66,6 @@ epiviz.ui.charts.decoration.ChartColorsButton.prototype._renderOptions = functio
  * @protected
  */
 epiviz.ui.charts.decoration.ChartColorsButton.prototype._text = function() { return 'Colors'; };
+
+
+// goog.inherits(epiviz.ui.charts.decoration.ChartColorsButton, epiviz.ui.charts.decoration.ChartOptionButton);

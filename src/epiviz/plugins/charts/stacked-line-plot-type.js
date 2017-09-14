@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.StackedLinePlotType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.StackedLinePlot');
+goog.require('epiviz.ui.charts.PlotType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
@@ -135,3 +139,5 @@ epiviz.plugins.charts.StackedLinePlotType.CustomSettings = {
   USE_GROUP_BY: 'useGroupBy',
   HOVER_OPACITY: 'hoverOpacity'
 };
+
+// goog.inherits(epiviz.plugins.charts.StackedLinePlotType, epiviz.ui.charts.PlotType);

@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.datatypes.MapGenomicData');
 
+goog.require('epiviz.datatypes.GenomicData');
+goog.require('epiviz.deferred.Deferred');
+
+
 /**
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>} [map]
  * @constructor

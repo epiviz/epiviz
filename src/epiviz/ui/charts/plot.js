@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.Plot');
 
+goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.ui.charts.VisualizationType');
+
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn

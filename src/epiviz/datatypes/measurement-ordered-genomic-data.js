@@ -6,6 +6,11 @@
 
 goog.provide('epiviz.datatypes.MeasurementOrderedGenomicData');
 
+goog.require('epiviz.datatypes.MapGenomicData');
+goog.require('epiviz.deferred.Deferred');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.utils');
+
 /**
  * @param {epiviz.datatypes.GenomicData} data
  * @param {epiviz.ui.charts.markers.VisualizationMarker.<epiviz.datatypes.GenomicData, *, epiviz.measurements.Measurement, string|number>} order

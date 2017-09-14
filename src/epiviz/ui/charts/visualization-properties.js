@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.ui.charts.VisualizationProperties');
 
+goog.require('epiviz.ui.controls.VisConfigSelection');
+goog.require('epiviz.utils');
+goog.require('epiviz.measurements.MeasurementSet');
+
 /**
  * @param {number|string} [width]
  * @param {number|string} [height]

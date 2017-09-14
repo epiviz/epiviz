@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.controls.MessageDialog');
 
+goog.require('epiviz.ui.controls.Dialog');
+
 /**
  * @param {string} title
  * @param {string} message

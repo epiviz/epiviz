@@ -6,6 +6,13 @@
 
 goog.provide('epiviz.ui.charts.DataStructureVisualization');
 
+goog.require('epiviz.ui.charts.Visualization');
+goog.require('epiviz.measurements.MeasurementSet');
+goog.require('epiviz.events.Event');
+goog.require('epiviz.ui.charts.VisualizationType');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.controls.VisConfigSelection');
+
 /**
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn

@@ -6,6 +6,11 @@
 
 goog.provide('epiviz.ui.controls.ComputedMeasurementsDialog');
 
+goog.require('epiviz.ui.controls.Dialog');
+goog.require('epiviz.measurements.Measurement');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.controls.MessageDialog');
+
 /**
  * @param {string} title
  * @param {{add: function(epiviz.measurements.Measurement), remove: function(epiviz.measurements.Measurement), close: function()}} handlers

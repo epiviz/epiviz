@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.ui.controls.Wizard');
 
+goog.require('epiviz.ui.controls.Dialog');
+goog.require('epiviz.ui.controls.MessageDialog');
+goog.require('epiviz.utils');
+
 /**
  * @param {string} title
  * @param {{finish: function(*)=, close: function()=}} handlers

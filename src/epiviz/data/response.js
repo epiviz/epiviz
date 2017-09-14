@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.data.Response');
 
+goog.require('epiviz.data.MessageType');
+
 /**
  * @param {number} requestId
  * @param {T} data

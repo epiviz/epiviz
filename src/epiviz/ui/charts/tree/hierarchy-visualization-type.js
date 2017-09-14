@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.tree.HierarchyVisualizationType');
 
+goog.require('epiviz.ui.charts.DataStructureVisualizationType');
+
+
 /**
  * @param {epiviz.Config} config
  * @extends {epiviz.ui.charts.DataStructureVisualizationType}

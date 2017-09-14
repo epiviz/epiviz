@@ -4,6 +4,8 @@
  * Time: 8:37 PM
  */
 
+goog.provide('epiviz.ui.charts.Axis');
+
 /**
  * @enum {string}
  */
