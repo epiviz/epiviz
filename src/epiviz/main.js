@@ -21,7 +21,7 @@ goog.require('epiviz.workspaces.UserManager');
 goog.require('epiviz.ui.WebArgsManager');
 goog.require('epiviz.EpiViz');
 goog.require('epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory');
-
+goog.require('epiviz.deferred.Promise');
 
 /*
  * Main entry point
