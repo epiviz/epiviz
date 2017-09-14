@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.datatypes.MeasurementGenomicDataArrayWrapper');
 
+goog.require('epiviz.datatypes.MeasurementGenomicData');
+
 /**
  * @param {epiviz.measurements.Measurement} measurement
  * @param {Array.<epiviz.datatypes.GenomicData.ValueItem>} items

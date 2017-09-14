@@ -6,6 +6,17 @@
 
 goog.provide('epiviz.plugins.charts.HeatmapPlot');
 
+goog.require('epiviz.ui.charts.Plot');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.ChartObject');
+goog.require('epiviz.measurements.Measurement');
+goog.require('epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.datatypes.MapGenomicData');
+
 /**
  * @param {string} id
  * @param {jQuery} container
@@ -853,3 +864,5 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
 epiviz.plugins.charts.HeatmapPlot.prototype.colorLabels = function() {
   return this._colorLabels;
 };
+
+// goog.inherits(epiviz.plugins.charts.HeatmapPlot, epiviz.ui.charts.Plot);

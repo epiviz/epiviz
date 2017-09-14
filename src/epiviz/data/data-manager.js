@@ -9,7 +9,20 @@ goog.provide('epiviz.data.DataManager');
 goog.require('epiviz.data.DataProvider');
 goog.require('epiviz.data.DataProviderFactory');
 goog.require('epiviz.measurements.MeasurementSet');
+goog.require('epiviz.measurements.Measurement');
 goog.require('epiviz.events.EventListener');
+goog.require('epiviz.data.Cache');
+goog.require('epiviz.events.Event');
+goog.require('epiviz.data.RequestStack');
+goog.require('epiviz.datatypes.GenomicRangeArray');
+goog.require('epiviz.datatypes.FeatureValueArray');
+goog.require('epiviz.datatypes.MeasurementGenomicData');
+goog.require('epiviz.datatypes.MeasurementGenomicDataWrapper');
+goog.require('epiviz.events.EventResult');
+// goog.require('epiviz.utils.arrayAppend');
+// goog.require('epiviz.utils.forEach');
+goog.require('epiviz.utils');
+
 
 /**
  * @param {epiviz.Config} config

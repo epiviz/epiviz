@@ -6,6 +6,13 @@
 
 goog.provide('epiviz.ui.charts.tree.Icicle');
 
+goog.require('epiviz.ui.charts.tree.HierarchyVisualization');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.controls.VisConfigSelection');
+goog.require('epiviz.datatypes.GenomicRange');
+goog.require('epiviz.ui.charts.tree.UiNode');
+
 /**
  * @param {string} id
  * @param {jQuery} container

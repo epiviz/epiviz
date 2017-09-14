@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.datatypes.SeqInfo');
 
+goog.require('epiviz.utils');
+
 /**
  * @param {string} seqName
  * @param {number} min Minimum location covered inclusive

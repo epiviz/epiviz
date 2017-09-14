@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.controls.DataTable');
 
+goog.require('epiviz.ui.controls.Control');
+
 /**
  * @param {jQuery} container
  * @param {Array.<epiviz.ui.controls.DataTable.Column>} columns

@@ -6,6 +6,17 @@
 
 goog.provide('epiviz.plugins.charts.DiversityScatterPlot');
 
+goog.require('epiviz.ui.charts.Plot');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.charts.Visualization');
+goog.require('epiviz.utils');
+goog.require('epiviz.measurements.Measurement');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.ChartIndexObject');
+goog.require('epiviz.deferred.Deferred');
+
+
 /**
  * @param {string} id
  * @param {jQuery} container
@@ -715,7 +726,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype.colorLabels = function() {
  * @protected
  */
 epiviz.plugins.charts.DiversityScatterPlot.prototype._drawAxesOld = function(xScale, yScale, xTicks, yTicks, svg, width, height, margins) {
-    epiviz.ui.charts.Visualization.prototype._drawAxes(xScale, yScale, xTicks, yTicks,
+    epiviz.ui.charts.Plot.prototype._drawAxes(xScale, yScale, xTicks, yTicks,
     svg, width, height, margins, undefined, undefined,
     this.xTickValues, undefined, undefined);
     //epiviz.ui.charts.Plot.prototype._drawAxes.call(this, xScale, yScale, xTicks, yTicks, svg, width, height, margins);
@@ -844,3 +855,6 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype.transformData = function(ra
   deferred.resolve();
   return deferred;
 };
+
+
+// goog.inherits(epiviz.plugins.charts.DiversityScatterPlot, epiviz.ui.charts.Plot);

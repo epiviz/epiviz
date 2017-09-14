@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.charts.VisObject');
 
+goog.require('epiviz.utils');
+
 /**
  * @constructor
  */

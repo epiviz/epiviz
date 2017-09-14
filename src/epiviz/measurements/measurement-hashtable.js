@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.measurements.MeasurementHashtable');
 
+goog.require('epiviz.utils.Iterable');
+goog.require('epiviz.utils.Iterator');
+
+
 /**
  * @constructor
  * @implements {epiviz.utils.Iterable}

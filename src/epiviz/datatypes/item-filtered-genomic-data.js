@@ -6,6 +6,12 @@
 
 goog.provide('epiviz.datatypes.ItemFilteredGenomicData');
 
+goog.require('epiviz.datatypes.MapGenomicData');
+goog.require('epiviz.utils');
+goog.require('epiviz.deferred.Deferred');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.datatypes.MeasurementGenomicDataArrayWrapper');
+
 /**
  * @param {epiviz.datatypes.GenomicData} data
  * @param {epiviz.ui.charts.markers.VisualizationMarker.<epiviz.datatypes.GenomicData, *, epiviz.datatypes.GenomicData.ValueItem, boolean>} filter
@@ -99,3 +105,5 @@ epiviz.datatypes.ItemFilteredGenomicData.prototype._initialize = function() {
 
   return this._deferredInit;
 };
+
+// goog.inherits(epiviz.datatypes.ItemFilteredGenomicData, epiviz.datatypes.MapGenomicData);

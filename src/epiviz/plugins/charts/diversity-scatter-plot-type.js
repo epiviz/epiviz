@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.DiversityScatterPlotType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.DiversityScatterPlot');
+goog.require('epiviz.ui.charts.PlotType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
@@ -122,3 +126,5 @@ epiviz.plugins.charts.DiversityScatterPlotType.prototype.customSettingsDefs = fu
 epiviz.plugins.charts.DiversityScatterPlotType.CustomSettings = {
   CIRCLE_RADIUS_RATIO: 'circleRadiusRatio'
 };
+
+// goog.inherits(epiviz.plugins.charts.DiversityScatterPlotType, epiviz.ui.charts.PlotType);

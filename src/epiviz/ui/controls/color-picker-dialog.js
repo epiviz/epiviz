@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.controls.ColorPickerDialog');
 
+goog.require('epiviz.ui.controls.Dialog');
+goog.require('epiviz.ui.charts.ColorPalette');
+
 /**
  * @param {{ok: function(epiviz.ui.charts.ColorPalette), cancel: function(), reset: function()}} handlers
  * @param {Array.<string>} names A list of measurement names

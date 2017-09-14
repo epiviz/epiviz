@@ -6,8 +6,6 @@
 
 goog.provide('epiviz.events.Event');
 
-goog.require('epiviz.events.EventListener');
-
 /**
  * @constructor
  * @template T

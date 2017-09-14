@@ -6,6 +6,7 @@
 
 goog.provide('epiviz.ui.controls.DatasourceGroupWizardStep');
 
+goog.require('epiviz.ui.controls.DataTable');
 /**
  * @constructor
  * @implements {epiviz.ui.controls.Wizard.Step}

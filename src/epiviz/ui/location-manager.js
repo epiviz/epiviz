@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.LocationManager');
 
+goog.require('epiviz.events.Event');
+goog.require('epiviz.datatypes.GenomicRange');
+
 /**
  * @param {epiviz.Config} config
  * @constructor

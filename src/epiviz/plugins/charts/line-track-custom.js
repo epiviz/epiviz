@@ -6,6 +6,14 @@
 
 goog.provide('epiviz.plugins.charts.LineTrackCustom');
 
+goog.require('epiviz.ui.charts.Track');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.ChartObject');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.utils');
+goog.require('epiviz.datatypes.GenomicRange');
+goog.require('epiviz.ui.charts.CustomSetting');
+
 /**
  * @param {string} id
  * @param {jQuery} container
@@ -327,3 +335,5 @@ epiviz.plugins.charts.LineTrackCustom.prototype._drawLines = function(range, dat
 
   return items;
 };
+
+// goog.inherits(epiviz.plugins.charts.LineTrackCustom, epiviz.plugins.charts.Track);

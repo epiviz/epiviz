@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.controls.SaveSvgAsImageDialog');
 
+goog.require('epiviz.ui.controls.Dialog');
+
 /**
  * @param {{ok: function(), cancel: function()}} handlers
  * @param {string} chartId The id of the chart being saved

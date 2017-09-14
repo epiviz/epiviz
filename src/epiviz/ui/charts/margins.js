@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.charts.Margins');
 
+goog.require('epiviz.ui.charts.Axis');
+
 /**
  * @param {number} top
  * @param {number} left

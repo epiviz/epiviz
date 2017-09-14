@@ -6,6 +6,11 @@
 
 goog.provide('epiviz.ui.charts.transform.clustering.AgglomerativeClustering');
 
+goog.require('epiviz.ui.charts.transform.clustering.ClusterSubtree');
+goog.require('epiviz.ui.charts.transform.clustering.ClusterLeaf');
+goog.require('epiviz.ui.charts.transform.clustering.ClusterTree');
+goog.require('epiviz.utils');
+
 /**
  * @constructor
  * @implements {epiviz.ui.charts.transform.clustering.HierarchicalClusteringAlgorithm}

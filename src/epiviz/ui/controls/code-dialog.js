@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.controls.CodeDialog');
 
+goog.require('epiviz.ui.controls.Dialog');
+
 /**
  * @param {string} title
  * @param {{save: function(Object.<string, string>), cancel: function()}} handlers

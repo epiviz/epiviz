@@ -7,7 +7,11 @@
 
 goog.provide('epiviz.plugins.charts.StackedLineTrackType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.StackedLineTrack');
+goog.require('epiviz.ui.charts.TrackType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization.CustomSettings');
 
 /**
  * @param {epiviz.Config} config
@@ -111,3 +115,4 @@ epiviz.plugins.charts.StackedLineTrackType.CustomSettings = {
   ABS_LINE_VAL: 'abLine'
 };
 
+// goog.inherits(epiviz.plugins.charts.StackedLineTrackType, epiviz.ui.charts.TrackType);

@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.measurements.MeasurementsManager');
 
+goog.require('epiviz.events.Event');
+goog.require('epiviz.measurements.MeasurementSet');
+
 /**
  * @constructor
  */

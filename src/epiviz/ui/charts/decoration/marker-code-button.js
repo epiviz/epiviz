@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.ui.charts.decoration.MarkerCodeButton');
 
+goog.require('epiviz.ui.charts.decoration.CodeButton');
+goog.require('epiviz.ui.controls.MarkerCodeControl');
+goog.require('epiviz.ui.charts.markers.VisualizationMarker');
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]

@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.tree.UiNode');
 
+goog.provide('epiviz.ui.charts.tree.Node');
+
+
 /**
  * @param {string} id
  * @param {string} name

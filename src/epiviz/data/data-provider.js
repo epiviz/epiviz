@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.data.DataProvider');
 
+goog.require('epiviz.events.Event');
+goog.require('epiviz.data.Response');
+
 /**
  * @param {string} id
  * @constructor

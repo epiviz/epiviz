@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.data.EmptyResponseDataProvider');
 
+goog.require('epiviz.data.DataProvider');
+goog.require('epiviz.data.Response');
+
 /**
  * @constructor
  * @extends {epiviz.data.DataProvider}
@@ -97,3 +100,5 @@ epiviz.data.EmptyResponseDataProvider.prototype.getData = function (request, cal
       break;
   }
 };
+
+// goog.inherits(epiviz.data.EmptyResponseDataProvider, epiviz.data.DataProvider);

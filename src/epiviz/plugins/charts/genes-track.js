@@ -6,6 +6,12 @@
 
 goog.provide('epiviz.plugins.charts.GenesTrack');
 
+goog.require('epiviz.ui.charts.Track');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.ChartObject');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.utils');
+
 /**
  * @param {string} id
  * @param {jQuery} container
@@ -324,3 +330,5 @@ epiviz.plugins.charts.GenesTrack.prototype._drawAxes = function(xScale, yScale, 
     .style('stroke', '#555555')
     .style('shape-rendering', 'crispEdges');
 };
+
+// goog.inherits(epiviz.plugins.charts.GenesTrack, epiviz.plugins.charts.Track);

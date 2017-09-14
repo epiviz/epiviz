@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.CustomScatterPlotType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.CustomScatterPlot');
+goog.require('epiviz.ui.charts.PlotType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
@@ -123,3 +127,5 @@ epiviz.plugins.charts.CustomScatterPlotType.CustomSettings = {
   CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
   COLOR_BY: 'colorBy'
 };
+
+// goog.inherits(epiviz.plugins.charts.CustomScatterPlotType, epiviz.ui.charts.PlotType);

@@ -6,6 +6,11 @@
 
 goog.provide('epiviz.data.WebServerDataProvider');
 
+goog.require('epiviz.data.DataProvider');
+goog.require('epiviz.data.Response');
+goog.require('epiviz.Config');
+goog.require('epiviz.utils');
+
 /**
  * @param {string} [id]
  * @param {string} [serverEndpoint]
@@ -114,3 +119,5 @@ epiviz.data.WebServerDataProvider.makePostRequest = function(query, postData, ca
   // if the request failed or succeeded
   request.always(function () {});
 };
+
+// goog.inherits(epiviz.data.WebServerDataProvider, epiviz.data.DataProvider);

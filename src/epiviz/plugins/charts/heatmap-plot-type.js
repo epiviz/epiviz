@@ -6,7 +6,12 @@
 
 goog.provide('epiviz.plugins.charts.HeatmapPlotType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.HeatmapPlot');
+goog.require('epiviz.ui.charts.PlotType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
+goog.require('epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory');
 
 /**
  * @param {epiviz.Config} config
@@ -183,3 +188,5 @@ epiviz.plugins.charts.HeatmapPlotType.CustomSettings = {
   SHOW_DENDROGRAM: 'showDendrogram',
   SHOW_COLORS_FOR_ROW_LABELS: 'showColorsForRowLabels'
 };
+
+// goog.inherits(epiviz.plugins.charts.HeatmapPlotType, epiviz.ui.charts.PlotType);

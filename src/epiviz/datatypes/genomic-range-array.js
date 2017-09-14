@@ -6,6 +6,10 @@
 
 goog.provide('epiviz.datatypes.GenomicRangeArray');
 
+goog.require('epiviz.datatypes.GenomicArray');
+goog.require('epiviz.datatypes.GenomicRange');
+goog.require('epiviz.utils');
+
 /**
  * @param {epiviz.measurements.Measurement} measurement
  * @param {epiviz.datatypes.GenomicRange} boundaries
@@ -344,7 +348,11 @@ epiviz.datatypes.GenomicRangeArray.prototype.toString = function() {
   return [header, id, idx, chr, start, end].join('\n');
 };
 
+// goog.inherits(epiviz.datatypes.GenomicRangeArray, epiviz.datatypes.GenomicArray);
+
 goog.provide('epiviz.datatypes.GenomicRangeArray.RowItemWrapper');
+
+goog.require('epiviz.datatypes.GenomicData.RowItem');
 
 /**
  * @param {epiviz.datatypes.GenomicRangeArray} parent
