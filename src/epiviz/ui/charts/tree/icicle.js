@@ -117,7 +117,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var aggLevel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AGG_LEVEL];
   var nodeSel = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.NODE_SEL];
   var icicleRoot = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.ICICLE_ROOT];
-
+  var icicleAutoPropagate = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AUTO_PROPAGATE];
+  
   // reset colors
   self.colors()._keyIndices = {};
   self.colors()._nKeys = 0;
@@ -298,7 +299,12 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
           self.id(),
           new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, d.id)));
+
+        if(icicleAutoPropagate) {
+          self._updateChartLocation(d.start, d.end - d.start);
+        }
       }
+
       d3.event.stopPropagation();
     })
     .on('mouseover', function(d) {

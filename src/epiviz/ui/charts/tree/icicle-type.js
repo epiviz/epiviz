@@ -81,7 +81,13 @@ epiviz.ui.charts.tree.IcicleType.prototype.customSettingsDefs = function() {
       epiviz.ui.charts.tree.IcicleType.CustomSettings.ICICLE_ROOT,
       epiviz.ui.charts.CustomSetting.Type.STRING,
       '',
-      'Current Root of the tree')
+      'Current Root of the tree'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.tree.IcicleType.CustomSettings.AUTO_PROPAGATE,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Auto Propogate Range'),
   ]);
 };
 
@@ -92,5 +98,6 @@ epiviz.ui.charts.tree.IcicleType.CustomSettings = {
   HOVER_OPACITY: 'hoverOpacity',
   AGG_LEVEL: 'aggLevel',
   NODE_SEL: 'nodeSel',
-  ICICLE_ROOT: 'icicleRoot'
+  ICICLE_ROOT: 'icicleRoot',
+  AUTO_PROPAGATE: 'icicleAutoPropagate'
 };
