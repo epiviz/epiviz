@@ -299,7 +299,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
           self.id(),
           new epiviz.ui.controls.VisConfigSelection(undefined, undefined, self.datasourceGroup(), self.dataprovider(), undefined, undefined, undefined, d.id)));
-
+          var icicleAutoPropagate = self.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AUTO_PROPAGATE];
+          
         if(icicleAutoPropagate) {
           self._updateChartLocation(d.start, d.end - d.start);
         }
