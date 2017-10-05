@@ -416,6 +416,16 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.setSelectMode = function(
  */
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(node) {
   var selectionType = (node.selectionType + 1) % 3;
+  var id_string = node.id;
+  if (parseInt(id_string.split()[0]) >= this.selCutLevel){
+    if (selectionType == 0){
+      selectionType = selectionType;
+    }
+    else {
+      selectionType = 2;
+    }
+  }
+
   this._selectedNodes[node.id] = selectionType;
 
   var self = this;
