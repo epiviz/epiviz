@@ -36,24 +36,28 @@ epiviz.data.EpivizApiDataProvider = function(id, serverEndpoint, measurementAnno
    * @private
    */
   this._selection = {};
+  this_lastSelection = {};
 
   /**
    * @type {Object.<string, number>}
    * @private
    */
   this._order = {};
+  this._lastOrder = {};
 
   /**
    * @type {Object.<number, number>}
    * @private
    */
   this._selectedLevels = selectedLevels || {6: epiviz.ui.charts.tree.NodeSelectionType.NODE, 7: epiviz.ui.charts.tree.NodeSelectionType.NODE};
+  this._lastSelectedLevels;
 
   /**
    * @type {string}
    * @private
    */
   this._lastRoot = '';
+  this._lastLastRoot = '';
 
   /**
    * @type {number}
@@ -99,6 +103,8 @@ epiviz.data.EpivizApiDataProvider.prototype.getData = function(request, callback
  * @private
  */
 epiviz.data.EpivizApiDataProvider.prototype._send = function(request, callback) {
+
+  var self = this;
   var requestHandler = $.ajax({
     type: 'post',
     url: this._serverEndpoint,
@@ -116,6 +122,8 @@ epiviz.data.EpivizApiDataProvider.prototype._send = function(request, callback) 
 
   // callback handler that will be called on failure
   requestHandler.fail(function (jqXHR, textStatus, errorThrown){
+    // console.log(self.request);
+    callback({"result": null});
     console.error("The following error occured: " + textStatus, errorThrown);
   });
 
@@ -172,6 +180,11 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var order = request.get('order');
       var selection = request.get('selection');
       var selectedLevels = request.get('selectedLevels');
+
+      this._lastSelectedLevels = JSON.parse(JSON.stringify(this._selectedLevels));
+      this._lastLastRoot = JSON.parse(JSON.stringify(this._lastRoot));
+      this._lastSelection = JSON.parse(JSON.stringify(this._selection));
+      this._lastOrder = JSON.parse(JSON.stringify(this._order));
 
       if (selectedLevels) {
         var self = this;
@@ -252,6 +265,13 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
 epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, data) {
   var result = data.result;
   var action = request.get('action');
+
+  if(result == null) {
+    return epiviz.data.Response.fromRawObject({
+      requestId: request.id(),
+      data: result
+    });
+  }
   switch (action) {
     case epiviz.data.Request.Action.GET_MEASUREMENTS:
       break;

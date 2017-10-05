@@ -120,8 +120,8 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   var icicleAutoPropagate = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.AUTO_PROPAGATE];
   
   // reset colors
-  self.colors()._keyIndices = {};
-  self.colors()._nKeys = 0;
+  // self.colors()._keyIndices = {};
+  // self.colors()._nKeys = 0;
 
   //self.visualization().setCustomSettingsValues(settingsValues);
 

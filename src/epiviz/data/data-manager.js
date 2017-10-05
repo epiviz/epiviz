@@ -48,6 +48,8 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._combinedRequestsStacks = {};
 
+  this._requestDataFailed = new epiviz.events.Event();  
+
   /**
    * @type {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
    * @private
@@ -477,7 +479,13 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
 
     var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
     dataProvider.getData(request, function(response) {
-      requestStack.serveData(response);
+      if(response._data == null) {
+        requestStack.clear();
+        self._requestDataFailed.notify({"selection": dataProvider._lastSelection, "order": dataProvider._lastOrder, "selectedLevels": dataProvider._lastSelectedLevels});
+      }
+      else {
+        requestStack.serveData(response);
+      }
     });
   });
 };

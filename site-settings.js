@@ -16,31 +16,32 @@ epiviz.Config.SETTINGS.dataProviders = [
       3,
       // aggregate at these levels in the tree:
       {3: epiviz.ui.charts.tree.NodeSelectionType.NODE, 4: epiviz.ui.charts.tree.NodeSelectionType.NODE}
-    ],
-    [
-      'epiviz.data.EpivizApiDataProvider',
-      'etec16s',
-      'http://metaviz.cbcb.umd.edu/api',
-      [],
-      3,
-      {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
-    ],
-    [
-      'epiviz.data.EpivizApiDataProvider',
-      'hmp',
-      'http://metaviz.cbcb.umd.edu/api',
-      [],
-      3,
-      {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
-    ],
-    [
-      'epiviz.data.EpivizApiDataProvider',
-      'ibd',
-      'http://metaviz.cbcb.umd.edu/api',
-      [],
-      3,
-      {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
     ]
+    // ,
+    // [
+    //   'epiviz.data.EpivizApiDataProvider',
+    //   'etec16s',
+    //   'http://metaviz.cbcb.umd.edu/api',
+    //   [],
+    //   3,
+    //   {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
+    // ],
+    // [
+    //   'epiviz.data.EpivizApiDataProvider',
+    //   'hmp',
+    //   'http://metaviz.cbcb.umd.edu/api',
+    //   [],
+    //   3,
+    //   {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
+    // ],
+    // [
+    //   'epiviz.data.EpivizApiDataProvider',
+    //   'ibd',
+    //   'http://metaviz.cbcb.umd.edu/api',
+    //   [],
+    //   3,
+    //   {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
+    // ]
 ];
 
 // This sets up the UMD workspace server 

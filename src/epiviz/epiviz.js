@@ -145,6 +145,9 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerChartRequestFeature();
   this._registerHierarchyChartRequestAddFeature();
 
+
+  this._registerDataFailed();
+
   /*
    * Prevent closing if workspace has changed
    */
@@ -657,6 +660,61 @@ epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
     self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
       self._chartManager.updateCharts(undefined, data, [chartId]);
     })
+  }));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataFailed = function() {
+  var self = this;
+  this._dataManager._requestDataFailed.addListener(new epiviz.events.EventListener(function(e) {
+
+    var iciclePlot, iciclePlotId;
+    for (var chartId in self._chartManager._charts) {
+        if (!self._chartManager._charts.hasOwnProperty(chartId)) { continue; }
+        if (self._chartManager._charts[chartId].displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { 
+          iciclePlot = self._chartManager._charts[chartId]; 
+          iciclePlotId = chartId;
+          // icicleMeasuremens = self._chartManager._charts[chartId].measurements();
+        } 
+      }
+
+    var map = {};
+    map[iciclePlotId] = new epiviz.ui.controls.VisConfigSelection(undefined, undefined, 
+        iciclePlot.datasourceGroup(), iciclePlot.dataprovider(), undefined, undefined, undefined,
+        e);
+
+
+        var diffNode = _.omit(iciclePlot._selectedNodes, function(v,k) {return e.selection[k] == v;});
+        
+            iciclePlot.selectNode(iciclePlot._uiDataMap[Object.keys(diffNode)[0]]);
+            iciclePlot.selectNode(iciclePlot._uiDataMap[Object.keys(diffNode)[0]]);
+
+    iciclePlot._selectedNodes = e.selection;
+    iciclePlot._nodesOrder = e.order;
+    iciclePlot._selectedLevels = e.selectedLevels;
+
+    var dataProvider = self._dataManager._dataProviderFactory.get(iciclePlot.dataprovider()) || self._dataManager._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    
+    dataProvider._selectedLevels = dataProvider._lastSelectedLevels;
+    dataProvider._lastRoot = dataProvider._lastLastRoot;
+    dataProvider._selection = dataProvider._lastSelection;
+    dataProvider._order = dataProvider._lastOrder;
+
+    iciclePlot._svg.select('.items').empty();
+
+    iciclePlot.draw();
+    // iciclePlot.firePropagateHierarchyChanges();
+
+    self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
+      self._chartManager.updateCharts(undefined, data, [chartId]);
+    });
+
+    
+    // self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
+    //   self._chartManager.updateCharts(undefined, data, [chartId]);
+    // });
   }));
 };
 
