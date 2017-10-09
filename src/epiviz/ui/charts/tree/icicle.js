@@ -283,6 +283,15 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .attr('id', function(d) { return self.id() + '-' + d.id; })
     .attr('class', function(d) {
       var selectionType = self.selectedNodes()[d.id];
+      var id_string = d.id;
+      if(parseInt(id_string.split()[0]) >= Object.keys(self._selectedLevels)[0]){
+        if (d.selectionType == 0){
+          selectionType = d.selectionType;
+        }
+        else {
+          selectionType = 2;
+        }
+      }
       if (selectionType == undefined) { selectionType = d.selectionType || 0; }
       return 'item ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
     })
@@ -449,6 +458,15 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   itemsGroup.selectAll('.item')
     .attr('class', function(d) {
       var selectionType = self.selectedNodes()[d.id];
+      var id_string = d.id;
+      if(id_string != undefined && (parseInt(id_string.split()[0]) >= Object.keys(self._selectedLevels)[0])){
+        if(d.selectionType == 0){
+          selectionType = d.selectionType;
+        }
+        else {
+          selectionType = 2;
+        }
+      }
       if (selectionType == undefined) { selectionType = d.selectionType || 0; }
       return 'item ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
     });
