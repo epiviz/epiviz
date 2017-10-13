@@ -140,7 +140,35 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
 epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES = {
   0: 'none-select',
   1: 'leaves-select',
-  2: 'node-select'
+  2: 'node-select',
+  3: 'none-select',
+  4: 'node-select',
+};
+
+epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS = {
+  'REMOVED': 0,
+  'EXPANDED': 1,
+  'AGGREGATED': 2,
+  'REMOVED_PRIME': 3,
+  'AGGREGATED_PRIME': 4,
+};
+
+epiviz.ui.charts.tree.HierarchyVisualization.ENUM_TRANSITIONS = {
+  'AGGREGATED_PRIME_TO_REMOVED_PRIME': [4,3],
+  'AGGREGATED_PRIME_TO_AGGREGATED': [4,2],
+  'AGGREGATED_PRIME_TO_AGGREGATED_PRIME': [4,4],
+  'REMOVED_PRIME_TO_AGGREGATED_PRIME': [3,4],
+  'REMOVED_PRIME_TO_AGGREGATED': [3,2],
+  'REMOVED_PRIME_TO_EXPANDED': [3,1],
+  'REMOVED_TO_EXPANDED': [0,1],
+  'AGGREGATED_TO_EXPANDED': [2,1],
+  'AGGREGATED_PRIME_TO_EXPANDED': [4,1],
+  'EXPANDED_TO_REMOVED_PRIME': [1, 3],
+  'REMOVED_TO_REMOVED_PRIME': [0, 3],
+  'AGGREGATED_TO_REMOVED_PRIME': [2, 3],
+  'AGGREGATED_TO_AGGREGATED_PRIME': [2, 4],
+  'EXPANDED_TO_AGGREGATED_PRIME': [1,4],
+  'REMOVED_TO_AGGREGATED_PRIME': [0,4]
 };
 
 /*
@@ -260,23 +288,41 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
         }
     });
 
-    // get selectionType from oldUiData
     this._uiData.forEach(function(node) {
-        if (self._oldUiDataMap[node.id] != null) {
-            node.selectionType = self._oldUiDataMap[node.id].selectionType;
-            self._updateSelectionAttribute(node, node.selectionType);
+        if(self._oldUiDataMap[node.id] != null && self._uiDataMap[node.id] != null){
+          if(self._oldUiDataMap[node.id].selectionType != self._uiDataMap[node.id].selectionType){
+            if (self._uiDataMap[node.id] != null && node.parentId != "None") {
+              var parent = self._uiDataMap[node.parentId];
+              if (parent != undefined && parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']){
+                node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
+                self.selectNode(node, node.selectionType, false);
+              }
+            }
+            else{
+              node.selectionType = self._uiDataMap[node.id].selectionType;
+              self.selectNode(node, node.selectionType, false);
+            }
+          }
         }
-
         if(node.globalDepth == self.selCutLevel && node.selectionType != 0) {
-          self._updateSelectionAttribute(node, 2);
+          node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'];
+          self.selectNode(node, node.selectionType, false);
+        }
+        if(node.globalDepth > self.selCutLevel && node.selectionType != 0) {
+          var parent = self._uiDataMap[node.parentId];
+          if (parent != undefined && 
+          (parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'] 
+          || parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'])){
+            node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
+            self.selectNode(node, node.selectionType, false);
+          }
         }
     }); 
 
-    //update to give parent higher preference
     Object.keys(self._selectedNodes).forEach(function(sel) {
-      if(self._uiDataMap[sel]) {
-        self._updateSelectionAttribute(self._uiDataMap[sel], self._selectedNodes[sel]);
-      }
+       if(self._uiDataMap[sel]) {
+         self.selectNode(self._uiDataMap[sel], self._selectedNodes[sel], false);
+       }
     });
   }
 
@@ -414,40 +460,142 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.setSelectMode = function(
 /**
  * @param {epiviz.ui.charts.tree.UiNode} node
  */
-epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(node) {
-  var selectionType = (node.selectionType + 1) % 3;
-  var id_string = node.id;
-  if (parseInt(id_string.split()[0]) >= this.selCutLevel){
-    if (selectionType != 0){
-      selectionType = 2;
-    }
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(node, inputSelection, propagate) {
+  if (propagate == undefined || propagate == null){
+    propagate = true;
   }
 
-  this._selectedNodes[node.id] = selectionType;
+  var ENUM_SELECTIONS = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS;
+  var oldSelection = node.selectionType;
+  var selectionType;
+
+  switch(oldSelection){
+    case ENUM_SELECTIONS['REMOVED']:
+      selectionType = ENUM_SELECTIONS['AGGREGATED'];
+      break;
+    case ENUM_SELECTIONS['EXPANDED']:
+      selectionType = ENUM_SELECTIONS['REMOVED'];
+      break;
+    case ENUM_SELECTIONS['AGGREGATED']:
+      selectionType = ENUM_SELECTIONS['EXPANDED'];
+      break;
+    case ENUM_SELECTIONS['REMOVED_PRIME']:
+      selectionType = ENUM_SELECTIONS['AGGREGATED'];
+      break;
+    case ENUM_SELECTIONS['AGGREGATED_PRIME']:
+      selectionType = ENUM_SELECTIONS['REMOVED'];
+      break;
+    default:
+      selectionType = oldSelection;
+  }
+
+  if(inputSelection != undefined || inputSelection != null){
+    selectionType = inputSelection;
+  }
+  var userSelection = selectionType;
+  if (selectionType == 0 || selectionType == 2){
+      this._selectedNodes[node.id] = selectionType;
+  }
 
   var self = this;
 
-  function setDisplay(nes) {
+  var currentState = oldSelection;
 
-    nes.selectionType = selectionType;
-    self._changeNodeSelection(nes, selectionType);
+  var propagationLookupResult = epiviz.ui.charts.tree.HierarchyVisualization.prototype.initialPropagationLookUp(currentState, userSelection);
+  var toParent = propagationLookupResult['toParent'];
+  var toChildren = propagationLookupResult['toChildren']
 
-    if(nes.children.length == 0) {
+  var parentPropagatedTransition = propagationLookupResult['parentPropagatedTransition'];
+  var childrenPropagatedTransition = propagationLookupResult['childrenPropagatedTransition'];
+
+  function setParentDisplay(nes, parentPropagatedTransition) {
+    //If userGenerated not null, switch with cases on User Generated
+    //If propogated, switch with cases on User Generated
+    if(nes == undefined){
+      return;
+    }
+    var toParent = false;
+    var propertyAlreadySet = nes.selectionType == parentPropagatedTransition[1] ? true : false;
+    var passOnParentPropagatedTransition = [];
+    if (nes.selectionType == parentPropagatedTransition[0]){
+      var updateSelectionType = parentPropagatedTransition[1];
+      nes.selectionType = updateSelectionType;
+      self._changeNodeSelection(nes, updateSelectionType);
+      if (updateSelectionType == 0 || updateSelectionType == 2){
+        self._selectedNodes[nes.id] = updateSelectionType;
+      }
+
+      var parentPropagationLookupResult = epiviz.ui.charts.tree.HierarchyVisualization.prototype.parentPropagationLookUp(parentPropagatedTransition);
+      toParent = parentPropagationLookupResult['toParent'];
+      passOnParentPropagatedTransition = parentPropagationLookupResult['passOnParentPropagatedTransition'];
+    }
+
+    if(nes.id == "0-0" || !toParent || propertyAlreadySet) {
       return;
     }
     else {
-      nes.children.forEach(function(n) {
-        setDisplay(n);
+      passOnParentPropagatedTransition.forEach(function(p) {
+        setParentDisplay(self._uiDataMap[nes.parentId], p);
       });
     }
   }
 
-  setDisplay(node);
+  if (toParent) {
+      parentPropagatedTransition.forEach(function(p) {
+        setParentDisplay(self._uiDataMap[node.parentId],p);
+      });
+  }
 
-  // this._changeNodeSelection(node, selectionType);
+  function setChildrenDisplay(nes, childrenPropagatedTransition) {
+
+    var toChildren = false;
+    var propertyAlreadySet = nes.selectionType == childrenPropagatedTransition[1] ? true : false;
+
+    var passOnChildPropagatedTransition = [];
+    if (nes.selectionType == childrenPropagatedTransition[0]){
+      var updateSelectionType = childrenPropagatedTransition[1];
+      nes.selectionType = updateSelectionType;
+      self._changeNodeSelection(nes, updateSelectionType);
+      if (updateSelectionType == 0 || updateSelectionType == 2){
+        self._selectedNodes[nes.id] = updateSelectionType;
+      } 
+
+      var childrenPropagatedLookupResult = epiviz.ui.charts.tree.HierarchyVisualization.prototype.childrenPropagationLookUp(childrenPropagatedTransition);
+      toChildren = childrenPropagatedLookupResult['toChildren'];
+      passOnChildPropagatedTransition = childrenPropagatedLookupResult['passOnChildPropagatedTransition'];
+    }
+
+    var hasChildren = false;
+    if(nes.children.length > 0){
+      hasChildren = true;
+    }
+    if(!hasChildren || !toChildren || propertyAlreadySet) {
+      return;
+    }
+    else {
+      nes.children.forEach(function(n) {
+        passOnChildPropagatedTransition.forEach(function (p){
+          setChildrenDisplay(n, p);
+        });
+      });
+    }
+  }
+
+  if (toChildren){
+    node.children.forEach(function(n) {
+      childrenPropagatedTransition.forEach(function (p){
+          setChildrenDisplay(n,p);
+      });
+    });
+  }
+ 
+  node.selectionType = selectionType;
+  this._changeNodeSelection(node, selectionType);
 
   if (this.autoPropagateChanges()) {
-    this.firePropagateHierarchyChanges();
+    if (propagate){
+      this.firePropagateHierarchyChanges();
+    }
   }
 
   return selectionType;
@@ -481,7 +629,8 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(le
       //propogate level selection to nodes
     self._uiData.forEach(function(node) {
       if (node.globalDepth == currentLevel && node.selectionType != 0) {
-          self._updateSelectionAttribute(node, 1);
+          //self._updateSelectionAttribute(node, 1);
+          self.selectNode(node, 1, false);
           self._uiDataMap[node.id] == node.selectionType;
       }
     });
@@ -489,7 +638,8 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(le
     for(var nodeId in  self._oldUiDataMap) {
       var node = self._oldUiDataMap[nodeId];
       if (node.globalDepth == currentLevel && node.selectionType != 0) {
-          self._updateSelectionAttribute(node, 1);
+          self.selectNode(node, 1, false);
+          //self._updateSelectionAttribute(node, 1);
           self._oldUiDataMap[nodeId] == 1;
       }
     }
@@ -518,7 +668,8 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(le
   self._uiData.forEach(function(node) {
     if (node.globalDepth == level) {
         node.selectionType = self._selectedLevels[level.toString()];
-        self._updateSelectionAttribute(node, node.selectionType);
+        //self._updateSelectionAttribute(node, node.selectionType);
+        self.selectNode(node, node.selectionType, false);
         self._uiDataMap[node.id] == node.selectionType;
     }
   });
@@ -527,13 +678,14 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(le
       var node = self._oldUiDataMap[nodeId];
       if (node.globalDepth == level) {
         node.selectionType = self._selectedLevels[level.toString()];
-          self._updateSelectionAttribute(node, node.selectionType);
+          //self._updateSelectionAttribute(node, node.selectionType);
+          self.selectNode(node, node.selectionType, false);
           self._oldUiDataMap[nodeId] == node.selectionType;
       }
     }
 
   if (this.autoPropagateChanges()) {
-    this.firePropagateHierarchyChanges();
+    //this.firePropagateHierarchyChanges();
   }
 };
 
@@ -641,4 +793,209 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._updateSelectionAttribute
   }
 
   setDisplay(node, selectionType);
+
+  
+//  node.selectionType = selectionType;
+
+
+//   self._changeNodeSelection(node, selectionType);
+};
+
+
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.parentPropagationLookUp = function (parentPropagatedTransition){
+
+      var toParent = false;
+      var passOnParentPropagatedTransition = [];
+      
+      var ENUM_TRANSITIONS = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_TRANSITIONS;
+
+      switch(parentPropagatedTransition){
+        case ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED']:
+          toParent = true;
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_EXPANDED']);
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_EXPANDED']);
+          break;
+        case ENUM_TRANSITIONS['REMOVED_PRIME_TO_EXPANDED']:
+          toParent = true;
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_EXPANDED']);
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_EXPANDED']);
+          break;
+        case ENUM_TRANSITIONS['REMOVED_TO_EXPANDED']:
+          toParent = true;
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_EXPANDED']);
+          break;
+        case ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']:
+          toParent = true;
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);          
+          break;
+        case ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_EXPANDED']:
+          toParent = true;
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_EXPANDED']);
+          passOnParentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);
+          break;
+        default:                   
+          break;     
+      }
+
+      var returnObject = {};
+      returnObject['toParent'] = toParent;
+      returnObject['passOnParentPropagatedTransition'] = passOnParentPropagatedTransition;
+      return returnObject;
+};
+
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.childrenPropagationLookUp = function (childrenPropagatedTransition){
+      var toChildren = false;
+      var passOnChildPropagatedTransition = [];
+      
+      var ENUM_TRANSITIONS = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_TRANSITIONS;
+
+      switch(childrenPropagatedTransition){
+        case ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
+          break;
+        case ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED_PRIME']);
+          break;
+        case ENUM_TRANSITIONS['EXPANDED_TO_REMOVED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['EXPANDED_TO_REMOVED_PRIME']);
+          break;
+        case ENUM_TRANSITIONS['REMOVED_TO_REMOVED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_REMOVED_PRIME']);
+          break;
+        case ENUM_TRANSITIONS['AGGREGATED_TO_REMOVED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_REMOVED_PRIME']);
+          break;
+        case ENUM_TRANSITIONS['AGGREGATED_TO_AGGREGATED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_AGGREGATED_PRIME']);
+          break;
+        case ENUM_TRANSITIONS['EXPANDED_TO_AGGREGATED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['EXPANDED_TO_AGGREGATED_PRIME']);
+          break;
+        case ENUM_TRANSITIONS['REMOVED_TO_AGGREGATED_PRIME']:
+          toChildren = true;
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_AGGREGATED_PRIME']);
+          break;
+        default:
+          break;                                                  
+      }
+
+      var returnObject = {};
+      returnObject['toChildren'] = toChildren;
+      returnObject['passOnChildPropagatedTransition'] = passOnChildPropagatedTransition;
+      return returnObject;
+};
+
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.initialPropagationLookUp = function (currentState, userSelection){
+    var toParent = false;
+    var toChildren = false;
+
+    var parentPropagatedTransition = [];
+    var childrenPropagatedTransition = [];
+    var returnObject = {};
+
+    if (userSelection == null) {
+      returnObject['toParent'] = toParent;
+      returnObject['toChildren'] = toChildren;
+      returnObject['parentPropagatedTransition'] = parentPropagatedTransition;
+      returnObject['childrenPropagatedTransition'] = childrenPropagatedTransition;
+      return returnObject;
+    }
+
+    var ENUM_SELECTIONS = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS;
+    var ENUM_TRANSITIONS = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_TRANSITIONS;
+
+    if (currentState == ENUM_SELECTIONS['AGGREGATED']) {
+      if (userSelection == ENUM_SELECTIONS['REMOVED']) {
+        toParent = false;
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
+      }
+      else if (userSelection == ENUM_SELECTIONS['EXPANDED']) {
+        toParent = true;
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_AGGREGATED']);
+      }
+    }
+    else if (currentState == ENUM_SELECTIONS['REMOVED']) {
+      if (userSelection == ENUM_SELECTIONS['AGGREGATED']) {
+        toParent = false;
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED_PRIME']);
+      }
+      else if (userSelection == ENUM_SELECTIONS['EXPANDED']) {
+        toParent = false;
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED']);
+      }
+    }
+    else if (currentState == ENUM_SELECTIONS['EXPANDED']) {
+      if (userSelection == ENUM_SELECTIONS['REMOVED']) {
+        toParent = false;
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['EXPANDED_TO_REMOVED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_REMOVED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_REMOVED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
+      }
+      else if (userSelection == ENUM_SELECTIONS['AGGREGATED']) {
+        toParent = false;
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['EXPANDED_TO_AGGREGATED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_AGGREGATED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_AGGREGATED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED_PRIME']);
+      }
+    }
+    else if (currentState == ENUM_SELECTIONS['REMOVED_PRIME']) {
+      if (userSelection == ENUM_SELECTIONS['AGGREGATED']) {
+        toParent = true;
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_EXPANDED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_EXPANDED']);
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED_PRIME']);
+      }
+      else if (userSelection == ENUM_SELECTIONS['EXPANDED']) {
+        toParent = true;
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_EXPANDED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_EXPANDED']);
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED']);
+      }
+    }
+    else if (currentState == ENUM_SELECTIONS['AGGREGATED_PRIME']) {
+      if (userSelection == ENUM_SELECTIONS['EXPANDED']) {
+        toParent = true;
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_EXPANDED']);
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_AGGREGATED']);
+      }
+      else if (userSelection == ENUM_SELECTIONS['REMOVED']) {
+        toParent = true;
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_EXPANDED']);
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
+      }
+      else if (userSelection == ENUM_SELECTIONS['AGGREGATED']) {
+        toParent = true;
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_EXPANDED']);
+        toChildren = false;
+      }
+    }
+
+    returnObject['toParent'] = toParent;
+    returnObject['toChildren'] = toChildren;
+    returnObject['parentPropagatedTransition'] = parentPropagatedTransition;
+    returnObject['childrenPropagatedTransition'] = childrenPropagatedTransition;
+    return returnObject; 
 };
