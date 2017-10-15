@@ -291,8 +291,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     // propagate cutlevel first
     this._uiData.forEach(function(node) {
       if(node.globalDepth == self.selCutLevel) {
-        node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'];
-        self.selectNode(node, node.selectionType, false);
+        self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'], false);
       }
     });
 
