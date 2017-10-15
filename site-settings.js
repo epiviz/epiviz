@@ -15,7 +15,7 @@ epiviz.Config.SETTINGS.dataProviders = [
       // this is the initial depth of icicles:
       3,
       // aggregate at these levels in the tree:
-      {3: epiviz.ui.charts.tree.NodeSelectionType.NODE, 4: epiviz.ui.charts.tree.NodeSelectionType.NODE}
+      {2: epiviz.ui.charts.tree.NodeSelectionType.NODE}
     ]
     // ,
     // [

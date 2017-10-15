@@ -126,7 +126,7 @@ epiviz.ui.charts.tree.HierarchyVisualization = function(id, container, propertie
 
   this._rootLineageLabel = null;
 
-  this.selCutLevel = parseInt(this._customSettingsValues["aggLevel"]) || 3;
+  this.selCutLevel = parseInt(this._customSettingsValues["aggLevel"]) || 2;
 
   this._selectedLevels[this.selCutLevel] = 2;
 
@@ -288,42 +288,71 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
         }
     });
 
+    // propagate cutlevel first
     this._uiData.forEach(function(node) {
-        if(self._oldUiDataMap[node.id] != null && self._uiDataMap[node.id] != null){
-          if(self._oldUiDataMap[node.id].selectionType != self._uiDataMap[node.id].selectionType){
-            if (self._uiDataMap[node.id] != null && node.parentId != "None") {
-              var parent = self._uiDataMap[node.parentId];
-              if (parent != undefined && parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']){
-                node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
-                self.selectNode(node, node.selectionType, false);
-              }
-            }
-            else{
-              node.selectionType = self._uiDataMap[node.id].selectionType;
-              self.selectNode(node, node.selectionType, false);
-            }
-          }
-        }
-        if(node.globalDepth == self.selCutLevel && node.selectionType != 0) {
-          node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'];
-          self.selectNode(node, node.selectionType, false);
-        }
-        if(node.globalDepth > self.selCutLevel && node.selectionType != 0) {
-          var parent = self._uiDataMap[node.parentId];
-          if (parent != undefined && 
-          (parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'] 
-          || parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'])){
-            node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
-            self.selectNode(node, node.selectionType, false);
-          }
-        }
-    }); 
+      if(node.globalDepth == self.selCutLevel) {
+        node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'];
+        self.selectNode(node, node.selectionType, false);
+      }
+    });
 
+    // propagate select_nodes
     Object.keys(self._selectedNodes).forEach(function(sel) {
        if(self._uiDataMap[sel]) {
          self.selectNode(self._uiDataMap[sel], self._selectedNodes[sel], false);
        }
     });
+
+    // propagate parent -> child, only for nodes 0 or 2
+    // Object.keys(self._selectedNodes).forEach(function(sel) {
+    //   if(self._uiDataMap[sel]) {
+    //     self.selectNode(self._uiDataMap[sel], self._selectedNodes[sel], false);
+    //   }
+    // });
+
+    // this._uiData.forEach(function(node) {
+    //   // node is noe new! propagate from old.
+    //   if(self._oldUiDataMap[node.id] != null) {
+
+    //   }
+    // });
+
+    // this._uiData.forEach(function(node) {
+    //     if(self._oldUiDataMap[node.id] != null && self._uiDataMap[node.id] != null) {
+    //       if(self._oldUiDataMap[node.id].selectionType != self._uiDataMap[node.id].selectionType){
+    //         if (self._uiDataMap[node.id] != null && node.parentId != "None") {
+    //           var parent = self._uiDataMap[node.parentId];
+    //           if (parent != undefined && parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']){
+    //             node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
+    //             self.selectNode(node, node.selectionType, false);
+    //           }
+    //         }
+    //         else{
+    //           node.selectionType = self._uiDataMap[node.id].selectionType;
+    //           self.selectNode(node, node.selectionType, false);
+    //         }
+    //       }
+    //     }
+        // if(node.globalDepth == self.selCutLevel && node.selectionType != 0) {
+        //   node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'];
+        //   self.selectNode(node, node.selectionType, false);
+        // }
+        // if(node.globalDepth > self.selCutLevel && node.selectionType != 0) {
+        //   var parent = self._uiDataMap[node.parentId];
+        //   if (parent != undefined && 
+        //   (parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'] 
+        //   || parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'])){
+        //     node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
+        //     self.selectNode(node, node.selectionType, false);
+        //   }
+        // }
+    // }); 
+
+    // Object.keys(self._selectedNodes).forEach(function(sel) {
+    //    if(self._uiDataMap[sel]) {
+    //      self.selectNode(self._uiDataMap[sel], self._selectedNodes[sel], false);
+    //    }
+    // });
   }
 
   //this._drawLegend();
@@ -501,7 +530,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
 
   var currentState = oldSelection;
 
-  var propagationLookupResult = epiviz.ui.charts.tree.HierarchyVisualization.prototype.initialPropagationLookUp(currentState, userSelection);
+  var propagationLookupResult = self.initialPropagationLookUp(currentState, userSelection);
   var toParent = propagationLookupResult['toParent'];
   var toChildren = propagationLookupResult['toChildren']
 
@@ -525,7 +554,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
         self._selectedNodes[nes.id] = updateSelectionType;
       }
 
-      var parentPropagationLookupResult = epiviz.ui.charts.tree.HierarchyVisualization.prototype.parentPropagationLookUp(parentPropagatedTransition);
+      var parentPropagationLookupResult = self.parentPropagationLookUp(parentPropagatedTransition);
       toParent = parentPropagationLookupResult['toParent'];
       passOnParentPropagatedTransition = parentPropagationLookupResult['passOnParentPropagatedTransition'];
     }
@@ -560,7 +589,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
         self._selectedNodes[nes.id] = updateSelectionType;
       } 
 
-      var childrenPropagatedLookupResult = epiviz.ui.charts.tree.HierarchyVisualization.prototype.childrenPropagationLookUp(childrenPropagatedTransition);
+      var childrenPropagatedLookupResult = self.childrenPropagationLookUp(childrenPropagatedTransition);
       toChildren = childrenPropagatedLookupResult['toChildren'];
       passOnChildPropagatedTransition = childrenPropagatedLookupResult['passOnChildPropagatedTransition'];
     }
