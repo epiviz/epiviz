@@ -593,10 +593,13 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       var updateSelectionType = childrenPropagatedTransition[1];
       nes.selectionType = updateSelectionType;
       self._changeNodeSelection(nes, updateSelectionType);
-      if (updateSelectionType == 0 || updateSelectionType == 2){
+      if (updateSelectionType == 3){
+        console.log(nes.id + " " + updateSelectionType);
+      }
+      if (updateSelectionType == 0 || updateSelectionType == 2 || updateSelectionType == 3){
         self._selectedNodes[nes.id] = updateSelectionType;
       } 
-      if (updateSelectionType == 1){
+      if (updateSelectionType == 1 || updateSelectionType == 4){
         delete self._selectedNodes[nes.id];
       }
       var childrenPropagatedLookupResult = self.childrenPropagationLookUp(childrenPropagatedTransition);
