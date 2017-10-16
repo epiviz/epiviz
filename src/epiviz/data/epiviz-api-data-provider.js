@@ -186,32 +186,8 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       this._lastSelection = JSON.parse(JSON.stringify(this._selection));
       this._lastOrder = JSON.parse(JSON.stringify(this._order));
 
-      if (selectedLevels) {
-        var self = this;
-        var deselectedNodeIds = [];
-        $.each(this._selection, function(nodeId, selectionType) {
-          var nodeDepth = self._calcNodeDepth(nodeId);
-          var selectionForNodeLevel = selectedLevels[nodeDepth];
-          var lastSelectionForNodeLevel = self._selectedLevels[nodeDepth];
-          if (selectionForNodeLevel != undefined && selectionForNodeLevel != lastSelectionForNodeLevel) {
-            deselectedNodeIds.push(nodeId);
-          }
-        });
-        deselectedNodeIds.forEach(function(nodeId) { delete self._selection[nodeId]; });
-      }
-
       if (selection) {
-        for (var nodeId  in selection) {
-          if (!selection.hasOwnProperty(nodeId)) { continue; }
-          var selectionForNodeLevel = selectedLevels[self._calcNodeDepth(nodeId)];
-          if (selectionForNodeLevel == undefined) { selectionForNodeLevel = epiviz.ui.charts.tree.NodeSelectionType.LEAVES; }
-          // if (selection[nodeId] == epiviz.ui.charts.tree.NodeSelectionType.LEAVES) {
-          if (selection[nodeId] == selectionForNodeLevel) {
-            delete this._selection[nodeId];
-            continue;
-          }
-          this._selection[nodeId] = selection[nodeId];
-        }
+        this._selection = selection;
       }
 
       if (order) {
@@ -225,13 +201,6 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
         if(Object.keys(selectedLevels).length > 0) {
           this._selectedLevels = selectedLevels;
         }
-        // for (var level in selectedLevels) {
-        //   if (!selectedLevels.hasOwnProperty(level)) { continue; }
-        //   this._selectedLevels[level] = selectedLevels[level];
-        //   if (this._selectedLevels[level] == epiviz.ui.charts.tree.NodeSelectionType.LEAVES) {
-        //     delete this._selectedLevels[level];
-        //   }
-        // }
       }
 
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
