@@ -381,25 +381,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
     .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.5; });
 
-    // newItems.selectAll("node-label-lineage").remove();
-    // var lineageLabel = newItems.append('text')
-    // .style("visibility", function(d) {
-    //   if (d.id != root.id) {
-    //       return "hidden";
-    //   }
-    //   return "visible";
-    // })
-    // .style("font-size", 11)
-    // .attr("text-anchor", "middle")
-    // .style("font-weight", "normal")
-    // .attr('class', 'unselectable-text node-label-lineage')
-    // .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
-    // .text(function(d) {
-    //   return "lineage: " + self._rootLineageLabel;
-    // })
-    // .attr('x', function(d) { return calcOldX(d) + calcOldWidth(d) * 0.5; })
-    // .attr('y', function(d) { return calcOldY(d) + calcOldHeight(d) * 0.7; });
-
   var newIconsBg = newItems.append('circle')
     .attr('class', 'icon-bg')
     .attr('cx', function(d) { return calcOldX(d) + self._nodeMargin + self._iconSize * 0.5; })
@@ -429,12 +410,63 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       d3.event.stopPropagation();
     })
     .on('click', function(d) {
-      var node = self._getNewNode(d);
-      node.selectionType = d.selectionType;
-      node.selectionType = self.selectNode(node);
-      self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
-      d.selectionType = node.selectionType;
-      self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+
+      var rdis = "", adis = "", edis = "";
+      if(d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED'] || d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED_PRIME']) {
+        rdis = "disabled";
+      }
+      else if(d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'] || d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME']) {
+        adis = "disabled";
+      }
+      else if(d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']) {
+        edis = "disabled";
+      }
+
+      var html = '<text class="nodeselection-remove ' + rdis + '">R</text>' +
+                  '<text class="nodeselection-aggregate ' + adis + '">A</text>' +
+                  '<text class="nodeselection-expand ' + edis + '">E</text>';
+
+      d3.select(this).append("g")
+      .attr("class", "nodeselection-container")
+      .html(html)
+      .attr('x', function(dt) { return calcOldX(d) + self._nodeMargin; })
+      .attr('y', function(dt) { return calcOldY(d) + calcOldHeight(d) - self._nodeMargin - self._iconSize - 15; })
+
+      $(".nodeselection-remove").click(function(e) {
+        e.stopPropagation();
+        var node = self._getNewNode(d);
+        node.selectionType = d.selectionType;
+        d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED']);
+        self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
+        d.selectionType = node.selectionType;
+        self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+
+        d3.select(".nodeselection-container").remove();
+      });
+
+      $(".nodeselection-aggregate").click(function(e) {
+        e.stopPropagation();
+        var node = self._getNewNode(d);
+        node.selectionType = d.selectionType;
+        d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']);
+        self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
+        d.selectionType = node.selectionType;
+        self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+        d3.select(".nodeselection-container").remove();
+      });
+
+      $(".nodeselection-expand").click(function(e) {
+        e.stopPropagation();
+        var node = self._getNewNode(d);
+        node.selectionType = d.selectionType;
+        d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']);
+        self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
+        d.selectionType = node.selectionType;
+        self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+
+        d3.select(".nodeselection-container").remove();
+      });
+
       d3.event.stopPropagation();
     });
 
@@ -493,26 +525,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
       };
     });
-
-  // itemsGroup.selectAll('.item').selectAll('.node-label-lineage')
-  //   .transition().duration(this._animationDelay)
-  //   .style("visibility", function(d) {
-  //     if (d.id != root.id) {
-  //         return "hidden";
-  //     }
-  //     return "visible";
-  //   })
-  //   .style("font-size", 11)
-  //   .attr("text-anchor", "middle")
-  //   .style("font-weight", "normal")    
-  //   .attr('x', function(d) { return calcNewX(d) + calcNewWidth(d) * 0.5; })
-  //   .attr('y', function(d) { return calcNewY(d) + calcNewHeight(d) * 0.7; })
-  //   .tween('text', function(d) {
-  //     var w = d3.interpolate(calcOldWidth(d), calcNewWidth(d));
-  //     return function(t) {
-  //       this.textContent = "lineage: " + self._rootLineageLabel;
-  //     };
-  //   });
 
   itemsGroup.selectAll('.item').selectAll('.icon-bg')
     .transition().duration(this._animationDelay)

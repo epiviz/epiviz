@@ -194,3 +194,20 @@ text {
    font-weight: bold;
 }
 
+.icicle .nodeselection-container {
+    background: white;
+    border: 1px solid black;
+    padding: 2px;
+}
+
+.icicle .nodeselection-container text {
+    background: gainsboro;
+    margin: 2px;
+    padding: 3px;
+    text-align: center;
+}
+
+.icicle .nodeselection-container .disabled {
+    color: gray;
+}
+
