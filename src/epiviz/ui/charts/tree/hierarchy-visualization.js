@@ -291,7 +291,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
     // propagate cutlevel first
     this._uiData.forEach(function(node) {
       if(node.globalDepth == self.selCutLevel) {
-        self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'], false);
+        self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'], false, true);
       }
     });
 
@@ -488,9 +488,13 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.setSelectMode = function(
 /**
  * @param {epiviz.ui.charts.tree.UiNode} node
  */
-epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(node, inputSelection, propagate) {
+epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(node, inputSelection, propagate, cutLevelSelection) {
   if (propagate == undefined || propagate == null){
     propagate = true;
+  }
+
+  if (cutLevelSelection == undefined || cutLevelSelection == null){
+    cutLevelSelection = false;
   }
 
   var ENUM_SELECTIONS = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS;
@@ -521,10 +525,13 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
     selectionType = inputSelection;
   }
   var userSelection = selectionType;
-  if (selectionType == 0 || selectionType == 2){
+
+  if ((selectionType == 0 || selectionType == 2) && !cutLevelSelection){
       this._selectedNodes[node.id] = selectionType;
   }
-
+  if (selectionType == 1){
+      delete this._selectedNodes[node.id];
+  }
   var self = this;
 
   var currentState = oldSelection;
@@ -552,7 +559,9 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       if (updateSelectionType == 0 || updateSelectionType == 2){
         self._selectedNodes[nes.id] = updateSelectionType;
       }
-
+      if (updateSelectionType == 1){
+      delete self._selectedNodes[nes.id];
+      }
       var parentPropagationLookupResult = self.parentPropagationLookUp(parentPropagatedTransition);
       toParent = parentPropagationLookupResult['toParent'];
       passOnParentPropagatedTransition = parentPropagationLookupResult['passOnParentPropagatedTransition'];
@@ -587,7 +596,9 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       if (updateSelectionType == 0 || updateSelectionType == 2){
         self._selectedNodes[nes.id] = updateSelectionType;
       } 
-
+      if (updateSelectionType == 1){
+        delete self._selectedNodes[nes.id];
+      }
       var childrenPropagatedLookupResult = self.childrenPropagationLookUp(childrenPropagatedTransition);
       toChildren = childrenPropagatedLookupResult['toChildren'];
       passOnChildPropagatedTransition = childrenPropagatedLookupResult['passOnChildPropagatedTransition'];
