@@ -629,41 +629,27 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
  */
 epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(level) {
   var self = this;
-  var deselectedNodeIds = [];
-  var deselectedNodes = [];
-  $.each(this._selectedNodes, function(nodeId, selectionType) {
-    /** @type {epiviz.ui.charts.tree.UiNode} */
-    var node = self._uiDataMap[nodeId];
-    if (node != undefined && node.globalDepth == level) {
-      deselectedNodeIds.push(nodeId);
-      deselectedNodes.push(node);
-    }
-  });
-  deselectedNodeIds.forEach(function(nodeId) { delete self._selectedNodes[nodeId]; });
-
   var tLevel;
 
   if (!(level in this._selectedLevels)) {
 
     var currentLevel = Object.keys(self._selectedLevels)[0]
 
-    self._changeLevelSelection(this._levelsTaxonomy[currentLevel], 1);
-
       //propogate level selection to nodes
     self._uiData.forEach(function(node) {
-      if (node.globalDepth == currentLevel && node.selectionType != 0) {
-          //self._updateSelectionAttribute(node, 1);
-          self.selectNode(node, 1, false);
+      if (node.globalDepth == currentLevel) {
+          // self._updateSelectionAttribute(node, 1);
+          self.selectNode(node, 2, false, false);
           self._uiDataMap[node.id] == node.selectionType;
       }
     });
 
     for(var nodeId in  self._oldUiDataMap) {
       var node = self._oldUiDataMap[nodeId];
-      if (node.globalDepth == currentLevel && node.selectionType != 0) {
-          self.selectNode(node, 1, false);
-          //self._updateSelectionAttribute(node, 1);
-          self._oldUiDataMap[nodeId] == 1;
+      if (node.globalDepth == currentLevel) {
+          self.selectNode(node, 2, false, false);
+          // self._updateSelectionAttribute(node, 1);
+          self._oldUiDataMap[nodeId] == 2;
       }
     }
 
@@ -671,44 +657,10 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(le
 
     tLevel = 2;
     this._selectedLevels[level] = epiviz.ui.charts.tree.NodeSelectionType.NODE;
-  } else {
-    
-    var tLevel = (this._selectedLevels[level] + 1) % 3;
-
-    if (tLevel == 0) {
-      tLevel = 1;
-    }
-    this._selectedLevels[level] = tLevel;
-  }
-
-  deselectedNodes.forEach(function(tn) {
-    self._changeNodeSelection(tn, tLevel);
-  });
-
-  self._changeLevelSelection(self._levelsTaxonomy[level], tLevel);
-
-  //propogate level selection to nodes
-  self._uiData.forEach(function(node) {
-    if (node.globalDepth == level) {
-        node.selectionType = self._selectedLevels[level.toString()];
-        //self._updateSelectionAttribute(node, node.selectionType);
-        self.selectNode(node, node.selectionType, false);
-        self._uiDataMap[node.id] == node.selectionType;
-    }
-  });
-
-  for(var nodeId in  self._oldUiDataMap) {
-      var node = self._oldUiDataMap[nodeId];
-      if (node.globalDepth == level) {
-        node.selectionType = self._selectedLevels[level.toString()];
-          //self._updateSelectionAttribute(node, node.selectionType);
-          self.selectNode(node, node.selectionType, false);
-          self._oldUiDataMap[nodeId] == node.selectionType;
-      }
-    }
+  } 
 
   if (this.autoPropagateChanges()) {
-    //this.firePropagateHierarchyChanges();
+    this.firePropagateHierarchyChanges();
   }
 };
 
