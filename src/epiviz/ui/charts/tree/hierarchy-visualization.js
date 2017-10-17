@@ -534,7 +534,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       var updateSelectionType = parentPropagatedTransition[1];
       nes.selectionType = updateSelectionType;
       self._changeNodeSelection(nes, updateSelectionType);
-      if (propagateChangeToSelectedLevels){
+      if (propagateChangeToSelectedLevels && !(updateSelectionType == 1)){
         self._selectedNodes[nes.id] = updateSelectionType;
       }
       var parentPropagationLookupResult = self.parentPropagationLookUp(parentPropagatedTransition);
@@ -568,7 +568,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       var updateSelectionType = childrenPropagatedTransition[1];
       nes.selectionType = updateSelectionType;
       self._changeNodeSelection(nes, updateSelectionType);
-      if (propagateChangeToSelectedLevels){
+      if (propagateChangeToSelectedLevels && !(updateSelectionType == 1)){
         self._selectedNodes[nes.id] = updateSelectionType;
       }
       var childrenPropagatedLookupResult = self.childrenPropagationLookUp(childrenPropagatedTransition);
@@ -609,7 +609,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       if(parseInt(sel.split("-")[0]) == self.selCutLevel && self._selectedNodes[sel] == 2){
         delete self._selectedNodes[sel];
       }
-      else if (self._selectedNodes[sel] == 1 || self._selectedNodes[sel] == 3 || self._selectedNodes[sel] == 4){
+      else if (self._selectedNodes[sel] == 3 || self._selectedNodes[sel] == 4){
         delete self._selectedNodes[sel];
       }
     });
@@ -1003,8 +1003,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.initialPropagationLookUp 
       }
       else if (userSelection == ENUM_SELECTIONS['REMOVED']) {
         toParent = true;
-        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);
-        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_EXPANDED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_AGGREGATED']);
         toChildren = true;
         childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
       }
