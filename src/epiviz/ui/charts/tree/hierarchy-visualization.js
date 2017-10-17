@@ -616,8 +616,6 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
     });
   }
 
-  console.log(this._selectedNodes);
-
   if (this.autoPropagateChanges()) {
     if (propagate){
       this.firePropagateHierarchyChanges();
