@@ -534,7 +534,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       var updateSelectionType = parentPropagatedTransition[1];
       nes.selectionType = updateSelectionType;
       self._changeNodeSelection(nes, updateSelectionType);
-      if (propagateChangeToSelectedLevels && !(updateSelectionType == 1)){
+      if (propagateChangeToSelectedLevels){
         self._selectedNodes[nes.id] = updateSelectionType;
       }
       var parentPropagationLookupResult = self.parentPropagationLookUp(parentPropagatedTransition);
@@ -568,7 +568,8 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       var updateSelectionType = childrenPropagatedTransition[1];
       nes.selectionType = updateSelectionType;
       self._changeNodeSelection(nes, updateSelectionType);
-      if (propagateChangeToSelectedLevels && !(updateSelectionType == 1)){
+      if (propagateChangeToSelectedLevels || updateSelectionType == ENUM_SELECTIONS['REMOVED_PRIME']){
+        delete self._selectedNodes[nes.id];
         self._selectedNodes[nes.id] = updateSelectionType;
       }
       var childrenPropagatedLookupResult = self.childrenPropagationLookUp(childrenPropagatedTransition);
@@ -606,14 +607,16 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
   if (propagateChangeToSelectedLevels){
 
     Object.keys(this._selectedNodes).forEach(function(sel) {
-      if(parseInt(sel.split("-")[0]) == self.selCutLevel && self._selectedNodes[sel] == 2){
+      if(parseInt(sel.split("-")[0]) == self.selCutLevel && self._selectedNodes[sel] == ENUM_SELECTIONS['AGGREGATED']){
         delete self._selectedNodes[sel];
       }
-      else if (self._selectedNodes[sel] == 3 || self._selectedNodes[sel] == 4){
+      else if (self._selectedNodes[sel] == ENUM_SELECTIONS['REMOVED_PRIME'] || self._selectedNodes[sel] == ENUM_SELECTIONS['AGGREGATED_PRIME']){
         delete self._selectedNodes[sel];
       }
     });
   }
+
+  console.log(this._selectedNodes);
 
   if (this.autoPropagateChanges()) {
     if (propagate){
@@ -836,6 +839,9 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.childrenPropagationLookUp
         case ENUM_TRANSITIONS['EXPANDED_TO_REMOVED_PRIME']:
           toChildren = true;
           passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['EXPANDED_TO_REMOVED_PRIME']);
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_REMOVED_PRIME']);
+          passOnChildPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_REMOVED_PRIME']);
           break;
         case ENUM_TRANSITIONS['REMOVED_TO_REMOVED_PRIME']:
           toChildren = true;
