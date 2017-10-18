@@ -959,7 +959,8 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.initialPropagationLookUp 
       }
       else if (userSelection == ENUM_SELECTIONS['REMOVED']) {
         toParent = true;
-        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_AGGREGATED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_EXPANDED']);
+        parentPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_EXPANDED']);
         toChildren = true;
         childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
       }
