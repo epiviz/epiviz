@@ -309,9 +309,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       d3.event.stopPropagation();
     })
     .on('mouseover', function(d) {
-      if(!d3.selectAll(".node-container")) {
         self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
         self.notifyAggregateNode(d);
+        
         var w = calcNewWidth(d);
         var maxChars = w / self._charWidth;
         if (maxChars < 7) {
@@ -330,7 +330,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
                   })
                   .attr("y", function(d) { return calcNewY(d) + (calcNewHeight(d)/3)});
         }
-      }
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
