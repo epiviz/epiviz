@@ -410,6 +410,10 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       d3.event.stopPropagation();
     })
     .on('click', function(d) {
+      d3.event.stopPropagation();
+
+      d3.selectAll(".nodeselection-container").remove();
+      d3.selectAll(".nodeselection-text").remove();
 
       var rdis = "", adis = "", edis = "";
       if(d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED'] || d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED_PRIME']) {
@@ -422,18 +426,25 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         edis = "disabled";
       }
 
-      var html = '<text class="nodeselection-remove ' + rdis + '">R</text>' +
-                  '<text class="nodeselection-aggregate ' + adis + '">A</text>' +
-                  '<text class="nodeselection-expand ' + edis + '">E</text>';
+      var posX = parseInt(this.parentElement.getAttribute("x")) + 3;
+      var poxY = parseInt(this.parentElement.getAttribute("y")) - 5;
 
-      d3.select(this).append("g")
+      d3.select("#" + self.id() + '-' + d.id).append("circle")
       .attr("class", "nodeselection-container")
-      .html(html)
-      .attr('x', function(dt) { return calcOldX(d) + self._nodeMargin; })
-      .attr('y', function(dt) { return calcOldY(d) + calcOldHeight(d) - self._nodeMargin - self._iconSize - 15; })
+      .attr('cx', function(d) { return posX + self._iconSize * 0.5; })
+      .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
+      .attr('r', self._iconSize * 0.5)
+      .style('fill', '#ffffff')
+      .style('opacity', 0.5);
 
-      $(".nodeselection-remove").click(function(e) {
-        e.stopPropagation();
+      d3.select("#" + self.id() + '-' + d.id).append("text")
+      .text("R")
+      .attr("class", "nodeselection-text nodeselection-remove " + rdis)
+      .attr('x', posX + self._iconSize * 0.5)
+      .attr('y', poxY - 2)
+      .on("click", function(dt) {
+        d3.event.stopPropagation();
+
         var node = self._getNewNode(d);
         node.selectionType = d.selectionType;
         d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED']);
@@ -441,22 +452,67 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         d.selectionType = node.selectionType;
         self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
 
-        d3.select(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-text").remove();
+      })
+      .attr("fill", function(d) {
+        if(rdis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
       });
 
-      $(".nodeselection-aggregate").click(function(e) {
-        e.stopPropagation();
+      d3.select("#" + self.id() + '-' + d.id).append("circle")
+      .attr("class", "nodeselection-container")
+      .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + 17; })
+      .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
+      .attr('r', self._iconSize * 0.5)
+      .style('fill', '#ffffff')
+      .style('opacity', 0.5);
+
+      d3.select("#" + self.id() + '-' + d.id).append("text")
+      .text("A")
+      .attr("class", "nodeselection-text nodeselection-aggregate " + adis)
+      .attr('x', posX + 17 + self._iconSize * 0.5)
+      .attr('y', poxY - 2)
+      .on("click", function(dt) {
+        d3.event.stopPropagation();
+
         var node = self._getNewNode(d);
         node.selectionType = d.selectionType;
         d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']);
         self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
         d.selectionType = node.selectionType;
         self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
-        d3.select(".nodeselection-container").remove();
+
+        d3.selectAll(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-text").remove();
+      })
+      .attr("fill", function(d) {
+        if(adis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
       });
 
-      $(".nodeselection-expand").click(function(e) {
-        e.stopPropagation();
+      d3.select("#" + self.id() + '-' + d.id).append("circle")
+      .attr("class", "nodeselection-container")
+      .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + 34; })
+      .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
+      .attr('r', self._iconSize * 0.5)
+      .style('fill', '#ffffff')
+      .style('opacity', 0.5);
+
+      d3.select("#" + self.id() + '-' + d.id).append("text")
+      .text("E")
+      .attr("class", "nodeselection-text nodeselection-expand " + edis)
+      .attr('x', posX + 34 + self._iconSize * 0.5)
+      .attr('y', poxY - 2)
+      .on("click", function(dt) {
+        d3.event.stopPropagation();
+
         var node = self._getNewNode(d);
         node.selectionType = d.selectionType;
         d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']);
@@ -464,12 +520,25 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         d.selectionType = node.selectionType;
         self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
 
-        d3.select(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-text").remove();
+      })
+      .attr("fill", function(d) {
+        if(edis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
       });
 
-      d3.event.stopPropagation();
-    });
+      $("body").click(function(e) {
+        e.stopPropagation();
+        d3.event.stopPropagation();
 
+        d3.selectAll(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-text").remove();
+      });
+    });
 
   defs.selectAll('rect')
     .transition().duration(this._animationDelay)

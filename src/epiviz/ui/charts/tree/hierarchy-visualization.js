@@ -632,6 +632,13 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectLevel = function(le
   var self = this;
   var tLevel;
 
+
+  for (var nodeId in self._selectedNodes) {
+    if(self._selectedNodes[nodeId] != 0) {
+      delete self._selectedNodes[nodeId];
+    }
+  }
+
   if (!(level in this._selectedLevels)) {
 
     var currentLevel = Object.keys(self._selectedLevels)[0]
