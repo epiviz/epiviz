@@ -309,33 +309,32 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       d3.event.stopPropagation();
     })
     .on('mouseover', function(d) {
-      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
-      
-      var w = calcNewWidth(d);
-      var maxChars = w / self._charWidth;
-      if (maxChars < 7) {
-            d3.select(this).append("text")
-                .attr("class", "hoverText")
-                .text(function(d) {return d.name;})
-                .attr("x", function(d) {
-                  var xText = calcNewX(d);
-                  if (xText < 2*self._rowCtrlWidth) {
-                    xText += self._rowCtrlWidth;
-                  }
-                  if(xText > width -  self._rowCtrlWidth) {
-                    xText -= (self._rowCtrlWidth/2);
-                  }
-                  return xText;
-                })
-                .attr("y", function(d) { return calcNewY(d) + (calcNewHeight(d)/3)});
+      if(!d3.selectAll(".node-container")) {
+        self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+        self.notifyAggregateNode(d);
+        var w = calcNewWidth(d);
+        var maxChars = w / self._charWidth;
+        if (maxChars < 7) {
+              d3.select("#" + self.id() + '-' + d.id).append("text")
+                  .attr("class", "hoverText")
+                  .text(function(d) {return d.name;})
+                  .attr("x", function(d) {
+                    var xText = calcNewX(d);
+                    if (xText < 2*self._rowCtrlWidth) {
+                      xText += self._rowCtrlWidth;
+                    }
+                    if(xText > width -  self._rowCtrlWidth) {
+                      xText -= (self._rowCtrlWidth/2);
+                    }
+                    return xText;
+                  })
+                  .attr("y", function(d) { return calcNewY(d) + (calcNewHeight(d)/3)});
+        }
       }
-      
-      self.notifyAggregateNode(d);
-
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-              d3.select(this).selectAll(".hoverText").remove();
+      d3.selectAll(".hoverText").remove();
     })
     .call(drag);
 
@@ -412,6 +411,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .on('click', function(d) {
       d3.event.stopPropagation();
 
+      d3.selectAll(".nodeselection-itemcontainer").remove();
       d3.selectAll(".nodeselection-container").remove();
       d3.selectAll(".nodeselection-text").remove();
 
@@ -428,10 +428,23 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         edis = "disabled";
       }
 
+      var v=17; h=17;
+      if(Math.max(0, self._xScale(d.x + d.dx) - self._xScale(d.x) - 2 * self._nodeBorder) < 40) {
+        h = 0;
+      }
+      else {
+        v = 0;
+      }
+
       var posX = parseInt(this.parentElement.getAttribute("x")) + 3;
       var poxY = parseInt(this.parentElement.getAttribute("y")) - 5;
 
-      d3.select("#" + self.id() + '-' + d.id).append("circle")
+      d3.select("#" + self.id() + '-' + d.id).append("g")
+      .attr("class", "nodeselection-itemcontainer")
+      .attr('x', posX + self._iconSize * 0.5)
+      .attr('y', poxY - 2);
+
+      d3.select(".nodeselection-itemcontainer").append("circle")
       .attr("class", "nodeselection-container")
       .attr('cx', function(d) { return posX + self._iconSize * 0.5; })
       .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
@@ -439,7 +452,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select("#" + self.id() + '-' + d.id).append("text")
+      d3.select(".nodeselection-itemcontainer").append("text")
       .text("R")
       .attr("class", "nodeselection-text nodeselection-remove " + rdis)
       .attr('x', posX + self._iconSize * 0.5)
@@ -455,6 +468,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
           self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
         }
 
+        d3.selectAll(".nodeselection-itemcontainer").remove();
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
       })
@@ -466,19 +480,19 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         return "black";
       });
 
-      d3.select("#" + self.id() + '-' + d.id).append("circle")
+      d3.select(".nodeselection-itemcontainer").append("circle")
       .attr("class", "nodeselection-container")
-      .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + 17; })
-      .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
+      .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + h; })
+      .attr('cy', function(d) { return (poxY - self._iconSize * 0.5) - v; })
       .attr('r', self._iconSize * 0.5)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select("#" + self.id() + '-' + d.id).append("text")
+      d3.select(".nodeselection-itemcontainer").append("text")
       .text("A")
       .attr("class", "nodeselection-text nodeselection-aggregate " + adis)
-      .attr('x', posX + 17 + self._iconSize * 0.5)
-      .attr('y', poxY - 2)
+      .attr('x', posX + h + self._iconSize * 0.5)
+      .attr('y', poxY - v - 2)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -490,6 +504,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
           self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
         }
 
+        d3.selectAll(".nodeselection-itemcontainer").remove();
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
       })
@@ -501,19 +516,19 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         return "black";
       });
 
-      d3.select("#" + self.id() + '-' + d.id).append("circle")
+      d3.select(".nodeselection-itemcontainer").append("circle")
       .attr("class", "nodeselection-container")
-      .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + 34; })
-      .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
+      .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + (2 * h); })
+      .attr('cy', function(d) { return (poxY - self._iconSize * 0.5) - (2 * v); })
       .attr('r', self._iconSize * 0.5)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select("#" + self.id() + '-' + d.id).append("text")
+      d3.select(".nodeselection-itemcontainer").append("text")
       .text("E")
       .attr("class", "nodeselection-text nodeselection-expand " + edis)
-      .attr('x', posX + 34 + self._iconSize * 0.5)
-      .attr('y', poxY - 2)
+      .attr('x', posX + (2 * h) + self._iconSize * 0.5)
+      .attr('y', poxY - (2 * v) - 2)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -525,6 +540,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
           self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
         }
 
+        d3.selectAll(".nodeselection-itemcontainer").remove();
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
       })
@@ -538,6 +554,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
       $("body").click(function(e) {
         e.stopPropagation();
+        d3.selectAll(".nodeselection-itemcontainer").remove();
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
       });
