@@ -415,14 +415,16 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       d3.selectAll(".nodeselection-container").remove();
       d3.selectAll(".nodeselection-text").remove();
 
+      var nodeSelectionType = self._uiDataMap[d.id].selectionType;
+
       var rdis = "", adis = "", edis = "";
-      if(d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED'] || d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED_PRIME']) {
+      if(nodeSelectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED'] || nodeSelectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED_PRIME']) {
         rdis = "disabled";
       }
-      else if(d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'] || d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME']) {
+      else if(nodeSelectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'] || nodeSelectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME']) {
         adis = "disabled";
       }
-      else if(d.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']) {
+      else if(nodeSelectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']) {
         edis = "disabled";
       }
 
@@ -445,12 +447,13 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
-        var node = self._getNewNode(d);
-        node.selectionType = d.selectionType;
-        d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED']);
-        self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
-        d.selectionType = node.selectionType;
-        self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+        if(rdis != "disabled") {
+          var node = self._getNewNode(d);
+          node.selectionType = nodeSelectionType;
+          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED']);
+          self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
+          self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+        }
 
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
@@ -479,12 +482,13 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
-        var node = self._getNewNode(d);
-        node.selectionType = d.selectionType;
-        d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']);
-        self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
-        d.selectionType = node.selectionType;
-        self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+        if(adis != "disabled") {
+          var node = self._getNewNode(d);
+          node.selectionType = nodeSelectionType;
+          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']);
+          self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
+          self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+        }
 
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
@@ -513,12 +517,13 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
-        var node = self._getNewNode(d);
-        node.selectionType = d.selectionType;
-        d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']);
-        self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
-        d.selectionType = node.selectionType;
-        self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+        if(edis != "disabled") {
+          var node = self._getNewNode(d);
+          node.selectionType = nodeSelectionType;
+          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']);
+          self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
+          self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+        }
 
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
@@ -533,8 +538,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
       $("body").click(function(e) {
         e.stopPropagation();
-        d3.event.stopPropagation();
-
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
       });
