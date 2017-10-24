@@ -288,6 +288,18 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
         }
     });
 
+    if(root.globalDepth - self.selCutLevel >= 1){
+      if(self._oldUiDataMap[root.id] != null){
+        var parentSelection = self._oldUiDataMap[root.id].selectionType;
+        var selectionToSend = parentSelection;
+        if (parentSelection == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']){
+          //Aggregate children of expanded, then if removed or expanded that will be in selected nodes which is applied after this
+          selectionToSend = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'];
+        }
+        self.selectNode(self._uiDataMap[root.id], selectionToSend, false, false);
+      }
+    }
+
     // propagate cutlevel first
     this._uiData.forEach(function(node) {
       if(node.globalDepth == self.selCutLevel) {
@@ -302,56 +314,6 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
        }
     });
 
-    // propagate parent -> child, only for nodes 0 or 2
-    // Object.keys(self._selectedNodes).forEach(function(sel) {
-    //   if(self._uiDataMap[sel]) {
-    //     self.selectNode(self._uiDataMap[sel], self._selectedNodes[sel], false);
-    //   }
-    // });
-
-    // this._uiData.forEach(function(node) {
-    //   // node is noe new! propagate from old.
-    //   if(self._oldUiDataMap[node.id] != null) {
-
-    //   }
-    // });
-
-    // this._uiData.forEach(function(node) {
-    //     if(self._oldUiDataMap[node.id] != null && self._uiDataMap[node.id] != null) {
-    //       if(self._oldUiDataMap[node.id].selectionType != self._uiDataMap[node.id].selectionType){
-    //         if (self._uiDataMap[node.id] != null && node.parentId != "None") {
-    //           var parent = self._uiDataMap[node.parentId];
-    //           if (parent != undefined && parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']){
-    //             node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
-    //             self.selectNode(node, node.selectionType, false);
-    //           }
-    //         }
-    //         else{
-    //           node.selectionType = self._uiDataMap[node.id].selectionType;
-    //           self.selectNode(node, node.selectionType, false);
-    //         }
-    //       }
-    //     }
-        // if(node.globalDepth == self.selCutLevel && node.selectionType != 0) {
-        //   node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'];
-        //   self.selectNode(node, node.selectionType, false);
-        // }
-        // if(node.globalDepth > self.selCutLevel && node.selectionType != 0) {
-        //   var parent = self._uiDataMap[node.parentId];
-        //   if (parent != undefined && 
-        //   (parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'] 
-        //   || parent.selectionType == epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'])){
-        //     node.selectionType = epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED_PRIME'];
-        //     self.selectNode(node, node.selectionType, false);
-        //   }
-        // }
-    // }); 
-
-    // Object.keys(self._selectedNodes).forEach(function(sel) {
-    //    if(self._uiDataMap[sel]) {
-    //      self.selectNode(self._uiDataMap[sel], self._selectedNodes[sel], false);
-    //    }
-    // });
   }
 
   //this._drawLegend();
@@ -934,6 +896,15 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.initialPropagationLookUp 
         childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_PRIME_TO_REMOVED_PRIME']);
       }
       else if (userSelection == ENUM_SELECTIONS['AGGREGATED']) {
+        toParent = false;
+        toChildren = true;
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['EXPANDED_TO_AGGREGATED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['AGGREGATED_TO_AGGREGATED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_TO_AGGREGATED_PRIME']);
+        childrenPropagatedTransition.push(ENUM_TRANSITIONS['REMOVED_PRIME_TO_AGGREGATED_PRIME']);
+      }
+    // This condition can occur if the root node is below the cut level
+     else if (userSelection == ENUM_SELECTIONS['AGGREGATED_PRIME']) {
         toParent = false;
         toChildren = true;
         childrenPropagatedTransition.push(ENUM_TRANSITIONS['EXPANDED_TO_AGGREGATED_PRIME']);
