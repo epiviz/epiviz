@@ -404,3 +404,11 @@ tfoot th input { width: 80% }
   background: #1d5aa9;
   color: white;
 }
+
+#sourcemodal {
+  width: 800px;
+}
+
+#sourcemodal .content {
+  overflow: both;
+}

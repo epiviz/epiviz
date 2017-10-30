@@ -528,7 +528,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           }
 
           if(!(datasourceGroups[m.datasourceGroup()] && datasourceGroups[m.datasourceGroup()][0] != "description not available")) {
-             datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG, 1];
+             datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG, 0];
           }
           else {
             datasourceGroups[m.datasourceGroup()][2]++;
@@ -1334,8 +1334,8 @@ epiviz.ui.ControlManager.prototype.updateLoadingScreen = function(e) {
     var currCount = parseInt($("#startScreenApp").find(".sampleCount").text());
     var currSize = parseInt($("#startScreenApp").find(".dataCount").text());
 
-    $("#startScreenApp").find(".sampleCount").text(currCount + e.sampleSize + 1);
-    $("#startScreenApp").find(".dataCount").text(currSize + 1);
+    $("#startScreenApp").find(".sampleCount").text(currCount + e.sampleSize);
+    $("#startScreenApp").find(".dataCount").text(currSize);
 
     var item = '<tr>' +
           '<td>' + e.dataset + '</td>'+
