@@ -528,7 +528,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
           }
 
           if(!(datasourceGroups[m.datasourceGroup()] && datasourceGroups[m.datasourceGroup()][0] != "description not available")) {
-             datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG, 0];
+             datasourceGroups[m.datasourceGroup()] = [m._description, workspaceDSG, 0, m._annotation["sequencingType"]];
           }
           else {
             datasourceGroups[m.datasourceGroup()][2]++;
@@ -549,19 +549,25 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
             },
             onApprove: function() {
                 var source = $('#form').form('get value', 'source');
-                var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
-                var vconfig = new epiviz.ui.controls.VisConfigSelection(
-                    measurements, // measurements
-                    undefined, // datasource
-                    source, // datasourceGroup
-                    undefined, // dataprovider
-                    undefined, // annotation
-                    chartType.chartName(), // defaultChartType
-                    chartType.minSelectedMeasurements());
-                self._addChart.notify({
-                  type: chartType,
-                  visConfigSelection: vconfig
-                });
+                if(source.length == 1) {
+                  $('#warning-message').show();
+                  return false;
+                }
+                else {
+                  var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
+                  var vconfig = new epiviz.ui.controls.VisConfigSelection(
+                      measurements, // measurements
+                      undefined, // datasource
+                      source, // datasourceGroup
+                      undefined, // dataprovider
+                      undefined, // annotation
+                      chartType.chartName(), // defaultChartType
+                      chartType.minSelectedMeasurements());
+                  self._addChart.notify({
+                    type: chartType,
+                    visConfigSelection: vconfig
+                  });
+                }
             }
         });
         $('#sourcemodal').modal('show');
@@ -1296,6 +1302,7 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
                 '<thead>'+
                   '<tr><th> Dataset</th>'+
                   '<th> Sample Count</th>'+
+                  '<th> Sequencing Type</th>'+
                 '</tr></thead>'+
                 '<tbody id="listScreenApp" style="overflow:auto">'+
                 '</tbody>'+
@@ -1340,6 +1347,7 @@ epiviz.ui.ControlManager.prototype.updateLoadingScreen = function(e) {
     var item = '<tr>' +
           '<td>' + e.dataset + '</td>'+
           '<td>' + e.sampleSize + '</td>'+
+          '<td>' + e.sequencingType + '</td>'+
         '</tr>';
 
     $("#listScreenApp").append(item);

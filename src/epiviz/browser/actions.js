@@ -277,7 +277,8 @@ function initialize(sources) {
 	var form =     
 	'<div class="ui small modal" id="sourcemodal">' +
 		'<div class="header">'+
-			'Select Data Source'+
+			'<span>Select Data Source</span>'+
+			'<div id="warning-message" class="ui negative message" style="display:none;">Please select a Data Source</div>'+
 		'</div>'+
 		'<div class="content">'+
 			'<form class="ui form" id="form">'+
@@ -310,6 +311,10 @@ function initialize(sources) {
 
 	var th = document.createElement("th");
 	th.innerHTML = "Samples";
+	tr.appendChild(th);
+
+	var th = document.createElement("th");
+	th.innerHTML = "Sequencing Type";
 	tr.appendChild(th);
 
 	thead.appendChild(tr);
@@ -354,6 +359,10 @@ function initialize(sources) {
 		
 		var td = document.createElement("td");
 		td.innerHTML = sources[value][2];
+		tr.appendChild(td);
+
+		var td = document.createElement("td");
+		td.innerHTML = sources[value][3];
 		tr.appendChild(td);
 
 		tableBody.appendChild(tr);

@@ -359,12 +359,16 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
         var jsondata = response.data();
 
         if(self._config.configType == "default") {
-          self._loadingCurrentDataSet.notify({"dataset": provider.id(), "count": nResponses, "size": self._dataProviderFactory.size(), "sampleSize": jsondata['id'].length});
+          self._loadingCurrentDataSet.notify({"dataset": provider.id(), "count": nResponses,
+                         "size": self._dataProviderFactory.size(), "sampleSize": jsondata['id'].length,
+                         "sequencingType": jsondata['sequencingType'] ? jsondata['sequencingType'][0] : null});
         }
 
         if (jsondata) {
           var n = jsondata['id'] ? (jsondata['id'].length || 0) : 0;
           for (var i = 0; i < n; ++i) {
+            jsondata['annotation'][i]["sequencingType"] = jsondata['sequencingType'][i],
+
             result.add(new epiviz.measurements.Measurement(
               jsondata['id'][i],
               jsondata['name'][i],

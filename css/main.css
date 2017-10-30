@@ -410,6 +410,6 @@ tfoot th input { width: 80% }
 }
 
 #sourcemodal .content {
-  height: 400px;
+  max-height: 400px;
   overflow: auto;
 }
