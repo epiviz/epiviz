@@ -1335,7 +1335,7 @@ epiviz.ui.ControlManager.prototype.updateLoadingScreen = function(e) {
     var currSize = parseInt($("#startScreenApp").find(".dataCount").text());
 
     $("#startScreenApp").find(".sampleCount").text(currCount + e.sampleSize);
-    $("#startScreenApp").find(".dataCount").text(currSize);
+    $("#startScreenApp").find(".dataCount").text(currSize + 1);
 
     var item = '<tr>' +
           '<td>' + e.dataset + '</td>'+
