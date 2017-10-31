@@ -926,27 +926,13 @@ epiviz.ui.ControlManager.prototype._initializeManifestUploadMenu = function() {
               var measurements = [];
               var mid = [];
 
+              var data = self._measurementsManager.measurements();
+
               for(var i=0; i < datasources.length; i++) {
                 var dsi = datasources[i];
                 var idi = ids[i];
-                measurements.push({
-                  "id":idi,
-                  "name":idi,
-                  "type":"feature",
-                  "datasourceId":dsi,
-                  "datasourceGroup":dsi,
-                  "dataprovider":dsi,
-                  "formula":null,
-                  "defaultChartType":null,
-                  "annotation":{},
-                  "minValue":0,
-                  "maxValue":20000,
-                  "metadata":["label","id","taxonomy1","taxonomy2",
-                              "taxonomy3","taxonomy4","taxonomy5",
-                              "taxonomy6","taxonomy7","lineage"],
-                  "description": dsi
-                });
-
+                var mea = data.subset(function(m) { return m.id() == idi});
+                measurements.push(mea.raw()[0]);
                 mid.push(i);
               }
 
