@@ -398,6 +398,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script>  
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-scatter-plot-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>

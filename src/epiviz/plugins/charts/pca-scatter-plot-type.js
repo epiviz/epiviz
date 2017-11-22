@@ -6,7 +6,7 @@
 
 goog.provide('epiviz.plugins.charts.PCAScatterPlotType');
 
-goog.require('epiviz.plugins.charts.CustomScatterPlot');
+// goog.require('epiviz.plugins.charts.FeatureScatterPlot');
 goog.require('epiviz.ui.charts.PlotType');
 goog.require('epiviz.measurements.Measurement.Type');
 goog.require('epiviz.ui.charts.CustomSetting');
