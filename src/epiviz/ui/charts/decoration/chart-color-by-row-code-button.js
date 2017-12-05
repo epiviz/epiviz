@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.decoration.ChartColorByRowCodeButton');
 
+goog.require('epiviz.ui.charts.decoration.MarkerCodeButton');
+goog.require('epiviz.ui.charts.markers.VisualizationMarker');
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
@@ -73,3 +76,4 @@ epiviz.ui.charts.decoration.ChartColorByRowCodeButton.prototype.markTemplate = f
   '}\n'
 };
 
+// goog.inherits(epiviz.ui.charts.decoration.ChartColorByRowCodeButton, epiviz.ui.charts.decoration.MarkerCodeButton);

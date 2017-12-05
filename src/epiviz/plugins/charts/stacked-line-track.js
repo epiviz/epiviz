@@ -7,6 +7,13 @@
 
 goog.provide('epiviz.plugins.charts.StackedLineTrack');
 
+goog.require('epiviz.ui.charts.Track');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.ChartObject');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.utils');
+goog.require('epiviz.datatypes.GenomicRange');
+
 /**
  * @param {string} id
  * @param {jQuery} container
@@ -236,3 +243,4 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
   return items;
 };
 
+// goog.inherits(epiviz.plugins.charts.StackedLineTrack, epiviz.plugins.charts.Track);

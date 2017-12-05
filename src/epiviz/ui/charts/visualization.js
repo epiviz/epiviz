@@ -6,6 +6,13 @@
 
 goog.provide('epiviz.ui.charts.Visualization');
 
+goog.require('epiviz.caja');
+goog.require('epiviz.deferred.Deferred');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.events.Event');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.charts.Margins');
+
 /**
  * Uses data of T type for drawing objects of a subtype of epiviz.ui.charts.VisObject
  * @param {string} id

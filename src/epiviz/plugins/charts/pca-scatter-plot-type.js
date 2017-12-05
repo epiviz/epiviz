@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.PCAScatterPlotType');
 
-goog.require('epiviz.ui.charts.Chart');
+// goog.require('epiviz.plugins.charts.FeatureScatterPlot');
+goog.require('epiviz.ui.charts.PlotType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
@@ -130,3 +134,5 @@ epiviz.plugins.charts.PCAScatterPlotType.CustomSettings = {
   COLOR_BY: 'colorBy',
   AB_LINE: 'abLine'
 };
+
+// goog.inherits(epiviz.plugins.charts.CustomScatterPlotType, epiviz.ui.charts.PlotType);

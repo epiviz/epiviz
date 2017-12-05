@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.controls.DatasourceGroupWizardStep');
 
+goog.require('epiviz.ui.controls.DataTable');
+goog.require('epiviz.utils.IterableArray');
 /**
  * @constructor
  * @implements {epiviz.ui.controls.Wizard.Step}

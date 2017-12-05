@@ -5,10 +5,12 @@
  */
 
 goog.provide('epiviz.ui.charts.VisualizationType');
-goog.provide('epiviz.ui.charts.VisualizationType.DisplayType');
+// goog.provide('epiviz.ui.charts.VisualizationType.DisplayType');
 
 goog.require('epiviz.ui.charts.Visualization');
-
+goog.require('epiviz.Config');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.charts.CustomSetting');
 
 /**
  * Abstract class

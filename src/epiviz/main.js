@@ -6,12 +6,22 @@
 
 goog.provide('epiviz.main');
 
+goog.require('epiviz.utils');
+goog.require('epiviz.Config');
+goog.require('epiviz.ui.LocationManager');
+goog.require('epiviz.measurements.MeasurementsManager');
 goog.require('epiviz.ui.charts.ChartFactory');
 goog.require('epiviz.ui.charts.ChartManager');
-goog.require('epiviz.workspaces.WorkspaceManager');
 goog.require('epiviz.ui.ControlManager');
-goog.require('epiviz.Config');
+goog.require('epiviz.data.DataProviderFactory');
+goog.require('epiviz.data.DataManager');
+goog.require('epiviz.localstorage.LocalStorageManager');
+goog.require('epiviz.workspaces.WorkspaceManager');
+goog.require('epiviz.workspaces.UserManager');
+goog.require('epiviz.ui.WebArgsManager');
 goog.require('epiviz.EpiViz');
+goog.require('epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory');
+goog.require('epiviz.deferred.Promise');
 
 /*
  * Main entry point
@@ -71,4 +81,4 @@ epiviz.main = function() {
   epivizHandler.start();
 };
 
-goog.exportSymbol('epiviz.main', epiviz.main);
+goog.exportSymbol('epiviz', epiviz);

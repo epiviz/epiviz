@@ -217,12 +217,12 @@ epiviz.Config.SETTINGS = {
       yMax: 2
     },
     'epiviz.plugins.charts.DiversityScatterPlot': {
-      yMin: 0,
-      yMax: 6
+      yMin: 'default',
+      yMax: 'default'
     },
     'epiviz.plugins.charts.FeatureScatterPlot': {
-      yMin: 0,
-      yMax: 6
+      yMin: 'default',
+      yMax: 'default'
     }
   },
 

@@ -6,8 +6,9 @@
 
 goog.provide('epiviz.ui.charts.ChartType');
 
-goog.require('epiviz.ui.charts.Chart');
-
+goog.require('epiviz.ui.charts.VisualizationType');
+goog.require('epiviz.ui.charts.markers.MeasurementAggregator');
+goog.require('epiviz.ui.charts.CustomSetting');
 
 /**
  * Abstract class

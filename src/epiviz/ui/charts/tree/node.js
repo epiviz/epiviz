@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.tree.Node');
 
+goog.require('epiviz.ui.charts.VisObject');
+goog.require('epiviz.ui.charts.tree.NodeSelectionType');
+
 /**
  * @param {string} id
  * @param {string} name

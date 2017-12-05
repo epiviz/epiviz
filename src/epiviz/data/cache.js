@@ -6,6 +6,13 @@
 
 goog.provide('epiviz.data.Cache');
 
+goog.require('epiviz.data.RequestStack');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.datatypes.MeasurementGenomicDataArrayWrapper');
+goog.require('epiviz.datatypes.MapGenomicData');
+goog.require('epiviz.measurements.MeasurementSet');
+goog.require('epiviz.datatypes.PartialSummarizedExperiment');
+
 /**
  * @param {epiviz.Config} config
  * @param {epiviz.data.DataProviderFactory} dataProviderFactory

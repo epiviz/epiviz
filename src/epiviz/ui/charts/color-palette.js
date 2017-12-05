@@ -6,6 +6,8 @@
 
 goog.provide('epiviz.ui.charts.ColorPalette');
 
+goog.require('epiviz.utils');
+
 /**
  * @param {Array.<string>} colors
  * @param {string} [name]

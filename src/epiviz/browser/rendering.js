@@ -127,6 +127,7 @@ function loadMeasurements(datasource, input) {
     var checkboxIndex = 0;
     var i = 0;
     var measurements = {};
+    var fTracker= {};
     measurements[datasource] = input;
     // while(i < input.length && measurements[datasource][i].annotation === null) {
     //     i++;
@@ -142,6 +143,7 @@ function loadMeasurements(datasource, input) {
         var form = document.createElement('div');
         var fields = document.createElement('div');
         var sanitized = text.replace(/[^a-zA-Z0-9]/g, '');
+        fTracker[sanitized] = text;
         values = [];
         var allCounts = {};
         var fieldCount = 0;
@@ -251,7 +253,7 @@ function loadMeasurements(datasource, input) {
         });
         $('#' + ids + " .thumb").on('mousedown', function() {
             $('#' + ids).on('mouseup', function() {
-                $('#' + ids).range('get value', function(val) {filter(val, ids.split('-')[0], true, measurements)});
+                $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
                 $('#' + ids).off('mouseup');
             });
         });

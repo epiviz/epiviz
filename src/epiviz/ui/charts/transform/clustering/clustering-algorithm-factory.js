@@ -6,6 +6,15 @@
 
 goog.provide('epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory');
 
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.charts.transform.clustering.NoneClustering');
+goog.require('epiviz.ui.charts.transform.clustering.AgglomerativeClustering');
+goog.require('epiviz.ui.charts.transform.clustering.HierarchicalClusteringAlgorithm');
+goog.require('epiviz.ui.charts.transform.clustering.EuclideanMetric');
+goog.require('epiviz.ui.charts.transform.clustering.CompleteLinkage');
+goog.require('epiviz.ui.charts.transform.clustering.ClusteringLinkage');
+
+
 /**
  * @param {epiviz.Config} config
  * @constructor

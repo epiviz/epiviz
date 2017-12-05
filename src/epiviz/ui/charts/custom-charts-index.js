@@ -6,6 +6,7 @@
 
 goog.provide('epiviz.ui.charts.ChartIndexObject');
 
+goog.require('epiviz.ui.charts.VisObject');
 /**
  * A struct for various objects in visualizations, like blocks, genes or circles in scatter plots
  * @param {string} id

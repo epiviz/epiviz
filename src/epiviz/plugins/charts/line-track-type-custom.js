@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.LineTrackTypeCustom');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.LineTrackCustom');
+goog.require('epiviz.ui.charts.TrackType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
@@ -131,3 +135,5 @@ epiviz.plugins.charts.LineTrackTypeCustom.CustomSettings = {
   LINE_THICKNESS: 'lineThickness',
   INTERPOLATION: 'interpolation'
 };
+
+// goog.inherits(epiviz.plugins.charts.LineTrackTypeCustom, epiviz.ui.charts.TrackType);

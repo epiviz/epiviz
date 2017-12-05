@@ -6,6 +6,19 @@
 
 goog.provide('epiviz.data.WebsocketDataProvider');
 
+goog.require('epiviz.utils');
+goog.require('epiviz.data.DataProvider');
+goog.require('epiviz.data.Response');
+goog.require('epiviz.ui.WebArgsManager');
+goog.require('epiviz.data.MessageType');
+goog.require('epiviz.data.Request');
+goog.require('epiviz.measurements.Measurement');
+goog.require('epiviz.measurements.MeasurementSet');
+goog.require('epiviz.ui.controls.VisConfigSelection');
+goog.require('epiviz.events.EventResult');
+goog.require('epiviz.datatypes.GenomicRange');
+goog.require('epiviz.ui.charts.ColorPalette');
+
 /**
  * @param {?string} [id]
  * @param {string} websocketHost

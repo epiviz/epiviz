@@ -6,6 +6,32 @@
 
 goog.provide('epiviz.ui.charts.ChartManager');
 
+goog.require('epiviz.events.Event');
+goog.require('epiviz.ui.charts.markers.VisualizationMarker');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.ControlManager');
+goog.require('epiviz.ui.charts.VisualizationProperties');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.charts.VisualizationType');
+goog.require('epiviz.events.EventListener');
+goog.require('epiviz.ui.controls.SaveSvgAsImageDialog');
+goog.require('epiviz.ui.charts.decoration.RemoveChartButton');
+goog.require('epiviz.ui.charts.decoration.SaveChartButton');
+goog.require('epiviz.ui.charts.decoration.CustomSettingsButton');
+goog.require('epiviz.ui.charts.decoration.EditCodeButton');
+goog.require('epiviz.ui.charts.decoration.ChartColorsButton');
+goog.require('epiviz.ui.charts.decoration.ChartLoaderAnimation');
+goog.require('epiviz.ui.charts.decoration.ChartResize');
+goog.require('epiviz.ui.charts.decoration.ToggleTooltipButton');
+goog.require('epiviz.ui.charts.decoration.ChartTooltip');
+goog.require('epiviz.ui.charts.decoration.ChartFilterCodeButton');
+goog.require('epiviz.ui.charts.tree.decoration.TogglePropagateSelectionButton');
+goog.require('epiviz.ui.charts.decoration.HierarchyFilterCodeButton');
+goog.require('epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton');
+goog.require('epiviz.ui.charts.decoration.ChartColorByMeasurementsCodeButton');
+goog.require('epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton');
+goog.require('epiviz.ui.charts.decoration.ChartColorByRowCodeButton');
+
 /**
  * @param {epiviz.Config} config
  * @constructor

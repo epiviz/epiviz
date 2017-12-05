@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.decoration.EditCodeButton');
 
+goog.require('epiviz.ui.charts.decoration.CodeButton');
+goog.require('epiviz.ui.controls.EditCodeControl');
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]

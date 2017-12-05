@@ -31,3 +31,7 @@ To run it use:
 docker pull epiviz/epiviz
 docker run --name epiviz-app -d -p 80:80 epiviz/epiviz
 ```
+
+To Compile closure
+-------------------
+`java -jar compiler.jar --js_output_file=epiviz-compiled-jar.js --js 'src/epiviz/**' --js '!src/epiviz/default-settings.js' --js '!src/epiviz/epivizr-settings.js' --js '!src/epiviz/standalone-settings.js' --entry_point=goog:epiviz.main`

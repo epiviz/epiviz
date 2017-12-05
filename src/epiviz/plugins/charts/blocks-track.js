@@ -6,6 +6,13 @@
 
 goog.provide('epiviz.plugins.charts.BlocksTrack');
 
+goog.require('epiviz.ui.charts.Track');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.ChartObject');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.charts.Visualization');
+
+
 /**
  * @param id
  * @param {jQuery} container
@@ -244,3 +251,5 @@ epiviz.plugins.charts.BlocksTrack.prototype.setColors = function(colors) {
   this.container().find('.items').remove();
   epiviz.ui.charts.Visualization.prototype.setColors.call(this, colors);
 };
+
+// goog.inherits(epiviz.plugins.charts.BlocksTrack, epiviz.plugins.charts.Track);

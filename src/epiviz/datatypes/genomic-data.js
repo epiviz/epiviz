@@ -98,6 +98,10 @@ epiviz.datatypes.GenomicData.prototype.binarySearchStarts = function(m, range) {
  */
 epiviz.datatypes.GenomicData.prototype.foreach = function(callback) { throw Error('unimplemented abstract method'); };
 
+
+goog.provide('epiviz.datatypes.GenomicData.ValueItem');
+
+
 /**
  * @param {number} globalIndex
  * @param {epiviz.datatypes.GenomicData.RowItem} rowItem
@@ -133,6 +137,9 @@ epiviz.datatypes.GenomicData.ValueItem = function(globalIndex, rowItem, value, m
    */
   this.valueAnnotation = valueAnnotation;
 };
+
+
+goog.provide('epiviz.datatypes.GenomicData.RowItem');
 
 /**
  * @interface

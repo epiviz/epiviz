@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.LineTrackType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.LineTrack');
+goog.require('epiviz.ui.charts.TrackType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
@@ -138,3 +142,5 @@ epiviz.plugins.charts.LineTrackType.CustomSettings = {
   INTERPOLATION: 'interpolation',
   ABS_LINE_VAL: 'abLine'
 };
+
+// goog.inherits(epiviz.plugins.charts.LineTrackType, epiviz.ui.charts.TrackType);

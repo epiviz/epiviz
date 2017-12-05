@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.LinePlotType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.LinePlot');
+goog.require('epiviz.ui.charts.PlotType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.Visualization');
 
 /**
  * @param {epiviz.Config} config
@@ -152,3 +156,4 @@ epiviz.plugins.charts.LinePlotType.CustomSettings = {
   ABS_LINE_VAL: 'abLine'
 };
 
+// goog.inherits(epiviz.plugins.charts.LinePlotType, epiviz.ui.charts.PlotType);

@@ -6,6 +6,9 @@
 
 goog.provide('epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton');
 
+goog.require('epiviz.ui.charts.decoration.MarkerCodeButton');
+goog.require('epiviz.ui.charts.markers.VisualizationMarker');
+
 /**
  * @param {epiviz.ui.charts.Visualization} visualization
  * @param {epiviz.ui.charts.decoration.VisualizationDecoration} [otherDecoration]
@@ -72,3 +75,4 @@ epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton.prototype.markTem
   '}\n';
 };
 
+// goog.inherits(epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton, epiviz.ui.charts.decoration.MarkerCodeButton);

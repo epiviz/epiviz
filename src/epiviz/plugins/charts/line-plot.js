@@ -6,6 +6,14 @@
 
 goog.provide('epiviz.plugins.charts.LinePlot');
 
+goog.require('epiviz.ui.charts.Plot');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.ChartObject');
+goog.require('epiviz.measurements.Measurement');
+
 /**
  * @param {string} id
  * @param {jQuery} container

@@ -6,12 +6,11 @@
 
 goog.provide('epiviz.EpiViz');
 
-goog.require('epiviz.Config');
-goog.require('epiviz.data.DataProviderFactory');
-goog.require('epiviz.data.DataManager');
-goog.require('epiviz.data.DataProvider');
-goog.require('epiviz.ui.PrintManager');
-
+goog.require('epiviz.ui.charts.VisualizationType');
+goog.require('epiviz.workspaces.Workspace');
+goog.require('epiviz.events.EventListener');
+goog.require('epiviz.ui.controls.MessageDialog');
+goog.require('epiviz.datatypes.GenomicRange');
 
 /**
  * @param {epiviz.Config} config
@@ -175,14 +174,13 @@ epiviz.EpiViz.prototype.start = function() {
   this._controlManager.initialize();
   this._workspaceManager.initialize();
 
-  var requestWorkspaceId = epiviz.ui.WebArgsManager.WEB_ARGS['ws'] ||
-  epiviz.ui.WebArgsManager.WEB_ARGS['workspace'] ||
-  null;
-
-  if (requestWorkspaceId == null) {
+  var requestWorkspaceId = epiviz.ui.WebArgsManager.WEB_ARGS['ws'] || epiviz.ui.WebArgsManager.WEB_ARGS['workspace'] || null;
+  var metavizr = epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'] || null;
+  
+  if (requestWorkspaceId == null && metavizr == null) {
     this._controlManager.startApp();
   }
-};
+};q
 
 /**
  * @returns {epiviz.Config}

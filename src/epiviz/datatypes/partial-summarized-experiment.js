@@ -6,7 +6,8 @@
 
 goog.provide('epiviz.datatypes.PartialSummarizedExperiment');
 
-goog.require('epiviz.datatypes.GenomicRangeArray');
+goog.require('epiviz.measurements.MeasurementHashtable');
+goog.require('epiviz.measurements.Measurement.Type');
 
 /**
  * @constructor

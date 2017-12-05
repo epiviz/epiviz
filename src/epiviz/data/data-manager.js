@@ -9,7 +9,21 @@ goog.provide('epiviz.data.DataManager');
 goog.require('epiviz.data.DataProvider');
 goog.require('epiviz.data.DataProviderFactory');
 goog.require('epiviz.measurements.MeasurementSet');
+goog.require('epiviz.measurements.Measurement');
 goog.require('epiviz.events.EventListener');
+goog.require('epiviz.data.Cache');
+goog.require('epiviz.events.Event');
+goog.require('epiviz.data.RequestStack');
+goog.require('epiviz.datatypes.GenomicRangeArray');
+goog.require('epiviz.datatypes.FeatureValueArray');
+goog.require('epiviz.datatypes.MeasurementGenomicData');
+goog.require('epiviz.datatypes.MeasurementGenomicDataWrapper');
+goog.require('epiviz.datatypes.SeqInfo');
+goog.require('epiviz.events.EventResult');
+// goog.require('epiviz.utils.arrayAppend');
+// goog.require('epiviz.utils.forEach');
+goog.require('epiviz.utils');
+
 
 /**
  * @param {epiviz.Config} config
@@ -358,7 +372,7 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
       function(response) {
         var jsondata = response.data();
 
-        if(self._config.configType == "default") {
+        if(self._config.configType == "default" && provider._id.indexOf("websocket") == -1) {
           self._loadingCurrentDataSet.notify({"dataset": provider.id(), "count": nResponses,
                          "size": self._dataProviderFactory.size(), "sampleSize": jsondata['id'].length,
                          "sequencingType": jsondata['sequencingType'] ? jsondata['sequencingType'][0] : null});

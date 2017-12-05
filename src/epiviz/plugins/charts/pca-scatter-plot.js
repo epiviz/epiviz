@@ -6,6 +6,14 @@
 
 goog.provide('epiviz.plugins.charts.PCAScatterPlot');
 
+goog.require('epiviz.ui.charts.Plot');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.utils');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.ChartIndexObject');
+goog.require('epiviz.deferred.Deferred');
+
 /**
  * @param {string} id
  * @param {jQuery} container
@@ -528,3 +536,5 @@ epiviz.plugins.charts.PCAScatterPlot.prototype.transformData = function(range, d
   deferred.resolve();
   return deferred;
 };
+
+// goog.inherits(epiviz.plugins.charts.CustomScatterPlot, epiviz.ui.charts.Plot);
