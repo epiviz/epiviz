@@ -180,7 +180,7 @@ epiviz.EpiViz.prototype.start = function() {
   if (requestWorkspaceId == null && metavizr == null) {
     this._controlManager.startApp();
   }
-};q
+};
 
 /**
  * @returns {epiviz.Config}
