@@ -198,7 +198,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
   root = this._lastData;
   range = this._lastRange;
 
-  if(this._lastData.dataprovidertype != null && this._lastData.dataprovidertype == "websocket") {
+  if(this._lastData != null && this._lastData.dataprovidertype != null && this._lastData.dataprovidertype == "websocket") {
     root = this._lastData.tree;
     range = this._lastRange;
 

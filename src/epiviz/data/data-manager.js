@@ -372,7 +372,7 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
       function(response) {
         var jsondata = response.data();
 
-        if(self._config.configType == "default") {
+        if(self._config.configType == "default" && provider._id.indexOf("websocket") == -1) {
           self._loadingCurrentDataSet.notify({"dataset": provider.id(), "count": nResponses,
                          "size": self._dataProviderFactory.size(), "sampleSize": jsondata['id'].length,
                          "sequencingType": jsondata['sequencingType'] ? jsondata['sequencingType'][0] : null});

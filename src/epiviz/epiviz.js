@@ -174,14 +174,13 @@ epiviz.EpiViz.prototype.start = function() {
   this._controlManager.initialize();
   this._workspaceManager.initialize();
 
-  var requestWorkspaceId = epiviz.ui.WebArgsManager.WEB_ARGS['ws'] ||
-  epiviz.ui.WebArgsManager.WEB_ARGS['workspace'] ||
-  null;
-
-  if (requestWorkspaceId == null) {
+  var requestWorkspaceId = epiviz.ui.WebArgsManager.WEB_ARGS['ws'] || epiviz.ui.WebArgsManager.WEB_ARGS['workspace'] || null;
+  var metavizr = epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'] || null;
+  
+  if (requestWorkspaceId == null && metavizr == null) {
     this._controlManager.startApp();
   }
-};
+};q
 
 /**
  * @returns {epiviz.Config}
