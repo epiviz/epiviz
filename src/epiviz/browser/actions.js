@@ -516,11 +516,16 @@ function filter(value, anno, filter, measurements) {
 						var val = filters[category].values;
 						var type = filters[category].type;
 						if (val.length !== 0) {
-							if (data['annotation'] == null || !(category in data['annotation'])) {
+							if (data['annotation'] == null) {
 								hide = true;
 							}
 							else if (type === "range") {
-								if (data['annotation'][category] < val[0] || data['annotation'][category] > val[1]) {
+								if(val[0] == val[1]) {
+									if (parseInt(data['annotation'][category]) != val[0]) {
+										hide = true;
+									}
+								}
+								else if (!(parseInt(data['annotation'][category]) <= val[1] && parseInt(data['annotation'][category]) >= val[0])) {
 									hide = true;
 								}
 							}
