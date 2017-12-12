@@ -1180,12 +1180,12 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
 
         self._uiData.forEach(function(uiNode) {
 
-          if(uiNode.depth == self._rootDepth) {
+          if(uiNode.globalDepth == self._rootDepth) {
             range_start = uiNode.start;
             range_end = uiNode.end;
           }
 
-          if( (uiNode.depth) == move_level) {
+          if( (uiNode.globalDepth) == move_level) {
 
             if(loc_x >= uiNode.x && loc_x < (uiNode.x + uiNode.dx)) {
               node_starts.push(uiNode.start);
