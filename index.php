@@ -349,6 +349,15 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/transform/clustering/clustering-linkage.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/hierarchical-clustering-algorithm.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/euclidean-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/bray-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/binomial-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/canberra-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/gower-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/jaccard-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/kulzynski-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/manhattan-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/morisita-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/morisita-horn-metric.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/complete-linkage.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
