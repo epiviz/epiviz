@@ -38,7 +38,7 @@ epiviz.ui.charts.transform.clustering.MorisitaMetric.prototype.distance = functi
 
   dist = 1 - (2 * sum / ( ((lam1 / (sum_item1 * (sum_item1 - 1))) + (lam2 / (sum_item2 * (sum_item2 - 1))) ) * sum_item1 * sum_item2) );
 
-  if(dist < 0) {
+  if(dist < 0 || isNaN(dist)) {
     dist = 0;
   }
 
