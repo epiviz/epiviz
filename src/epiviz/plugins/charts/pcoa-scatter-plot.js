@@ -452,7 +452,7 @@ epiviz.plugins.charts.PCoAScatterPlot.prototype._drawAxes = function(xScale, ySc
     var self = this;
     this._legend.selectAll('text').remove();
 
-    var xMeasurements = ['pcoa1'];
+    var xMeasurements = ['PCoA1'];
     var self = this;
     this._legend.selectAll('.x-measurement').remove();
     this._legend.selectAll('.x-measurement-color').remove();
@@ -486,7 +486,7 @@ epiviz.plugins.charts.PCoAScatterPlot.prototype._drawAxes = function(xScale, ySc
         return (self.width() - xTextLength) * 0.5 + 7 + xTitleEntriesStartPosition[i];
     });
 
-    var yMeasurements = ['pcoa2'];
+    var yMeasurements = ['PCoA2'];
     this._legend.selectAll('.y-measurement').remove();
     this._legend.selectAll('.y-measurement-color').remove();
 

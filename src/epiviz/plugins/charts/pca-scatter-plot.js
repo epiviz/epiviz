@@ -452,7 +452,7 @@ epiviz.plugins.charts.PCAScatterPlot.prototype._drawAxes = function(xScale, ySca
     var self = this;
     this._legend.selectAll('text').remove();
 
-    var xMeasurements = ['pca1'];
+    var xMeasurements = ['PCA1'];
     var self = this;
     this._legend.selectAll('.x-measurement').remove();
     this._legend.selectAll('.x-measurement-color').remove();
@@ -486,7 +486,7 @@ epiviz.plugins.charts.PCAScatterPlot.prototype._drawAxes = function(xScale, ySca
         return (self.width() - xTextLength) * 0.5 + 7 + xTitleEntriesStartPosition[i];
     });
 
-    var yMeasurements = ['pca2'];
+    var yMeasurements = ['PCA2'];
     this._legend.selectAll('.y-measurement').remove();
     this._legend.selectAll('.y-measurement-color').remove();
 
