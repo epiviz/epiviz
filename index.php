@@ -404,7 +404,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/stacked-line-plot.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/pca-scatter-plot.js"></script>
-    <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script>  
+    <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script> 
+    <script src="src/epiviz/plugins/charts/pcoa-scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/pcoa-scatter-plot-type.js"></script>  
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/feature-scatter-plot.js"></script>

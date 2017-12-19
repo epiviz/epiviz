@@ -212,6 +212,15 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
         self._chartManager.updateCharts(range, data, [chartId]);
       });
   }
+  else if (type.typeName() == 'epiviz.plugins.charts.PCoAScatterPlot'){
+    var range = null;
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    this._dataManager.getPCoA(range, chartMeasurementsMap,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  }
   else if (type.typeName() == 'epiviz.plugins.charts.DiversityScatterPlot'){
     var range = null;
     var chartMeasurementsMap = {};
@@ -1135,6 +1144,15 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
           if (mea.indexOf('pca_scatter') != -1) {
 
             self._dataManager.getPCA(e.newValue, cMap,
+              function(chartId, data) {
+                self._chartManager.updateCharts(e.newValue, data, [chartId]);
+            });
+
+            delete chartMeasurementsMap[mea];
+          }
+          else if (mea.indexOf('pcoa_scatter') != -1) {
+
+            self._dataManager.getPCoA(e.newValue, cMap,
               function(chartId, data) {
                 self._chartManager.updateCharts(e.newValue, data, [chartId]);
             });

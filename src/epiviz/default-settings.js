@@ -47,6 +47,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.StackedLinePlotType',
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.PCAScatterPlotType',
+    'epiviz.plugins.charts.PCoAScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
     'epiviz.plugins.charts.FeatureScatterPlotType'
   ],
@@ -169,6 +170,12 @@ epiviz.Config.SETTINGS = {
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
       ]
      },
+     'epiviz.plugins.charts.PCoAScatterPlot': {
+      margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+      ]
+     },
     'epiviz.plugins.charts.DiversityScatterPlot': {
       margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
       decorations: [
@@ -215,6 +222,12 @@ epiviz.Config.SETTINGS = {
       xMax: 2,
       yMin: -2,
       yMax: 2
+    },
+    'epiviz.plugins.charts.PoCAScatterPlot': {
+      xMin: "default",
+      xMax: "default",
+      yMin: "default",
+      yMax: "default"
     },
     'epiviz.plugins.charts.DiversityScatterPlot': {
       yMin: 'default',
