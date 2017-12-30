@@ -257,7 +257,6 @@ function showModal(source, input, cb) {
 }
 
 function initialize(sources) {
-
 	current_measurements = undefined;
 	filters = {};
 	graph;
@@ -370,7 +369,6 @@ function initialize(sources) {
 		$("#" + value).click(function() {
 			$("#"+value).find(".ui.checkbox").checkbox("check");
 			$("#"+value).addClass("active");
-			console.log(old_ds);
 			if(old_ds) {
 				$("#"+old_ds).removeClass("active");
 			}
@@ -456,16 +454,13 @@ function toggleParent(source) {
 		var selected = parseInt($count.attr("data-selected"));
 		var total = parseInt($count.attr("data-total"));
 		if (selected > 0 && selected !== total) {
-			// console.log('hi1');
 			$('#source-' + source).parent().checkbox('set indeterminate');
 			$('#source-' + source).removeClass('hidden');
 
 		} else if (selected === total && total !== 0){
-			// console.log('hi2');
 			$('#source-' + source).parent().checkbox('set checked');
 			$('#source-' + source).removeClass('hidden');
 		} else if (selected === 0) {
-			// console.log('hi3');
 			$('#source-' + source).parent().checkbox('set unchecked');
 			$('#source-' + source).removeClass('hidden');
 		}
@@ -479,24 +474,35 @@ function filter(value, anno, filter, measurements) {
 	var recalc;
 	var new_list = {};
 	if (filter) {
-		//recalculate from original list if you are modifying an exisitng filter
+		//recalculate from original list if you are modifying an existing filter
 		recalc = filters[anno].values.length === 0 ? false : true;
 		if (filters[anno].type === "range") {
 			recalc = true;
-			filters[anno].values = value;
+			// value passed in could be just setting the na field to true or false.
+			if (Array.isArray(value)) {
+				filters[anno].values = value;
+			} else {
+				filters[anno].hideNa = !filters[anno].hideNa;
+			}
 		} else {
+			// maybe some stricter checking here incase accidentally passed in value to set na field?
 			filters[anno].values.push(value);
 		}
 	} else {
-		filters[anno].values.splice(filters[anno].values.indexOf(value),1);
+		if (value === "NA" && filters[anno].type === "range") {
+			filters[anno].hideNa = !filters[anno].hideNa;
+		} else {
+			filters[anno].values.splice(filters[anno].values.indexOf(value),1);	
+		}
 		recalc = true;
 	}
-	//If filters are all empty, show entire dataset
+	// if filters are all empty, show entire dataset
 	_.forEach(filters, function(val, key) {
-		if (val.length !== 0) {
+		if (val.length !== 0 || val.hideNa) {
 			all_empty = false;
 		}
 	});
+	// apply filter to current measurements or from all measurements
 	if (recalc || !current_measurements) {
 		list = measurements;
 		current_measurements = {};
@@ -507,11 +513,13 @@ function filter(value, anno, filter, measurements) {
 		new_list[source] = [];
 	});
 	_.forEach(list, function(val, source) {
+		// loop through all elements for the given source
 		list[source].forEach(function(data) {
-			var sanitizedId = data.id.replace(/[^a-zA-Z0-9]/g, '');
+			var sanitizedId = data.id.replace(/[^a-zA-Z0-9_]/g, '');
 			var hide = false;
 			if (!(all_empty && $('#' + sanitizedId).css('display') === 'none')) {
 				if (recalc) {
+					// loop through all filters and see if the element passes the filters
 					Object.keys(filters).forEach(function(category) {
 						var val = filters[category].values;
 						var type = filters[category].type;
@@ -520,35 +528,40 @@ function filter(value, anno, filter, measurements) {
 								hide = true;
 							}
 							else if (type === "range") {
-								if(val[0] == val[1]) {
-									if (parseInt(data['annotation'][category]) != val[0]) {
+								if (val[0] == val[1]) {
+									// check if it is the value, or if it is "NA" and na flag is set to false
+									if (parseInt(data['annotation'][category]) != val[0] &&
+										(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 										hide = true;
 									}
 								}
-								else if (!(parseInt(data['annotation'][category]) <= val[1] && parseInt(data['annotation'][category]) >= val[0])) {
+								else if (!(parseInt(data['annotation'][category]) <= val[1] && parseInt(data['annotation'][category]) >= val[0]) && 
+										 (!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 									hide = true;
 								}
-							}
-							else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
+							} else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9_]/g,'')) === -1) {
 								hide = true;
 							}
+						} else if (type === "range" && 
+									(data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
+							// case where no range but toggle hideNa checkbox
+							hide = true;
 						}
 					});
-				} else {
-					if (filters[anno].values.length !== 0) {
-						var val = filters[anno].values;
-						var type = filters[anno].type;
-						if (data['annotation'] == null || !(anno in data['annotation'])) {
+				} else if (filters[anno].values.length !== 0) {
+					var val = filters[anno].values;
+					var type = filters[anno].type;
+					if (data['annotation'] == null || !(anno in data['annotation'])) {
+						hide = true;
+					}
+					else if (type === "range") {
+						if (parseInt(data['annotation'][anno]) < val[0] || parseInt(data['annotation'][anno]) > val[1] && 
+							(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 							hide = true;
 						}
-						else if (type === "range") {
-							if (data['annotation'][anno] < val[0] || data['annotation'][anno] > val[1]) {
-								hide = true;
-							}
-						}
-						else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
-							hide = true;
-						}
+					}
+					else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
+						hide = true;
 					}
 				}
 			}
@@ -592,6 +605,36 @@ function filter(value, anno, filter, measurements) {
 
 function getRandom(max, min) {
 	return Math.floor(Math.random() * (max - min)) + min;
+}
+
+// returns true false depending on if array is mostly numbers
+function isNumbers(arr) {
+	var length = arr.length;
+	var nums = 0;
+	for (var i = 0; i < length; i++) {
+		if (parseInt(arr[i])) {
+			nums++;
+			if (nums >= length / 4) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// checks to see if there exists elements that are undefined, NULL, or NA in a range array
+function removeUndefined(arr) {
+	var length = arr.length;
+	var res = [];
+
+	for (var i = 0; i < length; i++) {
+		if (!isNaN(arr[i])) {
+			// remove NA from the list
+			res.push(parseInt(arr[i]));
+		}
+	}
+	res.sort((a,b) => {return a - b});
+	return res;
 }
 
 function sortAlphaNum(a,b) {

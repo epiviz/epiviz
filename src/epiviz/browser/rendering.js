@@ -142,7 +142,7 @@ function loadMeasurements(datasource, input) {
         var content = document.createElement('div');
         var form = document.createElement('div');
         var fields = document.createElement('div');
-        var sanitized = text.replace(/[^a-zA-Z0-9]/g, '');
+        var sanitized = text.replace(/[^a-zA-Z0-9_]/g, '');
         fTracker[sanitized] = text;
         values = [];
         var allCounts = {};
@@ -163,14 +163,18 @@ function loadMeasurements(datasource, input) {
         });
         values = values.sort(sortAlphaNum);
         // console.log(parseInt(values[getRandom(0, values.length - 1)]));
+        // check if the values are all numbers
         if (parseInt(values[getRandom(0, values.length - 1)]) && values.length > 5) {
             // console.log("values" + values.length);
-            filters[text] = {values: [], type: "range"};
+            // filter keys should be sanitized because ids are sanitized and used to index into the filter hash
+            filters[sanitized] = {values: [], type: "range", hideNa: false};
             var field = document.createElement('div');
             var range1 = document.createElement('div');
             var display1 = document.createElement('span');
             var cont1 = document.createElement('p');
             var cont2 = document.createElement('p');
+            var filterUndefined = removeUndefined(values);
+
             field.className = "field";
             field.width = "inherit";
             range1.className = "ui range"
@@ -180,9 +184,26 @@ function loadMeasurements(datasource, input) {
             field.appendChild(range1);
             cont1.appendChild(display1);
             field.appendChild(cont1);
-            ranges[range1.id] = values;
+            ranges[range1.id] = filterUndefined;
+            if (filterUndefined.length !== values.length) {
+                var checkbox = document.createElement('div');
+                var input = document.createElement('input');
+                var label = document.createElement('label');
+
+                input.type = "checkbox";
+                input.value = sanitized + "-NA";
+                label.innerHTML = "Hide NA values";
+
+                checkbox.className = "ui checkbox";
+                checkbox.id = "checkbox" + checkboxIndex;
+                checkbox.appendChild(input);
+                checkbox.appendChild(label);
+                field.appendChild(checkbox);
+                checkboxIndex++;
+            }
         } else {
-            filters[text] = {values: [], type: "normal"};
+            // filter keys should be sanitized because ids are sanitized and used to index into the filter hash
+            filters[sanitized] = {values: [], type: "normal", hideNa: false};
             fieldType = "category";
             values.forEach(function(anno) {
                 var field = document.createElement('div');
@@ -227,9 +248,9 @@ function loadMeasurements(datasource, input) {
     });
     for (var i = 0; i < checkboxIndex; i++) {
         $('#checkbox' + i).checkbox({
-
             onChecked: function() {
                 // $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) + parseInt($(this).parent().find("div.label").text()) );
+                // value, anno, filter, measurements
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], true, measurements);
             },
             onUnchecked: function() {
@@ -256,6 +277,11 @@ function loadMeasurements(datasource, input) {
                 $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
                 $('#' + ids).off('mouseup');
             });
+            $('#' + ids).on('mouseleave', function() {
+                // helps update the mouse event if you dragged past the end, should have some other method to keep drag of mouseevents though
+                $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
+                $('#' + ids).off('mouseleave');    
+            })
         });
     });
 
