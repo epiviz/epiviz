@@ -94,9 +94,9 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
   this._serveAvailableData(range, chartMeasurementsMap, dataReadyCallback);
 
   var requestRanges = [
-    range,
-    epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName(), Math.max(range.start() - range.width(), 0), range.start(), range.genome()),
-    new epiviz.datatypes.GenomicRange(range.seqName(), range.end(), range.width(), range.genome())
+    range
+    // epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName(), Math.max(range.start() - range.width(), 0), range.start(), range.genome()),
+    // new epiviz.datatypes.GenomicRange(range.seqName(), range.end(), range.width(), range.genome())
   ];
 
   /**
@@ -165,10 +165,28 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
 epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, chartRequestedRange, chartMeasurementsMap, request, range, measurement, rawData) {
 
   if (range) {
-    var genomicArray = measurement.type() == epiviz.measurements.Measurement.Type.RANGE ?
-      new epiviz.datatypes.GenomicRangeArray(measurement, range, rawData.globalStartIndex, rawData.values, rawData.useOffset) :
-      new epiviz.datatypes.FeatureValueArray(measurement, range, rawData.globalStartIndex, rawData.values);
-    this._mergeData(measurement, genomicArray);
+
+    if(measurement.type() == epiviz.measurements.Measurement.Type.RANGE) {
+      var genomicArray = new epiviz.datatypes.GenomicRangeArray(measurement, range, rawData.globalStartIndex, rawData.values, rawData.useOffset)
+      this._mergeData(measurement, genomicArray);
+    }
+    else {
+      var mrange = measurement.datasource();
+      delete rawData.rows.values.chr;
+      rawData.rows.values.end = null;
+      delete rawData.rows.values.metadata;
+      var rowData = new epiviz.datatypes.GenomicRangeArray(mrange, range, rawData.rows.globalStartIndex, rawData.rows.values, rawData.rows.useOffset);
+      this._mergeData(mrange, rowData);
+
+      var valData = new epiviz.datatypes.FeatureValueArray(measurement, range, rawData.values.globalStartIndex, rawData.values.values[measurement.id()]);
+      this._mergeData(measurement, valData);
+    }
+
+
+    // var genomicArray = measurement.type() == epiviz.measurements.Measurement.Type.RANGE ?
+    //   new epiviz.datatypes.GenomicRangeArray(measurement, range, rawData.globalStartIndex, rawData.values, rawData.useOffset) :
+    //   new epiviz.datatypes.FeatureValueArray(measurement, range, rawData.globalStartIndex, rawData.values);
+    // this._mergeData(measurement, genomicArray);
   }
 
   var computedMs = this._extractComputedMeasurements(chartMeasurementsMap);
@@ -267,12 +285,12 @@ epiviz.data.Cache.prototype._calcMeasurementNeededRanges = function(ranges, char
         var compMs = m.componentMeasurements();
         compMs.foreach(function(compM) {
           chartMeasurements.add(compM);
-          chartMeasurements.add(compM.datasource());
+          // chartMeasurements.add(compM.datasource());
         });
 
-        if (!m.isComputed()) {
-          chartMeasurements.add(m.datasource());
-        }
+        // if (!m.isComputed()) {
+        //   chartMeasurements.add(m.datasource());
+        // }
       });
     })(chartMeasurements);
 
