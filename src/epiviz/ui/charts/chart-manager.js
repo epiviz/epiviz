@@ -229,13 +229,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     chartMarkers
   );
 
-  chartProperties.customSettingsValues.title = "";
-
-  if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+  if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chartProperties.customSettingsValues.title == "") {
     chartProperties.customSettingsValues.title = visConfigSelection.datasourceGroup;
-  }
-  else if (chartTitle) {
-    // chartProperties.customSettingsValues.title = chartTitle;
   }
 
   var chart = chartType.createNew(id, container, chartProperties);
