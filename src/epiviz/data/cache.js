@@ -93,8 +93,10 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
   this._updateComputedMeasurementsData(computedMs);
   this._serveAvailableData(range, chartMeasurementsMap, dataReadyCallback);
 
+  var range_with_cache = new epiviz.datatypes.GenomicRange(range.seqName(), Math.max(range.start() - range.width(), 0), range.end() + range.width() - Math.max(range.start() - range.width(), 0), range.genome())
+
   var requestRanges = [
-    range
+    range_with_cache
     // epiviz.datatypes.GenomicRange.fromStartEnd(range.seqName(), Math.max(range.start() - range.width(), 0), range.start(), range.genome()),
     // new epiviz.datatypes.GenomicRange(range.seqName(), range.end(), range.width(), range.genome())
   ];
@@ -172,9 +174,11 @@ epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, c
     }
     else {
       var mrange = measurement.datasource();
-      delete rawData.rows.values.chr;
-      rawData.rows.values.end = null;
-      delete rawData.rows.values.metadata;
+      // delete rawData.rows.values.chr;
+      if(Object.keys(rawData.rows.values.metadata).length == 0) {
+        delete rawData.rows.values.metadata;
+      }
+      // rawData.rows.values.end = null;
       var rowData = new epiviz.datatypes.GenomicRangeArray(mrange, range, rawData.rows.globalStartIndex, rawData.rows.values, rawData.rows.useOffset);
       this._mergeData(mrange, rowData);
 
