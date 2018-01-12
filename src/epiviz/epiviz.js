@@ -575,12 +575,23 @@ epiviz.EpiViz.prototype._registerUiSearch = function() {
  */
 epiviz.EpiViz.prototype._registerChartRequestHierarchy = function() {
   var self = this;
+
   this._chartManager.onChartRequestHierarchy().addListener(new epiviz.events.EventListener(function(e) {
     var map = {};
     map[e.id] = e.args;
     self._dataManager.getHierarchy(map, function(chartId, data) {
-      self._chartManager.updateCharts(undefined, data, [chartId]);
-    })
+
+      var SunburstPlot;
+
+      for (var schartId in self._chartManager._charts) {
+          if (!self._chartManager._charts.hasOwnProperty(schartId)) { continue; }
+          if (self._chartManager._charts[schartId].type == "Sunburst") { 
+            SunburstPlot = schartId; 
+          } 
+        }
+
+      self._chartManager.updateCharts(undefined, data, [chartId, SunburstPlot]);
+    });
   }));
 };
 
@@ -1128,7 +1139,7 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
          * @returns {boolean}
          */
         function(chart) {
-          return chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE;
+          return chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chart.type != "Sunburst";
         });
 
       /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
