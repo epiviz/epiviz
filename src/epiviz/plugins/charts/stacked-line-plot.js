@@ -66,13 +66,14 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
 
   var groupBy = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.ROW_GROUP_BY];
   var useGroupBy = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.USE_GROUP_BY];
+  var orderBy = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.ORDER_BY];
 
   var self = this;
 
   var removeMarker = function() {
 
     for(var k=0; k < self._markers.length; k ++) {
-      if (self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS) {
+      if (self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS || self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS) {
         // remove existing groupby marker.
         var old_mId = self._markers[k].id(); 
         delete self._markersMap[old_mId];
@@ -123,7 +124,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   };
 
   if(useGroupBy) {
-    var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS, null, null, 'function(data){return null}', "function(m, data, preMarkResult) {return m.annotation()['" + groupBy + "'];}");
+    var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS, 
+      "group-anno", null, 'function(data){return null}', "function(m, data, preMarkResult) {return m.annotation()['" + groupBy + "'];}");
     var value = checkMarker(marker);
 
     //if(value != null) {
@@ -134,8 +136,15 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
     removeMarker();
   }
 
+  if(orderBy) {
+    var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS, 
+      "order-anno", null, 
+      'function(data){return null}', 
+      "function(m, data, preMarkResult) {var anno = m.annotation()['" + orderBy + "']; if(!isNaN(anno)) { return parseInt(anno); } else { return anno; }}");
+    var value = checkMarker(marker);
+  }
+
   transformPlotData();
-  
 };
 
 epiviz.plugins.charts.StackedLinePlot.prototype._drawPlot = function(range, data, slide, zoom) {
@@ -341,9 +350,6 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-
-
-
     });
 
   lines
@@ -427,7 +433,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.colorLabels = function() {
 
 epiviz.plugins.charts.StackedLinePlot.prototype.doHover = function(selectedObject) {
 
-    var hoverOpacity = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY];
+  var hoverOpacity = this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY];
 
 
   var itemsGroup = this._container.find('.items');
