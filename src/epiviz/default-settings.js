@@ -49,7 +49,8 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.PCAScatterPlotType',
     'epiviz.plugins.charts.PCoAScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
-    'epiviz.plugins.charts.FeatureScatterPlotType'
+    'epiviz.plugins.charts.FeatureScatterPlotType',
+    'epiviz.ui.charts.tree.SunburstType'
   ],
 
   // Chart default settings

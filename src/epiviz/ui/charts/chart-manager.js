@@ -739,10 +739,13 @@ epiviz.ui.charts.ChartManager.prototype._registerChartIcicleLocationChanges = fu
    var self = this;
 
    self.onChartIcicleLocationChanges().addListener(new epiviz.events.EventListener(function(e) {
-      if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
-        chart._updateLocation(e.args.start, e.args.width);
-        chart._drawAxes(chart._lastRoot);
-      }
+    if (chart.type == "Sunburst") {
+      chart._drawAxes(chart._lastRoot);
+    }
+    else if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+      chart._updateLocation(e.args.start, e.args.width);
+      chart._drawAxes(chart._lastRoot);
+    }
    }));
 }; 
 

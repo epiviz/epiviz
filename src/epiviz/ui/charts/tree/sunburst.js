@@ -19,9 +19,10 @@ goog.require('epiviz.ui.charts.VisEventArgs');
  */
 epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
 
-  epiviz.ui.charts.Visualization.call(this, id, container, properties);
-
+  // epiviz.ui.charts.Visualization.call(this, id, container, properties);
+  epiviz.ui.charts.tree.HierarchyVisualization.call(this, id, container, properties);
   // Sunburst specific
+  this.type = "Sunburst";
 
   /**
    * A D3 function used to partition a tree
@@ -132,7 +133,8 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.tree.Sunburst.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Visualization.prototype);
+// epiviz.ui.charts.tree.Sunburst.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.tree.HierarchyVisualization.prototype);
+epiviz.ui.charts.tree.Sunburst.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.tree.HierarchyVisualization.prototype);
 epiviz.ui.charts.tree.Sunburst.constructor = epiviz.ui.charts.tree.Sunburst;
 
 /**
@@ -140,7 +142,7 @@ epiviz.ui.charts.tree.Sunburst.constructor = epiviz.ui.charts.tree.Sunburst;
  * @protected
  */
 epiviz.ui.charts.tree.Sunburst.prototype._initialize = function() {
-  epiviz.ui.charts.Visualization.prototype._initialize.call(this);
+  epiviz.ui.charts.tree.HierarchyVisualization.prototype._initialize.call(this);
 
   this._radius = Math.min(this.width(), this.height()) * 0.5;
   this._y = d3.scale.pow().exponent(1.2)
@@ -153,7 +155,7 @@ epiviz.ui.charts.tree.Sunburst.prototype._initialize = function() {
  * @returns {Array.<epiviz.ui.charts.VisObject>}
  */
 epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
-  epiviz.ui.charts.Visualization.prototype.draw.call(this, root);
+  epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw.call(this, root);
 
   var self = this;
 
@@ -187,10 +189,10 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
   var width = this.width();
   var height = this.height();
 
-  var canvas = this._svg.select('.sunburst-canvas');
+  var canvas = this._svg.select('.Sunburst-canvas');
   if (canvas.empty()) {
     canvas = this._svg.append('g')
-      .attr('class', 'sunburst-canvas')
+      .attr('class', 'Sunburst-canvas')
       .attr('transform', sprintf('translate(%s,%s) rotate(180)', width * 0.5, height * 0.5));
   }
 

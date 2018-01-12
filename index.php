@@ -413,6 +413,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/feature-scatter-plot-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
+    <script src="src/epiviz/ui/charts/tree/sunburst-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
     <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
