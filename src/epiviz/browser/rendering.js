@@ -168,23 +168,57 @@ function loadMeasurements(datasource, input) {
             // console.log("values" + values.length);
             // filter keys should be sanitized because ids are sanitized and used to index into the filter hash
             filters[sanitized] = {values: [], type: "range", hideNa: false};
-            var field = document.createElement('div');
-            var range1 = document.createElement('div');
-            var display1 = document.createElement('span');
-            var cont1 = document.createElement('p');
-            var cont2 = document.createElement('p');
+            // var field = document.createElement('div');
+            // var range1 = document.createElement('div');
+            // var display1 = document.createElement('span');
+            // var cont1 = document.createElement('p');
+            // var cont2 = document.createElement('p');
             var filterUndefined = removeUndefined(values);
 
-            field.className = "field";
-            field.width = "inherit";
-            range1.className = "ui range"
-            range1.id = sanitized + "-range";
-            display1.id = sanitized + "-display";
+            // field.className = "field";
+            // field.width = "inherit";
+            // range1.className = "ui range"
+            // range1.id = sanitized + "-range";
+            // display1.id = sanitized + "-display";
+            // fields.appendChild(field);
+            // field.appendChild(range1);
+            // cont1.appendChild(display1);
+            // field.appendChild(cont1);
+
+            var field = document.createElement('div');
+            field.className = "ui mini"
+            var minInput = document.createElement('input');
+            minInput.type = "number";
+            minInput.className = "ui minInput";
+            minInput.placeholder = "min";
+            minInput.id = sanitized + "-min";
+            minInput.value = filterUndefined[0];
+            minInput.style.width = "60px";
+            var maxInput = document.createElement('input');
+            maxInput.type = "number";
+            maxInput.placeholder = "max";
+            maxInput.className = "ui maxInput";
+            maxInput.id = sanitized + "-max";
+            maxInput.value = filterUndefined[filterUndefined.length-1];
+            maxInput.style.width = "60px";
+
+            field.appendChild(minInput);
+
+            var span = document.createElement("span");
+            span.textContent = " - ";
+            field.appendChild(span);
+            field.appendChild(maxInput);
+
+            var button = document.createElement("button");
+            button.id = sanitized + "-filter";
+            button.textContent = "filter";
+            button.className = "mini ui button";
+            // field.appendChild(button);
+
             fields.appendChild(field);
-            field.appendChild(range1);
-            cont1.appendChild(display1);
-            field.appendChild(cont1);
-            ranges[range1.id] = filterUndefined;
+            ranges[sanitized] = ["#" + sanitized + "-filter", "#" + sanitized + "-min", "#" + sanitized + "-max"];
+            
+            // ranges[range1.id] = filterUndefined;
             if (filterUndefined.length !== values.length) {
                 var checkbox = document.createElement('div');
                 var input = document.createElement('input');
@@ -264,25 +298,41 @@ function loadMeasurements(datasource, input) {
     });
 
     Object.keys(ranges).forEach(function(ids) {
-        $('#' + ids).range({
-            start: ranges[ids][0],
-            values: [ranges[ids][0], ranges[ids][ranges[ids].length-1]],
-            step: 1,
-            onChange: function(min, max) {
-                $('#'+ ids.split('-')[0] + "-display").html("Min: " + min + " " + "Max:" + max);
-            }
+
+        // $(ranges[ids][0]).on("click", function() {
+        //     filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
+        //     fTracker[ids.split('-')[0]], true, measurements);
+        // });
+
+        $(ranges[ids][1]).change(function() {
+            filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
+            fTracker[ids.split('-')[0]], true, measurements);        
         });
-        $('#' + ids + " .thumb").on('mousedown', function() {
-            $('#' + ids).on('mouseup', function() {
-                $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
-                $('#' + ids).off('mouseup');
-            });
-            $('#' + ids).on('mouseleave', function() {
-                // helps update the mouse event if you dragged past the end, should have some other method to keep drag of mouseevents though
-                $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
-                $('#' + ids).off('mouseleave');    
-            })
+
+        $(ranges[ids][2]).change(function() {
+            filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
+            fTracker[ids.split('-')[0]], true, measurements);
         });
+
+        // $('#' + ids).range({
+        //     start: ranges[ids][0],
+        //     values: [ranges[ids][0], ranges[ids][ranges[ids].length-1]],
+        //     step: 1,
+        //     onChange: function(min, max) {
+        //         $('#'+ ids.split('-')[0] + "-display").html("Min: " + min + " " + "Max:" + max);
+        //     }
+        // });
+        // $('#' + ids + " .thumb").on('mousedown', function() {
+        //     $('#' + ids).on('mouseup', function() {
+        //         $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
+        //         $('#' + ids).off('mouseup');
+        //     });
+        //     $('#' + ids).on('mouseleave', function() {
+        //         // helps update the mouse event if you dragged past the end, should have some other method to keep drag of mouseevents though
+        //         $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
+        //         $('#' + ids).off('mouseleave');    
+        //     })
+        // });
     });
 
     $('.active.content').each(function(index) {
