@@ -73,14 +73,14 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   var removeMarker = function() {
 
     for(var k=0; k < self._markers.length; k ++) {
-      if (self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS || self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS) {
+      if (self._markers[k] && (self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS || self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS)) {
         // remove existing groupby marker.
         var old_mId = self._markers[k].id(); 
         delete self._markersMap[old_mId];
         delete self._markersIndices[old_mId];
         delete self._markers[k];
 
-        self._markers.length--;
+        self._markers.length = self._markers.length - 1;
       }
     }
   };
