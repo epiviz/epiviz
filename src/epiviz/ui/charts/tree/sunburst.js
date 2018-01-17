@@ -55,6 +55,8 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
    */
   this._y = null;
 
+  this._charWidth = 10;
+
   var self = this;
   /**
    * Generates an arc given a ui node
@@ -197,7 +199,7 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
   }
 
   if (!root) { return; }
-
+  
   var groups = canvas.selectAll('g')
     .data(this._uiData, function(d) { return d.id; });
 
@@ -211,6 +213,14 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
     .style('fill', function(d) { return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); })
     .on('mouseover', function(d) { self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); })
     .on('mouseout', function() { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
+  
+  this._uiData.forEach(function(d){
+      var arclength = d.dx * 2 * Math.PI * self._y(d.y + d.dy);
+      var maxChars = arclength / (self._charWidth + 4);
+      if (d.name.length > maxChars && d.dx != 0) {
+          d.name = (d.name).substring(0, Math.round(maxChars)) + "..";
+      }
+  });
 
   var newLabels = newGroups.append('text')
     .attr('class', 'unselectable-text node-label')
