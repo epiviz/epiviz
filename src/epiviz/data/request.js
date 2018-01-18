@@ -69,6 +69,7 @@ epiviz.data.Request.Action = {
   GET_CHART_SETTINGS: 'getChartSettings',
   SET_CHART_SETTINGS: 'setChartSettings',
   GET_AVAILABLE_CHARTS: 'getAvailableCharts',
+  SPLINES_SETTINGS: 'splinesSettings',
 
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
@@ -465,3 +466,17 @@ epiviz.data.Request.getFeatureData = function(measurementsByDatasource, chartSet
   });
 };
 
+
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.updateSplinesSettings = function(settings) {
+
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.SPLINES_SETTINGS,
+    settings: settings
+  });
+};

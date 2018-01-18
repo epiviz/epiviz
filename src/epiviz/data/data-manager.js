@@ -1127,3 +1127,24 @@ epiviz.data.DataManager.prototype._registerProviderGetAvailableCharts = function
         }));
   });
 };
+
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype.updateSplines = function(settings) {
+  var self = this;
+  this._dataProviderFactory.foreach(function(provider) {
+
+    if(provider.id().includes('websocket-')) {
+      provider.updateSplines(epiviz.data.Request.createRequest({
+            action: epiviz.data.Request.Action.SPLINES_SETTINGS,
+            settings: settings,
+      }),
+          function() {
+            //do nothing
+          }
+      );  
+    }
+  });
+};

@@ -145,6 +145,9 @@ epiviz.ui.ControlManager = function(config, chartFactory, chartManager, measurem
    * @private
    */
   this._zoomoutRatio = config.zoomoutRatio;
+
+
+  this._splinesSettings = new epiviz.events.Event();
 };
 
 /**
@@ -185,6 +188,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   this._initializeTutorials();
   this._initializeScreenshotMenu();
   this._initializeManifestUploadMenu();
+  this._initializeSplines();
 
   /*
    * Log in/out
@@ -1388,5 +1392,49 @@ epiviz.ui.ControlManager.prototype.updateLoadingScreen = function(e) {
       $("#okScreenApp").removeClass("disabled");
     }
   }
+};
+
+epiviz.ui.ControlManager.prototype._initializeSplines = function(e) {
+  var self = this;
+
+  var splinesButton = $('#splines-settings');
+
+  splinesButton.button({
+    text:true
+  })
+  .click( function() {
+
+    splinesButton.append(sprintf('<div id="splinesSettings" title="metavizr/splines Settings">' +
+    '<form id="splinesForm">' + 
+    '<label for="alpha">Alpha : </label>' +
+    '<input id="alpha" name="alpha" type="number">' +
+    '</form>' +
+    '</div>'));
+
+    splinesButton.find("#splinesSettings").dialog({
+      resizable: false,
+      modal: true,
+      title: "Splines settings (metavizr sessions)",
+      buttons: {
+        "save": function () {
+
+          // hide the dialog box from the UI so that its not in the screenshot
+          $(this).dialog('close');
+
+          // get form values
+          var values = {};
+          values["alpha"] = $("#alpha").val();
+
+          self._splinesSettings.notify({ splines: values});
+
+          $(this).dialog('destroy').remove();
+        },
+        "cancel": function () {
+          $(this).dialog('destroy').remove();
+        }
+      }
+    }).show();
+
+  });
 };
 

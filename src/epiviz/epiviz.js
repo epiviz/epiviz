@@ -106,6 +106,7 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerUiSearchWorkspaces();
   this._registerUiActiveWorkspaceChanged();
   this._registerUiSearch();
+  this._registerUISplinesSettings();
 
   this._registerChartRequestHierarchy();
   this._registerChartPropagateHierarchySelection();
@@ -1224,4 +1225,16 @@ epiviz.EpiViz.prototype._registerLoadingAppScreen = function() {
       self._controlManager.updateLoadingScreen(e);
     }
   ));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerUISplinesSettings = function() {
+  var self = this;
+  this._controlManager._splinesSettings.addListener(new epiviz.events.EventListener(
+    function(e) {
+        self._dataManager.updateSplines(e.splines);
+      }
+    ));
 };
