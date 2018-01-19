@@ -1142,7 +1142,9 @@ epiviz.data.DataManager.prototype.updateSplines = function(settings) {
             settings: settings,
       }),
           function() {
-            //do nothing
+            provider.onRequestRedraw().notify({
+              result: new epiviz.events.EventResult()
+            });
           }
       );  
     }
