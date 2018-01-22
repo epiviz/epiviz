@@ -395,7 +395,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .style('opacity', 0);
 
   var newIcons = newItems.append('svg:foreignObject')
-    .attr('class', 'icon-container')
+    .attr('class', function(d) { return 'icon-container ' + self.id() + '-icon-' + d.id;} )
     .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
     .attr('width', this._iconSize)
     .attr('height', this._iconSize)
@@ -662,7 +662,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   if(this._firstRun == 0) {
     this._firstRun++;
-    // this.selectLevel(this.selCutLevel);
 
     self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
       self.id(),
@@ -671,6 +670,21 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
     this.firePropagateHierarchyChanges();
   }
+
+  setTimeout(function() {
+      if(root.children[0].children.length == 1) {
+        $("." + self.id() + '-icon-' + root.children[0].id + " span").click();
+        (function blink() { 
+          $(".nodeselection-expand").fadeOut(500).fadeIn(500, blink); 
+        })();
+     
+      $("body").click(function(){
+        d3.selectAll(".nodeselection-itemcontainer").remove();
+        d3.selectAll(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-text").remove();
+      });
+    }
+  }, 3000);
 
   return uiData;
 };
