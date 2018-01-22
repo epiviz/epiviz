@@ -68,12 +68,10 @@ function rightAccordion(measurements) {
             //point, source, and index to allow for easy indexing in measurements list
             checkbox.id = "item-" + sanitized + "-" + index + "-" + source;
             input.type = "checkbox";
-            //input.id = "item-" + point.id + "-" + source;
             input.name = "small";
             span1.innerHTML = point.id;
 
             label.appendChild(span1);
-            // fields.appendChild(field);
             field.appendChild(checkbox);
             checkbox.appendChild(input);
             checkbox.appendChild(label);
@@ -98,12 +96,9 @@ function rightAccordion(measurements) {
         title.appendChild(icon);
         titlecheckbox.appendChild(checkboxinput);
         titlecheckbox.appendChild(checkboxlabel);
-        // content.appendChild(fields);
 
         table.appendChild(tableBody);
         content.appendChild(table);
-
-        // $(table).tablesort();
 
         $('#rightmenu').append(item);
         $(titlecheckbox).unbind("click");
@@ -129,9 +124,6 @@ function loadMeasurements(datasource, input) {
     var measurements = {};
     var fTracker= {};
     measurements[datasource] = input;
-    // while(i < input.length && measurements[datasource][i].annotation === null) {
-    //     i++;
-    // }
     measurements[datasource] = _.sortBy(measurements[datasource], [function(o) {return o.id}])
     annotations = Object.keys(measurements[datasource][i].annotation);
     annotations = annotations.sort(sortAlphaNum);
@@ -162,28 +154,11 @@ function loadMeasurements(datasource, input) {
             });
         });
         values = values.sort(sortAlphaNum);
-        // console.log(parseInt(values[getRandom(0, values.length - 1)]));
         // check if the values are all numbers
         if (parseInt(values[getRandom(0, values.length - 1)]) && values.length > 5) {
-            // console.log("values" + values.length);
             // filter keys should be sanitized because ids are sanitized and used to index into the filter hash
             filters[sanitized] = {values: [], type: "range", hideNa: false};
-            // var field = document.createElement('div');
-            // var range1 = document.createElement('div');
-            // var display1 = document.createElement('span');
-            // var cont1 = document.createElement('p');
-            // var cont2 = document.createElement('p');
             var filterUndefined = removeUndefined(values);
-
-            // field.className = "field";
-            // field.width = "inherit";
-            // range1.className = "ui range"
-            // range1.id = sanitized + "-range";
-            // display1.id = sanitized + "-display";
-            // fields.appendChild(field);
-            // field.appendChild(range1);
-            // cont1.appendChild(display1);
-            // field.appendChild(cont1);
 
             var field = document.createElement('div');
             field.className = "ui mini"
@@ -213,12 +188,10 @@ function loadMeasurements(datasource, input) {
             button.id = sanitized + "-filter";
             button.textContent = "filter";
             button.className = "mini ui button";
-            // field.appendChild(button);
 
             fields.appendChild(field);
             ranges[sanitized] = ["#" + sanitized + "-filter", "#" + sanitized + "-min", "#" + sanitized + "-max"];
             
-            // ranges[range1.id] = filterUndefined;
             if (filterUndefined.length !== values.length) {
                 var checkbox = document.createElement('div');
                 var input = document.createElement('input');
@@ -262,13 +235,8 @@ function loadMeasurements(datasource, input) {
         item.className = "item";
         item.id = sanitized;
         title.className = "title";
-        // if(fieldType == "category") {
-        //     title.innerHTML = text + "<div class=\"ui mini circular horizontal label\"> filtered: <span class=\"data-count\">0</span> of " + fieldCount + "</div>";
-        // }
-        // else {
-            title.innerHTML = text;
+        title.innerHTML = text;
 
-        // }
         icon.className = "dropdown icon";
         content.className = "active content";
         form.className = "ui form";
@@ -283,12 +251,10 @@ function loadMeasurements(datasource, input) {
     for (var i = 0; i < checkboxIndex; i++) {
         $('#checkbox' + i).checkbox({
             onChecked: function() {
-                // $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) + parseInt($(this).parent().find("div.label").text()) );
                 // value, anno, filter, measurements
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], true, measurements);
             },
             onUnchecked: function() {
-                // $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) - parseInt($(this).parent().find("div.label").text()) );
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], false, measurements);
             }
         });
@@ -299,11 +265,6 @@ function loadMeasurements(datasource, input) {
 
     Object.keys(ranges).forEach(function(ids) {
 
-        // $(ranges[ids][0]).on("click", function() {
-        //     filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
-        //     fTracker[ids.split('-')[0]], true, measurements);
-        // });
-
         $(ranges[ids][1]).change(function() {
             filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
             fTracker[ids.split('-')[0]], true, measurements);        
@@ -313,26 +274,6 @@ function loadMeasurements(datasource, input) {
             filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
             fTracker[ids.split('-')[0]], true, measurements);
         });
-
-        // $('#' + ids).range({
-        //     start: ranges[ids][0],
-        //     values: [ranges[ids][0], ranges[ids][ranges[ids].length-1]],
-        //     step: 1,
-        //     onChange: function(min, max) {
-        //         $('#'+ ids.split('-')[0] + "-display").html("Min: " + min + " " + "Max:" + max);
-        //     }
-        // });
-        // $('#' + ids + " .thumb").on('mousedown', function() {
-        //     $('#' + ids).on('mouseup', function() {
-        //         $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
-        //         $('#' + ids).off('mouseup');
-        //     });
-        //     $('#' + ids).on('mouseleave', function() {
-        //         // helps update the mouse event if you dragged past the end, should have some other method to keep drag of mouseevents though
-        //         $('#' + ids).range('get value', function(val) {filter(val, fTracker[ids.split('-')[0]], true, measurements)});
-        //         $('#' + ids).off('mouseleave');    
-        //     })
-        // });
     });
 
     $('.active.content').each(function(index) {

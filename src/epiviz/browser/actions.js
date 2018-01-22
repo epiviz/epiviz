@@ -63,16 +63,10 @@ function initialize_dropdown(source) {
 			selectSamples();
 		}
 	});
-	$('#sample-size').range({
-		start: selectionCount,
-		min: 0,
-		max: 100,
-		step: 1,
-		value: selectionCount,
-		onChange: function(min, max) {
-			selectionCount = min;
-			$('#sampleSizeValue').text(min + "% samples");
-		}
+
+	$('#sample-size').change(function() {
+		selectionCount = parseInt($('#sample-size').val());
+		$('#sampleSizeValue').text(selectionCount + "% samples");  
 	});
 }
 
@@ -187,8 +181,8 @@ function showModal(source, input, cb) {
 						  	'<span class="text" id="sampleSizeValue">0%: samples</span>'+
 						  	'<div class="menu">'+
 							  '<div class="item">'+
-								'<div class="ui range disabled inline" style="width: 75px;"id="sample-size"></div>'+
-								'</div>'+
+							  	'<input class="ui" type="number" id="sample-size" value="0">'+
+							  '</div>'+
 						  	'</div>'+
 						'</div>'+
 					'</div>'+
@@ -235,7 +229,6 @@ function showModal(source, input, cb) {
 			approve: '.ui.primary.button'
 		},
 		onDeny: function() {
-			// $('#sourcemodal').modal('show');
 			$('#leftmenu').empty();
 			$('#rightmenu').empty();
 			$('#resultmodal').remove();
@@ -289,7 +282,6 @@ function initialize(sources) {
 		'</div>'+
 	'</div>';
 	$('body').append(form);
-	// sources = sources.sort(sortAlphaNum);
 	var fields = document.createElement('div');
 	fields.className = "grouped fields";
 
@@ -375,7 +367,6 @@ function initialize(sources) {
 			old_ds = value;
 		});
 	});
-	// $('#form').append(fields);
 	$('#form').form();
 }
 
@@ -384,7 +375,6 @@ function attachActions(measurements) {
 	$('#rightmenu .ui.checkbox input[type="checkbox"]').click(function(e) {
 		var split = this.id.split('-');
 		split[1] = _.join(_.slice(split, 1), separator="-");
-		// console.log('source clicked');
 		//this means that you selected the measurement checkbox
 		if (split[0] === "source") {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
@@ -667,9 +657,7 @@ function storeMeasurement(measurements, cb) {
 	$('#resultTable').empty();
 	$('#sourcemodal').remove();
 	cb(store[name], filters);
-	// resultTable(name, new_list, cb);
 }
-
 
 function resultTable(name, list, cb) {
 	$('#resultTable').append()
