@@ -188,7 +188,7 @@ function showModal(source, input, cb) {
 					'</div>'+
 				'</div>'+
 				'<div id="leftRightRow" class="row">'+
-					'<div class="four wide column">'+
+					'<div id="annoMenu" class="four wide column">'+
 						'<div id="leftmenu" class="ui vertical scrolling accordion menu"> '+
 						'</div>'+
 					'</div>'+
