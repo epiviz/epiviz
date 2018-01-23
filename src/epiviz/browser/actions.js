@@ -190,6 +190,13 @@ function showModal(source, input, cb) {
 				'<div id="leftRightRow" class="row">'+
 					'<div id="annoMenu" class="four wide column">'+
 						'<div id="leftmenu" class="ui vertical scrolling accordion menu"> '+
+							'<div id="annoSearch" class="ui search"> '+
+								'<div class="ui icon input">'+
+									'<input class="prompt" type="text" placeholder="Search Annotations"> '+
+									'<i class="search icon"></i>'+
+								'</div>'+
+  								'<div id="annoSearchResults" class="results"></div>'+
+							'</div>'+
 						'</div>'+
 					'</div>'+
 					'<div class="twelve wide column">'+

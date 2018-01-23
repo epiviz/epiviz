@@ -35,6 +35,12 @@
     word-wrap: break-word;
 }
 
+#leftmenu #annoSearch .icon.input {
+    margin: 5px;
+    width: 95%;
+    height: 30px;
+}
+
 #rightmenu {
     /*height: 335px;*/
     height: 100%;

@@ -123,6 +123,7 @@ function loadMeasurements(datasource, input) {
     var i = 0;
     var measurements = {};
     var fTracker= {};
+    var searchList = [];
     measurements[datasource] = input;
     measurements[datasource] = _.sortBy(measurements[datasource], [function(o) {return o.id}])
     annotations = Object.keys(measurements[datasource][i].annotation);
@@ -247,7 +248,20 @@ function loadMeasurements(datasource, input) {
         title.appendChild(icon);
         content.appendChild(fields);
         $('#leftmenu').append(item);
+
+        searchList.push({title: text, selector: item});
     });
+    
+    $('.ui.search').search({
+        minCharacters: 0,
+        source: searchList,
+        maxResults: searchList.length,
+        cache: false,
+        onResults: (results) => {searchFilter(results.results, searchList)},
+    });
+
+    $('#annoSearchResults').remove();
+
     for (var i = 0; i < checkboxIndex; i++) {
         $('#checkbox' + i).checkbox({
             onChecked: function() {
@@ -282,3 +296,14 @@ function loadMeasurements(datasource, input) {
     rightAccordion(measurements);
     attachActions(measurements);
 }
+
+function searchFilter(results, searchList) {
+    var diff = _.differenceBy(searchList, results, "title")
+    _.forEach(diff, function(anno) {
+        $(anno.selector).hide();
+    });
+    _.forEach(results, function(anno) {
+        $(anno.selector).show();
+    })
+}
+
