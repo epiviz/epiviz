@@ -194,7 +194,7 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
   var canvas = this._svg.select('.Sunburst-canvas');
   if (canvas.empty()) {
     canvas = this._svg.append('g')
-      .attr('class', 'Sunburst-canvas')
+      .attr('class', 'items Sunburst-canvas')
       .attr('transform', sprintf('translate(%s,%s) rotate(180)', width * 0.5, height * 0.5));
   }
 
@@ -205,7 +205,8 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
 
   var newGroups = groups
     .enter().append('g')
-    .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
+    .attr("class", "item");
+    // .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
 
   var newPaths = newGroups.append('path')
     .attr('id', function(d) { return self.id() + '-' + d.id; })
@@ -380,4 +381,114 @@ epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelTransform = function(node) {
 epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelStartOffset = function(node) {
   var py = this._y(node.y + node.dy);
   return py * this._x(node.dx / 2);
+};
+
+
+/**
+ * @param {epiviz.ui.charts.VisObject} selectedObject
+ */
+epiviz.ui.charts.tree.Sunburst.prototype.doHover = function(selectedObject) {
+
+  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.SunburstType.CustomSettings.HOVER_OPACITY];
+
+    var self = this;
+    if (this._dragging) {
+        return;
+    }
+
+    var itemsGroup = this._svg.select('.items');
+    itemsGroup.classed('unhovered', true);
+    var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+        if (d instanceof epiviz.ui.charts.tree.UiNode) {
+            var isOverlap = selectedObject.overlapsWith(d);
+
+            if (isOverlap && d.selectionType == 2) {
+                self.hoverHierarchy(d);
+            }
+
+            return isOverlap;
+        }
+        return false;
+    });
+    selectItems.classed('hovered', true);
+    itemsGroup.selectAll('.item').sort(function(d1, d2) {
+        if (d1 instanceof epiviz.ui.charts.tree.UiNode) {
+            return selectedObject.overlapsWith(d1) ? 1 : -1;
+        }
+        return -1;
+
+    });
+
+    if (selectedObject instanceof epiviz.ui.charts.tree.UiNode) {
+        this.hoverHierarchy(selectedObject);
+    }
+
+      this._svg.selectAll(".item")
+      .style("opacity", 1 - hoverOpacity);
+
+      this._svg.selectAll(".item.hovered")
+      .style("opacity", hoverOpacity);
+};
+
+/**
+ */
+epiviz.ui.charts.tree.Sunburst.prototype.doUnhover = function() {
+
+  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.SunburstType.CustomSettings.HOVER_OPACITY];
+
+  if (this._dragging) { return; }
+  this._svg.select('.items').classed('unhovered', false);
+  this._svg.select('.items').selectAll('.item').classed('hovered', false);
+
+      this._svg.selectAll(".item.hovered")
+      .style("opacity", 1);
+
+      this._svg.selectAll(".item")
+      .style("opacity", 1);
+};
+
+
+epiviz.ui.charts.tree.Sunburst.prototype.hoverHierarchy = function(selectedObject) {
+
+  var self = this;
+  var itemsGroup = this._svg.select('.items');
+
+  // for all children and parents set class hovered = true;
+  function setChildrenHovered(nes) {
+      var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+          if (d instanceof epiviz.ui.charts.tree.UiNode) {
+            return nes.overlapsWith(d);
+          }
+          return false;
+      });
+
+      selectItems.classed('hovered', true);
+      if (nes.children.length == 0) {
+          return;
+      } else {
+          nes.children.forEach(function(n) {
+              setChildrenHovered(n);
+          });
+      }
+  }
+
+  setChildrenHovered(selectedObject);
+
+  function setParentHovered(nes) {
+      var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+          if (d instanceof epiviz.ui.charts.tree.UiNode) {
+              return nes.overlapsWith(d);
+          }
+          return false;
+      });
+
+      selectItems.classed('hovered', true);
+      if (nes.parent == null) {
+          return;
+      } else {
+          setParentHovered(nes.parent);
+      }
+  }
+  setParentHovered(selectedObject);
+
 };

@@ -98,4 +98,10 @@ epiviz.ui.charts.tree.SunburstType.prototype.customSettingsDefs = function() {
 /**
  * @enum {string}
  */
-epiviz.ui.charts.tree.SunburstType.CustomSettings = {};
+epiviz.ui.charts.tree.SunburstType.CustomSettings = {
+  HOVER_OPACITY: 'hoverOpacity',
+  AGG_LEVEL: 'aggLevel',
+  NODE_SEL: 'nodeSel',
+  ICICLE_ROOT: 'icicleRoot',
+  AUTO_PROPAGATE: 'icicleAutoPropagate'
+};
