@@ -211,7 +211,10 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
   var newPaths = newGroups.append('path')
     .attr('id', function(d) { return self.id() + '-' + d.id; })
     .attr('class', 'node-arc')
-    .style('fill', function(d) { return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); })
+    .style('fill', function(d) { 
+      // return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); 
+      return self.colors().getByKey(d.taxonomy);
+    })
     .on('mouseover', function(d) { self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); })
     .on('mouseout', function() { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
   
