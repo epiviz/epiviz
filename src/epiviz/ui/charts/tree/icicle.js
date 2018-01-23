@@ -434,7 +434,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         edis = "disabled";
       }
 
-      var v=17; h=17;
+      var v=17; h=23;
       if(Math.max(0, self._xScale(d.x + d.dx) - self._xScale(d.x) - 2 * self._nodeBorder) < 40) {
         h = 0;
       }
@@ -454,15 +454,16 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       .attr("class", "nodeselection-container")
       .attr('cx', function(d) { return posX + self._iconSize * 0.5; })
       .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
-      .attr('r', self._iconSize * 0.5)
+      .attr('r', self._iconSize * 0.7)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select(".nodeselection-itemcontainer").append("text")
-      .text("R")
-      .attr("class", "nodeselection-text nodeselection-remove " + rdis)
-      .attr('x', posX + self._iconSize * 0.5)
-      .attr('y', poxY - 2)
+      var fObj = d3.select(".nodeselection-itemcontainer").append('svg:foreignObject')
+      .attr('class', "nodeselection-text nodeselection-remove " + rdis)
+      .attr('x', posX)
+      .attr('y', poxY - 15)
+      .attr("height", self._iconSize)
+      .attr("width", self._iconSize)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -486,19 +487,31 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         return "black";
       });
 
+      fObj.append('xhtml:span')
+      .attr('class', 'unselectable-text icon')
+      .attr("fill-opacity", .5)
+      .style('color', function(d) {
+        if(rdis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
+      });
+
       d3.select(".nodeselection-itemcontainer").append("circle")
       .attr("class", "nodeselection-container")
       .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + h; })
       .attr('cy', function(d) { return (poxY - self._iconSize * 0.5) - v; })
-      .attr('r', self._iconSize * 0.5)
+      .attr('r', self._iconSize * 0.7)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select(".nodeselection-itemcontainer").append("text")
-      .text("A")
-      .attr("class", "nodeselection-text nodeselection-aggregate " + adis)
-      .attr('x', posX + h + self._iconSize * 0.5)
-      .attr('y', poxY - v - 2)
+      var fObj = d3.select(".nodeselection-itemcontainer").append('svg:foreignObject')
+      .attr('class', "nodeselection-text nodeselection-aggregate " + adis)
+      .attr('x', posX + h)
+      .attr('y', poxY - v - 15)
+      .attr("height", self._iconSize)
+      .attr("width", self._iconSize)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -522,19 +535,31 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         return "black";
       });
 
+      fObj.append('xhtml:span')
+      .attr('class', 'unselectable-text icon')
+      .attr("fill-opacity", .5)
+      .style('color', function(d) {
+        if(adis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
+      });
+
       d3.select(".nodeselection-itemcontainer").append("circle")
       .attr("class", "nodeselection-container")
       .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + (2 * h); })
       .attr('cy', function(d) { return (poxY - self._iconSize * 0.5) - (2 * v); })
-      .attr('r', self._iconSize * 0.5)
+      .attr('r', self._iconSize * 0.7)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select(".nodeselection-itemcontainer").append("text")
-      .text("E")
-      .attr("class", "nodeselection-text nodeselection-expand " + edis)
-      .attr('x', posX + (2 * h) + self._iconSize * 0.5)
-      .attr('y', poxY - (2 * v) - 2)
+      var fObj = d3.select(".nodeselection-itemcontainer").append('svg:foreignObject')
+      .attr('class', "nodeselection-text nodeselection-expand " + edis)
+      .attr('x', posX + (2 * h))
+      .attr('y', poxY - (2 * v) - 2 - 13)
+      .attr("height", self._iconSize)
+      .attr("width", self._iconSize)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -551,6 +576,17 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         d3.selectAll(".nodeselection-text").remove();
       })
       .attr("fill", function(d) {
+        if(edis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
+      });
+
+      fObj.append('xhtml:span')
+      .attr('class', 'unselectable-text icon')
+      .attr("fill-opacity", .5)
+      .style('color', function(d) {
         if(edis == "disabled") {
           return "gray";          
         }
@@ -678,13 +714,14 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
           $(".nodeselection-expand").fadeOut(500).fadeIn(500, blink); 
         })();
      
-      $("body").click(function(){
+      $("body").click(function(e){
+        e.stopPropagation();
         d3.selectAll(".nodeselection-itemcontainer").remove();
         d3.selectAll(".nodeselection-container").remove();
         d3.selectAll(".nodeselection-text").remove();
       });
     }
-  }, 3000);
+  }, 1000);
 
   return uiData;
 };

@@ -214,3 +214,19 @@ text {
     cursor: context-menu;
 }
 
+.icicle .nodeselection-remove .icon::before {
+    content: "\f379";
+}
+
+.icicle .nodeselection-aggregate .icon::before {
+    content: "\f3b3";
+}
+
+.icicle .nodeselection-expand .icon::before {
+    content: "\f3b2";
+    /*content: '\e900';*/
+}
+
+.icicle .custom-select .icon::before {
+    content: "\f3b4";
+}
