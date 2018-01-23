@@ -405,10 +405,6 @@ tfoot th input { width: 80% }
   color: white;
 }
 
-#sourcemodal {
-  width: 800px;
-}
-
 #sourcemodal .content {
   max-height: 400px;
   overflow: auto;

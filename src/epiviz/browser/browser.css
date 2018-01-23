@@ -9,8 +9,7 @@
 }
 
 #sourcemodal {
-    width: auto;
-    top:40%;
+    /*top:40%;*/
     /*left: 60%;*/
 }
 
@@ -29,6 +28,10 @@
 #leftRightRow #annoMenu {
     overflow: auto;
     padding-right: 0px;
+}
+
+#leftmenu {
+    width: 100%;
 }
 
 #leftmenu .item .title{
