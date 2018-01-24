@@ -200,12 +200,16 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
 
   if (!root) { return; }
   
+  
+  canvas.selectAll('g').remove();
+    
   var groups = canvas.selectAll('g')
     .data(this._uiData, function(d) { return d.id; });
 
   var newGroups = groups
     .enter().append('g')
-    .attr("class", "item");
+    .attr('id', function(d) { return self.id() + '-' + d.id + '-parent'; })
+    .attr("class", "item")
     // .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
 
   var newPaths = newGroups.append('path')
@@ -215,16 +219,25 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
       // return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); 
       return self.colors().getByKey(d.taxonomy);
     })
-    .on('mouseover', function(d) { self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); })
-    .on('mouseout', function() { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
-  
-  this._uiData.forEach(function(d){
+    .on('mouseover', function(d) { 
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
       var arclength = d.dx * 2 * Math.PI * self._y(d.y + d.dy);
       var maxChars = arclength / (self._charWidth + 4);
       if (d.name.length > maxChars && d.dx != 0) {
-          d.name = (d.name).substring(0, Math.round(maxChars)) + "..";
+        d3.select('#' + self.id() + '-' + d.id + '-parent').append("text")
+          .attr("class", "hoverText")
+          .text(d.name)
+          .attr("x", self._y(d.y + d.dy) * (self._x(d.dx/2)) + 2 * Math.PI * d.dx)
+          .attr("y", self._y(d.y))
+          .attr('transform', sprintf('rotate(180)'));
       }
-  });
+    })
+    .on('mouseout', function() { 
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); 
+      d3.selectAll(".hoverText").remove();
+    });
+
+  newGroups.selectAll('text').remove();
 
   var newLabels = newGroups.append('text')
     .attr('class', 'unselectable-text node-label')
@@ -233,7 +246,16 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
     .attr("dx", "6") // margin
     .attr("dy", ".35em") // vertical-align
     .attr('startOffset', 20)
-    .text(function(d) { return d.name; });
+    .text(function(d) { 
+      var arclength = d.dx * 2 * Math.PI * self._y(d.y + d.dy);
+      var maxChars = arclength / (self._charWidth + 4);
+      if (d.name.length > maxChars && d.dx != 0) {
+          return d.name.substring(0, Math.round(maxChars)) + "..";
+      }
+      else{
+        return d.name;
+      }
+    });
 
   canvas.selectAll('g').selectAll('path')
     .transition().duration(this._animationDelay)
