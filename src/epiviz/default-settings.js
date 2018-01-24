@@ -219,10 +219,10 @@ epiviz.Config.SETTINGS = {
       colLabel: 'label'
     },
     'epiviz.plugins.charts.PCAScatterPlot': {
-      xMin: -2,
-      xMax: 2,
-      yMin: -2,
-      yMax: 2
+      xMin: "default",
+      xMax: "default",
+      yMin: "default",
+      yMax: "default"
     },
     'epiviz.plugins.charts.PoCAScatterPlot': {
       xMin: "default",
