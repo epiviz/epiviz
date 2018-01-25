@@ -43,8 +43,8 @@ function initialize_dropdown(source) {
 		}
 	});
 
-	$("#autoClickSelect").click(function() {
-		if($("#sample-type").hasClass("disabled")) {
+	$("#autoClickSelect").click(function(e) {
+		if($("#sample-type").hasClass("disabled") && e.target.parentNode.id != "select-type" && e.target.parentNode.parentNode.id != "select-type") {
 			$("#select-type").dropdown("set selected", "Auto");
 		}
 	});	
@@ -64,7 +64,7 @@ function initialize_dropdown(source) {
 		}
 	});
 
-	$('#sample-size').change(function() {
+	$('#sample-size').change(function(e) {
 		selectionCount = parseInt($('#sample-size').val());
 		$('#sampleSizeValue').text(selectionCount + "% samples");  
 	});
@@ -169,21 +169,21 @@ function showModal(source, input, cb) {
 						'</div>'+
 						'select: '+
 						'<div class="ui disabled compact selection dropdown" id="sample-type">'+
-						  	'<i class="dropdown icon"></i>'+
-						  	'<span class="text">Random</span>'+
-						  	'<div class="menu">'+
-						    	'<div class="item" data-value="1">Random</div>'+
-						    	'<div class="item" data-value="0">Top</div>'+
-						  	'</div>'+
+							'<i class="dropdown icon"></i>'+
+							'<span class="text">Random</span>'+
+							'<div class="menu">'+
+								'<div class="item" data-value="1">Random</div>'+
+								'<div class="item" data-value="0">Top</div>'+
+							'</div>'+
 						'</div>'+
 						'<div class="ui disabled compact dropdown" id="sample-size-dropdown">'+
-						  	'<i class="dropdown icon"></i>'+
-						  	'<span class="text" id="sampleSizeValue">0%: samples</span>'+
-						  	'<div class="menu">'+
-							  '<div class="item">'+
-							  	'<input class="ui" type="number" id="sample-size" value="0">'+
-							  '</div>'+
-						  	'</div>'+
+							'<i class="dropdown icon"></i>'+
+							'<span class="text" id="sampleSizeValue">0%: samples</span>'+
+							'<div class="menu">'+
+							'<div class="item">'+
+								'<input class="ui" type="number" id="sample-size" value="0">'+
+							'</div>'+
+							'</div>'+
 						'</div>'+
 					'</div>'+
 				'</div>'+
