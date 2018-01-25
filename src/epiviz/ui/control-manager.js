@@ -643,7 +643,7 @@ epiviz.ui.ControlManager.prototype._initializeChartMenus = function() {
             type: chartType,
             visConfigSelection: vconfig
           });
-
+          visMenu.hide();
         }
         else {
 
