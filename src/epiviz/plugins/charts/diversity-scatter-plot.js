@@ -160,9 +160,24 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
     var maxX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 
     // if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
-    if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
+    // if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
     // if (maxX == CustomSetting.DEFAULT) { maxX = this._measurementsX[0].maxValue(); }
-    if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
+    // if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
+
+    var minYdata = data[0][dimy];
+    var maxYdata = data[0][dimy];
+
+    data.forEach(function(m){
+        if(m[dimy] < minYdata){
+            minYdata = m[dimy];
+        }
+        if(m[dimy] > maxYdata){
+            maxYdata = m[dimy];
+        }
+    });
+
+    if (minY == CustomSetting.DEFAULT) { minY = minYdata - 1; }
+    if (maxY == CustomSetting.DEFAULT) { maxY = maxYdata + 1; }
 
     var allValues = []
     data.forEach(function(m) { allValues.push(m[dimx]);});
