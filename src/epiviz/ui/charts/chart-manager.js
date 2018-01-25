@@ -372,6 +372,7 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
       chart.transformData(range, data).done(function() {
         // No need to call with arguments, since transformData will set the lastRange and lastData values
         chart.draw();
+        chart._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(chart.id()));
       });
     })(chart);
   }
@@ -425,7 +426,7 @@ epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId, chartF
   }
   for (var id in this._charts) {
     if (!this._charts.hasOwnProperty(id)) { continue; }
-    if (!chartFilter || !chartFilter[this._charts[id]]) { continue; }
+    if (!chartFilter || !chartFilter(this._charts[id])) { continue; }
     this._charts[id].onDataWaitStart().notify(new epiviz.ui.charts.VisEventArgs(id));
   }
 };

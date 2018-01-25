@@ -203,6 +203,7 @@ epiviz.EpiViz.prototype.config = function() {
 epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, chartProperties, chartTitle) {
   chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties, chartTitle);
   var self = this;
+  this._chartManager.dataWaitStart(chartId);
   // TODO: Maybe later implement hierarchical display type (see display-type.js for the start of the idea)
   if (type.typeName() == 'epiviz.plugins.charts.PCAScatterPlot'){
     var range = null;
@@ -261,7 +262,7 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
   } 
   else {
     var range = this._workspaceManager.activeWorkspace().range();
-    this._chartManager.dataWaitStart(chartId);
+    // this._chartManager.dataWaitStart(chartId);
     var chartMeasurementsMap = {};
     chartMeasurementsMap[chartId] = visConfigSelection.measurements;
     this._dataManager.getData(range, chartMeasurementsMap,
