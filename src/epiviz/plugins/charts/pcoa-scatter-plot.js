@@ -154,10 +154,30 @@ epiviz.plugins.charts.PCoAScatterPlot.prototype._drawCircles = function(data, di
 
     var colorbylabel = this.customSettingsValues()[epiviz.plugins.charts.PCoAScatterPlotType.CustomSettings.COLOR_BY];
 
-    if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
-    if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
-    if (maxX == CustomSetting.DEFAULT) { maxX = this._measurementsX[0].maxValue(); }
-    if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
+    var minXdata = data[0][dimx];
+    var maxXdata = data[0][dimx];
+    var minYdata = data[0][dimy];
+    var maxYdata = data[0][dimy];
+    
+    data.forEach(function(m){
+        if(m[dimy] < minYdata){
+            minYdata = m[dimy];
+        }
+        if(m[dimy] > maxYdata){
+            maxYdata = m[dimy];
+        }
+        if(m[dimx] < minXdata){
+            minXdata = m[dimx];
+        }
+        if(m[dimx] > maxXdata){
+            maxXdata = m[dimx];
+        }
+    });
+
+    if (minX == CustomSetting.DEFAULT) { minX = minXdata - .1; }
+    if (minY == CustomSetting.DEFAULT) { minY = minYdata - .1; }
+    if (maxX == CustomSetting.DEFAULT) { maxX = maxXdata + .1; }
+    if (maxY == CustomSetting.DEFAULT) { maxY = maxYdata + .1; }
 
     var xScale = d3.scale.linear()
         .domain([minX, maxX])
