@@ -73,7 +73,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
   var removeMarker = function() {
 
     for(var k=0; k < self._markers.length; k ++) {
-      if (self._markers[k] && (self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS || self._markers[k]._type == epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS)) {
+      if (self._markers[k] && (self._markers[k].id() == "order-anno" || self._markers[k].id() == "group-anno")) {
         // remove existing groupby marker.
         var old_mId = self._markers[k].id(); 
         delete self._markersMap[old_mId];
@@ -101,6 +101,7 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
           return null;
         }
         self._markers[i] = marker;
+        self._markersIndices[marker.id()] = i;
         self._markersMap[marker.id()] = marker;
       } 
       else {
@@ -123,20 +124,15 @@ epiviz.plugins.charts.StackedLinePlot.prototype.draw = function(range, data, sli
     self._markersModified.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._markers));
   };
 
+  removeMarker();
+
   if(useGroupBy) {
     var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.GROUP_BY_MEASUREMENTS, 
       "group-anno", null, 'function(data){return null}', "function(m, data, preMarkResult) {return m.annotation()['" + groupBy + "'];}");
     var value = checkMarker(marker);
-
-    //if(value != null) {
-    //  this._drawPlot(range, data, slide, zoom);
-    //}
-  }
-  else {
-    removeMarker();
   }
 
-  if(orderBy) {
+  if(orderBy != "name") {
     var marker = new epiviz.ui.charts.markers.VisualizationMarker(epiviz.ui.charts.markers.VisualizationMarker.Type.ORDER_BY_MEASUREMENTS, 
       "order-anno", null, 
       'function(data){return null}', 
