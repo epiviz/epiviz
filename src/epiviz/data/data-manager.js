@@ -439,7 +439,7 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
 epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
-  if (this._config.useCache) {
+  if (this._config.useCache && !(range == null || range.seqName() == "all" || range.seqName() == null)) {
     this._cache.getData(range, chartMeasurementsMap, dataReadyCallback);
   } else {
     this._getDataNoCache(range, chartMeasurementsMap, dataReadyCallback);
@@ -486,25 +486,31 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
       var dataByDs = {};
       epiviz.utils.forEach(msByDs, function(dsMs, datasourceId) {
         var datasource = dsMs.first().datasource();
-        var dsData = data[datasourceId];
+        // var dsData = data[datasourceId];
+        var dsData = data;
         var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
 
-        var globalStartIndex = dsData.globalStartIndex;
+        var globalStartIndex = dsData.rows.globalStartIndex;
 
-        if(isNaN(range._start)) {
-          range._start = globalStartIndex;
+        var newRange = range;
+        if(range == null || range.seqName() == "all" || range.seqName() == null) {
+          newRange = new epiviz.datatypes.GenomicRange("all", dsData.rows.values.start[0], dsData.rows.values.start.length);
         }
 
-        if(isNaN(range._width)) {
-          range._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
+        if(isNaN(newRange._start)) {
+          newRange._start = globalStartIndex;
         }
 
-        var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, dsData.rows);
+        if(isNaN(newRange._width)) {
+          newRange._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
+        }
+
+        var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, newRange, globalStartIndex, dsData.rows.values, dsData.rows.useOffset);
 
         sumExp.addRowData(rowData);
 
         dsMs.foreach(function(m) {
-          var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols[m.id()]);
+          var valueData = new epiviz.datatypes.FeatureValueArray(m, newRange, globalStartIndex, dsData.values.values[m.id()]);
           sumExp.addValues(valueData);
         });
 

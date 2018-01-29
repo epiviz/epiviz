@@ -238,17 +238,35 @@ epiviz.data.Request.getValues = function(measurement, range) {
 epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
   var rawMsByDs = {};
   var dataSource = "";
+  var measure;
   for (var ds in measurementsByDatasource) {
     dataSource = ds;
     if (!measurementsByDatasource.hasOwnProperty(ds)) { continue; }
     rawMsByDs[ds] = (function() {
       var ms = [];
       measurementsByDatasource[ds].foreach(function(m) {
+        if(dataSource == "genes") {
+          measure = m;
+        }
         ms.push(m.id());
       });
       return ms;
     })();
   }
+  if(dataSource == "genes") {
+    return epiviz.data.Request.createRequest({
+      version: epiviz.EpiViz.VERSION,
+      action: epiviz.data.Request.Action.GET_COMBINED,
+      seqName: range ? range.seqName() : undefined,
+      start: range ? range.start() : undefined,
+      end: range ? range.end() : undefined,
+      measurements: rawMsByDs[dataSource],
+      datasource: dataSource,
+      genome: range ? range.genome() : undefined,
+      metadata: measure.metadata()
+    });  
+  }
+
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_COMBINED,
@@ -259,6 +277,7 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
     datasource: dataSource,
     genome: range ? range.genome() : undefined
   });
+
 };
 
 /**
