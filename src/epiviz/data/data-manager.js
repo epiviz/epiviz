@@ -289,7 +289,7 @@ epiviz.data.DataManager.prototype.onRequestUiStatus = function() { return this._
 /**
  * @param {function(Array.<epiviz.datatypes.SeqInfo>)} callback
  */
-epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
+epiviz.data.DataManager.prototype.getSeqInfos = function(callback, failCallback) {
   var self = this;
 
   var nResponses = 0;
@@ -344,6 +344,8 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
         if (++nResponses < self._dataProviderFactory.size()) { return; }
 
         callback(result.sort(epiviz.datatypes.SeqInfo.compare));
+      }, function(jqXHR, textStatus, errorThrown) {
+        failCallback(jqXHR, textStatus, errorThrown);
       });
   });
 };
@@ -381,7 +383,7 @@ epiviz.data.DataManager.prototype.updateChartSettings = function(values) {
 /**
  * @param {function(epiviz.measurements.MeasurementSet)} callback
  */
-epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
+epiviz.data.DataManager.prototype.getMeasurements = function(callback, failCallback) {
   var self = this;
   var result = new epiviz.measurements.MeasurementSet();
 
@@ -429,6 +431,8 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
         if (++nResponses < self._dataProviderFactory.size()) { return; }
 
         callback(result);
+      }, function(jqXHR, textStatus, errorThrown) {
+        failCallback(jqXHR, textStatus, errorThrown);
       });
   });
 };
@@ -438,11 +442,11 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
-epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
+epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback, failCallback) {
   if (this._config.useCache && !(range == null || range.seqName() == "all" || range.seqName() == null)) {
-    this._cache.getData(range, chartMeasurementsMap, dataReadyCallback);
+    this._cache.getData(range, chartMeasurementsMap, dataReadyCallback, failCallback);
   } else {
-    this._getDataNoCache(range, chartMeasurementsMap, dataReadyCallback);
+    this._getDataNoCache(range, chartMeasurementsMap, dataReadyCallback, failCallback);
   }
 };
 
@@ -452,7 +456,7 @@ epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
-epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasurementsMap, dataReadyCallback) {
+epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasurementsMap, dataReadyCallback, failCallback) {
   var self = this;
 
   /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
@@ -524,6 +528,8 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
     var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
     dataProvider.getData(request, function(response) {
       requestStack.serveData(response);
+    }, function(jqXHR, textStatus, errorThrown) {
+      failCallback(jqXHR, textStatus, errorThrown);
     });
   });
 };

@@ -70,7 +70,7 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
-epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback) {
+epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback, failCallback) {
   var MeasurementType = epiviz.measurements.Measurement.Type;
 
   var self = this;
@@ -148,6 +148,8 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
       var dataProvider = self._dataProviderFactory.get(m.dataprovider()) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
       dataProvider.getData(request, function(response) {
         requestStack.serveData(response);
+      }, function(jqXHR, textStatus, errorThrown) {
+        failCallback(jqXHR, textStatus, errorThrown);
       });
     }
   });
