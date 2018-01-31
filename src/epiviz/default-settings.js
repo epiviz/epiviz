@@ -278,7 +278,7 @@ epiviz.Config.SETTINGS = {
       'epiviz.ui.charts.transform.clustering.KulzynskiMetric',
       'epiviz.ui.charts.transform.clustering.ManhattanMetric',
       'epiviz.ui.charts.transform.clustering.MorisitaMetric',
-      'epiviz.ui.charts.transform.clustering.MorisitaHornMetric'
+      'epiviz.ui.charts.transform.clustering.HornMetric'
     ],
     linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
   },

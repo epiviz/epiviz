@@ -3,20 +3,20 @@
  * @Date: 2017-12-15 09:00:36 
  */
 
-goog.provide('epiviz.ui.charts.transform.clustering.MorisitaHornMetric');
+goog.provide('epiviz.ui.charts.transform.clustering.HornMetric');
 
 /**
  * @constructor
  * @implements {epiviz.ui.charts.transform.clustering.ClusteringMetric}
  */
-epiviz.ui.charts.transform.clustering.MorisitaHornMetric = function() {};
+epiviz.ui.charts.transform.clustering.HornMetric = function() {};
 
 /**
  * @param {?Array.<number>} item1
  * @param {?Array.<number>} item2
  * @returns {?number}
  */
-epiviz.ui.charts.transform.clustering.MorisitaHornMetric.prototype.distance = function(item1, item2) {
+epiviz.ui.charts.transform.clustering.HornMetric.prototype.distance = function(item1, item2) {
   if (item1 == undefined || item2 == undefined) {
     return null;
   }
@@ -44,4 +44,4 @@ epiviz.ui.charts.transform.clustering.MorisitaHornMetric.prototype.distance = fu
 /**
  * @returns {string}
  */
-epiviz.ui.charts.transform.clustering.MorisitaHornMetric.prototype.id = function() { return 'morisita-horn'; };
+epiviz.ui.charts.transform.clustering.HornMetric.prototype.id = function() { return 'horn'; };
