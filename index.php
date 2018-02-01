@@ -189,7 +189,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
 
     <!-- CSS -->
-    <link href="css/fa/css/font-awesome.css" rel="stylesheet"/>
+    <!-- <link href="css/fa/css/font-awesome.css" rel="stylesheet"/> -->
     <!-- Icons -->
     <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
     <!--Semantic-->
@@ -357,7 +357,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/transform/clustering/kulzynski-metric.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/manhattan-metric.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/morisita-metric.js"></script>
-    <script src="src/epiviz/ui/charts/transform/clustering/morisita-horn-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/horn-metric.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/complete-linkage.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
