@@ -189,7 +189,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
 
     <!-- CSS -->
-    <!-- <link href="css/fa/css/font-awesome.css" rel="stylesheet"/> -->
+    <link href="css/fa/css/font-awesome.css" rel="stylesheet"/>
     <!-- Icons -->
     <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
     <!--Semantic-->
