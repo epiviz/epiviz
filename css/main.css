@@ -409,3 +409,7 @@ tfoot th input { width: 80% }
   max-height: 400px;
   overflow: auto;
 }
+
+.splines-icon {
+  background-image: url("../img/line-chart.png") !important;
+}

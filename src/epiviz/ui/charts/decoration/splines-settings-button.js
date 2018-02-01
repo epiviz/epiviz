@@ -51,7 +51,7 @@ epiviz.ui.charts.decoration.SplinesSettingsButton.prototype._click = function() 
  */
 epiviz.ui.charts.decoration.SplinesSettingsButton.prototype._renderOptions = function() {
   return {
-    icons:{ primary:'fa-line-chart' },
+    icons:{ primary:'ui-icon splines-icon' },
     text:false
   };
 };
