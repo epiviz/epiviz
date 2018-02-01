@@ -414,7 +414,8 @@ epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelStartOffset = function(node) 
  */
 epiviz.ui.charts.tree.Sunburst.prototype.doHover = function(selectedObject) {
 
-  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.SunburstType.CustomSettings.HOVER_OPACITY];
+  if(!selectedObject.aggregateHover) {
+    var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.SunburstType.CustomSettings.HOVER_OPACITY];
 
     var self = this;
     if (this._dragging) {
@@ -453,6 +454,7 @@ epiviz.ui.charts.tree.Sunburst.prototype.doHover = function(selectedObject) {
 
       this._svg.selectAll(".item.hovered")
       .style("opacity", hoverOpacity);
+  }
 };
 
 /**

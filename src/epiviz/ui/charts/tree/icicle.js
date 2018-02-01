@@ -1563,7 +1563,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
  */
 epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
 
-  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
+  if(!selectedObject.aggregateHover) {
+
+    var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
 
     var self = this;
     if (this._dragging) {
@@ -1602,6 +1604,7 @@ epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
 
       this._svg.selectAll(".item.hovered rect")
       .style("fill-opacity", hoverOpacity);
+  }
 };
 
 /**
@@ -1690,6 +1693,7 @@ epiviz.ui.charts.tree.Icicle.prototype.notifyAggregateNode = function(node) {
     function setParentHovered(nes) {
 
         if (nes.selectionType == 2) {
+            nes.aggregateHover = true;
             self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), nes));
         }
 
