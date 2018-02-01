@@ -708,7 +708,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   }
 
   setTimeout(function() {
-      if(root.children[0].children.length == 1) {
+      if(root.children[0].length == 1) {
         $("." + self.id() + '-icon-' + root.children[0].id + " span").click();
         (function blink() { 
           $(".nodeselection-expand").fadeOut(500).fadeIn(500, blink); 
