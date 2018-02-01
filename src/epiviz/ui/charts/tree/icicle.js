@@ -294,6 +294,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       return 'item ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
     })
     .on('click', function(d) {
+      d3.selectAll(".nodeselection-itemcontainer").remove();
+      d3.selectAll(".nodeselection-container").remove();
+      d3.selectAll(".nodeselection-text").remove();
       if (self._dragging) { self._dragging = false; return; }
       if (self.selectMode()) {
         var node = self._getNewNode(d);
@@ -708,7 +711,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
   }
 
   setTimeout(function() {
-      if(root.children[0].length == 1) {
+      if(self._uiDataMap[root.children[0].id].selectionType == 2 || self._uiDataMap[root.children[0].id].selectionType == 4) {
         $("." + self.id() + '-icon-' + root.children[0].id + " span").click();
         (function blink() { 
           $(".nodeselection-expand").fadeOut(500).fadeIn(500, blink); 
@@ -844,6 +847,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           .on("click", function(d) {
               moveCtrCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       ctrCtrl.append("rect")
@@ -914,6 +920,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           .on("click", function(d) {
               moveCtrCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       ctrCtrl.append("rect")
@@ -985,6 +994,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         .on("click", function(d) {
               moveLeftCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       leftCtrl.append("rect")
@@ -1015,6 +1027,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         .on("click", function(d) {
               moveCtrCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       ctrCtrl.append("rect")
@@ -1044,6 +1059,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         .on("click", function(d) {
               moveRightCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       rightCtrl.append("rect")
@@ -1131,7 +1149,6 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
                     " " + (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) +
                     "," + (navbar_y + (navbar_height/2) + 7)
                 );
-
 
       var dragrect = this._legend.append("rect")
           .attr("id", "active")
@@ -1444,6 +1461,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
       self._customSettingsValues["aggLevel"] = root.globalDepth + i;
       self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
       d3.event.stopPropagation();
+      d3.selectAll(".nodeselection-itemcontainer").remove();
+      d3.selectAll(".nodeselection-container").remove();
+      d3.selectAll(".nodeselection-text").remove();
     });
 
     var height = self.height();
