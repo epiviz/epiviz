@@ -1018,6 +1018,16 @@ epiviz.EpiViz.prototype._registerDataRedraw = function() {
      * @param {{result: epiviz.events.EventResult}} e
      */
     function(e) {
+
+      self._chartManager.dataWaitStart(undefined,
+        /**
+         * @param {epiviz.ui.charts.Visualization} chart
+         * @returns {boolean}
+         */
+        function(chart) {
+          return chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chart.type != "Sunburst";
+        });
+
       try {
         var currentLocation = self._locationManager.currentLocation();
         self._locationManager.changeCurrentLocation(currentLocation);
@@ -1241,6 +1251,16 @@ epiviz.EpiViz.prototype._registerUISplinesSettings = function() {
 
     self._chartManager._chartSplineSettingsChanged.addListener(new epiviz.events.EventListener(
       function(e) {
+
+          self._chartManager.dataWaitStart(undefined,
+          /**
+           * @param {epiviz.ui.charts.Visualization} chart
+           * @returns {boolean}
+           */
+          function(chart) {
+            return true;
+          });
+          
           self._dataManager.updateSplines(e.splines);
         }
       ));
