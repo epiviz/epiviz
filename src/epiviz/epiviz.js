@@ -1238,4 +1238,10 @@ epiviz.EpiViz.prototype._registerUISplinesSettings = function() {
         self._dataManager.updateSplines(e.splines);
       }
     ));
+
+    self._chartManager._chartSplineSettingsChanged.addListener(new epiviz.events.EventListener(
+      function(e) {
+          self._dataManager.updateSplines(e.splines);
+        }
+      ));
 };

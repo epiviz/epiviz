@@ -441,11 +441,6 @@ if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
   // if(enableWidget) {
   // }
 
-  $("#splines-settings").prependTo("#" + this.id());
-  $("#splines-settings").show();
-  $("#splines-settings").css("position", "absolute");
-  $("#splines-settings").css("float", "left");
-
   return lineItems;
 };
 

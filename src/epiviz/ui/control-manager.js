@@ -188,7 +188,6 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   this._initializeTutorials();
   this._initializeScreenshotMenu();
   this._initializeManifestUploadMenu();
-  this._initializeSplines();
 
   /*
    * Log in/out

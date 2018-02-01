@@ -424,7 +424,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
     <script src="src/epiviz/ui/controls/message-dialog.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/splines-settings-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/splines-settings-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
     <script src="src/epiviz/ui/controls/code-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/code-button.js"></script>
@@ -655,7 +657,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         <button id="help-tutorials">Tutorials</button>
         <button id="save-page">Screenshot</button>
         <button id="manifest-upload">Upload</button>
-        <button id="splines-settings" style="display:none;">Splines settings</button>
+        <!-- <button id="splines-settings" style="display:none;">Splines settings</button> -->
       </div>
     </div>
 

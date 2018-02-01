@@ -149,7 +149,8 @@ epiviz.Config.SETTINGS = {
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton',
-        'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton'
+        'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton',
+        'epiviz.ui.charts.decoration.SplinesSettingsButton'
       ],
       colors: 'd3-category20b'
     },

@@ -18,6 +18,7 @@ goog.require('epiviz.ui.controls.SaveSvgAsImageDialog');
 goog.require('epiviz.ui.charts.decoration.RemoveChartButton');
 goog.require('epiviz.ui.charts.decoration.SaveChartButton');
 goog.require('epiviz.ui.charts.decoration.CustomSettingsButton');
+goog.require('epiviz.ui.charts.decoration.SplinesSettingsButton');
 goog.require('epiviz.ui.charts.decoration.EditCodeButton');
 goog.require('epiviz.ui.charts.decoration.ChartColorsButton');
 goog.require('epiviz.ui.charts.decoration.ChartLoaderAnimation');
@@ -161,6 +162,8 @@ epiviz.ui.charts.ChartManager = function(config) {
 
   this._heatmapAddFeatureChartEvent = new epiviz.events.Event();
 
+  this._chartSplineSettingsChanged = new epiviz.events.Event();
+
   this._registerWindowResize();
 };
 
@@ -245,6 +248,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartMethodsReset(chart);
   this._registerChartMarkersModified(chart);
   this._registerChartCustomSettingsChanged(chart);
+  this._registerChartSplinesSettingsChanged(chart);
   this._registerChartSizeChanged(chart);
   this._registerChartMarginsChanged(chart);
   this._registerChartRemove(chart);
@@ -672,6 +676,17 @@ epiviz.ui.charts.ChartManager.prototype._registerChartCustomSettingsChanged = fu
   var self = this;
   chart.onCustomSettingsChanged().addListener(new epiviz.events.EventListener(function(e) {
     self._chartCustomSettingsChanged.notify(e);
+  }));
+};
+
+/**
+ * @param {epiviz.ui.charts.Chart} chart
+ * @private
+ */
+epiviz.ui.charts.ChartManager.prototype._registerChartSplinesSettingsChanged = function(chart) {
+  var self = this;
+  chart._splinesSettings.addListener(new epiviz.events.EventListener(function(e) {
+    self._chartSplineSettingsChanged.notify(e);
   }));
 };
 
