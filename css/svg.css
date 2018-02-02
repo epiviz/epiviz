@@ -19,7 +19,7 @@ text {
 .base-chart path,
 .base-chart line {
     fill: none;
-    stroke: #565656;
+    stroke:#565656;
     shape-rendering: crispEdges;
     stroke-width: 1px;
 }
@@ -55,6 +55,10 @@ text {
     stroke: #fff;
     fill-rule: evenodd;
 }
+
+.Sunburst-canvas .hovered path { stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; fill-opacity: 1!important; }
+
+.Sunburst-canvas .unhovered path { fill-opacity: 0.5; }
 
 /* Scatter plot */
 
@@ -214,3 +218,19 @@ text {
     cursor: context-menu;
 }
 
+.icicle .nodeselection-remove .icon::before {
+    content: "\f379";
+}
+
+.icicle .nodeselection-aggregate .icon::before {
+    content: "\f3b3";
+}
+
+.icicle .nodeselection-expand .icon::before {
+    content: "\f3b2";
+    /*content: '\e900';*/
+}
+
+.icicle .custom-select .icon::before {
+    content: "\f3b4";
+}

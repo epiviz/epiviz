@@ -121,6 +121,12 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
       'Group By'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedLinePlotType.CustomSettings.ORDER_BY,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
+      'name',
+      'Order By'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       0.6,
@@ -137,7 +143,8 @@ epiviz.plugins.charts.StackedLinePlotType.CustomSettings = {
   SCALE_TO_PERCENT: 'scaleToPercent',
   ROW_GROUP_BY: 'groupBy',
   USE_GROUP_BY: 'useGroupBy',
-  HOVER_OPACITY: 'hoverOpacity'
+  HOVER_OPACITY: 'hoverOpacity',
+  ORDER_BY: 'orderBy'
 };
 
 // goog.inherits(epiviz.plugins.charts.StackedLinePlotType, epiviz.ui.charts.PlotType);

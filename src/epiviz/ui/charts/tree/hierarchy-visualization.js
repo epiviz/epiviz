@@ -308,6 +308,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
 
     // propagate cutlevel first
     this._uiData.forEach(function(node) {
+      node.aggregateHover = false;
       if(node.globalDepth == self.selCutLevel) {
         self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED'], false, false);
       }

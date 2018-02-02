@@ -349,6 +349,15 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/transform/clustering/clustering-linkage.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/hierarchical-clustering-algorithm.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/euclidean-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/bray-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/binomial-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/canberra-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/gower-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/jaccard-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/kulzynski-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/manhattan-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/morisita-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/horn-metric.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/complete-linkage.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
@@ -395,13 +404,17 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/stacked-line-plot.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/pca-scatter-plot.js"></script>
-    <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script>  
+    <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script> 
+    <script src="src/epiviz/plugins/charts/pcoa-scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/pcoa-scatter-plot-type.js"></script>  
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/feature-scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/feature-scatter-plot-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/sunburst.js"></script>
+    <script src="src/epiviz/ui/charts/tree/sunburst-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
     <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
@@ -411,7 +424,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
     <script src="src/epiviz/ui/controls/message-dialog.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/splines-settings-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/splines-settings-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
     <script src="src/epiviz/ui/controls/code-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/code-button.js"></script>
@@ -642,6 +657,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         <button id="help-tutorials">Tutorials</button>
         <button id="save-page">Screenshot</button>
         <button id="manifest-upload">Upload</button>
+        <!-- <button id="splines-settings" style="display:none;">Splines settings</button> -->
       </div>
     </div>
 

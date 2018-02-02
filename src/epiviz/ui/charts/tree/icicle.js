@@ -294,6 +294,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       return 'item ' + epiviz.ui.charts.tree.HierarchyVisualization.SELECTION_CLASSES[selectionType];
     })
     .on('click', function(d) {
+      d3.selectAll(".nodeselection-itemcontainer").remove();
+      d3.selectAll(".nodeselection-container").remove();
+      d3.selectAll(".nodeselection-text").remove();
       if (self._dragging) { self._dragging = false; return; }
       if (self.selectMode()) {
         var node = self._getNewNode(d);
@@ -395,7 +398,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
     .style('opacity', 0);
 
   var newIcons = newItems.append('svg:foreignObject')
-    .attr('class', 'icon-container')
+    .attr('class', function(d) { return 'icon-container ' + self.id() + '-icon-' + d.id;} )
     .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
     .attr('width', this._iconSize)
     .attr('height', this._iconSize)
@@ -434,7 +437,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         edis = "disabled";
       }
 
-      var v=17; h=17;
+      var v=17; h=23;
       if(Math.max(0, self._xScale(d.x + d.dx) - self._xScale(d.x) - 2 * self._nodeBorder) < 40) {
         h = 0;
       }
@@ -454,15 +457,16 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
       .attr("class", "nodeselection-container")
       .attr('cx', function(d) { return posX + self._iconSize * 0.5; })
       .attr('cy', function(d) { return poxY - self._iconSize * 0.5; })
-      .attr('r', self._iconSize * 0.5)
+      .attr('r', self._iconSize * 0.7)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select(".nodeselection-itemcontainer").append("text")
-      .text("R")
-      .attr("class", "nodeselection-text nodeselection-remove " + rdis)
-      .attr('x', posX + self._iconSize * 0.5)
-      .attr('y', poxY - 2)
+      var fObj = d3.select(".nodeselection-itemcontainer").append('svg:foreignObject')
+      .attr('class', "nodeselection-text nodeselection-remove " + rdis)
+      .attr('x', posX)
+      .attr('y', poxY - 15)
+      .attr("height", self._iconSize)
+      .attr("width", self._iconSize)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -486,19 +490,31 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         return "black";
       });
 
+      fObj.append('xhtml:span')
+      .attr('class', 'unselectable-text icon')
+      .attr("fill-opacity", .5)
+      .style('color', function(d) {
+        if(rdis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
+      });
+
       d3.select(".nodeselection-itemcontainer").append("circle")
       .attr("class", "nodeselection-container")
       .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + h; })
       .attr('cy', function(d) { return (poxY - self._iconSize * 0.5) - v; })
-      .attr('r', self._iconSize * 0.5)
+      .attr('r', self._iconSize * 0.7)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select(".nodeselection-itemcontainer").append("text")
-      .text("A")
-      .attr("class", "nodeselection-text nodeselection-aggregate " + adis)
-      .attr('x', posX + h + self._iconSize * 0.5)
-      .attr('y', poxY - v - 2)
+      var fObj = d3.select(".nodeselection-itemcontainer").append('svg:foreignObject')
+      .attr('class', "nodeselection-text nodeselection-aggregate " + adis)
+      .attr('x', posX + h)
+      .attr('y', poxY - v - 15)
+      .attr("height", self._iconSize)
+      .attr("width", self._iconSize)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -522,19 +538,31 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         return "black";
       });
 
+      fObj.append('xhtml:span')
+      .attr('class', 'unselectable-text icon')
+      .attr("fill-opacity", .5)
+      .style('color', function(d) {
+        if(adis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
+      });
+
       d3.select(".nodeselection-itemcontainer").append("circle")
       .attr("class", "nodeselection-container")
       .attr('cx', function(d) { return (posX + self._iconSize * 0.5) + (2 * h); })
       .attr('cy', function(d) { return (poxY - self._iconSize * 0.5) - (2 * v); })
-      .attr('r', self._iconSize * 0.5)
+      .attr('r', self._iconSize * 0.7)
       .style('fill', '#ffffff')
       .style('opacity', 0.5);
 
-      d3.select(".nodeselection-itemcontainer").append("text")
-      .text("E")
-      .attr("class", "nodeselection-text nodeselection-expand " + edis)
-      .attr('x', posX + (2 * h) + self._iconSize * 0.5)
-      .attr('y', poxY - (2 * v) - 2)
+      var fObj = d3.select(".nodeselection-itemcontainer").append('svg:foreignObject')
+      .attr('class', "nodeselection-text nodeselection-expand " + edis)
+      .attr('x', posX + (2 * h))
+      .attr('y', poxY - (2 * v) - 2 - 13)
+      .attr("height", self._iconSize)
+      .attr("width", self._iconSize)
       .on("click", function(dt) {
         d3.event.stopPropagation();
 
@@ -551,6 +579,17 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         d3.selectAll(".nodeselection-text").remove();
       })
       .attr("fill", function(d) {
+        if(edis == "disabled") {
+          return "gray";          
+        }
+
+        return "black";
+      });
+
+      fObj.append('xhtml:span')
+      .attr('class', 'unselectable-text icon')
+      .attr("fill-opacity", .5)
+      .style('color', function(d) {
         if(edis == "disabled") {
           return "gray";          
         }
@@ -662,7 +701,6 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   if(this._firstRun == 0) {
     this._firstRun++;
-    // this.selectLevel(this.selCutLevel);
 
     self.onRequestHierarchy().notify(new epiviz.ui.charts.VisEventArgs(
       self.id(),
@@ -671,6 +709,22 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
     this.firePropagateHierarchyChanges();
   }
+
+  setTimeout(function() {
+      if(self._uiDataMap[root.children[0].id].selectionType == 2 || self._uiDataMap[root.children[0].id].selectionType == 4) {
+        $("." + self.id() + '-icon-' + root.children[0].id + " span").click();
+        (function blink() { 
+          $(".nodeselection-expand").fadeOut(500).fadeIn(500, blink); 
+        })();
+     
+      $("body").click(function(e){
+        e.stopPropagation();
+        d3.selectAll(".nodeselection-itemcontainer").remove();
+        d3.selectAll(".nodeselection-container").remove();
+        d3.selectAll(".nodeselection-text").remove();
+      });
+    }
+  }, 1000);
 
   return uiData;
 };
@@ -793,6 +847,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           .on("click", function(d) {
               moveCtrCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       ctrCtrl.append("rect")
@@ -863,6 +920,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
           .on("click", function(d) {
               moveCtrCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       ctrCtrl.append("rect")
@@ -934,6 +994,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         .on("click", function(d) {
               moveLeftCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       leftCtrl.append("rect")
@@ -964,6 +1027,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         .on("click", function(d) {
               moveCtrCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       ctrCtrl.append("rect")
@@ -993,6 +1059,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
         .on("click", function(d) {
               moveRightCtrl();
               d3.event.stopPropagation();
+              d3.selectAll(".nodeselection-itemcontainer").remove();
+              d3.selectAll(".nodeselection-container").remove();
+              d3.selectAll(".nodeselection-text").remove();
           });
 
       rightCtrl.append("rect")
@@ -1080,7 +1149,6 @@ epiviz.ui.charts.tree.Icicle.prototype._drawAxes = function(root) {
                     " " + (Math.round(self.width() - self.margins().left() - 5 - self._rowAllLevelWidth) + 3) +
                     "," + (navbar_y + (navbar_height/2) + 7)
                 );
-
 
       var dragrect = this._legend.append("rect")
           .attr("id", "active")
@@ -1393,6 +1461,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
       self._customSettingsValues["aggLevel"] = root.globalDepth + i;
       self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
       d3.event.stopPropagation();
+      d3.selectAll(".nodeselection-itemcontainer").remove();
+      d3.selectAll(".nodeselection-container").remove();
+      d3.selectAll(".nodeselection-text").remove();
     });
 
     var height = self.height();
@@ -1492,7 +1563,9 @@ epiviz.ui.charts.tree.Icicle.prototype._drawRowControls = function(root) {
  */
 epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
 
-  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
+  if(!selectedObject.aggregateHover) {
+
+    var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY];
 
     var self = this;
     if (this._dragging) {
@@ -1531,6 +1604,7 @@ epiviz.ui.charts.tree.Icicle.prototype.doHover = function(selectedObject) {
 
       this._svg.selectAll(".item.hovered rect")
       .style("fill-opacity", hoverOpacity);
+  }
 };
 
 /**
@@ -1619,6 +1693,7 @@ epiviz.ui.charts.tree.Icicle.prototype.notifyAggregateNode = function(node) {
     function setParentHovered(nes) {
 
         if (nes.selectionType == 2) {
+            nes.aggregateHover = true;
             self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), nes));
         }
 

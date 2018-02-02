@@ -438,6 +438,9 @@ if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
     });
 }
 
+  // if(enableWidget) {
+  // }
+
   return lineItems;
 };
 

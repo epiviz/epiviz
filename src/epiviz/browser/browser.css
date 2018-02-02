@@ -1,6 +1,7 @@
 .ui.grid {
     padding: 0px;
-    max-height: inherit;
+    /*max-height: inherit;*/
+    height: 100%;
 }
 
 #titleRow {
@@ -8,33 +9,59 @@
 }
 
 #sourcemodal {
-    width: auto;
-    top:40%;
+    /*top:40%;*/
     /*left: 60%;*/
 }
 
 #newmodal {
     /*left: 50%;*/
     top: 40%;
-    max-height: 400px;
+    /*max-height: 400px;*/
+    height: 90%;
+    width: 85%;
 }
 
 #leftRightRow {
     height: 350px;
 }
 
+#leftRightRow #annoMenu {
+    overflow: auto;
+    padding-right: 0px;
+}
+
 #leftmenu {
-    height: 335px;
+    width: 100%;
     overflow: auto;
 }
 
+#leftmenu .item .title{
+    word-wrap: break-word;
+}
+
+#leftmenu #annoSearch .icon.input {
+    margin: 5px;
+    width: 95%;
+    height: 30px;
+}
+
 #rightmenu {
-    height: 335px;
+    /*height: 335px;*/
+    height: 100%;
 }
 
 #rightmenu .content {
     overflow: auto;
-    height: 290px;
+    /*height: 290px;*/
+    height: 100%;
+}
+
+#rightmenu .item {
+    height: 100%;
+}
+
+#leftRightRow {
+    height: 100%;
 }
 
 #titleRow {
@@ -60,4 +87,8 @@
 #startScreenApp > div.content.m > div {
     overflow: scroll;
     height: 180px;
+}
+
+#newmodal > div.content.m {
+    height: 80%;
 }

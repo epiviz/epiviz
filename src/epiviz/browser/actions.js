@@ -43,8 +43,8 @@ function initialize_dropdown(source) {
 		}
 	});
 
-	$("#autoClickSelect").click(function() {
-		if($("#sample-type").hasClass("disabled")) {
+	$("#autoClickSelect").click(function(e) {
+		if($("#sample-type").hasClass("disabled") && e.target.parentNode.id != "select-type" && e.target.parentNode.parentNode.id != "select-type") {
 			$("#select-type").dropdown("set selected", "Auto");
 		}
 	});	
@@ -63,16 +63,10 @@ function initialize_dropdown(source) {
 			selectSamples();
 		}
 	});
-	$('#sample-size').range({
-		start: selectionCount,
-		min: 0,
-		max: 100,
-		step: 1,
-		value: selectionCount,
-		onChange: function(min, max) {
-			selectionCount = min;
-			$('#sampleSizeValue').text(min + "% samples");
-		}
+
+	$('#sample-size').change(function(e) {
+		selectionCount = parseInt($('#sample-size').val());
+		$('#sampleSizeValue').text(selectionCount + "% samples");  
 	});
 }
 
@@ -175,27 +169,34 @@ function showModal(source, input, cb) {
 						'</div>'+
 						'select: '+
 						'<div class="ui disabled compact selection dropdown" id="sample-type">'+
-						  	'<i class="dropdown icon"></i>'+
-						  	'<span class="text">Random</span>'+
-						  	'<div class="menu">'+
-						    	'<div class="item" data-value="1">Random</div>'+
-						    	'<div class="item" data-value="0">Top</div>'+
-						  	'</div>'+
+							'<i class="dropdown icon"></i>'+
+							'<span class="text">Random</span>'+
+							'<div class="menu">'+
+								'<div class="item" data-value="1">Random</div>'+
+								'<div class="item" data-value="0">Top</div>'+
+							'</div>'+
 						'</div>'+
 						'<div class="ui disabled compact dropdown" id="sample-size-dropdown">'+
-						  	'<i class="dropdown icon"></i>'+
-						  	'<span class="text" id="sampleSizeValue">0%: samples</span>'+
-						  	'<div class="menu">'+
-							  '<div class="item">'+
-								'<div class="ui range disabled inline" style="width: 75px;"id="sample-size"></div>'+
-								'</div>'+
-						  	'</div>'+
+							'<i class="dropdown icon"></i>'+
+							'<span class="text" id="sampleSizeValue">0%: samples</span>'+
+							'<div class="menu">'+
+							'<div class="item">'+
+								'<input class="ui" type="number" id="sample-size" value="0">'+
+							'</div>'+
+							'</div>'+
 						'</div>'+
 					'</div>'+
 				'</div>'+
 				'<div id="leftRightRow" class="row">'+
-					'<div class="four wide column">'+
+					'<div id="annoMenu" class="four wide column">'+
 						'<div id="leftmenu" class="ui vertical scrolling accordion menu"> '+
+							'<div id="annoSearch" class="ui search"> '+
+								'<div class="ui icon input">'+
+									'<input class="prompt" type="text" placeholder="Search Annotations"> '+
+									'<i class="search icon"></i>'+
+								'</div>'+
+  								'<div id="annoSearchResults" class="results"></div>'+
+							'</div>'+
 						'</div>'+
 					'</div>'+
 					'<div class="twelve wide column">'+
@@ -235,7 +236,6 @@ function showModal(source, input, cb) {
 			approve: '.ui.primary.button'
 		},
 		onDeny: function() {
-			// $('#sourcemodal').modal('show');
 			$('#leftmenu').empty();
 			$('#rightmenu').empty();
 			$('#resultmodal').remove();
@@ -257,7 +257,6 @@ function showModal(source, input, cb) {
 }
 
 function initialize(sources) {
-
 	current_measurements = undefined;
 	filters = {};
 	graph;
@@ -290,7 +289,6 @@ function initialize(sources) {
 		'</div>'+
 	'</div>';
 	$('body').append(form);
-	// sources = sources.sort(sortAlphaNum);
 	var fields = document.createElement('div');
 	fields.className = "grouped fields";
 
@@ -370,14 +368,12 @@ function initialize(sources) {
 		$("#" + value).click(function() {
 			$("#"+value).find(".ui.checkbox").checkbox("check");
 			$("#"+value).addClass("active");
-			console.log(old_ds);
 			if(old_ds) {
 				$("#"+old_ds).removeClass("active");
 			}
 			old_ds = value;
 		});
 	});
-	// $('#form').append(fields);
 	$('#form').form();
 }
 
@@ -386,7 +382,6 @@ function attachActions(measurements) {
 	$('#rightmenu .ui.checkbox input[type="checkbox"]').click(function(e) {
 		var split = this.id.split('-');
 		split[1] = _.join(_.slice(split, 1), separator="-");
-		// console.log('source clicked');
 		//this means that you selected the measurement checkbox
 		if (split[0] === "source") {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
@@ -456,16 +451,13 @@ function toggleParent(source) {
 		var selected = parseInt($count.attr("data-selected"));
 		var total = parseInt($count.attr("data-total"));
 		if (selected > 0 && selected !== total) {
-			// console.log('hi1');
 			$('#source-' + source).parent().checkbox('set indeterminate');
 			$('#source-' + source).removeClass('hidden');
 
 		} else if (selected === total && total !== 0){
-			// console.log('hi2');
 			$('#source-' + source).parent().checkbox('set checked');
 			$('#source-' + source).removeClass('hidden');
 		} else if (selected === 0) {
-			// console.log('hi3');
 			$('#source-' + source).parent().checkbox('set unchecked');
 			$('#source-' + source).removeClass('hidden');
 		}
@@ -479,24 +471,35 @@ function filter(value, anno, filter, measurements) {
 	var recalc;
 	var new_list = {};
 	if (filter) {
-		//recalculate from original list if you are modifying an exisitng filter
+		//recalculate from original list if you are modifying an existing filter
 		recalc = filters[anno].values.length === 0 ? false : true;
 		if (filters[anno].type === "range") {
 			recalc = true;
-			filters[anno].values = value;
+			// value passed in could be just setting the na field to true or false.
+			if (Array.isArray(value)) {
+				filters[anno].values = value;
+			} else {
+				filters[anno].hideNa = !filters[anno].hideNa;
+			}
 		} else {
+			// maybe some stricter checking here incase accidentally passed in value to set na field?
 			filters[anno].values.push(value);
 		}
 	} else {
-		filters[anno].values.splice(filters[anno].values.indexOf(value),1);
+		if (value === "NA" && filters[anno].type === "range") {
+			filters[anno].hideNa = !filters[anno].hideNa;
+		} else {
+			filters[anno].values.splice(filters[anno].values.indexOf(value),1);	
+		}
 		recalc = true;
 	}
-	//If filters are all empty, show entire dataset
+	// if filters are all empty, show entire dataset
 	_.forEach(filters, function(val, key) {
-		if (val.length !== 0) {
+		if (val.length !== 0 || val.hideNa) {
 			all_empty = false;
 		}
 	});
+	// apply filter to current measurements or from all measurements
 	if (recalc || !current_measurements) {
 		list = measurements;
 		current_measurements = {};
@@ -507,11 +510,13 @@ function filter(value, anno, filter, measurements) {
 		new_list[source] = [];
 	});
 	_.forEach(list, function(val, source) {
+		// loop through all elements for the given source
 		list[source].forEach(function(data) {
-			var sanitizedId = data.id.replace(/[^a-zA-Z0-9]/g, '');
+			var sanitizedId = data.id.replace(/[^a-zA-Z0-9_]/g, '');
 			var hide = false;
 			if (!(all_empty && $('#' + sanitizedId).css('display') === 'none')) {
 				if (recalc) {
+					// loop through all filters and see if the element passes the filters
 					Object.keys(filters).forEach(function(category) {
 						var val = filters[category].values;
 						var type = filters[category].type;
@@ -520,35 +525,40 @@ function filter(value, anno, filter, measurements) {
 								hide = true;
 							}
 							else if (type === "range") {
-								if(val[0] == val[1]) {
-									if (parseInt(data['annotation'][category]) != val[0]) {
+								if (val[0] == val[1]) {
+									// check if it is the value, or if it is "NA" and na flag is set to false
+									if (parseInt(data['annotation'][category]) != val[0] &&
+										(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 										hide = true;
 									}
 								}
-								else if (!(parseInt(data['annotation'][category]) <= val[1] && parseInt(data['annotation'][category]) >= val[0])) {
+								else if (!(parseInt(data['annotation'][category]) <= val[1] && parseInt(data['annotation'][category]) >= val[0]) && 
+										 (!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 									hide = true;
 								}
-							}
-							else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
+							} else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9_]/g,'')) === -1) {
 								hide = true;
 							}
+						} else if (type === "range" && 
+									(data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
+							// case where no range but toggle hideNa checkbox
+							hide = true;
 						}
 					});
-				} else {
-					if (filters[anno].values.length !== 0) {
-						var val = filters[anno].values;
-						var type = filters[anno].type;
-						if (data['annotation'] == null || !(anno in data['annotation'])) {
+				} else if (filters[anno].values.length !== 0) {
+					var val = filters[anno].values;
+					var type = filters[anno].type;
+					if (data['annotation'] == null || !(anno in data['annotation'])) {
+						hide = true;
+					}
+					else if (type === "range") {
+						if (parseInt(data['annotation'][anno]) < val[0] || parseInt(data['annotation'][anno]) > val[1] && 
+							(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 							hide = true;
 						}
-						else if (type === "range") {
-							if (data['annotation'][anno] < val[0] || data['annotation'][anno] > val[1]) {
-								hide = true;
-							}
-						}
-						else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
-							hide = true;
-						}
+					}
+					else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
+						hide = true;
 					}
 				}
 			}
@@ -594,6 +604,36 @@ function getRandom(max, min) {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
+// returns true false depending on if array is mostly numbers
+function isNumbers(arr) {
+	var length = arr.length;
+	var nums = 0;
+	for (var i = 0; i < length; i++) {
+		if (parseInt(arr[i])) {
+			nums++;
+			if (nums >= length / 4) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// checks to see if there exists elements that are undefined, NULL, or NA in a range array
+function removeUndefined(arr) {
+	var length = arr.length;
+	var res = [];
+
+	for (var i = 0; i < length; i++) {
+		if (!isNaN(arr[i])) {
+			// remove NA from the list
+			res.push(parseInt(arr[i]));
+		}
+	}
+	res.sort((a,b) => {return a - b});
+	return res;
+}
+
 function sortAlphaNum(a,b) {
 	var reA = /[^a-zA-Z]/g;
 	var reN = /[^0-9]/g;
@@ -624,9 +664,7 @@ function storeMeasurement(measurements, cb) {
 	$('#resultTable').empty();
 	$('#sourcemodal').remove();
 	cb(store[name], filters);
-	// resultTable(name, new_list, cb);
 }
-
 
 function resultTable(name, list, cb) {
 	$('#resultTable').append()

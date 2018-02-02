@@ -18,6 +18,7 @@ goog.require('epiviz.ui.controls.SaveSvgAsImageDialog');
 goog.require('epiviz.ui.charts.decoration.RemoveChartButton');
 goog.require('epiviz.ui.charts.decoration.SaveChartButton');
 goog.require('epiviz.ui.charts.decoration.CustomSettingsButton');
+goog.require('epiviz.ui.charts.decoration.SplinesSettingsButton');
 goog.require('epiviz.ui.charts.decoration.EditCodeButton');
 goog.require('epiviz.ui.charts.decoration.ChartColorsButton');
 goog.require('epiviz.ui.charts.decoration.ChartLoaderAnimation');
@@ -161,6 +162,8 @@ epiviz.ui.charts.ChartManager = function(config) {
 
   this._heatmapAddFeatureChartEvent = new epiviz.events.Event();
 
+  this._chartSplineSettingsChanged = new epiviz.events.Event();
+
   this._registerWindowResize();
 };
 
@@ -229,13 +232,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     chartMarkers
   );
 
-  chartProperties.customSettingsValues.title = "";
-
-  if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+  if (chartType.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chartProperties.customSettingsValues.title == "") {
     chartProperties.customSettingsValues.title = visConfigSelection.datasourceGroup;
-  }
-  else if (chartTitle) {
-    // chartProperties.customSettingsValues.title = chartTitle;
   }
 
   var chart = chartType.createNew(id, container, chartProperties);
@@ -250,6 +248,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartMethodsReset(chart);
   this._registerChartMarkersModified(chart);
   this._registerChartCustomSettingsChanged(chart);
+  this._registerChartSplinesSettingsChanged(chart);
   this._registerChartSizeChanged(chart);
   this._registerChartMarginsChanged(chart);
   this._registerChartRemove(chart);
@@ -377,6 +376,7 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
       chart.transformData(range, data).done(function() {
         // No need to call with arguments, since transformData will set the lastRange and lastData values
         chart.draw();
+        chart._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(chart.id()));
       });
     })(chart);
   }
@@ -430,7 +430,7 @@ epiviz.ui.charts.ChartManager.prototype.dataWaitStart = function(chartId, chartF
   }
   for (var id in this._charts) {
     if (!this._charts.hasOwnProperty(id)) { continue; }
-    if (!chartFilter || !chartFilter[this._charts[id]]) { continue; }
+    if (!chartFilter || !chartFilter(this._charts[id])) { continue; }
     this._charts[id].onDataWaitStart().notify(new epiviz.ui.charts.VisEventArgs(id));
   }
 };
@@ -683,6 +683,17 @@ epiviz.ui.charts.ChartManager.prototype._registerChartCustomSettingsChanged = fu
  * @param {epiviz.ui.charts.Chart} chart
  * @private
  */
+epiviz.ui.charts.ChartManager.prototype._registerChartSplinesSettingsChanged = function(chart) {
+  var self = this;
+  chart._splinesSettings.addListener(new epiviz.events.EventListener(function(e) {
+    self._chartSplineSettingsChanged.notify(e);
+  }));
+};
+
+/**
+ * @param {epiviz.ui.charts.Chart} chart
+ * @private
+ */
 epiviz.ui.charts.ChartManager.prototype._registerChartSizeChanged = function(chart) {
   var self = this;
   chart.onSizeChanged().addListener(new epiviz.events.EventListener(function(e) {
@@ -744,10 +755,13 @@ epiviz.ui.charts.ChartManager.prototype._registerChartIcicleLocationChanges = fu
    var self = this;
 
    self.onChartIcicleLocationChanges().addListener(new epiviz.events.EventListener(function(e) {
-      if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
-        chart._updateLocation(e.args.start, e.args.width);
-        chart._drawAxes(chart._lastRoot);
-      }
+    if (chart.type == "Sunburst") {
+      chart._drawAxes(chart._lastRoot);
+    }
+    else if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+      chart._updateLocation(e.args.start, e.args.width);
+      chart._drawAxes(chart._lastRoot);
+    }
    }));
 }; 
 

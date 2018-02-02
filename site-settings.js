@@ -17,15 +17,15 @@ epiviz.Config.SETTINGS.dataProviders = [
       // aggregate at these levels in the tree:
       {2: epiviz.ui.charts.tree.NodeSelectionType.NODE}
     ]
-    // ,
-    // [
-    //   'epiviz.data.EpivizApiDataProvider',
-    //   'etec16s',
-    //   'http://metaviz.cbcb.umd.edu/api',
-    //   [],
-    //   3,
-    //   {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
-    // ],
+    ,
+    [
+      'epiviz.data.EpivizApiDataProvider',
+      'vogtmannE',
+      'http://metaviz.cbcb.umd.edu/api',
+      [],
+      3,
+      {3: epiviz.ui.charts.tree.NodeSelectionType.NODE}
+    ],
     // [
     //   'epiviz.data.EpivizApiDataProvider',
     //   'hmp',

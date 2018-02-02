@@ -672,3 +672,13 @@ epiviz.data.WebsocketDataProvider.prototype._loadWorkspace = function (request) 
   var response = new epiviz.data.Response(request.id(), result);
   this._sendMessage(JSON.stringify(response.raw()));
 };
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype.updateSplines = function (request, callback) {
+  var message = JSON.stringify(request.raw());
+  this._callbacks[request.id()] = callback;
+  this._sendMessage(message);
+};

@@ -19,9 +19,10 @@ goog.require('epiviz.ui.charts.VisEventArgs');
  */
 epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
 
-  epiviz.ui.charts.Visualization.call(this, id, container, properties);
-
+  // epiviz.ui.charts.Visualization.call(this, id, container, properties);
+  epiviz.ui.charts.tree.HierarchyVisualization.call(this, id, container, properties);
   // Sunburst specific
+  this.type = "Sunburst";
 
   /**
    * A D3 function used to partition a tree
@@ -53,6 +54,8 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
    * @private
    */
   this._y = null;
+
+  this._charWidth = 10;
 
   var self = this;
   /**
@@ -132,7 +135,8 @@ epiviz.ui.charts.tree.Sunburst = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.tree.Sunburst.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Visualization.prototype);
+// epiviz.ui.charts.tree.Sunburst.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.tree.HierarchyVisualization.prototype);
+epiviz.ui.charts.tree.Sunburst.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.tree.HierarchyVisualization.prototype);
 epiviz.ui.charts.tree.Sunburst.constructor = epiviz.ui.charts.tree.Sunburst;
 
 /**
@@ -140,7 +144,7 @@ epiviz.ui.charts.tree.Sunburst.constructor = epiviz.ui.charts.tree.Sunburst;
  * @protected
  */
 epiviz.ui.charts.tree.Sunburst.prototype._initialize = function() {
-  epiviz.ui.charts.Visualization.prototype._initialize.call(this);
+  epiviz.ui.charts.tree.HierarchyVisualization.prototype._initialize.call(this);
 
   this._radius = Math.min(this.width(), this.height()) * 0.5;
   this._y = d3.scale.pow().exponent(1.2)
@@ -153,7 +157,7 @@ epiviz.ui.charts.tree.Sunburst.prototype._initialize = function() {
  * @returns {Array.<epiviz.ui.charts.VisObject>}
  */
 epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
-  epiviz.ui.charts.Visualization.prototype.draw.call(this, root);
+  epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw.call(this, root);
 
   var self = this;
 
@@ -187,26 +191,53 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
   var width = this.width();
   var height = this.height();
 
-  var canvas = this._svg.select('.sunburst-canvas');
+  var canvas = this._svg.select('.Sunburst-canvas');
   if (canvas.empty()) {
     canvas = this._svg.append('g')
-      .attr('class', 'sunburst-canvas')
+      .attr('class', 'items Sunburst-canvas')
       .attr('transform', sprintf('translate(%s,%s) rotate(180)', width * 0.5, height * 0.5));
   }
 
   if (!root) { return; }
-
+  
+  
+  canvas.selectAll('g').remove();
+    
   var groups = canvas.selectAll('g')
     .data(this._uiData, function(d) { return d.id; });
 
   var newGroups = groups
     .enter().append('g')
-    .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
+    .attr('id', function(d) { return self.id() + '-' + d.id + '-parent'; })
+    .attr("class", "item")
+    // .on('click', function(d) { self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d)); });
 
   var newPaths = newGroups.append('path')
     .attr('id', function(d) { return self.id() + '-' + d.id; })
     .attr('class', 'node-arc')
-    .style('fill', function(d) { return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); });
+    .style('fill', function(d) { 
+      // return self.colors().getByKey((d.children && d.children.length ? d : d.parent).id); 
+      return self.colors().getByKey(d.taxonomy);
+    })
+    .on('mouseover', function(d) { 
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      var arclength = d.dx * 2 * Math.PI * self._y(d.y + d.dy);
+      var maxChars = arclength / (self._charWidth + 4);
+      if (d.name.length > maxChars && d.dx != 0) {
+        d3.select('#' + self.id() + '-' + d.id + '-parent').append("text")
+          .attr("class", "hoverText")
+          .text(d.name)
+          .attr("x", self._y(d.y + d.dy) * (self._x(d.dx/2)) + 2 * Math.PI * d.dx)
+          .attr("y", self._y(d.y))
+          .attr('transform', sprintf('rotate(180)'));
+      }
+    })
+    .on('mouseout', function() { 
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); 
+      d3.selectAll(".hoverText").remove();
+    });
+
+  newGroups.selectAll('text').remove();
 
   var newLabels = newGroups.append('text')
     .attr('class', 'unselectable-text node-label')
@@ -215,7 +246,16 @@ epiviz.ui.charts.tree.Sunburst.prototype.draw = function(root) {
     .attr("dx", "6") // margin
     .attr("dy", ".35em") // vertical-align
     .attr('startOffset', 20)
-    .text(function(d) { return d.name; });
+    .text(function(d) { 
+      var arclength = d.dx * 2 * Math.PI * self._y(d.y + d.dy);
+      var maxChars = arclength / (self._charWidth + 4);
+      if (d.name.length > maxChars && d.dx != 0) {
+          return d.name.substring(0, Math.round(maxChars)) + "..";
+      }
+      else{
+        return d.name;
+      }
+    });
 
   canvas.selectAll('g').selectAll('path')
     .transition().duration(this._animationDelay)
@@ -366,4 +406,116 @@ epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelTransform = function(node) {
 epiviz.ui.charts.tree.Sunburst.prototype._nodeLabelStartOffset = function(node) {
   var py = this._y(node.y + node.dy);
   return py * this._x(node.dx / 2);
+};
+
+
+/**
+ * @param {epiviz.ui.charts.VisObject} selectedObject
+ */
+epiviz.ui.charts.tree.Sunburst.prototype.doHover = function(selectedObject) {
+
+  if(!selectedObject.aggregateHover) {
+    var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.SunburstType.CustomSettings.HOVER_OPACITY];
+
+    var self = this;
+    if (this._dragging) {
+        return;
+    }
+
+    var itemsGroup = this._svg.select('.items');
+    itemsGroup.classed('unhovered', true);
+    var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+        if (d instanceof epiviz.ui.charts.tree.UiNode) {
+            var isOverlap = selectedObject.overlapsWith(d);
+
+            if (isOverlap && d.selectionType == 2) {
+                self.hoverHierarchy(d);
+            }
+
+            return isOverlap;
+        }
+        return false;
+    });
+    selectItems.classed('hovered', true);
+    itemsGroup.selectAll('.item').sort(function(d1, d2) {
+        if (d1 instanceof epiviz.ui.charts.tree.UiNode) {
+            return selectedObject.overlapsWith(d1) ? 1 : -1;
+        }
+        return -1;
+
+    });
+
+    if (selectedObject instanceof epiviz.ui.charts.tree.UiNode) {
+        this.hoverHierarchy(selectedObject);
+    }
+
+      this._svg.selectAll(".item")
+      .style("opacity", 1 - hoverOpacity);
+
+      this._svg.selectAll(".item.hovered")
+      .style("opacity", hoverOpacity);
+  }
+};
+
+/**
+ */
+epiviz.ui.charts.tree.Sunburst.prototype.doUnhover = function() {
+
+  var hoverOpacity = this.customSettingsValues()[epiviz.ui.charts.tree.SunburstType.CustomSettings.HOVER_OPACITY];
+
+  if (this._dragging) { return; }
+  this._svg.select('.items').classed('unhovered', false);
+  this._svg.select('.items').selectAll('.item').classed('hovered', false);
+
+      this._svg.selectAll(".item.hovered")
+      .style("opacity", 1);
+
+      this._svg.selectAll(".item")
+      .style("opacity", 1);
+};
+
+
+epiviz.ui.charts.tree.Sunburst.prototype.hoverHierarchy = function(selectedObject) {
+
+  var self = this;
+  var itemsGroup = this._svg.select('.items');
+
+  // for all children and parents set class hovered = true;
+  function setChildrenHovered(nes) {
+      var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+          if (d instanceof epiviz.ui.charts.tree.UiNode) {
+            return nes.overlapsWith(d);
+          }
+          return false;
+      });
+
+      selectItems.classed('hovered', true);
+      if (nes.children.length == 0) {
+          return;
+      } else {
+          nes.children.forEach(function(n) {
+              setChildrenHovered(n);
+          });
+      }
+  }
+
+  setChildrenHovered(selectedObject);
+
+  function setParentHovered(nes) {
+      var selectItems = itemsGroup.selectAll('.item').filter(function(d) {
+          if (d instanceof epiviz.ui.charts.tree.UiNode) {
+              return nes.overlapsWith(d);
+          }
+          return false;
+      });
+
+      selectItems.classed('hovered', true);
+      if (nes.parent == null) {
+          return;
+      } else {
+          setParentHovered(nes.parent);
+      }
+  }
+  setParentHovered(selectedObject);
+
 };

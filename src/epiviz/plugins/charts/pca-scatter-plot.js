@@ -153,11 +153,31 @@ epiviz.plugins.charts.PCAScatterPlot.prototype._drawCircles = function(data, dim
     var maxX = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 
     var colorbylabel = this.customSettingsValues()[epiviz.plugins.charts.PCAScatterPlotType.CustomSettings.COLOR_BY];
+    
+    var minXdata = data[0][dimx];
+    var maxXdata = data[0][dimx];
+    var minYdata = data[0][dimy];
+    var maxYdata = data[0][dimy];
+    
+    data.forEach(function(m){
+        if(m[dimy] < minYdata){
+            minYdata = m[dimy];
+        }
+        if(m[dimy] > maxYdata){
+            maxYdata = m[dimy];
+        }
+        if(m[dimx] < minXdata){
+            minXdata = m[dimx];
+        }
+        if(m[dimx] > maxXdata){
+            maxXdata = m[dimx];
+        }
+    });
 
-    if (minX == CustomSetting.DEFAULT) { minX = this._measurementsX[0].minValue(); }
-    if (minY == CustomSetting.DEFAULT) { minY = this._measurementsY[0].minValue(); }
-    if (maxX == CustomSetting.DEFAULT) { maxX = this._measurementsX[0].maxValue(); }
-    if (maxY == CustomSetting.DEFAULT) { maxY = this._measurementsY[0].maxValue(); }
+    if (minX == CustomSetting.DEFAULT) { minX = minXdata - .1; }
+    if (minY == CustomSetting.DEFAULT) { minY = minYdata - .1; }
+    if (maxX == CustomSetting.DEFAULT) { maxX = maxXdata + .1; }
+    if (maxY == CustomSetting.DEFAULT) { maxY = maxYdata + .1; }
 
     var xScale = d3.scale.linear()
         .domain([minX, maxX])
@@ -452,7 +472,7 @@ epiviz.plugins.charts.PCAScatterPlot.prototype._drawAxes = function(xScale, ySca
     var self = this;
     this._legend.selectAll('text').remove();
 
-    var xMeasurements = ['pca1'];
+    var xMeasurements = ['PCA1'];
     var self = this;
     this._legend.selectAll('.x-measurement').remove();
     this._legend.selectAll('.x-measurement-color').remove();
@@ -486,7 +506,7 @@ epiviz.plugins.charts.PCAScatterPlot.prototype._drawAxes = function(xScale, ySca
         return (self.width() - xTextLength) * 0.5 + 7 + xTitleEntriesStartPosition[i];
     });
 
-    var yMeasurements = ['pca2'];
+    var yMeasurements = ['PCA2'];
     this._legend.selectAll('.y-measurement').remove();
     this._legend.selectAll('.y-measurement-color').remove();
 

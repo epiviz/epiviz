@@ -47,8 +47,10 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.StackedLinePlotType',
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.PCAScatterPlotType',
+    'epiviz.plugins.charts.PCoAScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
-    'epiviz.plugins.charts.FeatureScatterPlotType'
+    'epiviz.plugins.charts.FeatureScatterPlotType',
+    'epiviz.ui.charts.tree.SunburstType'
   ],
 
   // Chart default settings
@@ -147,7 +149,8 @@ epiviz.Config.SETTINGS = {
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton',
-        'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton'
+        'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton',
+        'epiviz.ui.charts.decoration.SplinesSettingsButton'
       ],
       colors: 'd3-category20b'
     },
@@ -164,6 +167,12 @@ epiviz.Config.SETTINGS = {
       colors: 'd3-category20b'
     },
     'epiviz.plugins.charts.PCAScatterPlot': {
+      margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+      ]
+     },
+     'epiviz.plugins.charts.PCoAScatterPlot': {
       margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
       decorations: [
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
@@ -211,10 +220,16 @@ epiviz.Config.SETTINGS = {
       colLabel: 'label'
     },
     'epiviz.plugins.charts.PCAScatterPlot': {
-      xMin: -2,
-      xMax: 2,
-      yMin: -2,
-      yMax: 2
+      xMin: "default",
+      xMax: "default",
+      yMin: "default",
+      yMax: "default"
+    },
+    'epiviz.plugins.charts.PoCAScatterPlot': {
+      xMin: "default",
+      xMax: "default",
+      yMin: "default",
+      yMax: "default"
     },
     'epiviz.plugins.charts.DiversityScatterPlot': {
       yMin: 'default',
@@ -254,7 +269,18 @@ epiviz.Config.SETTINGS = {
       'epiviz.ui.charts.transform.clustering.NoneClustering',
       'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
     ],
-    metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
+    metrics: [
+      'epiviz.ui.charts.transform.clustering.EuclideanMetric',
+      'epiviz.ui.charts.transform.clustering.BrayMetric',
+      'epiviz.ui.charts.transform.clustering.BinomialMetric',
+      'epiviz.ui.charts.transform.clustering.CanberraMetric',
+      'epiviz.ui.charts.transform.clustering.GowerMetric',
+      'epiviz.ui.charts.transform.clustering.JaccardMetric',
+      'epiviz.ui.charts.transform.clustering.KulzynskiMetric',
+      'epiviz.ui.charts.transform.clustering.ManhattanMetric',
+      'epiviz.ui.charts.transform.clustering.MorisitaMetric',
+      'epiviz.ui.charts.transform.clustering.HornMetric'
+    ],
     linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
   },
 
