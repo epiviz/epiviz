@@ -371,7 +371,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype._drawLegend = function() 
   var textLength = 0;
   var titleEntriesStartPosition = [];
 
-  $('#' + this.id() + ' .chart-title')
+  this._container.find(' .chart-title')
     .each(function(i) {
       titleEntriesStartPosition.push(textLength);
       textLength += this.getBBox().width + 15;

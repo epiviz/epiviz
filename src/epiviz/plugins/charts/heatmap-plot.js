@@ -667,7 +667,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
       .style('opacity', 0)
       .remove();
 
-    $('#' + this.id() + ' .col-text')
+    this._container.find(' .col-text')
       .each(function(i) {
         var textWidth = this.getBBox().width;
         if (maxColSize < textWidth) { maxColSize = textWidth; }
@@ -779,7 +779,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(itemsGroup, c
   var textLength = 0;
   var titleEntriesStartPosition = [];
 
-  $('#' + this.id() + ' .chart-title')
+  this._container.find(' .chart-title')
     .each(function(i) {
       titleEntriesStartPosition.push(textLength);
       textLength += this.getBBox().width + 15;

@@ -7,7 +7,8 @@ epiviz.Config.SETTINGS.dataProviders = [
         // fully qualified class name for the class
         'epiviz.data.WebServerDataProvider',
         epiviz.Config.DEFAULT_DATA_PROVIDER_ID,
-        'http://epiviz.cbcb.umd.edu/data/main.php'
+        // 'http://epiviz.cbcb.umd.edu/data/main.php'
+        'http://localhost:5000/'
 
     ]
 ];

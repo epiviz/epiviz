@@ -380,7 +380,7 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
   var textLength = 0;
   var titleEntriesStartPosition = [];
 
-  $('#' + this.id() + ' .chart-title')
+  this._container.find(' .chart-title')
     .each(function(i) {
       titleEntriesStartPosition.push(textLength);
       textLength += this.getBBox().width + 15;

@@ -564,7 +564,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
         var textLength = 0;
         var titleEntriesStartPosition = [];
 
-        $('#' + this.id() + ' .chart-title')
+        this._container.find(' .chart-title')
             .each(function(i) {
                 titleEntriesStartPosition.push(textLength);
                 textLength += this.getBBox().width + 15;
@@ -757,7 +757,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawAxesOld = function(xSc
     var xTextLength = 0;
     var xTitleEntriesStartPosition = [];
 
-    $('#' + this.id() + ' .x-measurement')
+    this._container.find(' .x-measurement')
         .each(function(i) {
             xTitleEntriesStartPosition.push(xTextLength);
             xTextLength += this.getBBox().width + 15;
@@ -810,7 +810,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawAxesOld = function(xSc
     var yTextLength = 0;
     var yTitleEntriesStartPosition = [];
 
-    $('#' + this.id() + ' .y-measurement')
+    this._container.find(' .y-measurement')
         .each(function(i) {
             yTitleEntriesStartPosition.push(yTextLength);
             yTextLength += this.getBBox().width + 15;

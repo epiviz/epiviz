@@ -325,9 +325,9 @@ epiviz.ui.charts.Visualization.prototype._initialize = function() {
   this._container.addClass('visualization-container');
 
   this._container.append(sprintf('<svg id="%s" class="visualization" width="%s" height="%s"><style type="text/css"></style><defs></defs></svg>', this._svgId, width, height));
-  this._svg = d3.select('#' + this._svgId);
+  this._svg = d3.select(this._container.find("#"+this._svgId)[0]);
 
-  var jSvg = $('#' + this._svgId);
+  var jSvg = $(this._container.find("#"+this._svgId)[0]);
 
   /**
    * The difference in size between the container and the inner SVG
