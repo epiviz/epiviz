@@ -6,6 +6,12 @@
 
 goog.provide('epiviz.plugins.charts.StackedBlocksTrack');
 
+goog.require('epiviz.ui.charts.Track');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.ChartObject');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.charts.Visualization');
+
 /**
  * @param id
  * @param {jQuery} container

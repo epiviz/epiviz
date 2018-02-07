@@ -8,6 +8,7 @@ goog.provide('epiviz.ui.charts.ChartFactory');
 
 goog.require('epiviz.utils');
 goog.require('epiviz.plugins.charts.BlocksTrackType');
+goog.require('epiviz.plugins.charts.StackedBlocksTrackType');
 goog.require('epiviz.plugins.charts.LineTrackType');
 goog.require('epiviz.plugins.charts.StackedLineTrackType');
 goog.require('epiviz.plugins.charts.ScatterPlotType');

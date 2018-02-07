@@ -6,7 +6,11 @@
 
 goog.provide('epiviz.plugins.charts.StackedBlocksTrackType');
 
-goog.require('epiviz.ui.charts.Chart');
+goog.require('epiviz.plugins.charts.StackedBlocksTrack');
+goog.require('epiviz.ui.charts.TrackType');
+goog.require('epiviz.measurements.Measurement.Type');
+goog.require('epiviz.ui.charts.CustomSetting');
+
 
 /**
  * @param {epiviz.Config} config
