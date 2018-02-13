@@ -85,18 +85,22 @@ epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize = functi
 
       var measurements = data.measurements();
 
-      epiviz.utils.deferredFor(measurements.length, function(j) {
-        var mDeferredIteration = new epiviz.deferred.Deferred();
-        var m = measurements[j];
+      var mDeferredIteration = new epiviz.deferred.Deferred();
+
+      measurements.forEach(function(m,i) {
         groupBy.mark()(m, data, preGroupVars).done(function(groupLabel) {
           if (!(groupLabel in grouped)) {
             grouped[groupLabel] = [];
           }
           grouped[groupLabel].push(m);
-          mDeferredIteration.resolve();
+
+          if(i == measurements.length-1) {
+            mDeferredIteration.resolve();
+          }
         });
-        return mDeferredIteration;
-      }).done(function() {
+      });
+      
+      mDeferredIteration.done(function() {
         var labelMeasurements = {};
         var label;
         /** @type {Array.<epiviz.measurements.Measurement>} */
