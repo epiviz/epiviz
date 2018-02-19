@@ -203,6 +203,7 @@ epiviz.data.Request.getRows = function(datasource, range) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_ROWS,
+    datasourceGroup: datasource.dataprovider(),
     datasource: datasource.id(),
     seqName: range ? range.seqName() : undefined,
     start: range ? range.start() : undefined,
@@ -221,6 +222,7 @@ epiviz.data.Request.getValues = function(measurement, range) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_VALUES,
+    datasourceGroup: measurement.dataprovider(),
     datasource: measurement.datasource().id(),
     measurement: measurement.id(),
     seqName: range ? range.seqName() : undefined,
@@ -238,6 +240,7 @@ epiviz.data.Request.getValues = function(measurement, range) {
 epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
   var rawMsByDs = {};
   var dataSource = "";
+  var dataprovider = "";
   var measure;
   for (var ds in measurementsByDatasource) {
     dataSource = ds;
@@ -248,6 +251,7 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
         if(dataSource == "genes") {
           measure = m;
         }
+        dataprovider = m.dataprovider();
         ms.push(m.id());
       });
       return ms;
@@ -261,6 +265,7 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
       start: range ? range.start() : undefined,
       end: range ? range.end() : undefined,
       measurements: rawMsByDs[dataSource],
+      datasourceGroup: dataprovider,
       datasource: dataSource,
       genome: range ? range.genome() : undefined,
       metadata: measure.metadata()
@@ -275,6 +280,7 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
     end: range ? range.end() : undefined,
     measurements: rawMsByDs[dataSource],
     datasource: dataSource,
+    datasourceGroup: dataprovider,
     genome: range ? range.genome() : undefined
   });
 
