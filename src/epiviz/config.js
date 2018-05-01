@@ -4,18 +4,18 @@
  * Time: 12:14 PM
  */
 
-goog.provide('epiviz.Config');
+goog.provide("epiviz.Config");
 
-goog.require('epiviz.ui.WebArgsManager');
-goog.require('epiviz.data.WebsocketDataProvider');
-goog.require('epiviz.data.WebServerDataProvider');
+goog.require("epiviz.ui.WebArgsManager");
+goog.require("epiviz.data.WebsocketDataProvider");
+goog.require("epiviz.data.WebServerDataProvider");
+goog.require("epiviz.data.ShinyDataProvider");
 
 /**
  * @param {*} [settingsMap] A map of settings to override the default settings for the config.
  * @constructor
  */
 epiviz.Config = function(settingsMap) {
-
   /**
    * The server storing all the back-end PHP scripts
    * @type {string}
@@ -130,7 +130,6 @@ epiviz.Config = function(settingsMap) {
   //   'epiviz.plugins.charts.BlocksTrack': { width: 450, height: 190 }
   // }
 
-
   /**
    * @type {Object.<epiviz.ui.charts.VisualizationType.DisplayType|string, Object.<epiviz.Config.VisualizationPropertySettings, *>>}
    */
@@ -166,17 +165,23 @@ epiviz.Config = function(settingsMap) {
   // Override settings included in the given object
   if (settingsMap) {
     for (var setting in settingsMap) {
-      if (!settingsMap.hasOwnProperty(setting)) { continue; }
+      if (!settingsMap.hasOwnProperty(setting)) {
+        continue;
+      }
       this[setting] = settingsMap[setting];
     }
 
-    if(settingsMap.configType != 'epivizr_standalone') {
-      var socketHosts = epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'];
+    if (settingsMap.configType != "epivizr_standalone") {
+      var socketHosts = epiviz.ui.WebArgsManager.WEB_ARGS["websocket-host"];
       if (socketHosts && socketHosts.length) {
         for (var i = 0; i < socketHosts.length; ++i) {
-          this.dataProviders.push(sprintf('epiviz.data.WebsocketDataProvider,%s,%s',
-              epiviz.data.WebsocketDataProvider.DEFAULT_ID + '-' + i,
-              socketHosts[i]));
+          this.dataProviders.push(
+            sprintf(
+              "epiviz.data.WebsocketDataProvider,%s,%s",
+              epiviz.data.WebsocketDataProvider.DEFAULT_ID + "-" + i,
+              socketHosts[i]
+            )
+          );
         }
       }
     }
@@ -187,8 +192,8 @@ epiviz.Config = function(settingsMap) {
     colorPalettesMap[palette.id()] = palette;
   });
   this.colorPalettesMap = colorPalettesMap;
-  
-  if(settingsMap.configType != 'default') {
+
+  if (settingsMap.configType != "default") {
     this.useCookie = epiviz.ui.WebArgsManager.WEB_ARGS.useCookie;
   }
 };
@@ -202,68 +207,177 @@ epiviz.Config.SETTINGS = {};
 /**
  * @const {string}
  */
-epiviz.Config.DEFAULT_DATA_PROVIDER_ID = 'umd';
+epiviz.Config.DEFAULT_DATA_PROVIDER_ID = "umd";
 
 /**
  * @const {string}
  */
-epiviz.Config.DEFAULT_WORKSPACE_NAME = 'Default Workspace';
+epiviz.Config.DEFAULT_WORKSPACE_NAME = "Default Workspace";
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.EPIVIZ_V1_COLORS = ['#025167', '#e7003e', '#ffcd00', '#057d9f', '#970026', '#ffe373', '#ff8100'];
+epiviz.Config.EPIVIZ_V1_COLORS = [
+  "#025167",
+  "#e7003e",
+  "#ffcd00",
+  "#057d9f",
+  "#970026",
+  "#ffe373",
+  "#ff8100"
+];
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.COLORS_BRIGHT = ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'];
+epiviz.Config.COLORS_BRIGHT = [
+  "#1859a9",
+  "#ed2d2e",
+  "#008c47",
+  "#010101",
+  "#f37d22",
+  "#662c91",
+  "#a11d20",
+  "#b33893"
+];
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.COLORS_LIGHT = ['#b8d2eb', '#f2aeac', '#d8e4aa', '#cccccc', '#f2d1b0', '#d4b2d3', '#ddb8a9', '#ebbfd9'];
+epiviz.Config.COLORS_LIGHT = [
+  "#b8d2eb",
+  "#f2aeac",
+  "#d8e4aa",
+  "#cccccc",
+  "#f2d1b0",
+  "#d4b2d3",
+  "#ddb8a9",
+  "#ebbfd9"
+];
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.COLORS_MEDIUM = ['#599ad3', '#f1595f', '#79c36a', '#727272', '#f9a65a', '#9e66ab', '#cd7058', '#d77fb3'];
+epiviz.Config.COLORS_MEDIUM = [
+  "#599ad3",
+  "#f1595f",
+  "#79c36a",
+  "#727272",
+  "#f9a65a",
+  "#9e66ab",
+  "#cd7058",
+  "#d77fb3"
+];
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.COLORS_D3_CAT10 = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+epiviz.Config.COLORS_D3_CAT10 = [
+  "#1f77b4",
+  "#ff7f0e",
+  "#2ca02c",
+  "#d62728",
+  "#9467bd",
+  "#8c564b",
+  "#e377c2",
+  "#7f7f7f",
+  "#bcbd22",
+  "#17becf"
+];
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.COLORS_D3_CAT20 = ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"];
+epiviz.Config.COLORS_D3_CAT20 = [
+  "#1f77b4",
+  "#aec7e8",
+  "#ff7f0e",
+  "#ffbb78",
+  "#2ca02c",
+  "#98df8a",
+  "#d62728",
+  "#ff9896",
+  "#9467bd",
+  "#c5b0d5",
+  "#8c564b",
+  "#c49c94",
+  "#e377c2",
+  "#f7b6d2",
+  "#7f7f7f",
+  "#c7c7c7",
+  "#bcbd22",
+  "#dbdb8d",
+  "#17becf",
+  "#9edae5"
+];
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.COLORS_D3_CAT20B = ["#393b79", "#5254a3", "#6b6ecf", "#9c9ede", "#637939", "#8ca252", "#b5cf6b", "#cedb9c", "#8c6d31", "#bd9e39", "#e7ba52", "#e7cb94", "#843c39", "#ad494a", "#d6616b", "#e7969c", "#7b4173", "#a55194", "#ce6dbd", "#de9ed6"];
+epiviz.Config.COLORS_D3_CAT20B = [
+  "#393b79",
+  "#5254a3",
+  "#6b6ecf",
+  "#9c9ede",
+  "#637939",
+  "#8ca252",
+  "#b5cf6b",
+  "#cedb9c",
+  "#8c6d31",
+  "#bd9e39",
+  "#e7ba52",
+  "#e7cb94",
+  "#843c39",
+  "#ad494a",
+  "#d6616b",
+  "#e7969c",
+  "#7b4173",
+  "#a55194",
+  "#ce6dbd",
+  "#de9ed6"
+];
 
 /**
  * @type {Array.<string>}
  * @const
  */
-epiviz.Config.COLORS_D3_CAT20C = ["#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d", "#fd8d3c", "#fdae6b", "#fdd0a2", "#31a354", "#74c476", "#a1d99b", "#c7e9c0", "#756bb1", "#9e9ac8", "#bcbddc", "#dadaeb", "#636363", "#969696", "#bdbdbd", "#d9d9d9"];
+epiviz.Config.COLORS_D3_CAT20C = [
+  "#3182bd",
+  "#6baed6",
+  "#9ecae1",
+  "#c6dbef",
+  "#e6550d",
+  "#fd8d3c",
+  "#fdae6b",
+  "#fdd0a2",
+  "#31a354",
+  "#74c476",
+  "#a1d99b",
+  "#c7e9c0",
+  "#756bb1",
+  "#9e9ac8",
+  "#bcbddc",
+  "#dadaeb",
+  "#636363",
+  "#969696",
+  "#bdbdbd",
+  "#d9d9d9"
+];
 
 /**
  * @enum {string}
  */
 epiviz.Config.VisualizationPropertySettings = {
-  WIDTH: 'width',
-  HEIGHT: 'height',
-  MARGINS: 'margins',
-  COLORS: 'colors',
-  DECORATIONS: 'decorations'
+  WIDTH: "width",
+  HEIGHT: "height",
+  MARGINS: "margins",
+  COLORS: "colors",
+  DECORATIONS: "decorations"
 };
