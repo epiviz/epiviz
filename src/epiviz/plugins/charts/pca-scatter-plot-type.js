@@ -4,9 +4,9 @@
  * Time: 11:55 PM
  */
 
-goog.provide('epiviz.plugins.charts.CustomScatterPlotType');
+goog.provide('epiviz.plugins.charts.PCAScatterPlotType');
 
-goog.require('epiviz.plugins.charts.CustomScatterPlot');
+// goog.require('epiviz.plugins.charts.FeatureScatterPlot');
 goog.require('epiviz.ui.charts.PlotType');
 goog.require('epiviz.measurements.Measurement.Type');
 goog.require('epiviz.ui.charts.CustomSetting');
@@ -17,7 +17,7 @@ goog.require('epiviz.ui.charts.Visualization');
  * @extends {epiviz.ui.charts.PlotType}
  * @constructor
  */
-epiviz.plugins.charts.CustomScatterPlotType = function(config) {
+epiviz.plugins.charts.PCAScatterPlotType = function(config) {
   // Call superclass constructor
   epiviz.ui.charts.PlotType.call(this, config);
 };
@@ -25,8 +25,8 @@ epiviz.plugins.charts.CustomScatterPlotType = function(config) {
 /*
  * Copy methods from upper class
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.PlotType.prototype);
-epiviz.plugins.charts.CustomScatterPlotType.constructor = epiviz.plugins.charts.CustomScatterPlotType;
+epiviz.plugins.charts.PCAScatterPlotType.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.PlotType.prototype);
+epiviz.plugins.charts.PCAScatterPlotType.constructor = epiviz.plugins.charts.PCAScatterPlotType;
 
 /**
  * @param {string} id
@@ -34,56 +34,56 @@ epiviz.plugins.charts.CustomScatterPlotType.constructor = epiviz.plugins.charts.
  * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.ScatterPlot}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.createNew = function(id, container, properties) {
-  return new epiviz.plugins.charts.CustomScatterPlot(id, container, properties);
+epiviz.plugins.charts.PCAScatterPlotType.prototype.createNew = function(id, container, properties) {
+  return new epiviz.plugins.charts.PCAScatterPlot(id, container, properties);
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.typeName = function() {
-  return 'epiviz.plugins.charts.CustomScatterPlot';
+epiviz.plugins.charts.PCAScatterPlotType.prototype.typeName = function() {
+  return 'epiviz.plugins.charts.PCAScatterPlot';
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.chartName = function() {
+epiviz.plugins.charts.PCAScatterPlotType.prototype.chartName = function() {
   return 'PCA Scatter Plot';
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.chartHtmlAttributeName = function() {
+epiviz.plugins.charts.PCAScatterPlotType.prototype.chartHtmlAttributeName = function() {
   return 'pca_scatter';
 };
 
 /**
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.measurementsFilter = function() { return function(m) { return epiviz.measurements.Measurement.Type.hasValues(m.type()); }; };
+epiviz.plugins.charts.PCAScatterPlotType.prototype.measurementsFilter = function() { return function(m) { return epiviz.measurements.Measurement.Type.hasValues(m.type()); }; };
 
 /**
  * If true, this flag indicates that the corresponding chart can only show measurements that belong to the same
  * data source group
  * @returns {boolean}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.isRestrictedToSameDatasourceGroup = function() { return true; };
+epiviz.plugins.charts.PCAScatterPlotType.prototype.isRestrictedToSameDatasourceGroup = function() { return true; };
 
 /**
  * Gets the minimum number of measurements that must be selected for the chart to be displayed
  * @returns {number}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.minSelectedMeasurements = function() { return 2; };
+epiviz.plugins.charts.PCAScatterPlotType.prototype.minSelectedMeasurements = function() { return 2; };
 
 /**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}
  */
-epiviz.plugins.charts.CustomScatterPlotType.prototype.customSettingsDefs = function() {
+epiviz.plugins.charts.PCAScatterPlotType.prototype.customSettingsDefs = function() {
   return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO,
+      epiviz.plugins.charts.PCAScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       0.015,
       'Circle radius ratio'),
@@ -113,19 +113,26 @@ epiviz.plugins.charts.CustomScatterPlotType.prototype.customSettingsDefs = funct
       'Max Y'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.COLOR_BY,
+      epiviz.plugins.charts.PCAScatterPlotType.CustomSettings.COLOR_BY,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
       'name',
-      'Color By')
+      'Color By'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.PCAScatterPlotType.CustomSettings.AB_LINE,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Draw Abline')
   ]);
 };
 
 /**
  * @enum {string}
  */
-epiviz.plugins.charts.CustomScatterPlotType.CustomSettings = {
+epiviz.plugins.charts.PCAScatterPlotType.CustomSettings = {
   CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
-  COLOR_BY: 'colorBy'
+  COLOR_BY: 'colorBy',
+  AB_LINE: 'abLine'
 };
 
 // goog.inherits(epiviz.plugins.charts.CustomScatterPlotType, epiviz.ui.charts.PlotType);

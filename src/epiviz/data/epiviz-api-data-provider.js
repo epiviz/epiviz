@@ -42,24 +42,28 @@ epiviz.data.EpivizApiDataProvider = function(id, serverEndpoint, measurementAnno
    * @private
    */
   this._selection = {};
+  this_lastSelection = {};
 
   /**
    * @type {Object.<string, number>}
    * @private
    */
   this._order = {};
+  this._lastOrder = {};
 
   /**
    * @type {Object.<number, number>}
    * @private
    */
   this._selectedLevels = selectedLevels || {6: epiviz.ui.charts.tree.NodeSelectionType.NODE, 7: epiviz.ui.charts.tree.NodeSelectionType.NODE};
+  this._lastSelectedLevels;
 
   /**
    * @type {string}
    * @private
    */
   this._lastRoot = '';
+  this._lastLastRoot = '';
 
   /**
    * @type {number}
@@ -82,7 +86,8 @@ epiviz.data.EpivizApiDataProvider.REQUEST_MAPPING = {
   getValues: 'values',
   getMeasurements: 'measurements',
   getSeqInfos: 'partitions',
-  getHierarchy: 'hierarchy'
+  getHierarchy: 'hierarchy',
+  getHierarchyFilter: 'hierarchyFilter'
 };
 
 /**
@@ -91,10 +96,13 @@ epiviz.data.EpivizApiDataProvider.REQUEST_MAPPING = {
  */
 epiviz.data.EpivizApiDataProvider.prototype.getData = function(request, callback) {
   if (request.isEmpty()) { return; }
-
+  // console.log(request);
   var self = this;
   var apiRequest = self._adaptRequest(request);
+  // console.log(apiRequest);
   this._send(apiRequest, function(apiData) {
+    // console.log("sent request");
+    // console.log(apiRequest);
     callback(self._adaptResponse(request, apiData));
   });
 };
@@ -105,6 +113,8 @@ epiviz.data.EpivizApiDataProvider.prototype.getData = function(request, callback
  * @private
  */
 epiviz.data.EpivizApiDataProvider.prototype._send = function(request, callback) {
+
+  var self = this;
   var requestHandler = $.ajax({
     type: 'post',
     url: this._serverEndpoint,
@@ -122,6 +132,8 @@ epiviz.data.EpivizApiDataProvider.prototype._send = function(request, callback) 
 
   // callback handler that will be called on failure
   requestHandler.fail(function (jqXHR, textStatus, errorThrown){
+    // console.log(self.request);
+    callback({"result": null});
     console.error("The following error occured: " + textStatus, errorThrown);
   });
 
@@ -160,51 +172,51 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       if (partition == '[NA]') { partition = ''; }
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'values', {datasource: datasourceGroup, start: start, end: end, partition: JSON.stringify(partition), measurement: JSON.stringify(measurement), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
-    case epiviz.data.Request.Action.GET_COMBINED:
+    case epiviz.data.Request.Action.GET_TIME_DATA:  
       var start = request.get('start');
       var end = request.get('end');
       var partition = request.get('seqName');
       var measurements = request.get('measurements')[this._id];
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       if (partition == '[NA]') { partition = ''; }
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combined', {datasource: datasourceGroup, start: start, end: end, partition: JSON.stringify(partition), measurements: JSON.stringify(measurements), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combinedTime', {datasource: datasourceGroup, start: start, end: end, partition: JSON.stringify(partition), measurements: JSON.stringify(measurements), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.GET_COMBINED:
+      var start = request.get('start');
+      var end = request.get('end');
+      var partition = request.get('seqName');
+      var measurements = request.get('measurements')[this._id];
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      var filter = request.get("filter") || "{}" ;
+      if (partition == '[NA]') { partition = ''; }
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'combined', {datasource: datasourceGroup, start: start, end: end, partition: JSON.stringify(partition), measurements: JSON.stringify(measurements), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels), filter: filter});
     case epiviz.data.Request.Action.GET_HIERARCHY:
       var nodeId = request.get('nodeId') || '';
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       this._lastRoot = nodeId;
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(nodeId), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.GET_HIERARCHY_FILTER:
+      var nodeId = request.get('nodeId') || '';
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      this._lastRoot = nodeId;
+      var filter = request.get('filter');
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchyFilter', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(nodeId), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels), filter: filter});
+    case epiviz.data.Request.Action.GET_SIMILAR_FUNCTIONS:
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      var featureList = request.get('featureList');
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'similarFunctions', {datasource: datasourceGroup, featureList: featureList});
     case epiviz.data.Request.Action.PROPAGATE_HIERARCHY_CHANGES:
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       var order = request.get('order');
       var selection = request.get('selection');
       var selectedLevels = request.get('selectedLevels');
 
-      if (selectedLevels) {
-        var self = this;
-        var deselectedNodeIds = [];
-        $.each(this._selection, function(nodeId, selectionType) {
-          var nodeDepth = self._calcNodeDepth(nodeId);
-          var selectionForNodeLevel = selectedLevels[nodeDepth];
-          var lastSelectionForNodeLevel = self._selectedLevels[nodeDepth];
-          if (selectionForNodeLevel != undefined && selectionForNodeLevel != lastSelectionForNodeLevel) {
-            deselectedNodeIds.push(nodeId);
-          }
-        });
-        deselectedNodeIds.forEach(function(nodeId) { delete self._selection[nodeId]; });
-      }
+      this._lastSelectedLevels = JSON.parse(JSON.stringify(this._selectedLevels));
+      this._lastLastRoot = JSON.parse(JSON.stringify(this._lastRoot));
+      this._lastSelection = JSON.parse(JSON.stringify(this._selection));
+      this._lastOrder = JSON.parse(JSON.stringify(this._order));
 
       if (selection) {
-        for (var nodeId  in selection) {
-          if (!selection.hasOwnProperty(nodeId)) { continue; }
-          var selectionForNodeLevel = selectedLevels[self._calcNodeDepth(nodeId)];
-          if (selectionForNodeLevel == undefined) { selectionForNodeLevel = epiviz.ui.charts.tree.NodeSelectionType.LEAVES; }
-          // if (selection[nodeId] == epiviz.ui.charts.tree.NodeSelectionType.LEAVES) {
-          if (selection[nodeId] == selectionForNodeLevel) {
-            delete this._selection[nodeId];
-            continue;
-          }
-          this._selection[nodeId] = selection[nodeId];
-        }
+        this._selection = selection;
       }
 
       if (order) {
@@ -218,16 +230,9 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
         if(Object.keys(selectedLevels).length > 0) {
           this._selectedLevels = selectedLevels;
         }
-        // for (var level in selectedLevels) {
-        //   if (!selectedLevels.hasOwnProperty(level)) { continue; }
-        //   this._selectedLevels[level] = selectedLevels[level];
-        //   if (this._selectedLevels[level] == epiviz.ui.charts.tree.NodeSelectionType.LEAVES) {
-        //     delete this._selectedLevels[level];
-        //   }
-        // }
       }
 
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchy', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'hierarchyFilter', {datasource: datasourceGroup, depth: this._maxDepth, nodeId: JSON.stringify(this._lastRoot), selection: JSON.stringify(this._selection), order: JSON.stringify(this._order), selectedLevels: JSON.stringify(this._selectedLevels), filter: JSON.stringify({})});
     case epiviz.data.Request.Action.SEARCH:
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       var maxResults = request.get('maxResults');
@@ -237,10 +242,26 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var measurements = request.get('measurements')[this._id];
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pca', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.GET_PCoA:
+      var measurements = request.get('measurements')[this._id];
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pcoa', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
     case epiviz.data.Request.Action.GET_DIVERSITY:
       var measurements = request.get('measurements')[this._id];
       var datasourceGroup = request.get('datasourceGroup') || this._id;
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'diversity', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.GET_FEATURE_DATA:
+      var measurements = request.get('measurements')[this._id];
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      var feature = request.get('feature') || "1-0";
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'featureData', {datasource: datasourceGroup, feature: feature, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+    case epiviz.data.Request.Action.GET_TIME_SPARKLINE_FEATURE_DATA:
+      var measurements = request.get('measurements')[this._id];
+      var datasourceGroup = request.get('datasourceGroup') || this._id;
+      var feature = request.get('feature') || "1-0";
+      // console.log("in adaptRequest about to generate featureTimeData");
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'featureTimeData', {datasource: datasourceGroup, feature: feature, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+
   }
 };
 
@@ -253,6 +274,13 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
 epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, data) {
   var result = data.result;
   var action = request.get('action');
+
+  if(result == null) {
+    return epiviz.data.Response.fromRawObject({
+      requestId: request.id(),
+      data: result
+    });
+  }
   switch (action) {
     case epiviz.data.Request.Action.GET_MEASUREMENTS:
       break;
@@ -269,6 +297,12 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, d
       break;
     case epiviz.data.Request.Action.GET_VALUES:
       break;
+    case epiviz.data.Request.Action.GET_SIMILAR_FUNCTIONS:
+      // console.log("in adapt response");
+      break;
+    // case epiviz.data.Request.Action.GET_TIME_SPARKLINE_FEATURE_DATA:
+    case epiviz.data.Request.Action.GET_TIME_DATA:
+      // console.log("in adapt response time data");
     case epiviz.data.Request.Action.GET_COMBINED:
       result.rows.id = result.rows.index;
       delete result.rows.index;
@@ -293,9 +327,17 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptResponse = function(request, d
       break;
     case epiviz.data.Request.Action.GET_PCA:
       break;
+    case epiviz.data.Request.Action.GET_PCoA:
+      break;
     case epiviz.data.Request.Action.GET_DIVERSITY:
       break;
+    case epiviz.data.Request.Action.GET_TIME_SPARKLINE_FEATURE_DATA:
+      // console.log("in adapt response");
+      break;
+    case epiviz.data.Request.Action.GET_FEATURE_DATA:
+      break;
   }
+  // console.log(result);
   return epiviz.data.Response.fromRawObject({
     requestId: request.id(),
     data: result

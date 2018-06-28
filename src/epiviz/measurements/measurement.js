@@ -26,7 +26,7 @@ goog.require('epiviz.utils');
  */
 epiviz.measurements.Measurement = function(id, name, type, datasourceId, datasourceGroup,
                                            dataprovider, formula, defaultChartType, annotation,
-                                           minValue, maxValue, metadata) {
+                                           minValue, maxValue, metadata, description) {
 
   var MeasurementType = epiviz.measurements.Measurement.Type;
 
@@ -112,6 +112,8 @@ epiviz.measurements.Measurement = function(id, name, type, datasourceId, datasou
    * @private
    */
   this._metadata = metadata || null;
+
+  this._description = description || null;
 };
 
 /**
@@ -350,7 +352,8 @@ epiviz.measurements.Measurement.prototype.raw = function(measurementsIndexMap) {
     annotation: this._annotation,
     minValue: this._minValue,
     maxValue: this._maxValue,
-    metadata: this._metadata
+    metadata: this._metadata,
+    description: this._description
   };
 };
 

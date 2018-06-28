@@ -59,14 +59,23 @@ epiviz.data.Request.Action = {
   GET_WORKSPACES: 'getWorkspaces',
 
   GET_HIERARCHY: 'getHierarchy',
+  GET_HIERARCHY_FILTER: 'getHierarchyFilter',
   PROPAGATE_HIERARCHY_CHANGES: 'propagateHierarchyChanges',
 
+  GET_SIMILAR_FUNCTIONS: 'getSimilarFunctions',
+
   GET_PCA: 'getPCA',
+  GET_PCoA: 'getPCoA',
   GET_DIVERSITY: 'getDiversity',
+  GET_FEATURE_DATA: 'getFeatureData',
+  GET_TIME_SPARKLINE_FEATURE_DATA: 'getFeatureTimeData',
+
+  GET_TIME_DATA: 'getCombinedTime',
 
   GET_CHART_SETTINGS: 'getChartSettings',
   SET_CHART_SETTINGS: 'setChartSettings',
   GET_AVAILABLE_CHARTS: 'getAvailableCharts',
+  SPLINES_SETTINGS: 'splinesSettings',
 
   // UI actions
   ADD_MEASUREMENTS: 'addMeasurements',
@@ -237,7 +246,7 @@ epiviz.data.Request.getValues = function(measurement, range) {
  * @param {epiviz.datatypes.GenomicRange} range
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
+epiviz.data.Request.getCombined = function(measurementsByDatasource, range, filter) {
   var rawMsByDs = {};
   var dataSource = "";
   var dataprovider = "";
@@ -264,7 +273,7 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
       seqName: range ? range.seqName() : undefined,
       start: range ? range.start() : undefined,
       end: range ? range.end() : undefined,
-      measurements: rawMsByDs[dataSource],
+      measurements: rawMsByDs,
       datasourceGroup: dataprovider,
       datasource: dataSource,
       genome: range ? range.genome() : undefined,
@@ -278,10 +287,11 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
     seqName: range ? range.seqName() : undefined,
     start: range ? range.start() : undefined,
     end: range ? range.end() : undefined,
-    measurements: rawMsByDs[dataSource],
+    measurements: rawMsByDs,
     datasource: dataSource,
     datasourceGroup: dataprovider,
-    genome: range ? range.genome() : undefined
+    genome: range ? range.genome() : undefined,
+    filter: filter
   });
 
 };
@@ -302,11 +312,12 @@ epiviz.data.Request.getMeasurements = function(datasourceGroup) {
  * @param {number} maxResults
  * @returns {epiviz.data.Request}
  */
-epiviz.data.Request.search = function(query, maxResults) {
+epiviz.data.Request.search = function(query, maxResults, datasourceGroup) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.SEARCH,
     q: query || '',
+    datasourceGroup: datasourceGroup,
     maxResults: maxResults
   });
 };
@@ -375,7 +386,39 @@ epiviz.data.Request.getHierarchy = function(datasourceGroup, nodeId) {
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_HIERARCHY,
     datasourceGroup: datasourceGroup,
-    nodeId: nodeId
+    nodeId: nodeId,
+    filter: {}
+  });
+};
+
+/**
+ * @param {string} datasourceGroup
+ * @param {string} [nodeId]
+ * @param {string} filter
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getHierarchyFilter = function(datasourceGroup, nodeId, filter) {
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_HIERARCHY_FILTER,
+    datasourceGroup: datasourceGroup,
+    nodeId: nodeId,
+    filter: filter
+  });
+};
+
+/**
+ * @param {string} datasourceGroup
+ * @param {string} [nodeId]
+ * @param {string} filter
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getSimilarFunctions = function(datasourceGroup, featureList) {
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_SIMILAR_FUNCTIONS,
+    datasourceGroup: datasourceGroup,
+    featureList: featureList
   });
 };
 
@@ -421,6 +464,30 @@ epiviz.data.Request.getPCA = function(measurementsByDatasource, range) {
   });
 };
 
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getPCoA = function(measurementsByDatasource, range) {
+  var rawMsByDs = {};
+  for (var ds in measurementsByDatasource) {
+    if (!measurementsByDatasource.hasOwnProperty(ds)) { continue; }
+    rawMsByDs[ds] = (function() {
+      var ms = [];
+      measurementsByDatasource[ds].foreach(function(m) {
+        ms.push(m.id());
+      });
+      return ms;
+    })();
+  }
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_PCoA,
+    measurements: rawMsByDs
+  });
+};
+
 
 /**
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
@@ -446,4 +513,94 @@ epiviz.data.Request.getDiversity = function(measurementsByDatasource, range) {
   });
 };
 
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getFeatureData = function(measurementsByDatasource, chartSettings, range) {
+  var rawMsByDs = {};
+  for (var ds in measurementsByDatasource) {
+    if (!measurementsByDatasource.hasOwnProperty(ds)) { continue; }
+    rawMsByDs[ds] = (function() {
+      var ms = [];
+      measurementsByDatasource[ds].foreach(function(m) {
+        ms.push(m.id());
+      });
+      return ms;
+    })();
+  }
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_FEATURE_DATA,
+    measurements: rawMsByDs,
+    feature: chartSettings.featureId
+  });
+};
 
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getTimeSparklineFeatureData = function(measurementsByDatasource, chartSettings, range) {
+  var rawMsByDs = {};
+  for (var ds in measurementsByDatasource) {
+    if (!measurementsByDatasource.hasOwnProperty(ds)) { continue; }
+    rawMsByDs[ds] = (function() {
+      var ms = [];
+      measurementsByDatasource[ds].foreach(function(m) {
+        ms.push(m.id());
+      });
+      return ms;
+    })();
+  }
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_TIME_SPARKLINE_FEATURE_DATA,
+    measurements: rawMsByDs,
+    feature: chartSettings.featureId
+  });
+};
+
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.updateSplinesSettings = function(settings) {
+
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.SPLINES_SETTINGS,
+    settings: settings
+  });
+};
+
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
+epiviz.data.Request.getTimeData = function(measurementsByDatasource, range, filter) {
+  var rawMsByDs = {};
+  for (var ds in measurementsByDatasource) {
+    if (!measurementsByDatasource.hasOwnProperty(ds)) { continue; }
+    rawMsByDs[ds] = (function() {
+      var ms = [];
+      measurementsByDatasource[ds].foreach(function(m) {
+        ms.push(m.id());
+      });
+      return ms;
+    })();
+  }
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_TIME_DATA,
+    seqName: range ? range.seqName() : undefined,
+    start: range ? range.start() : undefined,
+    end: range ? range.end() : undefined,
+    measurements: rawMsByDs,
+    filter: filter
+  });
+};

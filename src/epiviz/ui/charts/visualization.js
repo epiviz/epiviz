@@ -303,6 +303,12 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @protected
    */
   this._dataWaitEnd = new epiviz.events.Event();
+
+    /**
+   * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.VisObject>>}
+   * @protected
+   */
+  this._splinesSettings = new epiviz.events.Event();
 };
 
 /**

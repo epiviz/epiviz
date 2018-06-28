@@ -116,7 +116,13 @@ epiviz.plugins.charts.ScatterPlotType.prototype.customSettingsDefs = function() 
       epiviz.plugins.charts.ScatterPlotType.CustomSettings.ABS_LINE_VAL,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
-      'Draw abline')
+      'Draw abline'),
+    
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.ScatterPlotType.CustomSettings.LOG_TRANSFORM,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Log Transform count data')
   ]);
 };
 
@@ -125,7 +131,8 @@ epiviz.plugins.charts.ScatterPlotType.prototype.customSettingsDefs = function() 
  */
 epiviz.plugins.charts.ScatterPlotType.CustomSettings = {
   CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
-  ABS_LINE_VAL: 'abLine'
+  ABS_LINE_VAL: 'abLine',
+  LOG_TRANSFORM: 'logTransform'
 };
 
 // goog.inherits(epiviz.plugins.charts.ScatterPlotType, epiviz.ui.charts.PlotType);

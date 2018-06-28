@@ -62,6 +62,8 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._combinedRequestsStacks = {};
 
+  this._requestDataFailed = new epiviz.events.Event();  
+
   /**
    * @type {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
    * @private
@@ -171,7 +173,11 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._requestUiStatus = new epiviz.events.Event();
 
-
+   /**
+   * @type {epiviz.events.Event.<{result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._loadingCurrentDataSet = new epiviz.events.Event();
 
   this._registerProviderAddMeasurements();
   this._registerProviderRemoveMeasurements();
@@ -410,6 +416,8 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback, failCallb
         if (jsondata) {
           var n = jsondata['id'] ? (jsondata['id'].length || 0) : 0;
           for (var i = 0; i < n; ++i) {
+            jsondata['annotation'][i]["sequencingType"] = jsondata['sequencingType'][i],
+
             result.add(new epiviz.measurements.Measurement(
               jsondata['id'][i],
               jsondata['name'][i],
@@ -422,8 +430,8 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback, failCallb
               jsondata['annotation'][i],
               $.isArray(jsondata['minValue']) ? jsondata['minValue'][i] : jsondata['minValue'],
               $.isArray(jsondata['maxValue']) ? jsondata['maxValue'][i] : jsondata['maxValue'],
-              //($.isArray(jsondata['metadata']) && $.isArray(jsondata['metadata'][0])) ? jsondata['metadata'][i] : jsondata['metadata']
-              eval(jsondata['metadata'][i])
+              ($.isArray(jsondata['metadata']) && $.isArray(jsondata['metadata'][0])) ? jsondata['metadata'][i] : jsondata['metadata'],
+              jsondata['datasourceDescription'][i]
             ));
           }
         }
@@ -442,11 +450,11 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback, failCallb
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
-epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback, failCallback) {
+epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap, dataReadyCallback, failCallback, filter) {
   if (this._config.useCache && !(range == null || range.seqName() == "all" || range.seqName() == null)) {
     this._cache.getData(range, chartMeasurementsMap, dataReadyCallback, failCallback);
   } else {
-    this._getDataNoCache(range, chartMeasurementsMap, dataReadyCallback, failCallback);
+    this._getDataNoCache(range, chartMeasurementsMap, dataReadyCallback, failCallback, filter);
   }
 };
 
@@ -456,9 +464,9 @@ epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
  * @param {function(string, epiviz.datatypes.GenomicData)} dataReadyCallback
  */
-epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasurementsMap, dataReadyCallback, failCallback) {
+epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasurementsMap, dataReadyCallback, failCallback, filter) {
   var self = this;
-
+  
   /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
   var msByDp = {};
   for (var chartId in chartMeasurementsMap) {
@@ -478,7 +486,7 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
   var allData = {};
   epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
     var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
-    var request = epiviz.data.Request.getCombined(msByDs, range);
+    var request = epiviz.data.Request.getCombined(msByDs, range, filter);
 
     var requestStack = self._combinedRequestsStacks[dataprovider];
     if (requestStack == undefined) {
@@ -488,13 +496,14 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
 
     requestStack.pushRequest(request, function(data) {
       var dataByDs = {};
+      // console.log(msByDs);
       epiviz.utils.forEach(msByDs, function(dsMs, datasourceId) {
         var datasource = dsMs.first().datasource();
-        // var dsData = data[datasourceId];
-        var dsData = data;
+        var dsData = data[datasourceId];
         var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
 
-        var globalStartIndex = dsData.rows.globalStartIndex;
+        //var globalStartIndex = dsData.rows.globalStartIndex;
+        var globalStartIndex = dsData.globalStartIndex;
 
         var newRange = range;
         if(range == null || range.seqName() == "all" || range.seqName() == null) {
@@ -509,12 +518,15 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
           newRange._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
         }
 
-        var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, newRange, globalStartIndex, dsData.rows.values, dsData.rows.useOffset);
+        // var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, newRange, globalStartIndex, dsData.rows.values, dsData.rows.useOffset);
+        var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, newRange, globalStartIndex, dsData.rows, false);
 
         sumExp.addRowData(rowData);
 
         dsMs.foreach(function(m) {
-          var valueData = new epiviz.datatypes.FeatureValueArray(m, newRange, globalStartIndex, dsData.values.values[m.id()]);
+          // var valueData = new epiviz.datatypes.FeatureValueArray(m, newRange, globalStartIndex, dsData.values.values[m.id()]);
+          var valueData = new epiviz.datatypes.FeatureValueArray(m, newRange, globalStartIndex, dsData.cols[m.id()]);
+
           sumExp.addValues(valueData);
         });
 
@@ -607,6 +619,48 @@ epiviz.data.DataManager.prototype.getPCA = function(range, chartMeasurementsMap,
   });
 };
 
+
+/**
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.getPCoA = function(range, chartMeasurementsMap, dataReadyCallback) {
+  var self = this;
+
+  /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+  var msByDp = {};
+  for (var chartId in chartMeasurementsMap) {
+    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }     
+    var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+    for (var dp in chartMsByDp) {
+      if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+      var dpMs = msByDp[dp];
+      if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+      else { dpMs.addAll(chartMsByDp[dp]); }
+    }
+  }
+
+  /**
+   * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+   */
+  var allData = {};
+  epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+    var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+    var request = epiviz.data.Request.getPCoA(msByDs, range);
+    var msName = Object.keys(msByDs)[0];
+
+    var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    dataProvider.getData(request, function(response) {
+      var resp = response.data();
+      if(response.data().dataprovidertype == "websocket") {
+        resp = resp[msName];
+      }
+      dataReadyCallback(chartId, resp);
+    });
+  });
+};
+
 /**
  * @param {epiviz.datatypes.GenomicRange} range
  * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
@@ -648,6 +702,258 @@ epiviz.data.DataManager.prototype.getDiversity = function(range, chartMeasuremen
   });
 };
 
+epiviz.data.DataManager.prototype.getTimeData = function(range, chartMeasurementsMap, dataReadyCallback, filter) {
+  var self = this;
+
+  /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+  var msByDp = {};
+  for (var chartId in chartMeasurementsMap) {
+    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }
+    var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+    for (var dp in chartMsByDp) {
+      if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+      var dpMs = msByDp[dp];
+      if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+      else { dpMs.addAll(chartMsByDp[dp]); }
+    }
+  }
+
+  /**
+   * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+   */
+  var allData = {};
+  epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+    var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+    var request = epiviz.data.Request.getTimeData(msByDs, range, filter);
+
+    var requestStack = self._combinedRequestsStacks[dataprovider];
+    if (requestStack == undefined) {
+      requestStack = new epiviz.data.RequestStack();
+      self._combinedRequestsStacks[dataprovider] = requestStack;
+    }
+
+    requestStack.pushRequest(request, function(data) {
+      var dataByDs = {};
+      epiviz.utils.forEach(msByDs, function(dsMs, datasourceId) {
+        var datasource = dsMs.first().datasource();
+        var dsData = data[datasourceId];
+        var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+
+        var noSampleData = [];
+        for(var ecount =0; ecount < dsData.cols[Object.keys(dsData.cols)[0]].length; ecount++) {         
+          noSampleData[ecount] = 0;       
+        }
+
+        var globalStartIndex = dsData.globalStartIndex;
+
+        if(isNaN(range._start)) {
+          range._start = globalStartIndex;
+        }
+
+        if(isNaN(range._width)) {
+          range._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
+        }
+
+        var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, dsData.rows);
+
+        sumExp.addRowData(rowData);
+
+        dsMs.foreach(function(m) {
+          var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols[m.id()] || noSampleData );
+          sumExp.addValues(valueData);
+        });
+
+        dataByDs[datasourceId] = sumExp;
+      });
+
+      allData[dataprovider] = dataByDs;
+      self._serveAvailableData(range, chartMeasurementsMap, dataReadyCallback, allData);
+    });
+
+    var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    dataProvider.getData(request, function(response) {
+      if(response._data == null) {
+        requestStack.clear();
+        self._requestDataFailed.notify({"selection": dataProvider._lastSelection, "order": dataProvider._lastOrder, "selectedLevels": dataProvider._lastSelectedLevels});
+      }
+      else {
+        requestStack.serveData(response);
+      }
+    });
+  });
+};
+
+// epiviz.data.DataManager.prototype.getTimeData = function(range, chartMeasurementsMap, chartSettings, dataReadyCallback, filter) {
+//   var self = this;
+
+//   /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+//   var msByDp = {};
+//   for (var chartId in chartMeasurementsMap) {
+//     if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }
+//     var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+//     for (var dp in chartMsByDp) {
+//       if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+//       var dpMs = msByDp[dp];
+//       if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+//       else { dpMs.addAll(chartMsByDp[dp]); }
+//     }
+//   }
+
+//   /**
+//    * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+//    */
+//   var allData = {};
+//   epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+//     var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+//     var request = epiviz.data.Request.getTimeData(msByDs, range, filter);
+
+//     var requestStack = self._combinedRequestsStacks[dataprovider];
+//     if (requestStack == undefined) {
+//       requestStack = new epiviz.data.RequestStack();
+//       self._combinedRequestsStacks[dataprovider] = requestStack;
+//     }
+
+//     requestStack.pushRequest(request, function(data) {
+//       var dataByDs = {};
+//       epiviz.utils.forEach(msByDs, function(dsMs, datasourceId) {
+//         var datasource = dsMs.first().datasource();
+//         var dsData = data[datasourceId];
+//         var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+
+//         var noSampleData = [];
+//         for(var ecount =0; ecount < dsData.cols[Object.keys(dsData.cols)[0]].length; ecount++) {         
+//           noSampleData[ecount] = 0;       
+//         }
+
+//         var globalStartIndex = dsData.globalStartIndex;
+
+//         if(isNaN(range._start)) {
+//           range._start = globalStartIndex;
+//         }
+
+//         if(isNaN(range._width)) {
+//           range._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
+//         }
+
+//         var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, dsData.rows);
+
+//         sumExp.addRowData(rowData);
+
+//         dsMs.foreach(function(m) {
+//           var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols[m.id()] || noSampleData );
+//           sumExp.addValues(valueData);
+//         });
+
+//         dataByDs[datasourceId] = sumExp;
+//       });
+
+//       allData[dataprovider] = dataByDs;
+//       self._serveAvailableData(range, chartMeasurementsMap, dataReadyCallback, allData);
+//     });
+
+//     var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+//     dataProvider.getData(request, function(response) {
+//       if(response._data == null) {
+//         requestStack.clear();
+//         self._requestDataFailed.notify({"selection": dataProvider._lastSelection, "order": dataProvider._lastOrder, "selectedLevels": dataProvider._lastSelectedLevels});
+//       }
+//       else {
+//         requestStack.serveData(response);
+//       }
+//     });
+//   });
+// };
+
+/**
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.getFeatureData = function(range, chartMeasurementsMap, chartSettings, dataReadyCallback) {
+  var self = this;
+
+  /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+  var msByDp = {};
+  for (var chartId in chartMeasurementsMap) {
+    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }     
+    var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+    for (var dp in chartMsByDp) {
+      if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+      var dpMs = msByDp[dp];
+      if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+      else { dpMs.addAll(chartMsByDp[dp]); }
+    }
+  }
+
+  /**
+   * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+   */
+  var allData = {};
+  epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+    var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+    var request = epiviz.data.Request.getFeatureData(msByDs, chartSettings, range);
+    var msName = Object.keys(msByDs)[0];
+
+    var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    dataProvider.getData(request, function(response) {
+      var resp = response.data();
+      if(response.data().dataprovidertype == "websocket") {
+        resp = resp[msName];
+      }
+      dataReadyCallback(chartId, resp);
+    });
+  });
+};
+
+/**
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.getTimeSparklineFeatureData = function(range, chartMeasurementsMap, chartSettings, dataReadyCallback) {
+  var self = this;
+  // console.log("In getTimeSparklineFeatureData");
+  // console.log(chartMeasurementsMap);
+
+  /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+  var msByDp = {};
+  for (var chartId in chartMeasurementsMap) {
+    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }     
+    var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+    for (var dp in chartMsByDp) {
+      if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+      var dpMs = msByDp[dp];
+      if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+      else { dpMs.addAll(chartMsByDp[dp]); }
+    }
+  }
+  // console.log(msByDp);
+
+  /**
+   * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+   */
+  var allData = {};
+  epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+    var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+    // console.log("creating getTimeSparklineFeatureData request");
+
+    var request = epiviz.data.Request.getTimeSparklineFeatureData(msByDs, chartSettings, range);
+    var msName = Object.keys(msByDs)[0];
+
+    var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    // console.log("about to send getTimeSparklineFeatureData request");
+
+    dataProvider.getData(request, function(response) {
+      var resp = response.data();
+      // if(response.data().dataprovidertype == "websocket") {
+      //   resp = resp[msName];
+      // }
+      dataReadyCallback(chartId, resp);
+    });
+  });
+};
+
+
 /**
  * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
  * @param {function(string, *)} dataReadyCallback
@@ -678,8 +984,57 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
     });
   }
   var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
-  provider.getData(epiviz.data.Request.getHierarchy(datasourceGroup, visConfigSelection.customData), function(response) {
+  //  provider.getData(epiviz.data.Request.getHierarchy(datasourceGroup, visConfigSelection.customData), function(response) {
+  provider.getData(epiviz.data.Request.getHierarchyFilter(datasourceGroup, visConfigSelection.customData), function(response) {
     dataReadyCallback(chartId, response.data());
+  }, {});
+};
+
+
+epiviz.data.DataManager.prototype.getHierarchyFilter = function(chartVisConfigSelectionMap, dataReadyCallback, functionalFilter) {
+
+  for (var chartId in chartVisConfigSelectionMap) {
+    if (!chartVisConfigSelectionMap.hasOwnProperty(chartId)) { continue; }
+    var visConfigSelection = chartVisConfigSelectionMap[chartId];
+  }
+  var dataprovider = visConfigSelection.dataprovider;
+  if (!dataprovider) {
+    visConfigSelection.measurements.foreach(function(m) {
+      if (m.dataprovider()) {
+        dataprovider = m.dataprovider();
+        return true;
+      }
+      return false;
+    });
+  }
+  var datasourceGroup = visConfigSelection.datasourceGroup;
+  if(!datasourceGroup) {
+      visConfigSelection.measurements.foreach(function(m) {
+      if (m.datasourceGroup()) {
+        datasourceGroup = m.datasourceGroup();
+        return true;
+      }
+      return false;
+    });
+  }
+  var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+  
+  var filters = functionalFilter;
+  provider.getData(epiviz.data.Request.getHierarchyFilter(datasourceGroup, visConfigSelection.customData, functionalFilter), function(response) {
+    dataReadyCallback(chartId, response.data());
+  }, {});
+};
+
+epiviz.data.DataManager.prototype.getSimilarFunctions = function(vcs, dataReadyCallback, featureList) {
+
+  var dataprovider = vcs.datasourceGroup;
+
+  var datasourceGroup = vcs.datasourceGroup;
+
+  var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+  // console.log(provider);
+  provider.getData(epiviz.data.Request.getSimilarFunctions(datasourceGroup, featureList), function(response) {
+    dataReadyCallback(vcs.plotId, response.data());
   });
 };
 
@@ -1085,5 +1440,28 @@ epiviz.data.DataManager.prototype._registerProviderUiStatus = function() {
         function(e) {
           self._requestUiStatus.notify(e);
         }));
+  });
+};
+
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype.updateSplines = function(settings) {
+  var self = this;
+  this._dataProviderFactory.foreach(function(provider) {
+
+    if(provider.id().includes('websocket-')) {
+      provider.updateSplines(epiviz.data.Request.createRequest({
+            action: epiviz.data.Request.Action.SPLINES_SETTINGS,
+            settings: settings,
+      }),
+          function() {
+            provider.onRequestRedraw().notify({
+              result: new epiviz.events.EventResult()
+            });
+          }
+      );  
+    }
   });
 };

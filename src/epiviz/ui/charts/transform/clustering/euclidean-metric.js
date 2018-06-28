@@ -21,7 +21,9 @@ epiviz.ui.charts.transform.clustering.EuclideanMetric.prototype.distance = funct
   if (item1 == undefined || item2 == undefined) {
     return null;
   }
-
+  //console.log("in euclidean distance calculation");
+  //console.log(item1);
+  //console.log(item2);
   var len = item1.length; // Assume item1.length == item2.length
 
   var nDimensions = 0;

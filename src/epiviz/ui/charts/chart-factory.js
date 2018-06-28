@@ -14,11 +14,14 @@ goog.require('epiviz.plugins.charts.StackedLineTrackType');
 goog.require('epiviz.plugins.charts.ScatterPlotType');
 goog.require('epiviz.plugins.charts.GenesTrackType');
 goog.require('epiviz.plugins.charts.HeatmapPlotType');
+goog.require('epiviz.plugins.charts.HeatmapTimePlotType');
 goog.require('epiviz.plugins.charts.LinePlotType');
 goog.require('epiviz.plugins.charts.StackedLinePlotType');
 goog.require('epiviz.ui.charts.tree.IcicleType');
+goog.require('epiviz.ui.charts.tree.IcicleFunctionalType');
 goog.require('epiviz.plugins.charts.DiversityScatterPlotType');
-goog.require('epiviz.plugins.charts.CustomScatterPlotType');
+goog.require('epiviz.plugins.charts.FeatureScatterPlotType');
+goog.require('epiviz.plugins.charts.FeatureTimeSparklinePlotType');
 
 
 /**

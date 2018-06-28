@@ -67,7 +67,13 @@ epiviz.datatypes.MapGenomicData.prototype._setMap = function(map) {
  * @returns {epiviz.datatypes.MeasurementGenomicData}
  */
 epiviz.datatypes.MapGenomicData.prototype.firstSeries = function() {
+  console.log("in firstSeries");
+  console.log(this._map);
+  console.log(this._map.size());
+
   if (this._map.size() == 0) { return null; }
+    console.log(this._map.first().value);
+
   return this._map.first().value;
 };
 
