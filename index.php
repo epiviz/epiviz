@@ -324,7 +324,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/data/data-provider-factory.js"></script>
     <script src="src/epiviz/data/data-manager.js"></script>
     <script src="src/epiviz/data/webserver-data-provider.js"></script>
-    <script src="src/epiviz/data/metagenomics-data-provider.js"></script> <!-- TODO: Delete! -->
+    <script src="src/epiviz/data/shiny-data-provider.js"></script>
+    <!-- <script src="src/epiviz/data/metagenomics-data-provider.js"></script>  -->
+    <!-- TODO: Delete! -->
     <script src="src/epiviz/ui/charts/tree/node-selection-type.js"></script>
     <script src="src/epiviz/data/epiviz-api-data-provider.js"></script><!-- TODO: Move -->
     <script src="src/epiviz/caja/caja-standalone.js"></script>
