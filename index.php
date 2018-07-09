@@ -348,6 +348,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/transform/clustering/clustering-linkage.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/hierarchical-clustering-algorithm.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/euclidean-metric.js"></script>
+    <script src="src/epiviz/ui/charts/transform/clustering/euclidean-metric-heatmap-time-plot.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/complete-linkage.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
     <script src="src/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
@@ -391,6 +392,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/genes-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/heatmap-time-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/heatmap-time-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-plot.js"></script>
     <script src="src/epiviz/plugins/charts/line-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-plot.js"></script>
@@ -399,8 +402,14 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script>  
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/diversity-scatter-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-scatter-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-time-sparkline-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/feature-time-sparkline-plot-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle.js"></script>
     <script src="src/epiviz/ui/charts/tree/icicle-type.js"></script>
+    <script src="src/epiviz/ui/charts/tree/icicle-functional.js"></script>
+    <script src="src/epiviz/ui/charts/tree/icicle-functional-type.js"></script>
     <script src="src/epiviz/ui/charts/chart-factory.js"></script>
     <script src="src/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-option-button.js"></script>
@@ -409,6 +418,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/controls/color-picker-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
     <script src="src/epiviz/ui/controls/message-dialog.js"></script>
+    <script src="src/epiviz/ui/controls/splines-settings-dialog.js"></script>
+    <script src="src/epiviz/ui/charts/decoration/splines-settings-button.js"></script>
     <script src="src/epiviz/ui/controls/custom-settings-dialog.js"></script>
     <script src="src/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
     <script src="src/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
