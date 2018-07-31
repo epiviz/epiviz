@@ -4,10 +4,10 @@
  * Time: 10:25 AM
  */
 
-goog.provide('epiviz.ui.charts.Plot');
+goog.provide("epiviz.ui.charts.Plot");
 
-goog.require('epiviz.ui.charts.Chart');
-goog.require('epiviz.ui.charts.VisualizationType');
+goog.require("epiviz.ui.charts.Chart");
+goog.require("epiviz.ui.charts.VisualizationType");
 
 /**
  * @param {string} id
@@ -24,10 +24,14 @@ epiviz.ui.charts.Plot = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.Plot.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Chart.prototype);
+epiviz.ui.charts.Plot.prototype = epiviz.utils.mapCopy(
+  epiviz.ui.charts.Chart.prototype
+);
 epiviz.ui.charts.Plot.constructor = epiviz.ui.charts.Plot;
 
 /**
  * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
-epiviz.ui.charts.Plot.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.PLOT; };
+epiviz.ui.charts.Plot.prototype.displayType = function() {
+  return epiviz.ui.charts.VisualizationType.DisplayType.PLOT;
+};

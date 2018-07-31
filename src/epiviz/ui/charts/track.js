@@ -4,13 +4,13 @@
  * Time: 6:47 PM
  */
 
-goog.provide('epiviz.ui.charts.Track');
+goog.provide("epiviz.ui.charts.Track");
 
-goog.require('epiviz.ui.charts.Chart');
-goog.require('epiviz.ui.charts.VisualizationType');
-goog.require('epiviz.ui.charts.VisEventArgs');
-goog.require('epiviz.ui.charts.ChartObject');
-goog.require('epiviz.ui.charts.Axis');
+goog.require("epiviz.ui.charts.Chart");
+goog.require("epiviz.ui.charts.VisualizationType");
+goog.require("epiviz.ui.charts.VisEventArgs");
+goog.require("epiviz.ui.charts.ChartObject");
+goog.require("epiviz.ui.charts.Axis");
 
 /**
  * @param {string} id
@@ -46,39 +46,44 @@ epiviz.ui.charts.Track = function(id, container, properties) {
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.Track.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.Chart.prototype);
+epiviz.ui.charts.Track.prototype = epiviz.utils.mapCopy(
+  epiviz.ui.charts.Chart.prototype
+);
 epiviz.ui.charts.Track.constructor = epiviz.ui.charts.Track;
-
 
 /**
  * Initializes the chart and draws the initial SVG in the container
  * @protected
  */
 epiviz.ui.charts.Track.prototype._initialize = function() {
-  this._properties.width = '100%';
+  this._properties.width = "100%";
 
   epiviz.ui.charts.Chart.prototype._initialize.call(this);
 
   var self = this;
 
-  this._highlightGroup = this._svg
-    .append('g')
-    .attr('class', 'track-highlight');
+  this._highlightGroup = this._svg.append("g").attr("class", "track-highlight");
 
   this._background = this._svg
-    .append('rect')
-    .attr('class', 'chart-background')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', '100%')
-    .attr('height', '100%')
-    .attr('fill', '#ffffff')
-    .attr('fill-opacity', '0');
+    .append("rect")
+    .attr("class", "chart-background")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("fill", "#ffffff")
+    .attr("fill-opacity", "0");
 
   this._background
-    .on('mouseover', function() { self._captureMouseHover(); })
-    .on('mousemove', function() { self._captureMouseHover(); })
-    .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
+    .on("mouseover", function() {
+      self._captureMouseHover();
+    })
+    .on("mousemove", function() {
+      self._captureMouseHover();
+    })
+    .on("mouseout", function() {
+      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+    });
 };
 
 /**
@@ -90,8 +95,8 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
  */
 epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
   var result = epiviz.ui.charts.Chart.prototype.draw.call(this, range, data);
-
-  this._drawLegend();
+  // this.chartDrawType = "canvas";
+  // this._drawLegend();
 
   return result;
 };
@@ -99,7 +104,9 @@ epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
 /**
  * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
-epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.charts.VisualizationType.DisplayType.TRACK; };
+epiviz.ui.charts.Track.prototype.displayType = function() {
+  return epiviz.ui.charts.VisualizationType.DisplayType.TRACK;
+};
 
 /**
  * @param {epiviz.ui.charts.ChartObject} selectedObject
@@ -107,44 +114,84 @@ epiviz.ui.charts.Track.prototype.displayType = function() { return epiviz.ui.cha
 epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
   epiviz.ui.charts.Chart.prototype.doHover.call(this, selectedObject);
 
+  var self = this;
+
   if (selectedObject.start == undefined || selectedObject.end == undefined) {
     return;
   }
 
-  if (!this._lastRange) { return; }
+  if (!this._lastRange) {
+    return;
+  }
 
-  this._highlightGroup.selectAll('rect').remove();
-  this._highlightGroup.attr('transform', 'translate(' + this.margins().left() + ', ' + 0 + ')');
+  this._highlightGroup.selectAll("rect").remove();
+  this._highlightGroup.attr(
+    "transform",
+    "translate(" + this.margins().left() + ", " + 0 + ")"
+  );
 
   var Axis = epiviz.ui.charts.Axis;
-  var xScale = d3.scale.linear()
+  var xScale = d3.scale
+    .linear()
     .domain([this._lastRange.start(), this._lastRange.end()])
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
 
   var items = [];
   if (!selectedObject.measurements || !selectedObject.measurements.length) {
-    items.push({start: selectedObject.start, end: selectedObject.end});
+    items.push({ start: selectedObject.start, end: selectedObject.end });
   } else {
     for (var i = 0; i < selectedObject.valueItems[0].length; ++i) {
       var rowItem = selectedObject.valueItems[0][i].rowItem;
-      items.push({start: rowItem.start(), end: rowItem.end()});
+      items.push({ start: rowItem.start(), end: rowItem.end() });
     }
   }
 
   var minHighlightSize = 5;
-  this._highlightGroup.selectAll('rect').data(items, function(d) { return sprintf('%s-%s', d.start, d.end); })
+
+  if (self.chartDrawType == "canvas") {
+    // Show highlight on tracks
+    var ctx = self.hoverCanvas.getContext("2d");
+    ctx.clearRect(0, 0, self.hoverCanvas.width, self.hoverCanvas.height);
+
+    items.forEach(function(d) {
+      ctx.beginPath();
+
+      ctx.fillStyle = self.colors().get(0);
+      ctx.globalAlpha = 0.1;
+      var defaultWidth = xScale(d.end + 1) - xScale(d.start);
+      var width = Math.max(minHighlightSize, defaultWidth);
+      var x = xScale(d.start) + defaultWidth * 0.5 - width * 0.5;
+
+      ctx.fillRect(
+        x,
+        0,
+        Math.max(minHighlightSize, xScale(d.end + 1) - xScale(d.start)),
+        self.height()
+      );
+    });
+
+    return;
+  }
+
+  this._highlightGroup
+    .selectAll("rect")
+    .data(items, function(d) {
+      return sprintf("%s-%s", d.start, d.end);
+    })
     .enter()
-    .append('rect')
-    .style('fill', this.colors().get(0))
-    .style('fill-opacity', '0.1')
-    .attr('x', function(d) {
+    .append("rect")
+    .style("fill", this.colors().get(0))
+    .style("fill-opacity", "0.1")
+    .attr("x", function(d) {
       var defaultWidth = xScale(d.end + 1) - xScale(d.start);
       var width = Math.max(minHighlightSize, defaultWidth);
       return xScale(d.start) + defaultWidth * 0.5 - width * 0.5;
     })
-    .attr('width', function(d) { return Math.max(minHighlightSize, xScale(d.end + 1) - xScale(d.start)); })
-    .attr('y', 0)
-    .attr('height', this.height());
+    .attr("width", function(d) {
+      return Math.max(minHighlightSize, xScale(d.end + 1) - xScale(d.start));
+    })
+    .attr("y", 0)
+    .attr("height", this.height());
 };
 
 /**
@@ -152,24 +199,40 @@ epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
 epiviz.ui.charts.Track.prototype.doUnhover = function() {
   epiviz.ui.charts.Chart.prototype.doUnhover.call(this);
 
-  this._highlightGroup.selectAll('rect').remove();
+  this._highlightGroup.selectAll("rect").remove();
 };
 
 /**
  * @protected
  */
 epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
-  if (!this._lastRange) { return; }
+  if (!this._lastRange) {
+    return;
+  }
   this._unhover.notify(new epiviz.ui.charts.VisEventArgs(this.id()));
-  var inverseXScale = d3.scale.linear()
+  var inverseXScale = d3.scale
+    .linear()
     .domain([0, this.width()])
     .range([this._lastRange.start(), this._lastRange.end()]);
-  var start = inverseXScale(d3.mouse(this._background[0][0])[0]) - this._binSize / 2;
+  var start =
+    inverseXScale(d3.mouse(this._background[0][0])[0]) - this._binSize / 2;
   var end = start + this._binSize;
   var seqName = this._lastRange.seqName();
 
-  var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this.id()), start, end, null, null, null, null, null, seqName);
-  this._hover.notify(new epiviz.ui.charts.VisEventArgs(this.id(), selectedObject));
+  var selectedObject = new epiviz.ui.charts.ChartObject(
+    sprintf("%s-highlight", this.id()),
+    start,
+    end,
+    null,
+    null,
+    null,
+    null,
+    null,
+    seqName
+  );
+  this._hover.notify(
+    new epiviz.ui.charts.VisEventArgs(this.id(), selectedObject)
+  );
 };
 
 /**
@@ -177,54 +240,173 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
  */
 epiviz.ui.charts.Track.prototype._drawLegend = function() {
   var self = this;
-  this._svg.selectAll('.chart-title').remove();
-  this._svg.selectAll('.chart-title-color ').remove();
+  this._svg.selectAll(".chart-title").remove();
+  this._svg.selectAll(".chart-title-color ").remove();
 
-  if (!this._lastData || !this._lastData.isReady()) { return; }
+  if (!this._lastData || !this._lastData.isReady()) {
+    return;
+  }
 
-  var title = '';
+  var title = "";
   var measurements = this._lastData.measurements();
+  if (this.chartDrawType == "canvas") {
+    var ctx = self.canvas.getContext("2d");
+    var textIndent = 0;
+    measurements.forEach(function(m, i) {
+      var color;
+      if (!self._measurementColorLabels) {
+        color = self.colors().get(i);
+      } else {
+        color = self.colors().getByKey(self._measurementColorLabels.get(m));
+      }
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+
+      ctx.arc(self.margins().left() + textIndent - 2, -9, 4, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.fill();
+      ctx.font = "9px";
+      ctx.beginPath();
+
+      var circleIndent = 8;
+      ctx.textAlign = "start";
+
+      ctx.fillText(
+        m.name(),
+        self.margins().left() + textIndent + circleIndent,
+        -14
+      );
+
+      var textWidth = ctx.measureText(m.name()).width;
+
+      textIndent = textIndent + circleIndent + textWidth + 10;
+    });
+
+    return;
+  }
 
   var titleEntries = this._svg
-    .selectAll('.chart-title')
+    .selectAll(".chart-title")
     .data(measurements)
     .enter()
-    .append('text')
-    .attr('class', 'chart-title')
-    .attr('font-weight', 'bold')
-    .attr('fill', function(m, i) {
-      if (!self._measurementColorLabels) { return self.colors().get(i); }
+    .append("text")
+    .attr("class", "chart-title")
+    .attr("font-weight", "bold")
+    .attr("fill", function(m, i) {
+      if (!self._measurementColorLabels) {
+        return self.colors().get(i);
+      }
       return self.colors().getByKey(self._measurementColorLabels.get(m));
     })
-    .attr('y', self.margins().top() - 5)
-    .text(function(m, i) { return m.name(); });
+    .attr("y", self.margins().top() - 5)
+    .text(function(m, i) {
+      return m.name();
+    });
 
   var textLength = 0;
   var titleEntriesStartPosition = [];
 
-  this._container.find(' .chart-title')
-    .each(function(i) {
-      titleEntriesStartPosition.push(textLength);
-      textLength += this.getBBox().width + 15;
-    });
+  this._container.find(" .chart-title").each(function(i) {
+    titleEntriesStartPosition.push(textLength);
+    textLength += this.getBBox().width + 15;
+  });
 
-  titleEntries.attr('x', function(column, i) {
+  titleEntries.attr("x", function(column, i) {
     return self.margins().left() + 10 + titleEntriesStartPosition[i];
   });
 
   var colorEntries = this._svg
-    .selectAll('.chart-title-color')
+    .selectAll(".chart-title-color")
     .data(measurements)
     .enter()
-    .append('circle')
-    .attr('class', 'chart-title-color')
-    .attr('cx', function(column, i) { return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
-    .attr('cy', self.margins().top() - 9)
-    .attr('r', 4)
-    .style('shape-rendering', 'auto')
-    .style('stroke-width', '0')
-    .style('fill', function(m, i) {
-      if (!self._measurementColorLabels) { return self.colors().get(i); }
+    .append("circle")
+    .attr("class", "chart-title-color")
+    .attr("cx", function(column, i) {
+      return self.margins().left() + 4 + titleEntriesStartPosition[i];
+    })
+    .attr("cy", self.margins().top() - 9)
+    .attr("r", 4)
+    .style("shape-rendering", "auto")
+    .style("stroke-width", "0")
+    .style("fill", function(m, i) {
+      if (!self._measurementColorLabels) {
+        return self.colors().get(i);
+      }
       return self.colors().getByKey(self._measurementColorLabels.get(m));
     });
+};
+
+epiviz.ui.charts.Track.prototype.addCanvasEvents = function(
+  canvas,
+  hoverCanvas,
+  dataItems,
+  xScale
+) {
+  var self = this;
+  // console.log("in canvas events");
+  var ctx = hoverCanvas.getContext("2d");
+  self.hoverCanvasObjects = dataItems;
+
+  hoverCanvas.addEventListener("click", function(event) {
+    var rect = hoverCanvas.getBoundingClientRect();
+    var x = event.offsetX - self.margins().left() - self.margins().right();
+    var y = event.offsetY;
+  });
+
+  hoverCanvas.addEventListener("mousemove", function(event) {
+    var rect = hoverCanvas.getBoundingClientRect();
+    var x = event.offsetX - self.margins().left() - self.margins().right();
+    var y = event.offsetY;
+
+    var start = xScale.invert(x);
+
+    var elem = null;
+
+    if (dataItems) {
+      dataItems.forEach(function(r) {
+        if (r.regionStart() <= start && r.regionEnd() >= start) {
+          elem = r;
+        }
+      });
+    } else {
+      elem = new epiviz.ui.charts.ChartObject(
+        sprintf("%s-highlight", self.id()),
+        start,
+        start + self._binSize
+        // null,
+        // null,
+        // null,
+        // null,
+        // null,
+        // self._lastRange.seqName()
+      );
+    }
+
+    if (!elem) {
+      elem = new epiviz.ui.charts.ChartObject(
+        sprintf("%s-highlight", self.id()),
+        start,
+        start + self._binSize
+        // null,
+        // null,
+        // null,
+        // null,
+        // null,
+        // self._lastRange.seqName()
+      );
+    }
+    if (elem) {
+      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), elem));
+    }
+  });
+
+  hoverCanvas.addEventListener("mouseout", function(event) {
+    //remove hover elements
+    console.log("mouseout");
+    self._canvasHoverObject = null;
+    // self.draw();
+    ctx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
+    self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+  });
 };

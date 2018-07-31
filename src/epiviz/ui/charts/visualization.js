@@ -4,14 +4,14 @@
  * Time: 9:05 AM
  */
 
-goog.provide('epiviz.ui.charts.Visualization');
+goog.provide("epiviz.ui.charts.Visualization");
 
-goog.require('epiviz.caja');
-goog.require('epiviz.deferred.Deferred');
-goog.require('epiviz.ui.charts.CustomSetting');
-goog.require('epiviz.events.Event');
-goog.require('epiviz.ui.charts.VisEventArgs');
-goog.require('epiviz.ui.charts.Margins');
+goog.require("epiviz.caja");
+goog.require("epiviz.deferred.Deferred");
+goog.require("epiviz.ui.charts.CustomSetting");
+goog.require("epiviz.events.Event");
+goog.require("epiviz.ui.charts.VisEventArgs");
+goog.require("epiviz.ui.charts.Margins");
 
 /**
  * Uses data of T type for drawing objects of a subtype of epiviz.ui.charts.VisObject
@@ -56,7 +56,7 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @type {string}
    * @private
    */
-  this._lastModifiedMethod = 'draw';
+  this._lastModifiedMethod = "draw";
 
   var self = this;
   if (properties.modifiedMethods) {
@@ -66,22 +66,32 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
     var cajoledMethods = {};
     var nMethodsUpdated = 0;
     for (var m in modifiedMethods) {
-      if (!modifiedMethods.hasOwnProperty(m)) { continue; }
-      if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
+      if (!modifiedMethods.hasOwnProperty(m)) {
+        continue;
+      }
+      if (m == "_setModifiedMethods") {
+        continue;
+      } // Ignore modifications to this method
       (function(m) {
-        epiviz.caja.cajole(modifiedMethods[m], epiviz.caja.buildChartMethodContext()).done(function(method) {
-          if (!method) { return; }
-          cajoledMethods[m] = method;
-          nMethodsUpdated += 1;
-          if (nMethodsUpdated >= modifiedMethodNames.length) {
-            methodsUpdated.resolve();
-          }
-        });
+        epiviz.caja
+          .cajole(modifiedMethods[m], epiviz.caja.buildChartMethodContext())
+          .done(function(method) {
+            if (!method) {
+              return;
+            }
+            cajoledMethods[m] = method;
+            nMethodsUpdated += 1;
+            if (nMethodsUpdated >= modifiedMethodNames.length) {
+              methodsUpdated.resolve();
+            }
+          });
       })(m);
     }
     methodsUpdated.done(function() {
       for (var m in cajoledMethods) {
-        if (!cajoledMethods.hasOwnProperty(m)) { continue; }
+        if (!cajoledMethods.hasOwnProperty(m)) {
+          continue;
+        }
         self._originalMethods[m] = self[m];
         self[m] = cajoledMethods[m];
         self._lastModifiedMethod = m;
@@ -101,37 +111,54 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
     var val = properties.customSettingsValues[setting.id];
     switch (setting.type) {
       case epiviz.ui.charts.CustomSetting.Type.BOOLEAN:
-        this._customSettingsValues[setting.id] = (val === false || val) ? val : setting.defaultValue;
+        this._customSettingsValues[setting.id] =
+          val === false || val ? val : setting.defaultValue;
         break;
       case epiviz.ui.charts.CustomSetting.Type.NUMBER:
-        this._customSettingsValues[setting.id] = (val === 0 || val) ? val : setting.defaultValue;
+        this._customSettingsValues[setting.id] =
+          val === 0 || val ? val : setting.defaultValue;
         break;
       case epiviz.ui.charts.CustomSetting.Type.STRING:
-        this._customSettingsValues[setting.id] = (val === '' || val) ? val : setting.defaultValue;
+        this._customSettingsValues[setting.id] =
+          val === "" || val ? val : setting.defaultValue;
         break;
       case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA:
         var possibleValues = {};
         properties.visConfigSelection.measurements.foreach(function(m) {
-          m.metadata().forEach(function(metadataCol) { possibleValues[metadataCol] = metadataCol; });
+          m.metadata().forEach(function(metadataCol) {
+            possibleValues[metadataCol] = metadataCol;
+          });
         });
         setting.possibleValues = Object.keys(possibleValues);
         setting.possibleValues.sort();
         val = val || setting.defaultValue;
-        this._customSettingsValues[setting.id] = (val in possibleValues) ?
-          val : ((setting.possibleValues.length) ? setting.possibleValues[0] : '');
+        this._customSettingsValues[setting.id] =
+          val in possibleValues
+            ? val
+            : setting.possibleValues.length
+              ? setting.possibleValues[0]
+              : "";
         break;
       case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION:
-        var possibleValues = {name: 'name'};
+        var possibleValues = { name: "name" };
         properties.visConfigSelection.measurements.foreach(function(m) {
           var anno = m.annotation();
-          if (!anno) { return; }
-          Object.keys(anno).forEach(function(key) { possibleValues[key] = key; });
+          if (!anno) {
+            return;
+          }
+          Object.keys(anno).forEach(function(key) {
+            possibleValues[key] = key;
+          });
         });
         setting.possibleValues = Object.keys(possibleValues);
         setting.possibleValues.sort();
         val = val || setting.defaultValue;
-        this._customSettingsValues[setting.id] = (val in possibleValues) ?
-          val : ((setting.possibleValues.length) ? setting.possibleValues[0] : '');
+        this._customSettingsValues[setting.id] =
+          val in possibleValues
+            ? val
+            : setting.possibleValues.length
+              ? setting.possibleValues[0]
+              : "";
         break;
       default:
         this._customSettingsValues[setting.id] = val || setting.defaultValue;
@@ -143,7 +170,7 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
    * @type {string}
    * @private
    */
-  this._svgId = sprintf('%s-svg', this._id);
+  this._svgId = sprintf("%s-svg", this._id);
 
   /**
    * The D3 svg handler for the visualization
@@ -200,7 +227,9 @@ epiviz.ui.charts.Visualization = function(id, container, properties) {
   this._markersIndices = {};
 
   this._markers.forEach(function(marker, i) {
-    if (!marker) { return; }
+    if (!marker) {
+      return;
+    }
     self._markersMap[marker.id()] = marker;
     self._markersIndices[marker.id()] = i;
   });
@@ -316,38 +345,57 @@ epiviz.ui.charts.Visualization.SVG_MARGIN = 20;
  * @protected
  */
 epiviz.ui.charts.Visualization.prototype._initialize = function() {
-  if (this._properties.height == '100%') { this._properties.height = this._container.height() - epiviz.ui.charts.Visualization.SVG_MARGIN; }
-  if (this._properties.width == '100%') { this._properties.width = this._container.width() - epiviz.ui.charts.Visualization.SVG_MARGIN; }
+  if (this._properties.height == "100%") {
+    this._properties.height =
+      this._container.height() - epiviz.ui.charts.Visualization.SVG_MARGIN;
+  }
+  if (this._properties.width == "100%") {
+    this._properties.width =
+      this._container.width() - epiviz.ui.charts.Visualization.SVG_MARGIN;
+  }
 
   var width = this.width();
   var height = this.height();
 
-  this._container.addClass('visualization-container');
+  this._container.addClass("visualization-container");
 
-  this._container.append(sprintf('<svg id="%s" class="visualization" width="%s" height="%s"><style type="text/css"></style><defs></defs></svg>', this._svgId, width, height));
-  this._svg = d3.select(this._container.find("#"+this._svgId)[0]);
+  this._container.append(
+    sprintf(
+      '<svg id="%s" class="visualization" width="%s" height="%s"><style type="text/css"></style><defs></defs></svg>',
+      this._svgId,
+      width,
+      height
+    )
+  );
+  this._svg = d3.select(this._container.find("#" + this._svgId)[0]);
 
-  var jSvg = $(this._container.find("#"+this._svgId)[0]);
+  var jSvg = $(this._container.find("#" + this._svgId)[0]);
 
   /**
    * The difference in size between the container and the inner SVG
    * @type {number}
    * @private
    */
-  this._widthDif = jSvg.width() - (this._container.width() - epiviz.ui.charts.Visualization.SVG_MARGIN);
+  this._widthDif =
+    jSvg.width() -
+    (this._container.width() - epiviz.ui.charts.Visualization.SVG_MARGIN);
 
   /**
    * The difference in size between the container and the inner SVG
    * @type {number}
    * @private
    */
-  this._heightDif = height - (this._container.height() - epiviz.ui.charts.Visualization.SVG_MARGIN);
+  this._heightDif =
+    height -
+    (this._container.height() - epiviz.ui.charts.Visualization.SVG_MARGIN);
 
   this._properties.width = width;
   this._properties.height = height;
 
   var self = this;
-  this._container.click(function() { self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self._id)); });
+  this._container.click(function() {
+    self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self._id));
+  });
 };
 
 /**
@@ -356,8 +404,8 @@ epiviz.ui.charts.Visualization.prototype._initialize = function() {
  */
 epiviz.ui.charts.Visualization.prototype._clearAxes = function(svg) {
   svg = svg || this._svg;
-  svg.selectAll('.xAxis').remove();
-  svg.selectAll('.yAxis').remove();
+  svg.selectAll(".xAxis").remove();
+  svg.selectAll(".yAxis").remove();
 };
 
 /**
@@ -377,99 +425,277 @@ epiviz.ui.charts.Visualization.prototype._clearAxes = function(svg) {
  * @param {boolean} [yLabelsBtTicks]
  * @protected
  */
-epiviz.ui.charts.Visualization.prototype._drawAxes = function (xScale, yScale, xTicks, yTicks, svg, width, height, margins, xAxisFormat, yAxisFormat, xLabels, yLabels, xLabelsBtTicks, yLabelsBtTicks) {
+epiviz.ui.charts.Visualization.prototype._drawAxesCanvas = function(
+  xScale,
+  yScale,
+  xTicksn,
+  yTicksn,
+  canvas,
+  width,
+  height,
+  margins,
+  xAxisFormat,
+  yAxisFormat,
+  xLabels,
+  yLabels,
+  xLabelsBtTicks,
+  yLabelsBtTicks
+) {
+  canvas = canvas || this._canvas;
+  margins = margins || this.margins();
+  height = height || this.height();
+  width = width || this.width();
 
+  var ctx = canvas.getContext("2d");
+  ctx.lineWidth = 1;
+
+  if (xScale) {
+    // draw axes & grid
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    // x-axis
+    ctx.moveTo(margins.left(), height - margins.bottom());
+    ctx.lineTo(width - margins.right(), height - margins.bottom());
+
+    ctx.stroke();
+    //x-axis grid and ticks
+    var xTicks = xScale.ticks(xTicksn);
+    xTicks.forEach(function(tick) {
+      ctx.beginPath();
+      ctx.moveTo(margins.left() + xScale(tick), height - margins.bottom());
+      ctx.lineTo(margins.left() + xScale(tick), height - margins.bottom() + 6);
+      ctx.strokeStyle = "#565656";
+      ctx.stroke();
+
+      ctx.moveTo(margins.left() + xScale(tick), height - margins.bottom());
+      ctx.lineTo(margins.left() + xScale(tick), margins.top());
+      ctx.strokeStyle = "#dcdcdc";
+      ctx.stroke();
+    });
+
+    ctx.beginPath();
+    //x-scale labels
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+
+    var xAxisTickFormat =
+      xAxisFormat ||
+      (xLabels
+        ? function(i) {
+            return xLabels[i] || "";
+          }
+        : function(x) {
+            var format = d3.format("s");
+            var rounded = Math.round(x * 1000) / 1000;
+            return format(rounded);
+          });
+
+    var xUnits = xTicks.map(xAxisTickFormat);
+
+    xUnits.forEach(function(unit, i) {
+      ctx.fillText(
+        unit,
+        margins.left() + xScale(xTicks[i]),
+        height - margins.bottom() + 8
+      );
+    });
+  }
+
+  ctx.stroke();
+
+  if (yScale) {
+    // ctx.translate(this.margins().left(), this.margins().top());
+
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+
+    // y-axis
+    ctx.moveTo(margins.left(), height - margins.bottom());
+    ctx.lineTo(margins.left(), margins.top());
+    ctx.stroke();
+
+    //y-axis grid and ticks
+    var yTicks = yScale.ticks(yTicksn - 1);
+    yTicks.forEach(function(tick) {
+      ctx.beginPath();
+      ctx.moveTo(margins.left(), yScale(tick) + margins.top());
+      ctx.lineTo(margins.left() - 6, yScale(tick) + margins.top());
+      ctx.strokeStyle = "#565656";
+      ctx.stroke();
+
+      ctx.moveTo(margins.left(), yScale(tick) + margins.top());
+      ctx.lineTo(width - margins.right(), yScale(tick) + margins.top());
+      ctx.strokeStyle = "#dcdcdc";
+      ctx.stroke();
+    });
+
+    ctx.stroke();
+    ctx.beginPath();
+    //y-scale labels
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+
+    var yAxisTickFormat = yLabels
+      ? function(i) {
+          return yLabels[i];
+        }
+      : function(y) {
+          var format = d3.format("s");
+          var rounded = Math.round(y * 1000) / 1000;
+          return format(rounded);
+        };
+
+    var yUnits = yTicks.map(yAxisTickFormat);
+
+    yUnits.forEach(function(unit, i) {
+      ctx.fillText(unit, margins.left() - 8, yScale(yTicks[i]) + margins.top());
+    });
+
+    ctx.stroke();
+  }
+};
+
+epiviz.ui.charts.Visualization.prototype._drawAxes = function(
+  xScale,
+  yScale,
+  xTicks,
+  yTicks,
+  svg,
+  width,
+  height,
+  margins,
+  xAxisFormat,
+  yAxisFormat,
+  xLabels,
+  yLabels,
+  xLabelsBtTicks,
+  yLabelsBtTicks
+) {
   svg = svg || this._svg;
   margins = margins || this.margins();
   height = height || this.height();
   width = width || this.width();
 
-  var axesGroup = svg.select('.axes'),
-    xAxisGrid = axesGroup.select('.xAxis-grid'),
-    yAxisGrid = axesGroup.select('.yAxis-grid'),
-    xAxisLine = axesGroup.select('.xAxis-line'),
-    yAxisLine = axesGroup.select('.yAxis-line');
+  var axesGroup = svg.select(".axes"),
+    xAxisGrid = axesGroup.select(".xAxis-grid"),
+    yAxisGrid = axesGroup.select(".yAxis-grid"),
+    xAxisLine = axesGroup.select(".xAxis-line"),
+    yAxisLine = axesGroup.select(".yAxis-line");
 
-  if (axesGroup.empty()) { axesGroup = svg.append('g').attr('class', 'axes'); }
+  if (axesGroup.empty()) {
+    axesGroup = svg.append("g").attr("class", "axes");
+  }
 
-  if (xAxisGrid.empty()) { xAxisGrid = axesGroup.append('g').attr('class', 'xAxis xAxis-grid'); }
-  if (yAxisGrid.empty()) { yAxisGrid = axesGroup.append('g').attr('class', 'yAxis yAxis-grid'); }
-  if (xAxisLine.empty()) { xAxisLine = axesGroup.append('g').attr('class', 'xAxis xAxis-line'); }
-  if (yAxisLine.empty()) { yAxisLine = axesGroup.append('g').attr('class', 'yAxis yAxis-line'); }
+  if (xAxisGrid.empty()) {
+    xAxisGrid = axesGroup.append("g").attr("class", "xAxis xAxis-grid");
+  }
+  if (yAxisGrid.empty()) {
+    yAxisGrid = axesGroup.append("g").attr("class", "yAxis yAxis-grid");
+  }
+  if (xAxisLine.empty()) {
+    xAxisLine = axesGroup.append("g").attr("class", "xAxis xAxis-line");
+  }
+  if (yAxisLine.empty()) {
+    yAxisLine = axesGroup.append("g").attr("class", "yAxis yAxis-line");
+  }
 
   if (xScale) {
     // Draw X-axis grid lines
     xAxisGrid
-      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
-      .selectAll('line.x')
+      .attr(
+        "transform",
+        "translate(" + margins.left() + ", " + margins.top() + ")"
+      )
+      .selectAll("line.x")
       .data(xScale.ticks(xTicks))
-      .enter().append('line')
-      .attr('x1', xScale)
-      .attr('x2', xScale)
-      .attr('y1', 0)
-      .attr('y2', height - margins.top() - margins.bottom())
-      .style('stroke', '#eeeeee')
-      .style('shape-rendering', 'crispEdges');
+      .enter()
+      .append("line")
+      .attr("x1", xScale)
+      .attr("x2", xScale)
+      .attr("y1", 0)
+      .attr("y2", height - margins.top() - margins.bottom())
+      .style("stroke", "#eeeeee")
+      .style("shape-rendering", "crispEdges");
 
-    var xAxisTickFormat = xAxisFormat ||
-      ((xLabels) ?
-        function(i) { return xLabels[i]; } :
-        function(x) {
-          var format = d3.format('s');
-          var rounded = Math.round(x * 1000) / 1000;
-          return format(rounded);
-        });
+    var xAxisTickFormat =
+      xAxisFormat ||
+      (xLabels
+        ? function(i) {
+            return xLabels[i];
+          }
+        : function(x) {
+            var format = d3.format("s");
+            var rounded = Math.round(x * 1000) / 1000;
+            return format(rounded);
+          });
 
-    var xAxis = d3.svg.axis()
+    var xAxis = d3.svg
+      .axis()
       .scale(xScale)
-      .orient('bottom')
+      .orient("bottom")
       .ticks(xTicks)
       .tickFormat(xAxisTickFormat);
 
     xAxisLine
-      .attr('transform', 'translate(' + margins.left() + ', ' + (height - margins.bottom()) + ')')
+      .attr(
+        "transform",
+        "translate(" + margins.left() + ", " + (height - margins.bottom()) + ")"
+      )
       .call(xAxis);
 
     if (xLabels) {
-      var xTransform = 'rotate(-90)';
-      if (xLabelsBtTicks) { xTransform += 'translate(0,' + (xScale(0.5) - xScale(0)) + ')'; }
+      var xTransform = "rotate(-90)";
+      if (xLabelsBtTicks) {
+        xTransform += "translate(0," + (xScale(0.5) - xScale(0)) + ")";
+      }
       xAxisLine
-      .selectAll('text')
-      .style('text-anchor', 'end')
-      .attr('dx', '-.8em')
-      .attr('dy', '-0.5em')
-      .attr('transform', xTransform);
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", "-0.5em")
+        .attr("transform", xTransform);
     }
   }
 
   if (yScale) {
     // Draw Y-axis grid lines
     yAxisGrid
-      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
-      .selectAll('line.y')
+      .attr(
+        "transform",
+        "translate(" + margins.left() + ", " + margins.top() + ")"
+      )
+      .selectAll("line.y")
       .data(yScale.ticks(yTicks - 1))
-      .enter().append('line')
-      .attr('x1', 0)
-      .attr('x2', width - margins.left() - margins.right())
-      .attr('y1', yScale)
-      .attr('y2', yScale)
-      .style('stroke', '#eeeeee')
-      .style('shape-rendering', 'crispEdges');
+      .enter()
+      .append("line")
+      .attr("x1", 0)
+      .attr("x2", width - margins.left() - margins.right())
+      .attr("y1", yScale)
+      .attr("y2", yScale)
+      .style("stroke", "#eeeeee")
+      .style("shape-rendering", "crispEdges");
 
-    var yAxisTickFormat = (yLabels) ? function(i) { return yLabels[i]; } :
-      function(y) {
-        var format = d3.format('s');
-        var rounded = Math.round(y * 1000) / 1000;
-        return format(rounded);
-      };
+    var yAxisTickFormat = yLabels
+      ? function(i) {
+          return yLabels[i];
+        }
+      : function(y) {
+          var format = d3.format("s");
+          var rounded = Math.round(y * 1000) / 1000;
+          return format(rounded);
+        };
 
-    var yAxis = d3.svg.axis()
+    var yAxis = d3.svg
+      .axis()
       .ticks(yTicks - 1)
       .scale(yScale)
-      .orient('left')
+      .orient("left")
       .tickFormat(yAxisTickFormat);
     yAxisLine
-      .attr('transform', 'translate(' + margins.left() + ', ' + margins.top() + ')')
+      .attr(
+        "transform",
+        "translate(" + margins.left() + ", " + margins.top() + ")"
+      )
       .call(yAxis);
   }
 };
@@ -478,13 +704,13 @@ epiviz.ui.charts.Visualization.prototype._drawAxes = function (xScale, yScale, x
  * @private
  */
 epiviz.ui.charts.Visualization.prototype._drawTitle = function() {
-  var svgTitle = this._svg.selectAll('.visualization-title');
+  var svgTitle = this._svg.selectAll(".visualization-title");
 
   var Settings = epiviz.ui.charts.Visualization.CustomSettings;
   var settingsVals = this.customSettingsValues();
 
   var title = settingsVals[Settings.TITLE];
-  if (!title || title.trim() == '') {
+  if (!title || title.trim() == "") {
     if (!svgTitle.empty()) {
       svgTitle.remove();
     }
@@ -492,14 +718,15 @@ epiviz.ui.charts.Visualization.prototype._drawTitle = function() {
   }
 
   if (svgTitle.empty()) {
-    svgTitle = this._svg.append('text')
-      .attr('class', 'visualization-title')
-      .attr('text-anchor', 'middle');
+    svgTitle = this._svg
+      .append("text")
+      .attr("class", "visualization-title")
+      .attr("text-anchor", "middle");
   }
 
   svgTitle
-    .attr('x', this.width() * 0.5)
-    .attr('y', 25)
+    .attr("x", this.width() * 0.5)
+    .attr("y", 25)
     .text(title);
 };
 
@@ -508,21 +735,34 @@ epiviz.ui.charts.Visualization.prototype._drawTitle = function() {
  * @param {number} height
  */
 epiviz.ui.charts.Visualization.prototype.resize = function(width, height) {
-  if (width) { this._properties.width = width; }
-  if (height) { this._properties.height = height; }
+  if (width) {
+    this._properties.width = width;
+  }
+  if (height) {
+    this._properties.height = height;
+  }
 
   this.draw();
 
-  this._sizeChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, {width: this._properties.width, height: this._properties.height}));
+  this._sizeChanged.notify(
+    new epiviz.ui.charts.VisEventArgs(this._id, {
+      width: this._properties.width,
+      height: this._properties.height
+    })
+  );
 };
-
 
 /**
  */
 epiviz.ui.charts.Visualization.prototype.updateSize = function() {
   this.resize(
-    this._widthDif + this._container.width() - epiviz.ui.charts.Visualization.SVG_MARGIN,
-    this._heightDif + this._container.height() - epiviz.ui.charts.Visualization.SVG_MARGIN);
+    this._widthDif +
+      this._container.width() -
+      epiviz.ui.charts.Visualization.SVG_MARGIN,
+    this._heightDif +
+      this._container.height() -
+      epiviz.ui.charts.Visualization.SVG_MARGIN
+  );
 };
 
 /**
@@ -531,7 +771,6 @@ epiviz.ui.charts.Visualization.prototype.updateSize = function() {
  * @returns {Array.<epiviz.ui.charts.VisObject>}
  */
 epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
-
   if (range != undefined) {
     this._lastRange = range;
   }
@@ -542,9 +781,7 @@ epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
     this._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(this._id));
   }
 
-  this._svg
-    .attr('width', this.width())
-    .attr('height', this.height());
+  this._svg.attr("width", this.width()).attr("height", this.height());
 
   this._drawTitle();
 
@@ -556,12 +793,16 @@ epiviz.ui.charts.Visualization.prototype.draw = function(range, data) {
 /**
  * @returns {jQuery}
  */
-epiviz.ui.charts.Visualization.prototype.container = function() { return this._container; };
+epiviz.ui.charts.Visualization.prototype.container = function() {
+  return this._container;
+};
 
 /**
  * @returns {string}
  */
-epiviz.ui.charts.Visualization.prototype.id = function() { return this._id; };
+epiviz.ui.charts.Visualization.prototype.id = function() {
+  return this._id;
+};
 
 /**
  * @returns {epiviz.ui.charts.VisualizationProperties}
@@ -602,10 +843,14 @@ epiviz.ui.charts.Visualization.prototype.colors = function() {
  * @param {epiviz.ui.charts.ColorPalette} colors
  */
 epiviz.ui.charts.Visualization.prototype.setColors = function(colors) {
-  if (!colors || colors.equals(this._properties.colors)) { return; }
+  if (!colors || colors.equals(this._properties.colors)) {
+    return;
+  }
   this._properties.colors = colors;
   this.draw();
-  this._colorsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.colors));
+  this._colorsChanged.notify(
+    new epiviz.ui.charts.VisEventArgs(this._id, this._properties.colors)
+  );
 };
 
 /**
@@ -619,9 +864,10 @@ epiviz.ui.charts.Visualization.prototype.colorLabels = function() {
      * @param {epiviz.measurements.Measurement} m
      * @param {number} i
      */
-      function(m, i) {
+    function(m, i) {
       colors[i] = m.name();
-    });
+    }
+  );
 
   return colors;
 };
@@ -636,30 +882,46 @@ epiviz.ui.charts.Visualization.prototype.measurements = function() {
 /**
  * @returns {Object.<string, *>}
  */
-epiviz.ui.charts.Visualization.prototype.customSettingsValues = function() { return this._customSettingsValues; };
+epiviz.ui.charts.Visualization.prototype.customSettingsValues = function() {
+  return this._customSettingsValues;
+};
 
 /**
  * @param {Object.<string, *>} settingsValues
  */
-epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(settingsValues) {
-  if (this._customSettingsValues == settingsValues || !settingsValues || epiviz.utils.mapEquals(this._customSettingsValues, settingsValues)) {
+epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(
+  settingsValues
+) {
+  if (
+    this._customSettingsValues == settingsValues ||
+    !settingsValues ||
+    epiviz.utils.mapEquals(this._customSettingsValues, settingsValues)
+  ) {
     return;
   }
   var CustomSettings = epiviz.ui.charts.Visualization.CustomSettings;
 
-  var currentTitle = this._customSettingsValues[CustomSettings.TITLE] || '';
-  var newTitle = settingsValues[CustomSettings.TITLE] || '';
+  var currentTitle = this._customSettingsValues[CustomSettings.TITLE] || "";
+  var newTitle = settingsValues[CustomSettings.TITLE] || "";
 
   var currentLen = currentTitle.trim().length;
   var newLen = newTitle.trim().length;
 
   // Check if either both titles are undefined or both are defined
-  if (!(currentLen * newLen) && (currentLen + newLen)) {
+  if (!(currentLen * newLen) && currentLen + newLen) {
     var marginDelta = epiviz.utils.sign(newLen - currentLen) * 20;
-    var top = settingsValues[CustomSettings.MARGIN_TOP] || this._properties.margins.top();
-    var left = settingsValues[CustomSettings.MARGIN_LEFT] || this._properties.margins.left();
-    var right = settingsValues[CustomSettings.MARGIN_RIGHT] || this._properties.margins.right();
-    var bottom = settingsValues[CustomSettings.MARGIN_BOTTOM] || this._properties.margins.bottom();
+    var top =
+      settingsValues[CustomSettings.MARGIN_TOP] ||
+      this._properties.margins.top();
+    var left =
+      settingsValues[CustomSettings.MARGIN_LEFT] ||
+      this._properties.margins.left();
+    var right =
+      settingsValues[CustomSettings.MARGIN_RIGHT] ||
+      this._properties.margins.right();
+    var bottom =
+      settingsValues[CustomSettings.MARGIN_BOTTOM] ||
+      this._properties.margins.bottom();
     settingsValues[CustomSettings.MARGIN_TOP] = top + marginDelta;
     settingsValues[CustomSettings.MARGIN_LEFT] = left;
     settingsValues[CustomSettings.MARGIN_RIGHT] = right;
@@ -667,14 +929,31 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
   }
 
   // FIXME: This is a property specific to Chart and not Visualization; move this portion of the code in Chart
-  var currentMeasurementAggregator = this._customSettingsValues[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR];
-  var newMeasurementAggregator = settingsValues[epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR];
+  var currentMeasurementAggregator = this._customSettingsValues[
+    epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR
+  ];
+  var newMeasurementAggregator =
+    settingsValues[
+      epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR
+    ];
 
   this._customSettingsValues = settingsValues;
 
-  if (CustomSettings.MARGIN_TOP in settingsValues && CustomSettings.MARGIN_BOTTOM in settingsValues && CustomSettings.MARGIN_LEFT in settingsValues && CustomSettings.MARGIN_RIGHT in settingsValues) {
-    this._properties.margins = new epiviz.ui.charts.Margins(settingsValues[CustomSettings.MARGIN_TOP], settingsValues[CustomSettings.MARGIN_LEFT], settingsValues[CustomSettings.MARGIN_BOTTOM], settingsValues[CustomSettings.MARGIN_RIGHT]);
-    this._marginsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins));
+  if (
+    CustomSettings.MARGIN_TOP in settingsValues &&
+    CustomSettings.MARGIN_BOTTOM in settingsValues &&
+    CustomSettings.MARGIN_LEFT in settingsValues &&
+    CustomSettings.MARGIN_RIGHT in settingsValues
+  ) {
+    this._properties.margins = new epiviz.ui.charts.Margins(
+      settingsValues[CustomSettings.MARGIN_TOP],
+      settingsValues[CustomSettings.MARGIN_LEFT],
+      settingsValues[CustomSettings.MARGIN_BOTTOM],
+      settingsValues[CustomSettings.MARGIN_RIGHT]
+    );
+    this._marginsChanged.notify(
+      new epiviz.ui.charts.VisEventArgs(this._id, this._properties.margins)
+    );
   }
 
   if (currentMeasurementAggregator != newMeasurementAggregator) {
@@ -686,54 +965,72 @@ epiviz.ui.charts.Visualization.prototype.setCustomSettingsValues = function(sett
     this.draw();
   }
 
-  this._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(this._id, settingsValues));
+  this._customSettingsChanged.notify(
+    new epiviz.ui.charts.VisEventArgs(this._id, settingsValues)
+  );
 };
 
 /**
  * @param {Object.<string, string>} modifiedMethods
  */
-epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedMethods) {
+epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(
+  modifiedMethods
+) {
   var self = this;
   var methodsModified = false;
-  if (!modifiedMethods) { return; }
+  if (!modifiedMethods) {
+    return;
+  }
   var modifiedMethodNames = Object.keys(modifiedMethods);
   var methodsUpdated = new epiviz.deferred.Deferred();
   var nMethodsUpdated = 0;
   var cajoledMethods = {};
   for (var m in modifiedMethods) {
-    if (!modifiedMethods.hasOwnProperty(m)) { continue; }
-    if (m == '_setModifiedMethods') { continue; } // Ignore modifications to this method
-    if (this[m].toString() == modifiedMethods[m]) { continue; }
+    if (!modifiedMethods.hasOwnProperty(m)) {
+      continue;
+    }
+    if (m == "_setModifiedMethods") {
+      continue;
+    } // Ignore modifications to this method
+    if (this[m].toString() == modifiedMethods[m]) {
+      continue;
+    }
 
     if (!(m in this._originalMethods)) {
       this._originalMethods[m] = this[m];
     }
 
     (function(m) {
-      epiviz.caja.cajole(modifiedMethods[m], epiviz.caja.buildChartMethodContext()).done(function(method) {
-        if (method) {
-          cajoledMethods[m] = method;
-          methodsModified = true;
+      epiviz.caja
+        .cajole(modifiedMethods[m], epiviz.caja.buildChartMethodContext())
+        .done(function(method) {
+          if (method) {
+            cajoledMethods[m] = method;
+            methodsModified = true;
 
-          nMethodsUpdated += 1;
-          if (nMethodsUpdated >= modifiedMethodNames.length) {
-            methodsUpdated.resolve();
+            nMethodsUpdated += 1;
+            if (nMethodsUpdated >= modifiedMethodNames.length) {
+              methodsUpdated.resolve();
+            }
           }
-        }
-      });
+        });
     })(m);
   }
 
   methodsUpdated.done(function() {
     if (methodsModified) {
       for (var m in cajoledMethods) {
-        if (!cajoledMethods.hasOwnProperty(m)) { continue; }
+        if (!cajoledMethods.hasOwnProperty(m)) {
+          continue;
+        }
         self[m] = cajoledMethods[m];
         self._lastModifiedMethod = m;
       }
       self._hasModifiedMethods = true;
       self.draw();
-      self._methodsModified.notify(new epiviz.ui.charts.VisEventArgs(self._id, modifiedMethods));
+      self._methodsModified.notify(
+        new epiviz.ui.charts.VisEventArgs(self._id, modifiedMethods)
+      );
     }
   });
 };
@@ -741,19 +1038,27 @@ epiviz.ui.charts.Visualization.prototype.setModifiedMethods = function(modifiedM
 /**
  * @returns {boolean}
  */
-epiviz.ui.charts.Visualization.prototype.hasModifiedMethods = function() { return this._hasModifiedMethods; };
+epiviz.ui.charts.Visualization.prototype.hasModifiedMethods = function() {
+  return this._hasModifiedMethods;
+};
 
 /**
  * @returns {string}
  */
-epiviz.ui.charts.Visualization.prototype.lastModifiedMethod = function() { return this._lastModifiedMethod; };
+epiviz.ui.charts.Visualization.prototype.lastModifiedMethod = function() {
+  return this._lastModifiedMethod;
+};
 
 /**
  */
 epiviz.ui.charts.Visualization.prototype.resetModifiedMethods = function() {
-  if (!this._hasModifiedMethods) { return; }
+  if (!this._hasModifiedMethods) {
+    return;
+  }
   for (var m in this._originalMethods) {
-    if (!this._originalMethods.hasOwnProperty(m)) { continue; }
+    if (!this._originalMethods.hasOwnProperty(m)) {
+      continue;
+    }
     this[m] = this._originalMethods[m];
   }
 
@@ -768,15 +1073,19 @@ epiviz.ui.charts.Visualization.prototype.resetModifiedMethods = function() {
  * @param {epiviz.ui.charts.markers.VisualizationMarker} marker
  */
 epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
-  if (!marker) { return; }
+  if (!marker) {
+    return;
+  }
   var i;
   if (marker.id() in this._markersMap) {
     i = this._markersIndices[marker.id()];
     var oldMarker = this._markers[i];
-    if (oldMarker == marker ||
-        (oldMarker.type() == marker.type() &&
-         oldMarker.preMarkStr() == marker.preMarkStr() &&
-         oldMarker.markStr() == marker.markStr())) {
+    if (
+      oldMarker == marker ||
+      (oldMarker.type() == marker.type() &&
+        oldMarker.preMarkStr() == marker.preMarkStr() &&
+        oldMarker.markStr() == marker.markStr())
+    ) {
       // Marker not modified
       return;
     }
@@ -794,11 +1103,15 @@ epiviz.ui.charts.Visualization.prototype.putMarker = function(marker) {
     self.draw();
   });
 
-  this._markersModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._markers));
+  this._markersModified.notify(
+    new epiviz.ui.charts.VisEventArgs(this._id, this._markers)
+  );
 };
 
 epiviz.ui.charts.Visualization.prototype.removeMarker = function(markerId) {
-  if (!(markerId in this._markersMap)) { return; }
+  if (!(markerId in this._markersMap)) {
+    return;
+  }
 
   var i = this._markersIndices[markerId];
   this._markers[i] = null;
@@ -810,7 +1123,9 @@ epiviz.ui.charts.Visualization.prototype.removeMarker = function(markerId) {
     self.draw();
   });
 
-  this._markersModified.notify(new epiviz.ui.charts.VisEventArgs(this._id, this._markers));
+  this._markersModified.notify(
+    new epiviz.ui.charts.VisEventArgs(this._id, this._markers)
+  );
 };
 
 /**
@@ -818,24 +1133,34 @@ epiviz.ui.charts.Visualization.prototype.removeMarker = function(markerId) {
  * @returns {epiviz.ui.charts.markers.VisualizationMarker}
  */
 epiviz.ui.charts.Visualization.prototype.getMarker = function(markerId) {
-  if (!markerId || !(markerId in this._markersMap)) { return null; }
+  if (!markerId || !(markerId in this._markersMap)) {
+    return null;
+  }
   return this._markersMap[markerId];
 };
 
 /**
  * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
-epiviz.ui.charts.Visualization.prototype.displayType = function() { throw Error('unimplemented abstract method'); };
+epiviz.ui.charts.Visualization.prototype.displayType = function() {
+  throw Error("unimplemented abstract method");
+};
 
 /**
  * @returns {boolean}
  */
-epiviz.ui.charts.Visualization.prototype.autoPropagateChanges = function() { return this._autoPropagateChanges; };
+epiviz.ui.charts.Visualization.prototype.autoPropagateChanges = function() {
+  return this._autoPropagateChanges;
+};
 
 /**
  * @param {boolean} val
  */
-epiviz.ui.charts.Visualization.prototype.setAutoPropagateChanges = function(val) { this._autoPropagateChanges = val; };
+epiviz.ui.charts.Visualization.prototype.setAutoPropagateChanges = function(
+  val
+) {
+  this._autoPropagateChanges = val;
+};
 
 /**
  * @param {epiviz.datatypes.Range} range
@@ -853,11 +1178,21 @@ epiviz.ui.charts.Visualization.prototype.transformData = function(range, data) {
     this._unalteredData = data;
   }
 
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() == range.width()) {
+  if (
+    lastRange &&
+    range &&
+    lastRange.overlapsWith(range) &&
+    lastRange.width() == range.width()
+  ) {
     this._slide = range.start() - lastRange.start();
   }
 
-  if (lastRange && range && lastRange.overlapsWith(range) && lastRange.width() != range.width()) {
+  if (
+    lastRange &&
+    range &&
+    lastRange.overlapsWith(range) &&
+    lastRange.width() != range.width()
+  ) {
     this._zoom = lastRange.width() / range.width();
   }
 
@@ -871,22 +1206,30 @@ epiviz.ui.charts.Visualization.prototype.transformData = function(range, data) {
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.VisObject>>}
  */
-epiviz.ui.charts.Visualization.prototype.onHover = function() { return this._hover; };
+epiviz.ui.charts.Visualization.prototype.onHover = function() {
+  return this._hover;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
-epiviz.ui.charts.Visualization.prototype.onUnhover = function() { return this._unhover; };
+epiviz.ui.charts.Visualization.prototype.onUnhover = function() {
+  return this._unhover;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.VisObject>>}
  */
-epiviz.ui.charts.Visualization.prototype.onSelect = function() { return this._select; };
+epiviz.ui.charts.Visualization.prototype.onSelect = function() {
+  return this._select;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
-epiviz.ui.charts.Visualization.prototype.onDeselect = function() { return this._deselect; };
+epiviz.ui.charts.Visualization.prototype.onDeselect = function() {
+  return this._deselect;
+};
 
 // Deprecated code, kept here for future reference
 // Selection and hovering by changing the class of the selected items
@@ -932,16 +1275,21 @@ epiviz.ui.charts.Visualization.prototype.onDeselect = function() { return this._
  * @param {epiviz.ui.charts.VisObject} selectedObject
  */
 epiviz.ui.charts.Visualization.prototype.doHover = function(selectedObject) {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+  if (this.chartDrawType == "canvas") {
+    this._canvasHoverObject = selectedObject;
+    // this.draw();
+    return;
+  }
+  var itemsGroup = this._container.find(".items");
+  var unselectedHoveredGroup = itemsGroup.find("> .hovered");
+  var selectedGroup = itemsGroup.find("> .selected");
+  var selectedHoveredGroup = selectedGroup.find("> .hovered");
 
   var filter = function() {
-    if(Array.isArray(selectedObject)) {
+    if (Array.isArray(selectedObject)) {
       var match = false;
 
-      for(var sIndex = 0; sIndex < selectedObject.length; sIndex++) {
+      for (var sIndex = 0; sIndex < selectedObject.length; sIndex++) {
         var sel = selectedObject[sIndex];
         if (sel.overlapsWith(d3.select(this).data()[0])) {
           match = true;
@@ -949,25 +1297,32 @@ epiviz.ui.charts.Visualization.prototype.doHover = function(selectedObject) {
       }
 
       return match;
-    }
-    else {
+    } else {
       return selectedObject.overlapsWith(d3.select(this).data()[0]);
     }
   };
-  var selectItems = itemsGroup.find('> .item').filter(filter);
+  var selectItems = itemsGroup.find("> .item").filter(filter);
   unselectedHoveredGroup.append(selectItems);
 
-  selectItems = selectedGroup.find('> .item').filter(filter);
+  selectItems = selectedGroup.find("> .item").filter(filter);
   selectedHoveredGroup.append(selectItems);
 };
 
 /**
  */
 epiviz.ui.charts.Visualization.prototype.doUnhover = function() {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+  if (this.chartDrawType == "canvas") {
+    this._canvasHoverObject = null;
+    var ctx = this.hoverCanvas.getContext("2d");
+    ctx.clearRect(0, 0, this.hoverCanvas.width, this.hoverCanvas.height);
+    // this.draw();
+    return;
+  }
+
+  var itemsGroup = this._container.find(".items");
+  var unselectedHoveredGroup = itemsGroup.find("> .hovered");
+  var selectedGroup = itemsGroup.find("> .selected");
+  var selectedHoveredGroup = selectedGroup.find("> .hovered");
 
   itemsGroup.prepend(unselectedHoveredGroup.children());
 
@@ -978,101 +1333,123 @@ epiviz.ui.charts.Visualization.prototype.doUnhover = function() {
  * @param {epiviz.ui.charts.ChartObject} selectedObject
  */
 epiviz.ui.charts.Visualization.prototype.doSelect = function(selectedObject) {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+  var itemsGroup = this._container.find(".items");
+  var unselectedHoveredGroup = itemsGroup.find("> .hovered");
+  var selectedGroup = itemsGroup.find("> .selected");
+  var selectedHoveredGroup = selectedGroup.find("> .hovered");
 
   var filter = function() {
     return selectedObject.overlapsWith(d3.select(this).data()[0]);
   };
-  var selectItems = itemsGroup.find('> .item').filter(filter);
+  var selectItems = itemsGroup.find("> .item").filter(filter);
   selectedGroup.append(selectItems);
 
-  selectItems = unselectedHoveredGroup.find('> .item').filter(filter);
+  selectItems = unselectedHoveredGroup.find("> .item").filter(filter);
   selectedHoveredGroup.append(selectItems);
 };
 
 /**
  */
 epiviz.ui.charts.Visualization.prototype.doDeselect = function() {
-  var itemsGroup = this._container.find('.items');
-  var unselectedHoveredGroup = itemsGroup.find('> .hovered');
-  var selectedGroup = itemsGroup.find('> .selected');
-  var selectedHoveredGroup = selectedGroup.find('> .hovered');
+  var itemsGroup = this._container.find(".items");
+  var unselectedHoveredGroup = itemsGroup.find("> .hovered");
+  var selectedGroup = itemsGroup.find("> .selected");
+  var selectedHoveredGroup = selectedGroup.find("> .hovered");
 
-  itemsGroup.prepend(selectedGroup.find('> .item'));
+  itemsGroup.prepend(selectedGroup.find("> .item"));
   unselectedHoveredGroup.prepend(selectedHoveredGroup.children());
 };
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
-epiviz.ui.charts.Visualization.prototype.onSave = function() { return this._save; };
+epiviz.ui.charts.Visualization.prototype.onSave = function() {
+  return this._save;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
-epiviz.ui.charts.Visualization.prototype.onRemove = function() { return this._remove; };
+epiviz.ui.charts.Visualization.prototype.onRemove = function() {
+  return this._remove;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.ColorPalette>>}
  */
-epiviz.ui.charts.Visualization.prototype.onColorsChanged = function() { return this._colorsChanged; };
+epiviz.ui.charts.Visualization.prototype.onColorsChanged = function() {
+  return this._colorsChanged;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, string>>>}
  */
-epiviz.ui.charts.Visualization.prototype.onMethodsModified = function() { return this._methodsModified; };
+epiviz.ui.charts.Visualization.prototype.onMethodsModified = function() {
+  return this._methodsModified;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
-epiviz.ui.charts.Visualization.prototype.onMethodsReset = function() { return this._methodsReset; };
+epiviz.ui.charts.Visualization.prototype.onMethodsReset = function() {
+  return this._methodsReset;
+};
 
 /**
  * @returns {epiviz.events.Event.<Array.<epiviz.ui.charts.markers.VisualizationMarker>>}
  */
-epiviz.ui.charts.Visualization.prototype.onMarkersModified = function() { return this._markersModified; };
+epiviz.ui.charts.Visualization.prototype.onMarkersModified = function() {
+  return this._markersModified;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<Object.<string, *>>>}
  */
-epiviz.ui.charts.Visualization.prototype.onCustomSettingsChanged = function() { return this._customSettingsChanged; };
+epiviz.ui.charts.Visualization.prototype.onCustomSettingsChanged = function() {
+  return this._customSettingsChanged;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{width: (number|string), height: (number|string)}>>}
  */
-epiviz.ui.charts.Visualization.prototype.onSizeChanged = function() { return this._sizeChanged; };
+epiviz.ui.charts.Visualization.prototype.onSizeChanged = function() {
+  return this._sizeChanged;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.charts.Margins>>}
  */
-epiviz.ui.charts.Visualization.prototype.onMarginsChanged = function() { return this._marginsChanged; };
+epiviz.ui.charts.Visualization.prototype.onMarginsChanged = function() {
+  return this._marginsChanged;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
-epiviz.ui.charts.Visualization.prototype.onDataWaitStart = function() { return this._dataWaitStart; };
+epiviz.ui.charts.Visualization.prototype.onDataWaitStart = function() {
+  return this._dataWaitStart;
+};
 
 /**
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs>}
  */
-epiviz.ui.charts.Visualization.prototype.onDataWaitEnd = function() { return this._dataWaitEnd; };
+epiviz.ui.charts.Visualization.prototype.onDataWaitEnd = function() {
+  return this._dataWaitEnd;
+};
 
 /**
  * @enum {string}
  */
 epiviz.ui.charts.Visualization.CustomSettings = {
-  TITLE: 'title',
-  MARGIN_LEFT: 'marginLeft',
-  MARGIN_RIGHT: 'marginRight',
-  MARGIN_TOP: 'marginTop',
-  MARGIN_BOTTOM: 'marginBottom',
-  X_MIN: 'xMin',
-  X_MAX: 'xMax',
-  Y_MIN: 'yMin',
-  Y_MAX: 'yMax',
-  COL_LABEL: 'colLabel',
-  ROW_LABEL: 'rowLabel'
+  TITLE: "title",
+  MARGIN_LEFT: "marginLeft",
+  MARGIN_RIGHT: "marginRight",
+  MARGIN_TOP: "marginTop",
+  MARGIN_BOTTOM: "marginBottom",
+  X_MIN: "xMin",
+  X_MAX: "xMax",
+  Y_MIN: "yMin",
+  Y_MAX: "yMax",
+  COL_LABEL: "colLabel",
+  ROW_LABEL: "rowLabel"
 };
