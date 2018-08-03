@@ -13,9 +13,7 @@ goog.require("epiviz.utils");
 goog.require("epiviz.ui.charts.CustomSetting");
 goog.require("epiviz.ui.charts.ChartObject");
 goog.require("epiviz.measurements.Measurement");
-goog.require(
-  "epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory"
-);
+goog.require("epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory");
 goog.require("epiviz.measurements.MeasurementHashtable");
 goog.require("epiviz.datatypes.MapGenomicData");
 
@@ -1868,7 +1866,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype.addCanvasEvents = function(
  * @param {epiviz.ui.charts.VisObject} selectedObject
  */
 epiviz.plugins.charts.HeatmapPlot.prototype.doHover = function(selectedObject) {
-  epiviz.ui.charts.Plot.prototype.doHover.call(this);
+  epiviz.ui.charts.Plot.prototype.doHover.call(this, selectedObject);
 
   var self = this;
   if (this.chartDrawType == "canvas") {
