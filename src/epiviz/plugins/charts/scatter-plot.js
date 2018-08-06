@@ -1150,7 +1150,7 @@ epiviz.plugins.charts.ScatterPlot.prototype.addCanvasEvents = function(
         (width - margins.sumAxis(Axis.X)) +
       minX;
     var yValMin =
-      ((y - circleRadius - (height - margins.bottom())) * (maxY - minY)) /
+      ((-y - circleRadius + (height - margins.bottom())) * (maxY - minY)) /
         (height - margins.sumAxis(Axis.Y)) +
       minY;
 
@@ -1159,7 +1159,7 @@ epiviz.plugins.charts.ScatterPlot.prototype.addCanvasEvents = function(
         (width - margins.sumAxis(Axis.X)) +
       minX;
     var yValMax =
-      ((y + circleRadius - (height - margins.bottom())) * (maxY - minY)) /
+      ((-y + circleRadius + (height - margins.bottom())) * (maxY - minY)) /
         (height - margins.sumAxis(Axis.Y)) +
       minY;
 
