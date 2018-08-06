@@ -162,7 +162,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype.drawCanvas = function(range, data) {
   hoverCanvas.width = this.width();
   hoverCanvas.height = this.height();
   hoverCanvas.style =
-    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:10";
+    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
 
   var pair = this._applyClustering(range, data, canvas);
 

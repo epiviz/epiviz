@@ -381,8 +381,8 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawPlotCanvas = function(
   this._container.append(hoverCanvas);
   hoverCanvas.width = this.width();
   hoverCanvas.height = this.height();
-  hoverCanvas.style = "position:absolute;top:0;left:0;width:100%;height:100%;";
-
+  hoverCanvas.style =
+    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
   var ctx = canvas.getContext("2d");
   ctx.translate(this.margins().left(), this.margins().top());
 

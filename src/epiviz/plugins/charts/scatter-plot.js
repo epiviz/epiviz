@@ -264,7 +264,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCirclesCanvas = function(
   hoverCanvas.width = this.width();
   hoverCanvas.height = this.height();
   hoverCanvas.style =
-    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:10";
+    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
 
   this._drawAxesCanvas(xScale, yScale, 15, 15, canvas);
 
@@ -1185,7 +1185,6 @@ epiviz.plugins.charts.ScatterPlot.prototype.addCanvasEvents = function(
 
   hoverCanvas.addEventListener("mouseout", function(event) {
     //remove hover elements
-    console.log("mouseout");
     self._canvasHoverObject = null;
     // self.draw();
     ctx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);

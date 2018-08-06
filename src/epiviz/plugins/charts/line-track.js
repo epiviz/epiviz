@@ -146,7 +146,7 @@ epiviz.plugins.charts.LineTrack.prototype.drawCanvas = function(
   hoverCanvas.width = this.width();
   hoverCanvas.height = this.height();
   hoverCanvas.style =
-    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:10";
+    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
 
   this._drawAxesCanvas(xScale, yScale, 10, 5, canvas);
 

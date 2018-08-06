@@ -395,7 +395,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function(
   hoverCanvas.width = this.width();
   hoverCanvas.height = this.height();
   hoverCanvas.style =
-    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:10";
+    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
 
   // canvas.style = "border:1px solid #d3d3d3;";
   this._drawAxesCanvas(xScale, null, 10, 5, canvas);

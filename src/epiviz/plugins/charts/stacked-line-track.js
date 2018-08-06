@@ -506,7 +506,7 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLinesCanvas = function(
   hoverCanvas.width = this.width();
   hoverCanvas.height = this.height();
   hoverCanvas.style =
-    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:10";
+    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
   this._drawAxesCanvas(xScale, null, 10, 0, canvas);
   // TODO: Add option for labels on tracks
   /* this._drawAxes(
