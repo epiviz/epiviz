@@ -134,7 +134,7 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
     return [];
   }
 
-  return this._drawCirclesCanvas(range, data);
+  return this._drawCircles(range, data);
 };
 
 /**
