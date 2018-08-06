@@ -233,6 +233,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- Future tooltip: <script src="src/lib/qtip/jquery.qtip.min.js"></script>-->
 
     <!--<script src="//caja.appspot.com/caja.js"></script>-->
+    <script src="src/lib/renderingQueue/render-queue.js"></script>
 
     <!-- Google Analytics -->
     <script src="src/lib/google-analytics/google-analytics.js"></script>

@@ -963,7 +963,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCellsCanvas = function(
   var ctxh = hoverCanvas.getContext("2d");
   ctxh.translate(this.margins().left(), this.margins().top());
 
-  items.forEach(function(item) {
+  function renderCell(item) {
     ctx.beginPath();
 
     var color = !self._globalIndexColorLabels
@@ -982,7 +982,11 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCellsCanvas = function(
     );
     ctx.fill();
     ctx.stroke();
-  });
+  }
+
+  this.renderQueue = renderQueue(renderCell);
+  // .clear(clear_canvas);
+  this.renderQueue(items);
 
   this._canvasHoverOptions = {
     colIndex: colIndex,

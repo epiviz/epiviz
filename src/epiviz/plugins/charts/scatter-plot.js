@@ -134,7 +134,7 @@ epiviz.plugins.charts.ScatterPlot.prototype.draw = function(range, data) {
     return [];
   }
 
-  return this._drawCircles(range, data);
+  return this._drawCirclesCanvas(range, data);
 };
 
 /**
@@ -268,6 +268,31 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCirclesCanvas = function(
 
   this._drawAxesCanvas(xScale, yScale, 15, 15, canvas);
 
+  var ctx = canvas.getContext("2d");
+
+  function renderScatterDot(d) {
+    ctx.beginPath();
+    ctx.arc(
+      margins.left() +
+        ((d.values[0] - minX) * (width - margins.sumAxis(Axis.X))) /
+          (maxX - minX),
+      height -
+        margins.bottom() -
+        ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y))) /
+          (maxY - minY),
+      circleRadius,
+      0,
+      2 * Math.PI
+    );
+    var color = self.colors().get(d.seriesIndex);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  this.renderQueue = renderQueue(renderScatterDot);
+
   var i, index;
   var indices = []; //epiviz.utils.range(nSeries * nItems);
   for (i = 0; i < nItems; ++i) {
@@ -363,30 +388,9 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCirclesCanvas = function(
     selectedGroup.append("g").attr("class", "hovered");
   }
 
-  var ctx = canvas.getContext("2d");
   ctx.globalAlpha = 0.7;
-  // draw items on  canvas
-  // TODO: use renderingQueues for optimizing large draws
-  items.forEach(function(d) {
-    ctx.beginPath();
-    ctx.arc(
-      margins.left() +
-        ((d.values[0] - minX) * (width - margins.sumAxis(Axis.X))) /
-          (maxX - minX),
-      height -
-        margins.bottom() -
-        ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y))) /
-          (maxY - minY),
-      circleRadius,
-      0,
-      2 * Math.PI
-    );
-    var color = self.colors().get(d.seriesIndex);
-    ctx.strokeStyle = color;
-    ctx.stroke();
-    ctx.fillStyle = color;
-    ctx.fill();
-  });
+  // ctx.globalCompositeOperation = "destination-over";
+  self.renderQueue(items);
 
   // Draw legend if necessary
   if (this._globalIndexColorLabels) {
