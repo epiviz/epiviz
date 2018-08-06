@@ -1855,7 +1855,6 @@ epiviz.plugins.charts.HeatmapPlot.prototype.addCanvasEvents = function(
 
   hoverCanvas.addEventListener("mouseout", function(event) {
     //remove hover elements
-    console.log("mouseout");
     self._canvasHoverObject = null;
     ctx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
     self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));

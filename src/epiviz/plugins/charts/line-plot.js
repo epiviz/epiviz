@@ -1067,7 +1067,6 @@ epiviz.plugins.charts.LinePlot.prototype.addCanvasEvents = function(
 
   hoverCanvas.addEventListener("mouseout", function(event) {
     //remove hover elements
-    console.log("mouseout");
     self._canvasHoverObject = null;
     // self.draw();
     ctx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);

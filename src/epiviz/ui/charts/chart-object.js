@@ -4,10 +4,9 @@
  * Time: 2:03 PM
  */
 
-goog.provide('epiviz.ui.charts.ChartObject');
+goog.provide("epiviz.ui.charts.ChartObject");
 
-goog.require('epiviz.ui.charts.VisObject');
-
+goog.require("epiviz.ui.charts.VisObject");
 
 /**
  * A struct for various objects in visualizations, like blocks, genes or circles in scatter plots
@@ -24,7 +23,17 @@ goog.require('epiviz.ui.charts.VisObject');
  * @struct
  * @extends {epiviz.ui.charts.VisObject}
  */
-epiviz.ui.charts.ChartObject = function(id, start, end, values, seriesIndex, valueItems, measurements, cssClasses, seqName) {
+epiviz.ui.charts.ChartObject = function(
+  id,
+  start,
+  end,
+  values,
+  seriesIndex,
+  valueItems,
+  measurements,
+  cssClasses,
+  seqName
+) {
   epiviz.ui.charts.VisObject.call(this);
 
   /**
@@ -77,23 +86,31 @@ epiviz.ui.charts.ChartObject = function(id, start, end, values, seriesIndex, val
 /*
  * Copy methods from upper class
  */
-epiviz.ui.charts.ChartObject.prototype = epiviz.utils.mapCopy(epiviz.ui.charts.VisObject.prototype);
+epiviz.ui.charts.ChartObject.prototype = epiviz.utils.mapCopy(
+  epiviz.ui.charts.VisObject.prototype
+);
 epiviz.ui.charts.ChartObject.constructor = epiviz.ui.charts.ChartObject;
 
 /**
  * @returns {number}
  */
-epiviz.ui.charts.ChartObject.prototype.regionStart = function() { return this.start; };
+epiviz.ui.charts.ChartObject.prototype.regionStart = function() {
+  return this.start;
+};
 
 /**
  * @returns {number}
  */
-epiviz.ui.charts.ChartObject.prototype.regionEnd = function() { return this.end; };
+epiviz.ui.charts.ChartObject.prototype.regionEnd = function() {
+  return this.end;
+};
 
 /**
  * @returns {string}
  */
-epiviz.ui.charts.ChartObject.prototype.regionSeqName = function() { return this.seqName; };
+epiviz.ui.charts.ChartObject.prototype.regionSeqName = function() {
+  return this.seqName;
+};
 
 /**
  * @param {number} i
@@ -101,7 +118,11 @@ epiviz.ui.charts.ChartObject.prototype.regionSeqName = function() { return this.
  * @param {string} metadataCol
  * @returns {string}
  */
-epiviz.ui.charts.ChartObject.prototype.getMetadata = function(i, j, metadataCol) {
+epiviz.ui.charts.ChartObject.prototype.getMetadata = function(
+  i,
+  j,
+  metadataCol
+) {
   if (this.valueItems) {
     return this.valueItems[i][j].rowItem.metadata(metadataCol);
   }
@@ -115,11 +136,13 @@ epiviz.ui.charts.ChartObject.prototype.getMetadata = function(i, j, metadataCol)
  * @param {number} j
  * @returns {number}
  */
-epiviz.ui.charts.ChartObject.prototype.getStart = function(i, j) { return this.valueItems[i][j].rowItem.start(); };
+epiviz.ui.charts.ChartObject.prototype.getStart = function(i, j) {
+  return this.valueItems[i][j].rowItem.start();
+};
 
-epiviz.ui.charts.ChartObject.prototype.getSeqName = function(i, j) { return this.seqName | this.valueItems[i][j].rowItem.seqName() ; };
-
-
+epiviz.ui.charts.ChartObject.prototype.getSeqName = function(i, j) {
+  return this.seqName | this.valueItems[i][j].rowItem.seqName();
+};
 
 /**
  * Measurement i, object j
@@ -127,12 +150,20 @@ epiviz.ui.charts.ChartObject.prototype.getSeqName = function(i, j) { return this
  * @param {number} j
  * @returns {number}
  */
-epiviz.ui.charts.ChartObject.prototype.getEnd = function(i, j) { return this.valueItems[i][j].rowItem.end(); };
+epiviz.ui.charts.ChartObject.prototype.getEnd = function(i, j) {
+  return this.valueItems[i][j].rowItem.end();
+};
 
 /**
  * @returns {Array.<string>}
  */
-epiviz.ui.charts.ChartObject.prototype.metadataColumns = function() { return Object.keys(this.valueItems[0][0].rowItem.rowMetadata()); };
+epiviz.ui.charts.ChartObject.prototype.metadataColumns = function() {
+  if (this.valueItems && this.valueItems[0] && this.valueItems[0][0]) {
+    return Object.keys(this.valueItems[0][0].rowItem.rowMetadata());
+  }
+
+  return [];
+};
 
 /**
  * Number of measurements times number of objects stored per measurement
