@@ -14,20 +14,34 @@ epiviz.data.ShinyDataProvider = function(id) {
     id || epiviz.Config.DEFAULT_DATA_PROVIDER_ID
   );
 
-  this._callbacks = {};
+  this._shinycallbacks = {};
   this._requestQueue = [];
   this._requestInProgress = false;
+  this._registered = false;
+  this.providerId = Date.now().toString();
   // this._initialize();
+  Shiny.onInputChange("registerProvider", {
+    id: this.providerId,
+    ".nounce": Math.random()
+  });
   Shiny.addCustomMessageHandler(
-    "epivizapi.callback",
+    this.providerId + ".callback",
     this.callbackHandler.bind(this)
+  );
+  Shiny.addCustomMessageHandler(
+    this.providerId + ".registration",
+    this.registrationHandler.bind(this)
   );
 };
 
 epiviz.data.ShinyDataProvider.prototype._initialize = function() {
   Shiny.addCustomMessageHandler(
-    "epivizapi.callback",
+    this.providerId + ".callback",
     this.callbackHandler.bind(this)
+  );
+  Shiny.addCustomMessageHandler(
+    this.providerId + ".registration",
+    this.registrationHandler.bind(this)
   );
   // Shiny.addCustomMessageHandler('epivizapi.failureCallback', this.failureCallbackHandler);
 };
@@ -48,18 +62,32 @@ epiviz.data.ShinyDataProvider.prototype.getData = function(request, callback) {
   if (request.isEmpty()) {
     return;
   }
-  if (Object.keys(this._callbacks).length == 0) {
+  if (Object.keys(this._shinycallbacks).length == 0 && this._registered) {
+    var time = Date.now();
     var id = request.id();
-    this._callbacks[id] = callback;
-
+    //var id = time;
+    this._shinycallbacks[time] = [callback, id];
     var params = {};
     params["_method"] = request._args.action;
-    params["_reqid"] = id;
+    params["_reqid"] = time;
     params["_args"] = request._args;
-
-    Shiny.onInputChange("epivizapi", params);
+    params[".nounce"] = Math.random();
+    Shiny.onInputChange(this.providerId, params);
   } else {
     this._requestQueue.push([request, callback]);
+  }
+};
+
+epiviz.data.ShinyDataProvider.prototype.registrationHandler = function(
+  response
+) {
+  if (response.success) {
+    this._registered = true;
+
+    if (this._requestQueue.length > 0) {
+      var req = this._requestQueue.shift();
+      this.getData(req[0], req[1]);
+    }
   }
 };
 
@@ -76,15 +104,16 @@ epiviz.data.ShinyDataProvider.prototype.callbackHandler = function(response) {
   }
 
   var respObj = epiviz.data.Response.fromRawObject(response);
-
   var id = respObj.id();
 
-  var callback = this._callbacks[id];
-  delete this._callbacks[id];
-  callback(respObj);
+  var callback = this._shinycallbacks[id][0];
+  respObj._id = this._shinycallbacks[id][1];
+  delete this._shinycallbacks[id];
 
   if (this._requestQueue.length > 0) {
     var req = this._requestQueue.shift();
     this.getData(req[0], req[1]);
   }
+
+  callback(respObj);
 };
