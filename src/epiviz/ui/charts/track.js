@@ -96,7 +96,7 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
 epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
   var result = epiviz.ui.charts.Chart.prototype.draw.call(this, range, data);
   // this.chartDrawType = "canvas";
-  // this._drawLegend();
+  this._drawLegend();
 
   return result;
 };
