@@ -109,9 +109,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
   var logTransform = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.LOG_TRANSFORM];
 
   var self = this;
-  console.log("in heatmap plot");
-  console.log(data);
-  console.log(logTransform);
+  //console.log("in heatmap plot");
+  //console.log(data);
+  //console.log(logTransform);
   if(logTransform) {
     this._applyLogTransformation(data, function(transformed) {
         var pair = self._applyClustering(range, transformed);
@@ -119,8 +119,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
         /** @type {epiviz.datatypes.GenomicData} */
         var orderedData = pair.data;
         var colOrder = pair.columnOrder;
-        console.log("after log transform");
-        console.log(orderedData);
+        //console.log("after log transform");
+        //console.log(orderedData);
         return self._drawCells(range, orderedData, colOrder);
     });
   }
@@ -277,27 +277,27 @@ epiviz.plugins.charts.HeatmapPlot.prototype._applyClustering = function(range, d
 epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, colOrder) {
   var self = this;
   var Axis = epiviz.ui.charts.Axis;
-  console.log("in _drawCells printing range, data, colOrder");
-  console.log(range);
-  console.log(data);
-  console.log(colOrder);
+  // console.log("in _drawCells printing range, data, colOrder");
+  // console.log(range);
+  // console.log(data);
+  // console.log(colOrder);
   var maxColumns = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.MAX_COLUMNS];
 
   var firstGlobalIndex = data.firstSeries().globalStartIndex();
   
   var lastGlobalIndex = data.firstSeries().size() + firstGlobalIndex;
 
-  console.log("firstGlobalIndex");
-  console.log(firstGlobalIndex);
-  console.log("lastGlobalIndex");
-  console.log(lastGlobalIndex);
+  // console.log("firstGlobalIndex");
+  // console.log(firstGlobalIndex);
+  // console.log("lastGlobalIndex");
+  // console.log(lastGlobalIndex);
   var rows = [];
 
   // TODO: This might not be needed anymore
   // TODO: Search for all usages of this method
   var dataHasGenomicLocation = epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type());
-  console.log("dataHasGenomicLocation");
-  console.log(dataHasGenomicLocation);
+  // console.log("dataHasGenomicLocation");
+  // console.log(dataHasGenomicLocation);
   data.foreach(function(measurement, series) {
     var firstIndex = series.globalStartIndex();
     var lastIndex = series.globalEndIndex();
@@ -330,8 +330,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
   var colnames = [];
   var colids = [];
   var i, globalIndex;
-  console.log("nEntries");
-  console.log(nEntries);
+  // console.log("nEntries");
+  // console.log(nEntries);
   for (i = 0; i < nEntries; ++i) {
     globalIndex = i + firstGlobalIndex;
 
@@ -343,7 +343,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
     });
 
     if (!item) { 
-      console.log("item is null");
+      // console.log("item is null");
       continue; }
 
     if (!dataHasGenomicLocation ||
@@ -368,15 +368,15 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
       //columnMap[i] = globalIndices[i];
     }
   }
-  console.log("colnames");
-  console.log(colnames);
+  // console.log("colnames");
+  // console.log(colnames);
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
   var colIndex = {};
-  console.log("about to add data to items");
+  // console.log("about to add data to items");
   data.foreach(function(m, series, seriesIndex) {
-    console.log("m");
-    console.log(m);
+    // console.log("m");
+    // console.log(m);
     var nextCellsPerCol = Math.ceil(colnames.length / maxColumns), cellsPerCol = 0;
     var colsLeft = maxColumns;
     for (var i = 0; i < colnames.length; ++i) {
@@ -397,8 +397,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
           [[cell]], // valueItems one for each measurement
           [m], // measurements
           classes);
-        console.log("uiObj");
-        console.log(uiObj);
+        // console.log("uiObj");
+        // console.log(uiObj);
         items.push(uiObj);
 
         nextCellsPerCol = Math.ceil((colnames.length - i) / colsLeft);
@@ -422,8 +422,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
       --cellsPerCol;
     }
   });
-  console.log("in draw cells printing items");
-  console.log(items);
+  // console.log("in draw cells printing items");
+  // console.log(items);
   var colorLabelsMap;
   var colorScales;
   this._min = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];
@@ -517,9 +517,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
     .duration(1000)
     .style('opacity', 0)
     .remove();
-  console.log("in draw cells printing selection");
+  // console.log("in draw cells printing selection");
 
-  console.log(selection);
+  // console.log(selection);
   selection
     .on('mouseover', function (d) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));

@@ -454,6 +454,8 @@ epiviz.data.DataManager.prototype.getData = function(range, chartMeasurementsMap
   if (this._config.useCache && !(range == null || range.seqName() == "all" || range.seqName() == null)) {
     this._cache.getData(range, chartMeasurementsMap, dataReadyCallback, failCallback);
   } else {
+    console.log("in getData");
+    console.log(filter);
     this._getDataNoCache(range, chartMeasurementsMap, dataReadyCallback, failCallback, filter);
   }
 };
@@ -740,7 +742,8 @@ epiviz.data.DataManager.prototype.getTimeData = function(range, chartMeasurement
         var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
 
         var noSampleData = [];
-        for(var ecount =0; ecount < dsData.cols[Object.keys(dsData.cols)[0]].length; ecount++) {         
+        for(var ecount =0; ecount < dsData.cols[Object.keys(dsData.cols)[0]].length; ecount++) {  
+        // for(var ecount =0; ecount < dsData.cols.values[Object.keys(dsData.cols.values)[0]].length; ecount++) {                
           noSampleData[ecount] = 0;       
         }
 
@@ -760,6 +763,7 @@ epiviz.data.DataManager.prototype.getTimeData = function(range, chartMeasurement
 
         dsMs.foreach(function(m) {
           var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols[m.id()] || noSampleData );
+          // var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, dsData.cols.values[m.id()] || noSampleData );
           sumExp.addValues(valueData);
         });
 

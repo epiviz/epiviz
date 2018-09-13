@@ -280,7 +280,8 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range, filt
       metadata: measure.metadata()
     });  
   }
-
+  console.log("In get Combined");
+  console.log(filter);
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_COMBINED,

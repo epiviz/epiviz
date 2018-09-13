@@ -35,7 +35,6 @@ epiviz.plugins.charts.HeatmapTimePlot.constructor = epiviz.plugins.charts.Heatma
 epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function(range, data, colOrder) {
   var self = this;
   var Axis = epiviz.ui.charts.Axis;
-
   var maxColumns = this.customSettingsValues()[epiviz.plugins.charts.HeatmapTimePlotType.CustomSettings.MAX_COLUMNS];
 
   var firstGlobalIndex = data.firstSeries().globalStartIndex();
@@ -168,14 +167,19 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function(range, dat
   this._max = this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];
   var CustomSetting = epiviz.ui.charts.CustomSetting;
 
-  var dataMin = 100000, dataMax = -100000;
+  var dataMin = Math.log2(100000 + 1);
+  var dataMax = 0;
   var numTimePoints = 0;
   data.foreach(function(m, series) {
     var featureValues = series._container.values(m);
     featureValues._values.forEach(function(valData){
       valData = JSON.parse(valData);
       numTimePoints = valData.length;
-      var fMin = Math.min.apply(null, valData), fMax = Math.max.apply(null, valData);
+      var fMin = Math.min.apply(null, valData);
+      fMin = Math.log2(fMin + 1); 
+
+      var fMax = Math.max.apply(null, valData);
+      fMax = Math.log2(fMax + 1); 
 
       if (fMin < dataMin) { dataMin = fMin;} 
       if (fMax > dataMax) { dataMax = fMax;}
@@ -183,6 +187,7 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function(range, dat
   });
   if (this._min == CustomSetting.DEFAULT) { this._min = dataMin; }
   if (this._max == CustomSetting.DEFAULT) { this._max = dataMax; }
+  
   if (this._globalIndexColorLabels) {
     colorLabelsMap = {};
     for (var j = firstGlobalIndex; j < lastGlobalIndex; ++j) {
@@ -219,77 +224,182 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function(range, dat
   itemsGroup.attr('transform', 'translate(' + this.margins().left() + ', ' + this.margins().top() + ')');
 
   var selection = itemsGroup.selectAll('.spline-container').data(items, function(d) { return d.id; });
+
+  var all_features_std_devs = JSON.parse(items[0].valueItems[0][0].rowItem._parent._metadata.std_devs);
+  var all_features_means = JSON.parse(items[0].valueItems[0][0].rowItem._parent._metadata.means);
+  var all_subjects_metadata = JSON.parse(items[0].valueItems[0][0].rowItem._parent._metadata.subject_metadata);
+
+  var spline_color_field =  this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.SPLINE_COLOR_FIELD]; 
+
   self._uiItems = items;
 
-  // selection
-  //   .enter()
-  //   .append('rect')
-  //   .attr('id', function (d) {
-  //     return sprintf('%s-item-%s-%s', self.id(), d.seriesIndex, d.valueItems[0][0].globalIndex);
-  //   })
-  //   .attr('class', function(d) { return d.cssClasses; })
-  //   .style('opacity', 0)
-  //   .style('fill-opacity', 0)
-  //   .attr('x', function(d) { return cellWidth * colIndex[d.valueItems[0][0].globalIndex]; })
-  //   .attr('y', function(d) { return cellHeight * d.seriesIndex; })
-  //   .attr('width', cellWidth)
-  //   .attr('height', cellHeight)
-  //   .style('fill', function(d, i) {
-  //     if (!self._globalIndexColorLabels) { return self._colorScale(d.values[0]); }
-  //     return colorScales[self._globalIndexColorLabels[d.valueItems[0][0].globalIndex]](d.values[0]);
-  //   });
-
-
-
-    // var xaxis = d3.scale.linear().domain(d3.extent([0, numTimePoints]))
-    //   .range([0, cellWidth-10]);
-    // var yaxis = d3.scale.linear().domain(d3.extent([dataMin,dataMax]))
-    //   .range([cellHeight, 0]);
-
-  // selection.selectAll(".splinecurve").remove();
-
-  selection
+  var splinesselection = selection
     .enter()
     .append("g")
     .attr("class", "spline-container")
-    .style("fill-opacity", 0)
-    .style("opacity", 0)
-    // .attr('x', function(d) {margins.left() + (0.6 + plotData[i][0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX)})
+    .style("fill-opacity", 1.0)
+    .style("opacity", 1.0)
+    .style("stroke-opacity", 1.0)
+    .style("stroke-width", 0)
     .attr('x', function(d) { return cellWidth * colIndex[d.valueItems[0][0].globalIndex]; })
     .attr('y', function(d) { return cellHeight * d.seriesIndex; })
     .attr('width', cellWidth)
     .attr('height', cellHeight)
-    .attr('transform', function(d) {return 'translate(' +  (cellWidth * colIndex[d.valueItems[0][0].globalIndex]) + ',' + (cellHeight * d.seriesIndex) + ')';})
+    .attr('transform', function(d) {return 'translate(' +  (cellWidth * colIndex[d.valueItems[0][0].globalIndex]) + ',' + (cellHeight * d.seriesIndex) + ')';});
+    
+  splinesselection
+    .append("rect")
+    .style("fill", function(d){
+      var valuesAsArray = JSON.parse(d.values[0]);
+      var label = d.valueItems[0][0].rowItem.metadata('label');
+      var subject_name = d.measurements[0].name();
+      var label_std_dev = all_features_std_devs[label];
+      var label_mean = all_features_means[label];
+      label_mean.forEach(function(valueElement, j){
+          label_mean[j] = Math.log2(valueElement + 1); 
+      });
+      var greater_than_one_away = [];
+      label_mean.forEach(function(valueElement, j){
+        greater_than_one_away[j] = valueElement + Math.log2(label_std_dev[j] + 1);
+      });
+      var less_than_one_away = [];
+      label_mean.forEach(function(valueElement, j){
+        less_than_one_away[j] = valueElement - Math.log2(label_std_dev[j] + 1);
+      });
+      var diff_greater_than_one_away = [];
+      greater_than_one_away.forEach(function(valueElement, j){
+        if (j == greater_than_one_away.length){
+          break;
+        }
+        diff_greater_than_one_away[j] = greater_than_one_away[j+1] - valueElement;
+      });
+      var diff_less_than_one_away = [];
+      less_than_one_away.forEach(function(valueElement, j){
+        if (j == less_than_one_away.length){
+          break;
+        }
+        diff_less_than_one_away[j] = less_than_one_away[j+1] - valueElement;
+      });
+      var color = "#ffffbf";
+      //var color = "#d95f02";
+      var diff_valuesAsArray = [];
+      valuesAsArray.forEach(function(valueElement, j){
+        if (j == valuesAsArray.length){
+          break;
+        }
+        diff_valuesAsArray[j] = valuesAsArray[j+1] - valueElement;
+      });
+      diff_valuesAsArray.forEach(function(valueElement, j){
+          valueElement = Math.log2(valueElement + 1); 
+          if ((valueElement > diff_greater_than_one_away[j]) || (valueElement < diff_less_than_one_away[j])) {
+            color = "white";
+          }
+        });
+      return color;
+    }) 
+    .style("fill-opacity", 0.9)
+    .style("opacity", 0.9)
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('width', cellWidth-10)
+    .attr('height', cellHeight*.9)
+    .attr("class", "spline-rect");
+
+  //var newLineData = [];
+
+  splinesselection
     .append("path")
     .attr("d", function(d, i) {
+      var antiGivenArray = all_subjects_metadata[d.measurements[0].name()][spline_color_field];//['AntiGiven'];
+      var timePointFirstGiven = -1;
 
-        var valuesAsArray = JSON.parse(d.values[0]);
-        var lineData = [];
-        
-        var xData = [];
-        var yData = [];
-        valuesAsArray.forEach(function(valueElement, j){ 
+      for(var m = 0; m < antiGivenArray.length; m++){
+            timePointFirstGiven = m;
+            if(antiGivenArray[m] == "1") {
+                break;
+            }
+      }
+      
+      if (timePointFirstGiven == -1){
+            return null;
+      }
+      var valuesAsArray = JSON.parse(d.values[0]);
+      var lineData = [];
+
+      valuesAsArray.forEach(function(valueElement, j){ 
+        valueElement = Math.log2(valueElement + 1); 
           lineData.push({x:j, y:valueElement});
-          xData.push(j);
-          yData.push(valueElement);
-        });
-
-        
-    var xaxis = d3.scale.linear().domain(d3.extent([0, numTimePoints]))
+      });
+        // console.log(lineData);
+  
+      var xaxis = d3.scale.linear().domain(d3.extent([0, numTimePoints-1]))
       .range([0, cellWidth-10]);
-    var yaxis = d3.scale.linear().domain(d3.extent([dataMin,dataMax]))
-      .range([cellHeight, 0]);
+
+      var yaxis = d3.scale.linear().domain(d3.extent([dataMin-(dataMax/2),dataMax]))
+      .range([cellHeight*.9, 0]);
+        
+        var lineFunction = d3.svg.line()
+          .x(function(d) { return xaxis(d.x); })
+          .y(function(d) { return yaxis(d.y); })
+          .interpolate("basis");
+          //.interpolate("linear");
+        return lineFunction(lineData.filter(function(d){
+          return xaxis(d.x) <= xaxis(timePointFirstGiven);
+        }));
+    })
+    .style("stroke", "#fc8d59")
+    .style("fill-opacity", 1.0)
+    .style("opacity", 1.0)
+    .style("stroke-width", "3")
+    .style("stroke-linecap", "round")
+    .attr("class", "splinecurve");
+
+// written after looking at: https://stackoverflow.com/questions/27026625/how-to-change-line-color-in-d3js-according-to-axis-value
+
+    splinesselection
+      .append("path") // beginning of second
+      .attr("d", function(d, i) {
+        var antiGivenArray = all_subjects_metadata[d.measurements[0].name()][spline_color_field];//['AntiGiven'];
+        var timePointFirstGiven = -1;
+      
+        for(var m = 0; m < antiGivenArray.length; m++){
+            timePointFirstGiven = m;
+            if(antiGivenArray[m] == "1") {
+                break;
+            }
+        }
+
+        var valuesAsArray2 = JSON.parse(d.values[0]);
+        var lineData2 = [];
+        
+        valuesAsArray2.forEach(function(valueElement, j){ 
+          valueElement = Math.log2(valueElement + 1); 
+          //if (j >= timePointFirstGiven){
+            lineData2.push({x:j, y:valueElement});
+          //}
+        });
+  
+      var xaxis = d3.scale.linear().domain(d3.extent([0, numTimePoints-1]))
+      .range([0, cellWidth-10]);
+
+      var yaxis = d3.scale.linear().domain(d3.extent([dataMin-(dataMax/2),dataMax]))
+      .range([cellHeight*.9, 0]);
 
         var lineFunction = d3.svg.line()
                           .x(function(d) { return xaxis(d.x); })
                           .y(function(d) { return yaxis(d.y); })
-                      .interpolate("linear");
-        return lineFunction(lineData);
-    })
-    .style("stroke", "black")
-    // .attr("stroke-width", "10")
-    .style("stroke-width", "3")
-    .attr("class", "splinecurve");
+                          .interpolate("basis");
+        return lineFunction(lineData2.filter(function(d){
+          return xaxis(d.x) >= xaxis(timePointFirstGiven);
+        }));
+      })
+      .style("stroke", "#91bfdb")
+      .style("fill-opacity", 1.0)
+      .style("opacity", 1.0)
+      .style("stroke-width", "3")
+      .style("stroke-linecap", "round")
+      .attr("class", "splinecurve2");
+
 
   selection
     .transition()
@@ -301,37 +411,6 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function(range, dat
     .attr('width', cellWidth)
     .attr('height', cellHeight)
     .attr('transform', function(d) {return 'translate(' +  (cellWidth * colIndex[d.valueItems[0][0].globalIndex]) + ',' + (cellHeight * d.seriesIndex) + ')';});
-
-  selection.selectAll(".splinecurve").transition().duration(1000)    
-  .attr("d", function(d, i) {
-
-        var valuesAsArray = JSON.parse(d.values[0]);
-        var lineData = [];
-        
-        var xData = [];
-        var yData = [];
-        valuesAsArray.forEach(function(valueElement, j){ 
-          lineData.push({x:j, y:valueElement});
-          xData.push(j);
-          yData.push(valueElement);
-        });
-
-        
-    var xaxis = d3.scale.linear().domain(d3.extent([0, numTimePoints]))
-      .range([0, cellWidth-10]);
-    var yaxis = d3.scale.linear().domain(d3.extent([dataMin,dataMax]))
-      .range([cellHeight, 0]);
-
-        var lineFunction = d3.svg.line()
-                          .x(function(d) { return xaxis(d.x); })
-                          .y(function(d) { return yaxis(d.y); })
-                      .interpolate("linear");
-        return lineFunction(lineData);
-    })
-    .style("stroke", "black")
-    .attr("stroke-width", "10")
-    .attr("class", "splinecurve");
-
 
   selection
     .exit()
@@ -446,15 +525,12 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawLabels = function(itemsGrou
       .on("mouseover", function(d) {d3.select(this).style("cursor", "pointer");})
       .on("mouseout", function(d) {d3.select(this).style("cursor", "default");})
       .on('click', function(d,i) {
-        console.log(self._uiItems);
 
         var colData = [];
 
         self._uiItems.forEach(function(cellxy) {
 
           // need to write a regular expression with heatmap_%d_i to get all colData for that i, append cellxy to column data
-
-          //if(cellxy.id.)
         });
 
         self._addFeaturePlot.notify({
@@ -634,7 +710,6 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawLabels = function(itemsGrou
   this._svg.selectAll('.row-legend-color').remove();
   if (rowLabelsAsColors) {
     // TODO: Make this optional
-    //rowLabelCat.sort();
     var textEntries = this._svg
       .selectAll('.row-legend')
       .data(rowLabelCat);
@@ -678,3 +753,4 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawLabels = function(itemsGrou
     this._colorLabels = this._colorLabels.concat(rowLabelCat)
   }
 };
+
