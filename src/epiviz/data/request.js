@@ -388,7 +388,9 @@ epiviz.data.Request.getPCA = function(measurementsByDatasource, range) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_PCA,
-    measurements: rawMsByDs
+    measurements: rawMsByDs,
+    start: range.start(),
+    end: range.end()
   });
 };
 
@@ -412,7 +414,9 @@ epiviz.data.Request.getPCoA = function(measurementsByDatasource, range) {
   return epiviz.data.Request.createRequest({
     version: epiviz.EpiViz.VERSION,
     action: epiviz.data.Request.Action.GET_PCoA,
-    measurements: rawMsByDs
+    measurements: rawMsByDs,
+    start: range.start(),
+    end: range.end()
   });
 };
 

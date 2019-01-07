@@ -199,7 +199,7 @@ function showModal(source, input, cb) {
 							'</div>'+
 						'</div>'+
 					'</div>'+
-					'<div class="twelve wide column">'+
+					'<div id="measurementMenu" class="twelve wide column">'+
 						'<div id="rightmenu" class="ui vertical fluid accordion menu">'+
 						'</div>'+
 					'</div>'+
@@ -540,7 +540,7 @@ function filter(value, anno, filter, measurements) {
 								hide = true;
 							}
 						} else if (type === "range" && 
-									(data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
+									( data['annotation'][category] && data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
 							// case where no range but toggle hideNa checkbox
 							hide = true;
 						}

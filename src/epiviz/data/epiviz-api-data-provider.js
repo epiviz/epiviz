@@ -216,13 +216,17 @@ epiviz.data.EpivizApiDataProvider.prototype._adaptRequest = function(request) {
       var q = request.get('q');
       return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'search', {datasource: datasourceGroup, maxResults: maxResults, q: q});
     case epiviz.data.Request.Action.GET_PCA:
+      var start = request.get('start');
+      var end = request.get('end');
       var measurements = request.get('measurements')[this._id];
       var datasourceGroup = request.get('datasourceGroup') || this._id;
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pca', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pca', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels), selection: JSON.stringify(this._selection), start: start, end: end});
     case epiviz.data.Request.Action.GET_PCoA:
+      var start = request.get('start');
+      var end = request.get('end');
       var measurements = request.get('measurements')[this._id];
       var datasourceGroup = request.get('datasourceGroup') || this._id;
-      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pcoa', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels)});
+      return new epiviz.data.EpivizApiDataProvider.Request(request.id(), 'pcoa', {datasource: datasourceGroup, measurements: JSON.stringify(measurements), selectedLevels: JSON.stringify(this._selectedLevels), start: start, end: end});
     case epiviz.data.Request.Action.GET_DIVERSITY:
       var measurements = request.get('measurements')[this._id];
       var datasourceGroup = request.get('datasourceGroup') || this._id;

@@ -413,3 +413,8 @@ tfoot th input { width: 80% }
 .splines-icon {
   background-image: url("../img/line-chart.png") !important;
 }
+
+.sampleCount, .dataCount {
+ font-weight: bold;
+ font-size: 20px;
+}

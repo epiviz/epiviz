@@ -471,13 +471,13 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
 
         var globalStartIndex = dsData.globalStartIndex;
 
-        if(isNaN(range._start)) {
-          range._start = globalStartIndex;
-        }
+        // if(isNaN(range._start)) {
+        //  range._start = globalStartIndex;
+        // }
 
-        if(isNaN(range._width)) {
-          range._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
-        }
+        // if(isNaN(range._width)) {
+        //   range._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
+        // }
 
         var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, dsData.rows);
 

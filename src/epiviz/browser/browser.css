@@ -92,3 +92,11 @@
 #newmodal > div.content.m {
     height: 80%;
 }
+
+#measurementMenu {
+    height : 100%;
+}
+
+#annoMenu {
+    height: 100%;
+}
