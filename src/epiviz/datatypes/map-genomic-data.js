@@ -15,7 +15,7 @@ goog.require('epiviz.deferred.Deferred');
  * @constructor
  * @implements {epiviz.datatypes.GenomicData}
  */
-epiviz.datatypes.MapGenomicData = function(map) {
+epiviz.datatypes.MapGenomicData = function (map) {
   /**
    * @type {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>}
    * @private
@@ -40,14 +40,14 @@ epiviz.datatypes.MapGenomicData = function(map) {
 /**
  * @param {function} callback
  */
-epiviz.datatypes.MapGenomicData.prototype.ready = function(callback) {
+epiviz.datatypes.MapGenomicData.prototype.ready = function (callback) {
   this._mapLoaded.done(callback);
 };
 
 /**
  * @returns {boolean}
  */
-epiviz.datatypes.MapGenomicData.prototype.isReady = function() {
+epiviz.datatypes.MapGenomicData.prototype.isReady = function () {
   return this._mapLoaded.state() == epiviz.deferred.Deferred.State.RESOLVED;
 };
 
@@ -55,7 +55,7 @@ epiviz.datatypes.MapGenomicData.prototype.isReady = function() {
  * @param {epiviz.measurements.MeasurementHashtable.<epiviz.datatypes.MeasurementGenomicData>} map
  * @protected
  */
-epiviz.datatypes.MapGenomicData.prototype._setMap = function(map) {
+epiviz.datatypes.MapGenomicData.prototype._setMap = function (map) {
   if (this._map) { throw Error('MapGenomicData is immutable'); }
   this._map = map;
   if (!map) { return; }
@@ -66,13 +66,13 @@ epiviz.datatypes.MapGenomicData.prototype._setMap = function(map) {
 /**
  * @returns {epiviz.datatypes.MeasurementGenomicData}
  */
-epiviz.datatypes.MapGenomicData.prototype.firstSeries = function() {
-  console.log("in firstSeries");
-  console.log(this._map);
-  console.log(this._map.size());
+epiviz.datatypes.MapGenomicData.prototype.firstSeries = function () {
+  // console.log("in firstSeries");
+  // console.log(this._map);
+  // console.log(this._map.size());
 
   if (this._map.size() == 0) { return null; }
-    console.log(this._map.first().value);
+  // console.log(this._map.first().value);
 
   return this._map.first().value;
 };
@@ -81,7 +81,7 @@ epiviz.datatypes.MapGenomicData.prototype.firstSeries = function() {
  * @param {epiviz.measurements.Measurement} m
  * @returns {epiviz.datatypes.MeasurementGenomicData}
  */
-epiviz.datatypes.MapGenomicData.prototype.getSeries = function(m) {
+epiviz.datatypes.MapGenomicData.prototype.getSeries = function (m) {
   return this._map.get(m);
 };
 
@@ -90,7 +90,7 @@ epiviz.datatypes.MapGenomicData.prototype.getSeries = function(m) {
  * @param {number} i
  * @returns {epiviz.datatypes.GenomicData.ValueItem}
  */
-epiviz.datatypes.MapGenomicData.prototype.get = function(m, i) {
+epiviz.datatypes.MapGenomicData.prototype.get = function (m, i) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
   return mItems.get(i);
@@ -101,7 +101,7 @@ epiviz.datatypes.MapGenomicData.prototype.get = function(m, i) {
  * @param {number} i
  * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
-epiviz.datatypes.MapGenomicData.prototype.getRow = function(m, i) {
+epiviz.datatypes.MapGenomicData.prototype.getRow = function (m, i) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
   return mItems.getRow(i);
@@ -110,7 +110,7 @@ epiviz.datatypes.MapGenomicData.prototype.getRow = function(m, i) {
 /**
  * @returns {Array.<epiviz.measurements.Measurement>}
  */
-epiviz.datatypes.MapGenomicData.prototype.measurements = function() {
+epiviz.datatypes.MapGenomicData.prototype.measurements = function () {
   return this._measurements;
 };
 
@@ -118,7 +118,7 @@ epiviz.datatypes.MapGenomicData.prototype.measurements = function() {
  * @param {epiviz.measurements.Measurement} m
  * @returns {number}
  */
-epiviz.datatypes.MapGenomicData.prototype.globalStartIndex = function(m) {
+epiviz.datatypes.MapGenomicData.prototype.globalStartIndex = function (m) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
   return mItems.globalStartIndex();
@@ -128,7 +128,7 @@ epiviz.datatypes.MapGenomicData.prototype.globalStartIndex = function(m) {
  * @param {epiviz.measurements.Measurement} m
  * @returns {number}
  */
-epiviz.datatypes.MapGenomicData.prototype.globalEndIndex = function(m) {
+epiviz.datatypes.MapGenomicData.prototype.globalEndIndex = function (m) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
   return mItems.globalEndIndex();
@@ -138,7 +138,7 @@ epiviz.datatypes.MapGenomicData.prototype.globalEndIndex = function(m) {
  * @param {epiviz.measurements.Measurement} m
  * @returns {number}
  */
-epiviz.datatypes.MapGenomicData.prototype.size = function(m) {
+epiviz.datatypes.MapGenomicData.prototype.size = function (m) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
   return mItems.size();
@@ -149,7 +149,7 @@ epiviz.datatypes.MapGenomicData.prototype.size = function(m) {
  * @param {number} globalIndex
  * @returns {epiviz.datatypes.GenomicData.ValueItem}
  */
-epiviz.datatypes.MapGenomicData.prototype.getByGlobalIndex = function(m, globalIndex) {
+epiviz.datatypes.MapGenomicData.prototype.getByGlobalIndex = function (m, globalIndex) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
   return mItems.getByGlobalIndex(globalIndex);
@@ -160,7 +160,7 @@ epiviz.datatypes.MapGenomicData.prototype.getByGlobalIndex = function(m, globalI
  * @param {number} globalIndex
  * @returns {epiviz.datatypes.GenomicData.RowItem}
  */
-epiviz.datatypes.MapGenomicData.prototype.getRowByGlobalIndex = function(m, globalIndex) {
+epiviz.datatypes.MapGenomicData.prototype.getRowByGlobalIndex = function (m, globalIndex) {
   var mItems = this._map.get(m);
   if (!mItems) { return null; }
   return mItems.getRowByGlobalIndex(globalIndex);
@@ -172,9 +172,9 @@ epiviz.datatypes.MapGenomicData.prototype.getRowByGlobalIndex = function(m, glob
  * @param {epiviz.datatypes.GenomicRange} range
  * @returns {{index: ?number, length: number}}
  */
-epiviz.datatypes.MapGenomicData.prototype.binarySearchStarts = function(m, range) {
+epiviz.datatypes.MapGenomicData.prototype.binarySearchStarts = function (m, range) {
   var mItems = this._map.get(m);
-  if (!mItems) { return {index:null, length:0}; }
+  if (!mItems) { return { index: null, length: 0 }; }
   return mItems.binarySearchStarts(range);
 };
 
@@ -183,8 +183,8 @@ epiviz.datatypes.MapGenomicData.prototype.binarySearchStarts = function(m, range
  * evaluates to true.
  * @param {function(epiviz.measurements.Measurement, epiviz.datatypes.MeasurementGenomicData, number=)} callback
  */
-epiviz.datatypes.MapGenomicData.prototype.foreach = function(callback) {
-  this._map.foreach(function(m, series, seriesIndex) {
+epiviz.datatypes.MapGenomicData.prototype.foreach = function (callback) {
+  this._map.foreach(function (m, series, seriesIndex) {
     callback(m, series, seriesIndex);
   });
 };

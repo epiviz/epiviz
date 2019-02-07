@@ -10,18 +10,18 @@ goog.provide('epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePl
  * @constructor
  * @implements {epiviz.ui.charts.transform.clustering.ClusteringMetric}
  */
-epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot = function() {};
+epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot = function () { };
 
 /**
  * @param {?Array.<number>} item1
  * @param {?Array.<number>} item2
  * @returns {?number}
  */
-epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot.prototype.distance = function(item1, item2) {
+epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot.prototype.distance = function (item1, item2) {
   if (item1 == undefined || item2 == undefined) {
     return null;
   }
-  console.log("in euclidean distance  HeatmapTimePlot calculation");
+  // console.log("in euclidean distance  HeatmapTimePlot calculation");
   // item1 = string.parse(item1);
   // item2 = string.parse(item2);
   // console.log(item1);
@@ -46,10 +46,10 @@ epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot.prototype.d
     //console.log(item2[i]);
     var item1TempArray = JSON.parse(item1[i]);
     var item2TempArray = JSON.parse(item2[i]);
-    for(j = 0; j < item1TempArray.length; j++){
+    for (j = 0; j < item1TempArray.length; j++) {
       difArray.push((item1TempArray[j] - item2TempArray[j]));
     }
-    for(k = 0; k < difArray.length; k++){
+    for (k = 0; k < difArray.length; k++) {
       dif += difArray[k];
     }
     meanDimDif += dif;
@@ -69,4 +69,4 @@ epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot.prototype.d
 /**
  * @returns {string}
  */
-epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot.prototype.id = function() { return 'euclidean'; };
+epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot.prototype.id = function () { return 'euclidean'; };
