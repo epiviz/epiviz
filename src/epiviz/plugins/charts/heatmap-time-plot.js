@@ -432,23 +432,51 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function (
   //var newLineData = [];
   // var splineColorArray = [];
 
+  var defs = self._svg.select("defs");
+
   splinesselection
     .append("path")
     .attr("d", function (d, i) {
+      console.log(spline_color_field);
+      console.log(d.measurements[0].name());
+      console.log(d);
       var antiGivenArray =
         all_subjects_metadata[d.measurements[0].name()][spline_color_field]; //['AntiGiven'];
+      console.log(antiGivenArray);
       var timePointFirstGiven = -1;
 
-      for (var m = 0; m < antiGivenArray.length; m++) {
-        timePointFirstGiven = m;
-        if (antiGivenArray[m] == "1") {
-          break;
-        }
-      }
+      var gradient = defs.append("linearGradient")
+        .attr("id", d.id)
+        .attr("x1", "0%")
+        .attr("x2", "100%");
 
-      if (timePointFirstGiven == -1) {
-        return null;
-      }
+      // var colortemp = self
+      //   .colors()
+      //   .getByKey(0);
+
+      // gradient.append("stop")
+      //   .attr("offset", "0%")
+      //   .attr("stop-color", colortemp);
+
+      // for (var m = 0; m < antiGivenArray.length; m++) {
+
+      //   var color = self
+      //     .colors()
+      //     .getByKey(antiGivenArray[m] | antiGivenArray[m - 1]);
+
+      //   gradient.append("stop")
+      //     .attr("offset", Math.floor((m) * 100 / numTimePoints) + "%")
+      //     .attr("stop-color", color);
+
+      //   // timePointFirstGiven = m;
+      //   // if (antiGivenArray[m] == "1") {
+      //   //   break;
+      //   // }
+      // }
+
+      // if (timePointFirstGiven == -1) {
+      //   return null;
+      // }
       var valuesAsArray = JSON.parse(d.values[0]);
       var lineData = [];
 
@@ -461,6 +489,16 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function (
             lineData.push({ x: j, y: valueElement });
           }
         });
+
+        for (var m = 0; m < lineData.length; m++) {
+          var color = self
+            .colors()
+            .getByKey(antiGivenArray[m] | antiGivenArray[m - 1]);
+
+          gradient.append("stop")
+            .attr("offset", Math.ceil((lineData[m].x) * 100 / (numTimePoints - 1)) + "%")
+            .attr("stop-color", color);
+        }
       }
 
       // console.log(lineData);
@@ -493,15 +531,14 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function (
       //   })
       // );
     })
-    .style("stroke", function (d) {
-      self
-        .colors()
-        .getByKey(self._globalIndexColorLabels[globalIndex]);
+    .style("stroke", function (d, i) {
+      return "url(#" + d.id + ")";
     })
-    .style("fill-opacity", 1.0)
-    .style("opacity", 1.0)
+    // .style("fill", "none")
+    // .style("fill-opacity", 1.0)
+    // .style("opacity", 1.0)
     .style("stroke-width", "3")
-    .style("stroke-linecap", "round")
+    // .style("stroke-linecap", "round")
     .attr("class", "splinecurve");
 
   // written after looking at: https://stackoverflow.com/questions/27026625/how-to-change-line-color-in-d3js-according-to-axis-value

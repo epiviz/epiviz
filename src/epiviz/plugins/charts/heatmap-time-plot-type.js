@@ -10,7 +10,7 @@ goog.require('epiviz.plugins.charts.HeatmapTimePlot');
  * @extends {epiviz.ui.charts.PlotType}
  * @constructor
  */
-epiviz.plugins.charts.HeatmapTimePlotType = function(config) {
+epiviz.plugins.charts.HeatmapTimePlotType = function (config) {
   // Call superclass constructor
   epiviz.plugins.charts.HeatmapPlotType.call(this, config);
 };
@@ -27,32 +27,32 @@ epiviz.plugins.charts.HeatmapTimePlotType.constructor = epiviz.plugins.charts.He
  * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.HeatmapTimePlot}
  */
-epiviz.plugins.charts.HeatmapTimePlotType.prototype.createNew = function(id, container, properties) {
+epiviz.plugins.charts.HeatmapTimePlotType.prototype.createNew = function (id, container, properties) {
   return new epiviz.plugins.charts.HeatmapTimePlot(id, container, properties);
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.HeatmapTimePlotType.prototype.typeName = function() {
+epiviz.plugins.charts.HeatmapTimePlotType.prototype.typeName = function () {
   return 'epiviz.plugins.charts.HeatmapTimePlot';
 };
 
 /**
 * @returns {string}
 */
-epiviz.plugins.charts.HeatmapTimePlotType.prototype.chartName = function() {
- return 'HeatmapTimeSeries';
+epiviz.plugins.charts.HeatmapTimePlotType.prototype.chartName = function () {
+  return 'HeatmapTimeSeries';
 };
 
 /**
 * @returns {string}
 */
-epiviz.plugins.charts.HeatmapTimePlotType.prototype.chartHtmlAttributeName = function() {
- return 'heatmaptimeseries';
+epiviz.plugins.charts.HeatmapTimePlotType.prototype.chartHtmlAttributeName = function () {
+  return 'heatmaptimeseries';
 };
 
-epiviz.plugins.charts.HeatmapTimePlotType.prototype.customSettingsDefs = function() {
+epiviz.plugins.charts.HeatmapTimePlotType.prototype.customSettingsDefs = function () {
   var clusteringFactory = epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.instance();
 
   return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([
@@ -71,7 +71,7 @@ epiviz.plugins.charts.HeatmapTimePlotType.prototype.customSettingsDefs = functio
     new epiviz.ui.charts.CustomSetting(
       epiviz.ui.charts.Visualization.CustomSettings.SPLINE_COLOR_FIELD,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
-      '',
+      'AntiGiven',
       'Spline Color Field'),
 
     new epiviz.ui.charts.CustomSetting(
@@ -101,9 +101,9 @@ epiviz.plugins.charts.HeatmapTimePlotType.prototype.customSettingsDefs = functio
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTER,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
-      'rows',
+      'none',
       'Cluster',
-      Object.keys(epiviz.plugins.charts.HeatmapPlotType.Cluster).map(function(key) { return epiviz.plugins.charts.HeatmapTimePlotType.Cluster[key]; })),
+      Object.keys(epiviz.plugins.charts.HeatmapPlotType.Cluster).map(function (key) { return epiviz.plugins.charts.HeatmapTimePlotType.Cluster[key]; })),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.CLUSTERING_ALG,
@@ -147,7 +147,7 @@ epiviz.plugins.charts.HeatmapTimePlotType.prototype.customSettingsDefs = functio
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.LOG_TRANSFORM,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
-      true,
+      false,
       'Log Transform count data')
   ]);
 };
