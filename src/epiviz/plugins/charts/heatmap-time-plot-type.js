@@ -69,7 +69,7 @@ epiviz.plugins.charts.HeatmapTimePlotType.prototype.customSettingsDefs = functio
       'Row labels'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.ui.charts.Visualization.CustomSettings.SPLINE_COLOR_FIELD,
+      epiviz.plugins.charts.HeatmapTimePlotType.CustomSettings.SPLINE_COLOR_FIELD,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
       'AntiGiven',
       'Spline Color Field'),
@@ -175,5 +175,4 @@ epiviz.plugins.charts.HeatmapTimePlotType.CustomSettings = {
   SHOW_COLORS_FOR_ROW_LABELS: 'showColorsForRowLabels',
   LOG_TRANSFORM: 'logTransform',
   SPLINE_COLOR_FIELD: 'splineColorField'
-
 };
