@@ -383,40 +383,21 @@ epiviz.plugins.charts.HeatmapTimePlot.prototype._drawCells = function (
       label_mean.forEach(function (valueElement, j) {
         less_than_one_away[j] = valueElement - Math.log2(label_std_dev[j] + 1);
       });
-      var diff_greater_than_one_away = [];
-      greater_than_one_away.forEach(function (valueElement, j) {
-        if (j != greater_than_one_away.length) {
-          diff_greater_than_one_away[j] =
-            greater_than_one_away[j + 1] - valueElement;
-        }
-      });
-      var diff_less_than_one_away = [];
-      less_than_one_away.forEach(function (valueElement, j) {
-        if (j != less_than_one_away.length) {
-          diff_less_than_one_away[j] = less_than_one_away[j + 1] - valueElement;
-        }
-      });
-      var color = "#ffffbf";
+
+      // var color = "#ffffbf";
+      var color = "white";
       //var color = "#d95f02";
       var diff_valuesAsArray = [];
       if (Array.isArray(valuesAsArray)) {
         valuesAsArray.forEach(function (valueElement, j) {
-          if (j != valuesAsArray.length) {
-            diff_valuesAsArray[j] = valuesAsArray[j + 1] - valueElement;
+          if (valueElement != null) {
+            if (Math.log2(valueElement) > greater_than_one_away[j] ||
+              Math.log2(valueElement) < less_than_one_away[j]) {
+              color = "#ffffbf";
+              console.log(j);
+            }
           }
         });
-        diff_valuesAsArray.forEach(function (valueElement, j) {
-          valueElement = Math.log2(valueElement + 1);
-          if (
-            valueElement > diff_greater_than_one_away[j] ||
-            valueElement < diff_less_than_one_away[j]
-          ) {
-            color = "white";
-          }
-        });
-      }
-      else {
-        color = "white";
       }
 
       return color;
