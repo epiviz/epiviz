@@ -19,7 +19,7 @@ goog.require("epiviz.ui.charts.Visualization");
  * @extends {epiviz.ui.charts.Track}
  * @constructor
  */
-epiviz.plugins.charts.BlocksTrack = function(id, container, properties) {
+epiviz.plugins.charts.BlocksTrack = function (id, container, properties) {
   // Call superclass constructor
   epiviz.ui.charts.Track.call(this, id, container, properties);
 
@@ -38,7 +38,7 @@ epiviz.plugins.charts.BlocksTrack.constructor =
 /**
  * @protected
  */
-epiviz.plugins.charts.BlocksTrack.prototype._initialize = function() {
+epiviz.plugins.charts.BlocksTrack.prototype._initialize = function () {
   // Call super
   epiviz.ui.charts.Track.prototype._initialize.call(this);
 
@@ -52,7 +52,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._initialize = function() {
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
-epiviz.plugins.charts.BlocksTrack.prototype.draw = function(
+epiviz.plugins.charts.BlocksTrack.prototype.draw = function (
   range,
   data,
   slide,
@@ -73,7 +73,7 @@ epiviz.plugins.charts.BlocksTrack.prototype.draw = function(
   return this._drawBlocks(range, data, slide || 0, zoom || 1);
 };
 
-epiviz.plugins.charts.BlocksTrack.prototype.drawCanvas = function(
+epiviz.plugins.charts.BlocksTrack.prototype.drawCanvas = function (
   range,
   data,
   slide,
@@ -102,7 +102,7 @@ epiviz.plugins.charts.BlocksTrack.prototype.drawCanvas = function(
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  * @private
  */
-epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(
+epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
   range,
   data,
   slide,
@@ -143,14 +143,14 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(
     epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY
   ];
 
-  var colorBy = function(row) {
-    if (data.measurements().length > 1) {
-      return colors.get(row.seriesIndex);
-    }
-
+  var colorBy = function (row) {
     return useColorBy
       ? colors.getByKey(row.values)
       : colors.get(row.seriesIndex);
+
+    // if (data.measurements().length > 1) {
+    //   return colors.get(row.seriesIndex);
+    // }
   };
 
   var xScale = d3.scale
@@ -168,7 +168,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(
 
   var i = 0;
 
-  data.foreach(function(m, series, seriesIndex) {
+  data.foreach(function (m, series, seriesIndex) {
     var seriesBlocks = [];
 
     for (var j = 0; j < series.size(); ++j) {
@@ -190,7 +190,15 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(
         var lastEnd = xScale(lastBlock.end);
 
         if (start - lastEnd < minBlockDistance) {
-          lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
+          if (useColorBy) {
+            if (lastBlock.values == cell.rowItem.metadata(colorLabel)) {
+              lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
+            }
+          }
+          else {
+            lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
+          }
+
           lastBlock.valueItems[0].push(cell);
           lastBlock.id = sprintf(
             "b-%s-%s-%s",
@@ -260,50 +268,50 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(
 
   items.selectAll(".item").remove();
 
-  var selection = items.selectAll(".item").data(blocks, function(b) {
+  var selection = items.selectAll(".item").data(blocks, function (b) {
     return b.id;
   });
 
   selection
     .enter()
     .insert("rect", ":first-child")
-    .attr("class", function(b) {
+    .attr("class", function (b) {
       return b.cssClasses;
     })
-    .style("fill", function(b) {
+    .style("fill", function (b) {
       return colorBy(b);
     })
-    .attr("x", function(b) {
+    .attr("x", function (b) {
       return xScale(b.start) / zoom + delta;
     })
-    .attr("width", function(b) {
+    .attr("width", function (b) {
       // We're using b.end + 1 since b.end is the index of the last covered bp
       return zoom * (xScale(b.end + 1) - xScale(b.start));
     })
-    .on("mouseout", function() {
+    .on("mouseout", function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     })
-    .on("mouseover", function(b) {
+    .on("mouseover", function (b) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
     })
-    .on("click", function(b) {
+    .on("click", function (b) {
       self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
       self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
       d3.event.stopPropagation();
     });
 
   selection
-    .attr("class", function(b) {
+    .attr("class", function (b) {
       return b.cssClasses;
     })
     .attr("height", height - margins.sumAxis(Axis.Y))
     .attr("y", 0)
     .transition()
     .duration(500)
-    .attr("x", function(b) {
+    .attr("x", function (b) {
       return xScale(b.start);
     })
-    .attr("width", function(b) {
+    .attr("width", function (b) {
       return xScale(b.end + 1) - xScale(b.start);
     });
 
@@ -311,15 +319,17 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(
     .exit()
     .transition()
     .duration(500)
-    .attr("x", function(b) {
+    .attr("x", function (b) {
       return xScale(b.start);
     })
     .remove();
 
+  self._drawLegend();
+
   return blocks;
 };
 
-epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function(
+epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function (
   range,
   data,
   slide,
@@ -360,10 +370,10 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function(
     epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY
   ];
 
-  var colorBy = function(row) {
-    if (data.measurements().length > 1) {
-      return colors.get(row.seriesIndex);
-    }
+  var colorBy = function (row) {
+    // if (data.measurements().length > 1) {
+    //   return colors.get(row.seriesIndex);
+    // }
 
     return useColorBy
       ? colors.getByKey(row.values)
@@ -406,7 +416,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function(
 
   var i = 0;
 
-  data.foreach(function(m, series, seriesIndex) {
+  data.foreach(function (m, series, seriesIndex) {
     var seriesBlocks = [];
 
     for (var j = 0; j < series.size(); ++j) {
@@ -428,7 +438,15 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function(
         var lastEnd = xScale(lastBlock.end);
 
         if (start - lastEnd < minBlockDistance) {
-          lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
+          if (useColorBy) {
+            if (lastBlock.values == cell.rowItem.metadata(colorLabel)) {
+              lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
+            }
+          }
+          else {
+            lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
+          }
+
           lastBlock.valueItems[0].push(cell);
           lastBlock.id = sprintf(
             "b-%s-%s-%s",
@@ -466,7 +484,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function(
   var ctxh = hoverCanvas.getContext("2d");
   ctxh.translate(margins.left(), margins.top());
 
-  blocks.forEach(function(b) {
+  blocks.forEach(function (b) {
     ctx.beginPath();
 
     ctx.fillStyle = colorBy(b);
@@ -489,9 +507,138 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function(
 };
 
 /**
+ * @private
+ */
+epiviz.plugins.charts.BlocksTrack.prototype._drawLegend = function () {
+  var self = this;
+  this._svg.selectAll(".chart-title").remove();
+  this._svg.selectAll(".chart-title-color ").remove();
+
+  if (!this._lastData || !this._lastData.isReady()) {
+    return;
+  }
+
+  var colorLabel = this.customSettingsValues()[
+    epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_COLOR_BY
+  ];
+
+  var useColorBy = this.customSettingsValues()[
+    epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY
+  ];
+
+  var title = "";
+  var measurements = this._lastData.measurements();
+  if (this.chartDrawType == "canvas") {
+    var ctx = self.canvas.getContext("2d");
+    var textIndent = 0;
+    measurements.forEach(function (m, i) {
+      var color;
+      if (!self._measurementColorLabels) {
+        color = self.colors().get(i);
+      } else {
+        color = self.colors().getByKey(self._measurementColorLabels.get(m));
+      }
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+
+      ctx.arc(self.margins().left() + textIndent - 2, -9, 4, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.fill();
+      ctx.font = "9px";
+      ctx.beginPath();
+
+      var circleIndent = 8;
+      ctx.textAlign = "start";
+
+      ctx.fillText(
+        m.name(),
+        self.margins().left() + textIndent + circleIndent,
+        -14
+      );
+
+      var textWidth = ctx.measureText(m.name()).width;
+
+      textIndent = textIndent + circleIndent + textWidth + 10;
+    });
+
+    return;
+  }
+
+  var colLabels = measurements;
+  if (useColorBy) {
+    colLabels = Object.keys(self.colors()._keyIndices);
+  }
+
+
+  var titleEntries = this._svg
+    .selectAll(".chart-title")
+    .data(colLabels)
+    .enter()
+    .append("text")
+    .attr("class", "chart-title")
+    .attr("font-weight", "bold")
+    .attr("fill", function (m, i) {
+      if (useColorBy) {
+        return self.colors().getByKey(m);
+      }
+      else {
+        if (!self._measurementColorLabels) {
+          return self.colors().get(i);
+        }
+        return self.colors().getByKey(self._measurementColorLabels.get(m));
+      }
+    })
+    .attr("y", self.margins().top() - 5)
+    .text(function (m, i) {
+      if (useColorBy) {
+        return m;
+      }
+      return m.name();
+    });
+
+  var textLength = 0;
+  var titleEntriesStartPosition = [];
+
+  this._container.find(" .chart-title").each(function (i) {
+    titleEntriesStartPosition.push(textLength);
+    textLength += this.getBBox().width + 15;
+  });
+
+  titleEntries.attr("x", function (column, i) {
+    return self.margins().left() + 10 + titleEntriesStartPosition[i];
+  });
+
+  var colorEntries = this._svg
+    .selectAll(".chart-title-color")
+    .data(colLabels)
+    .enter()
+    .append("circle")
+    .attr("class", "chart-title-color")
+    .attr("cx", function (column, i) {
+      return self.margins().left() + 4 + titleEntriesStartPosition[i];
+    })
+    .attr("cy", self.margins().top() - 9)
+    .attr("r", 4)
+    .style("shape-rendering", "auto")
+    .style("stroke-width", "0")
+    .style("fill", function (m, i) {
+      if (useColorBy) {
+        return self.colors().getByKey(m);
+      }
+      else {
+        if (!self._measurementColorLabels) {
+          return self.colors().get(i);
+        }
+        return self.colors().getByKey(self._measurementColorLabels.get(m));
+      }
+    });
+};
+
+/**
  * @param {epiviz.ui.charts.ColorPalette} colors
  */
-epiviz.plugins.charts.BlocksTrack.prototype.setColors = function(colors) {
+epiviz.plugins.charts.BlocksTrack.prototype.setColors = function (colors) {
   this.container()
     .find(".items")
     .remove();
