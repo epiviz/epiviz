@@ -148,7 +148,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype.drawCanvas = function (
   hoverCanvas.style =
     "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
 
-  this._drawAxesCanvas(xScale, yScale, 10, 5, canvas);
+  this._drawAxesCanvas(xScale, null, 10, 5, canvas);
 
   var ctx = canvas.getContext("2d");
   ctx.translate(this.margins().left(), this.margins().top());
