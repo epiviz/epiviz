@@ -940,7 +940,8 @@ function html2canvas(nodeList, options) {
 
     var node = ((nodeList === undefined) ? [document.documentElement] : ((nodeList.length) ? nodeList : [nodeList]))[0];
     node.setAttribute(html2canvasNodeAttribute + index, index);
-    return renderDocument(node.ownerDocument, options, node.ownerDocument.defaultView.innerWidth, node.ownerDocument.defaultView.innerHeight, index).then(function(canvas) {
+    return renderDocument(node.ownerDocument, options, options.width != undefined ? options.width : node.ownerDocument.defaultView.innerWidth, options.height != undefined ? options.height : node.ownerDocument.defaultView.innerHeight, index).then(function(canvas) {
+    //return renderDocument(node.ownerDocument, options, node.ownerDocument.defaultView.innerWidth, node.ownerDocument.defaultView.innerHeight, index).then(function(canvas) {
         if (typeof(options.onrendered) === "function") {
             log("options.onrendered is deprecated, html2canvas returns a Promise containing the canvas");
             options.onrendered(canvas);

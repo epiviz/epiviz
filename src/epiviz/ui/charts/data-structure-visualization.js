@@ -57,6 +57,8 @@ epiviz.ui.charts.DataStructureVisualization = function(id, container, properties
    */
   this._propagateHierarchyChanges = new epiviz.events.Event();
 
+  this._propagateIcicleLocationChanges = new epiviz.events.Event();
+
   /**
    * event -> event args -> selection -> data
    * @type {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<epiviz.ui.controls.VisConfigSelection.<T>>>}
@@ -101,6 +103,8 @@ epiviz.ui.charts.DataStructureVisualization.prototype.colorLabels = function() {
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
  */
 epiviz.ui.charts.DataStructureVisualization.prototype.onPropagateHierarchyChanges = function() { return this._propagateHierarchyChanges; };
+
+epiviz.ui.charts.DataStructureVisualization.prototype.onPropagateIcicleLocationChanges = function() { return this._propagateIcicleLocationChanges; };
 
 /**
  */

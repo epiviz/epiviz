@@ -6,8 +6,6 @@
 
 goog.provide('epiviz.ui.charts.ChartManager');
 
-goog.require('epiviz.ui.PrintManager');
-
 /**
  * @param {epiviz.Config} config
  * @constructor
@@ -127,6 +125,10 @@ epiviz.ui.charts.ChartManager = function(config) {
    */
   this._chartPropagateHierarchyChanges = new epiviz.events.Event();
 
+  this._chartPropogateIcicleLocationChanges = new epiviz.events.Event();
+
+  this._chartIcicleLocationChanges = new epiviz.events.Event();
+
   this._registerWindowResize();
 };
 
@@ -173,6 +175,15 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   chartsContainer.append(sprintf('<div id="%s" class="%s"></div>', id, css));
   var container = chartsContainer.find('#' + id);
 
+  var chartMarkers = []; 
+  
+  if( chartType._defaultSettings.chartMarkers != null || chartType._defaultSettings.chartMarkers != undefined) {
+    for (var i=0; i < chartType._defaultSettings.chartMarkers.length ; i++ ) {
+      var tMark = chartType._defaultSettings.chartMarkers[i];
+      chartMarkers.push(new epiviz.ui.charts.markers.VisualizationMarker(tMark.type, tMark.id, tMark.name, tMark.preMark, tMark.mark));
+    }
+  } 
+
   chartProperties = chartProperties || new epiviz.ui.charts.VisualizationProperties(
     chartType.defaultWidth(), // width
     chartType.defaultHeight(), // height
@@ -182,8 +193,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
     null, // modified methods
     chartType.customSettingsValues(),
     chartType.customSettingsDefs(),
-    [],
-    null
+    //[],
+    chartMarkers
   );
 
   var chart = chartType.createNew(id, container, chartProperties);
@@ -204,6 +215,8 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartSave(chart);
   this._registerChartRequestHierarchy(chart);
   this._registerChartPropagateHierarchyChanges(chart);
+  this._registerChartPropogateIcicleLocationChanges(chart);
+  this._registerChartIcicleLocationChanges(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -409,6 +422,11 @@ epiviz.ui.charts.ChartManager.prototype.onChartRequestHierarchy = function() { r
  * @returns {epiviz.events.Event.<epiviz.ui.charts.VisEventArgs.<{selection: Object.<string, epiviz.ui.charts.tree.NodeSelectionType>, order: Object.<string, number>}>>}
  */
 epiviz.ui.charts.ChartManager.prototype.onChartPropagateHierarchyChanges = function() { return this._chartPropagateHierarchyChanges; };
+
+epiviz.ui.charts.ChartManager.prototype.onChartPropogateIcicleLocationChanges = function() { return this._chartPropogateIcicleLocationChanges; };
+
+epiviz.ui.charts.ChartManager.prototype.onChartIcicleLocationChanges = function() { return this._chartIcicleLocationChanges; };
+
 
 /**
  * @private
@@ -633,6 +651,28 @@ epiviz.ui.charts.ChartManager.prototype._registerChartPropagateHierarchyChanges 
     }));
   }
 };
+
+epiviz.ui.charts.ChartManager.prototype._registerChartPropogateIcicleLocationChanges = function(chart) {
+  var self = this;
+
+  if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+    var dataStructVis = /** @type {epiviz.ui.charts.DataStructureVisualization} */ chart; // Assignment done for consistency
+    dataStructVis.onPropagateIcicleLocationChanges().addListener(new epiviz.events.EventListener(function(e) {
+      self._chartPropogateIcicleLocationChanges.notify(e);
+    }));
+  }
+};
+
+epiviz.ui.charts.ChartManager.prototype._registerChartIcicleLocationChanges = function(chart) {
+   var self = this;
+
+   self.onChartIcicleLocationChanges().addListener(new epiviz.events.EventListener(function(e) {
+      if (chart.displayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+        chart._updateLocation(e.args.start, e.args.width);
+        chart._drawAxes(chart._lastRoot);
+      }
+   }));
+}; 
 
 epiviz.ui.charts.ChartManager.prototype.getChartSettings = function(id) {
 

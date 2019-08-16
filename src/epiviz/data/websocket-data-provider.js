@@ -133,6 +133,7 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
    * @type {{requestId: number, type: string, data: *}}
    */
   var message = JSON.parse(msg.data);
+  message.data.dataprovidertype = "websocket";
   if (message['type'] == epiviz.data.MessageType.RESPONSE) {
     var response = epiviz.data.Response.fromRawObject(message);
     var callback = this._callbacks[response.id()];
@@ -190,6 +191,14 @@ epiviz.data.WebsocketDataProvider.prototype._onSocketMessage = function (msg) {
         break;
       case Action.GET_AVAILABLE_CHARTS:
         this._getAvailableCharts(request);
+        break;
+      case Action.LOAD_WORKSPACE:
+        this._loadWorkspace(request);
+        break;
+      case Action.UI_STATUS:
+        this._uiStatus(request);
+      case Action.LOAD_MEASUREMENTS:
+        this._loadMeasurements(request);
         break;
     }
   }
@@ -373,6 +382,8 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
 
   var measurements, datasource, datasourceGroup;
 
+  var dataprovider = this.id();
+
   if (request.get('measurements') != undefined) {
     measurements = new epiviz.measurements.MeasurementSet();
 
@@ -391,13 +402,18 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
      */
     var rawMeasurements = JSON.parse(request.get('measurements'));
     for (var i = 0; i < rawMeasurements.length; ++i) {
+
+      if(rawMeasurements[i]['dataprovider'] != null && rawMeasurements[i]['dataprovider'].length != 0) {
+        dataprovider = rawMeasurements[i]['dataprovider'];
+      }
+
       measurements.add(new epiviz.measurements.Measurement(
         rawMeasurements[i]['id'],
         rawMeasurements[i]['name'],
         rawMeasurements[i]['type'],
         rawMeasurements[i]['datasourceId'],
         rawMeasurements[i]['datasourceGroup'],
-        this.id(),
+        dataprovider,
         null,
         rawMeasurements[i]['defaultChartType'],
         rawMeasurements[i]['annotation'],
@@ -639,3 +655,52 @@ epiviz.data.WebsocketDataProvider.prototype.updateChartSettings = function (requ
   this._callbacks[request.id()] = callback;
   this._sendMessage(message);
 };
+
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._loadWorkspace = function (request) {
+  var workspaceId = request.get('workspaceId');
+  var result = new epiviz.events.EventResult();
+  this._fireEvent(this.onRequestLoadWorkspace(), {
+    workspace: workspaceId
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._uiStatus = function (request) {
+  var result = new epiviz.events.EventResult();
+
+  this._fireEvent(this.onRequestUiStatus(), {
+    result: result
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+
+
+/**
+ * @param {epiviz.data.Request} request
+ * @private
+ */
+epiviz.data.WebsocketDataProvider.prototype._loadMeasurements = function (request) {
+  var result = new epiviz.events.EventResult();
+
+  this._fireEvent(this.onRequestLoadMeasurements(), {
+    result: result
+  });
+
+  var response = new epiviz.data.Response(request.id(), result);
+  this._sendMessage(JSON.stringify(response.raw()));
+};
+

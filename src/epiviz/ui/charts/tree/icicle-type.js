@@ -52,3 +52,38 @@ epiviz.ui.charts.tree.IcicleType.prototype.chartName = function() {
 epiviz.ui.charts.tree.IcicleType.prototype.chartHtmlAttributeName = function() {
   return 'icicle';
 };
+
+/**
+ * @returns {Array.<epiviz.ui.charts.CustomSetting>}
+ */
+epiviz.ui.charts.tree.IcicleType.prototype.customSettingsDefs = function() {
+  return epiviz.ui.charts.DataStructureVisualizationType.prototype.customSettingsDefs.call(this).concat([
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.tree.IcicleType.CustomSettings.HOVER_OPACITY,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      0.9,
+      'Hover Opacity'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.tree.IcicleType.CustomSettings.AGG_LEVEL,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      '',
+      'Agg Level'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.tree.IcicleType.CustomSettings.NODE_SEL,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      '{}',
+      'Node Selection')
+  ]);
+};
+
+/**
+ * @enum {string}
+ */
+epiviz.ui.charts.tree.IcicleType.CustomSettings = {
+  HOVER_OPACITY: 'hoverOpacity',
+  AGG_LEVEL: 'aggLevel',
+  NODE_SEL: 'nodeSel'
+};

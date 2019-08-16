@@ -131,6 +131,8 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
   var gridSquareSize = Math.max(Math.floor(circleRadius), 1);
   var nSeries = Math.min(this._measurementsX.length, this._measurementsY.length);
 
+  var absLine = this.customSettingsValues()[epiviz.plugins.charts.ScatterPlotType.CustomSettings.ABS_LINE_VAL];
+
   var firstGlobalIndex = data.firstSeries().globalStartIndex();
   var lastGlobalIndex = data.firstSeries().globalEndIndex();
   data.foreach(function(measurement, series) {
@@ -377,6 +379,21 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCircles = function(range, data)
     this._colorLabels = colors;
   }
 
+  // Draw abline
+  if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
+
+    itemsGroup.selectAll(".abLine").remove();
+
+    itemsGroup.append("svg:line")
+          .attr("class", "abLine")
+          .attr("x1", margins.left() + (minX - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
+          .attr("x2", margins.left() + (maxX - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
+          .attr("y1", height - margins.bottom() - ((absLine - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+          .attr("y2", height - margins.bottom() - ((absLine - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
+          .style("stroke", "black")
+          .style("stroke-dasharray", ("5, 5")) ;
+  }
+
   return items;
 };
 
@@ -486,7 +503,7 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawAxes = function(xScale, yScale,
 
   var yColorEntries = this._legend
     .selectAll('.y-measurement-color')
-    .data(xMeasurements)
+    .data(yMeasurements)
     .enter()
     .append('circle')
     .attr('class', 'y-measurement-color')

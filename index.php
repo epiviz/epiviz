@@ -105,6 +105,7 @@ if (array_key_exists('gist', $_REQUEST)) {
     ));
 
     // Send the request & save response to $resp
+    $resp = curl_exec($curl);
     if (!$resp) { continue; }
 
     $json = json_decode($resp, true);
@@ -188,7 +189,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <link rel="shortcut icon" href="css/epiviz_2_icon.png"/>
 
     <!-- CSS -->
-
+    <link href="css/fa/css/font-awesome.css" rel="stylesheet"/>
     <!-- Icons -->
     <link href="css/icomoon/epiviz-icons.css" rel="stylesheet"/>
 
@@ -257,7 +258,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <!-- Google Closure -->
     <script src="src/lib/closure/goog/base.js"></script>
-    <script src="src/lib/closure/goog/structs/collection.js"></script>
+    <!-- <script src="src/lib/closure/goog/structs/collection.js"></script> -->
 
     <!-- lightweight es6 promises -->
     <script src="src/lib/es6-promise/Promise.js"></script>
@@ -365,6 +366,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/visualization-type.js"></script>
 
     <script src="src/epiviz/ui/charts/chart-object.js"></script>
+    <script src="src/epiviz/ui/charts/custom-charts-index.js"></script>
     <script src="src/epiviz/ui/charts/chart.js"></script>
     <script src="src/epiviz/ui/charts/track.js"></script>
     <script src="src/epiviz/ui/charts/plot.js"></script>
@@ -432,6 +434,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/stacked-blocks-track.js"></script>
+    <script src="src/epiviz/plugins/charts/stacked-blocks-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-track.js"></script>
     <script src="src/epiviz/plugins/charts/line-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-track.js"></script>
@@ -446,6 +450,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/line-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-plot.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-plot-type.js"></script>
+    <script src="src/epiviz/plugins/charts/pca-scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/pca-scatter-plot-type.js"></script>  
+    <script src="src/epiviz/plugins/charts/diversity-scatter-plot.js"></script>
+    <script src="src/epiviz/plugins/charts/diversity-scatter-plot-type.js"></script>
 
     <script src="src/epiviz/ui/charts/tree/node-selection-type.js"></script>
     <script src="src/epiviz/ui/charts/tree/node.js"></script>

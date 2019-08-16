@@ -102,7 +102,25 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
       epiviz.plugins.charts.StackedLinePlotType.CustomSettings.SCALE_TO_PERCENT,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
-      'Scale to Percent')
+      'Scale to Percent'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedLinePlotType.CustomSettings.USE_GROUP_BY,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Use Group by'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedLinePlotType.CustomSettings.ROW_GROUP_BY,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
+      'name',
+      'Group By'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      0.6,
+      'Hover Opacity')
   ]);
 };
 
@@ -112,5 +130,8 @@ epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs = functio
 epiviz.plugins.charts.StackedLinePlotType.CustomSettings = {
   INTERPOLATION: 'interpolation',
   OFFSET: 'offset',
-  SCALE_TO_PERCENT: 'scaleToPercent'
+  SCALE_TO_PERCENT: 'scaleToPercent',
+  ROW_GROUP_BY: 'groupBy',
+  USE_GROUP_BY: 'useGroupBy',
+  HOVER_OPACITY: 'hoverOpacity'
 };

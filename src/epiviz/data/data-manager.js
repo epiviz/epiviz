@@ -78,6 +78,12 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._requestPrintWorkspace = new epiviz.events.Event();
 
+    /**
+   * @type {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestLoadWorkspace = new epiviz.events.Event();
+
   /**
    * @type {epiviz.events.Event.<{seqInfos: Array.<epiviz.datatypes.SeqInfo>, result: epiviz.events.EventResult}>}
    * @private
@@ -138,12 +144,27 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
    */
   this._requestGetAvailableCharts = new epiviz.events.Event();
 
+  /**
+   * @type {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestLoadMeasurements = new epiviz.events.Event();
+
+
+  /**
+   * @type {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+   * @private
+   */
+  this._requestUiStatus = new epiviz.events.Event();
+
+
 
   this._registerProviderAddMeasurements();
   this._registerProviderRemoveMeasurements();
   this._registerProviderAddChart();
   this._registerProviderRemoveChart();
   this._registerProviderPrintWorkspace();
+  this._registerProviderLoadWorkspace();
   this._registerProviderAddSeqInfos();
   this._registerProviderRemoveSeqNames();
   this._registerProviderNavigate();
@@ -154,7 +175,8 @@ epiviz.data.DataManager = function(config, dataProviderFactory) {
   this._registerProviderGetChartSettings();
   this._registerProviderSetChartSettings();
   this._registerProviderGetAvailableCharts();
-
+  this._registerProviderUiStatus();
+  this._registerProviderLoadMeasurements();
 };
 
 /**
@@ -166,6 +188,12 @@ epiviz.data.DataManager.prototype.onRequestAddMeasurements = function() { return
  * @returns {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataManager.prototype.onRequestRemoveMeasurements = function() { return this._requestRemoveMeasurements; };
+
+/**
+ * @returns {epiviz.events.Event.<{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestLoadMeasurements = function() { return this._requestLoadMeasurements; };
+
 
 /**
  * @returns {epiviz.events.Event.<{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult.<{id: string}>}>}
@@ -181,6 +209,12 @@ epiviz.data.DataManager.prototype.onRequestRemoveChart = function() { return thi
  * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
  */
 epiviz.data.DataManager.prototype.onRequestPrintWorkspace = function() { return this._requestPrintWorkspace; };
+
+/**
+ * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestLoadWorkspace = function() { return this._requestLoadWorkspace; };
+
 
 /**
  * @returns {epiviz.events.Event.<{seqInfos: Array.<epiviz.datatypes.SeqInfo>, result: epiviz.events.EventResult}>}
@@ -232,6 +266,11 @@ epiviz.data.DataManager.prototype.onRequestSetChartSettings = function() { retur
  */
 epiviz.data.DataManager.prototype.onRequestGetAvailableCharts = function() { return this._requestGetAvailableCharts; };
 
+/**
+ * @returns {epiviz.events.Event.<{id: string, result: epiviz.events.EventResult}>}
+ */
+epiviz.data.DataManager.prototype.onRequestUiStatus = function() { return this._requestUiStatus; };
+
 
 /**
  * @param {function(Array.<epiviz.datatypes.SeqInfo>)} callback
@@ -246,7 +285,7 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback) {
   /** @type {Array.<epiviz.datatypes.SeqInfo>} */
   var result = [];
   this._dataProviderFactory.foreach(function(provider) {
-    provider.getData(epiviz.data.Request.getSeqInfos(),
+    provider.getData(epiviz.data.Request.getSeqInfos(provider.id()),
       /**
        * @param {epiviz.data.Response.<Array.<Array>>} response Each element in the response is an array with three values:
        * the name of the sequence, the minimum and maximum values it can have
@@ -319,7 +358,7 @@ epiviz.data.DataManager.prototype.getMeasurements = function(callback) {
 
   var nResponses = 0;
   this._dataProviderFactory.foreach(function(provider) {
-    provider.getData(epiviz.data.Request.getMeasurements(),
+    provider.getData(epiviz.data.Request.getMeasurements(provider.id()),
       /**
        * @param {epiviz.data.Response.<{
        *   id: Array.<number>,
@@ -421,6 +460,15 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
         var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
 
         var globalStartIndex = dsData.globalStartIndex;
+
+        if(isNaN(range._start)) {
+          range._start = globalStartIndex;
+        }
+
+        if(isNaN(range._width)) {
+          range._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
+        }
+
         var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, dsData.rows);
 
         sumExp.addRowData(rowData);
@@ -477,6 +525,88 @@ epiviz.data.DataManager.prototype._serveAvailableData = function(range, chartMea
 };
 
 /**
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.getPCA = function(range, chartMeasurementsMap, dataReadyCallback) {
+  var self = this;
+
+  /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+  var msByDp = {};
+  for (var chartId in chartMeasurementsMap) {
+    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }     
+    var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+    for (var dp in chartMsByDp) {
+      if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+      var dpMs = msByDp[dp];
+      if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+      else { dpMs.addAll(chartMsByDp[dp]); }
+    }
+  }
+
+  /**
+   * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+   */
+  var allData = {};
+  epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+    var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+    var request = epiviz.data.Request.getPCA(msByDs, range);
+    var msName = Object.keys(msByDs)[0];
+
+    var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    dataProvider.getData(request, function(response) {
+      var resp = response.data();
+      if(response.data().dataprovidertype == "websocket") {
+        resp = resp[msName];
+      }
+      dataReadyCallback(chartId, resp);
+    });
+  });
+};
+
+/**
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} chartMeasurementsMap
+ * @param {function(string, *)} dataReadyCallback
+ */
+epiviz.data.DataManager.prototype.getDiversity = function(range, chartMeasurementsMap, dataReadyCallback) {
+  var self = this;
+
+  /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
+  var msByDp = {};
+  for (var chartId in chartMeasurementsMap) {
+    if (!chartMeasurementsMap.hasOwnProperty(chartId)) { continue; }     
+    var chartMsByDp = chartMeasurementsMap[chartId].split(function(m) { return m.dataprovider(); });
+    for (var dp in chartMsByDp) {
+      if (!chartMsByDp.hasOwnProperty(dp)) { continue; }
+      var dpMs = msByDp[dp];
+      if (dpMs == undefined) { msByDp[dp] = chartMsByDp[dp]; }
+      else { dpMs.addAll(chartMsByDp[dp]); }
+    }
+  }
+
+  /**
+   * @type {Object.<string, Object.<string, epiviz.datatypes.PartialSummarizedExperiment>>}
+   */
+  var allData = {};
+  epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
+    var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
+    var request = epiviz.data.Request.getDiversity(msByDs, range);
+    var msName = Object.keys(msByDs)[0];
+
+    var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
+    dataProvider.getData(request, function(response) {
+      var resp = response.data();
+      if(response.data().dataprovidertype == "websocket") {
+        resp = resp[msName];
+      }
+      dataReadyCallback(chartId, resp);
+    });
+  });
+};
+
+/**
  * @param {Object.<string, epiviz.ui.controls.VisConfigSelection>} chartVisConfigSelectionMap
  * @param {function(string, *)} dataReadyCallback
  */
@@ -495,8 +625,18 @@ epiviz.data.DataManager.prototype.getHierarchy = function(chartVisConfigSelectio
       return false;
     });
   }
+  var datasourceGroup = visConfigSelection.datasourceGroup;
+  if(!datasourceGroup) {
+      visConfigSelection.measurements.foreach(function(m) {
+      if (m.datasourceGroup()) {
+        datasourceGroup = m.datasourceGroup();
+        return true;
+      }
+      return false;
+    });
+  }
   var provider = this._dataProviderFactory.get(dataprovider) || this._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
-  provider.getData(epiviz.data.Request.getHierarchy(visConfigSelection.datasourceGroup, visConfigSelection.customData), function(response) {
+  provider.getData(epiviz.data.Request.getHierarchy(datasourceGroup, visConfigSelection.customData), function(response) {
     dataReadyCallback(chartId, response.data());
   });
 };
@@ -691,6 +831,19 @@ epiviz.data.DataManager.prototype._registerProviderRemoveMeasurements = function
 /**
  * @private
  */
+epiviz.data.DataManager.prototype._registerProviderLoadMeasurements = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestLoadMeasurements().addListener(new epiviz.events.EventListener(
+      function(e) {
+        self._requestLoadMeasurements.notify(e);
+      }));
+  });
+};
+
+/**
+ * @private
+ */
 epiviz.data.DataManager.prototype._registerProviderAddChart = function() {
   var self = this;
   this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
@@ -723,6 +876,19 @@ epiviz.data.DataManager.prototype._registerProviderPrintWorkspace = function() {
     provider.onRequestPrintWorkspace().addListener(new epiviz.events.EventListener(
         function(e) {
           self._requestPrintWorkspace.notify(e);
+        }));
+  });
+};
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderLoadWorkspace = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestLoadWorkspace().addListener(new epiviz.events.EventListener(
+        function(e) {
+          self._requestLoadWorkspace.notify(e);
         }));
   });
 };
@@ -862,6 +1028,20 @@ epiviz.data.DataManager.prototype._registerProviderGetAvailableCharts = function
     provider.onRequestGetChartSettings().addListener(new epiviz.events.EventListener(
         function(e) {
           self._requestGetAvailableCharts.notify(e);
+        }));
+  });
+};
+
+
+/**
+ * @private
+ */
+epiviz.data.DataManager.prototype._registerProviderUiStatus = function() {
+  var self = this;
+  this._dataProviderFactory.foreach(function(/** @type {epiviz.data.DataProvider} */ provider) {
+    provider.onRequestUiStatus().addListener(new epiviz.events.EventListener(
+        function(e) {
+          self._requestUiStatus.notify(e);
         }));
   });
 };

@@ -154,6 +154,8 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
 
   var interpolation = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];
 
+  var absLine = this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL];
+
   var self = this;
 
   var invXScale = d3.scale.linear()
@@ -324,6 +326,21 @@ epiviz.plugins.charts.LineTrack.prototype._drawLines = function(range, data, del
       }
     }
   });
+
+  // show baseline
+  if(absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
+
+    graph.selectAll('.abLine').remove();
+
+    graph.append("svg:line")
+          .attr("class", "abLine")
+          .attr("x1", 0)
+          .attr("x2", self.width() - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
+          .attr("y1", yScale(absLine))
+          .attr("y2", yScale(absLine))
+          .style("stroke", "black")
+          .style("stroke-dasharray", ("5, 5")) ;
+  }
 
   return items;
 };

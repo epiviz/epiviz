@@ -106,7 +106,13 @@ epiviz.plugins.charts.ScatterPlotType.prototype.customSettingsDefs = function() 
       epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
-      'Max Y')
+      'Max Y'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.ScatterPlotType.CustomSettings.ABS_LINE_VAL,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Draw abline')
   ]);
 };
 
@@ -114,5 +120,6 @@ epiviz.plugins.charts.ScatterPlotType.prototype.customSettingsDefs = function() 
  * @enum {string}
  */
 epiviz.plugins.charts.ScatterPlotType.CustomSettings = {
-  CIRCLE_RADIUS_RATIO: 'circleRadiusRatio'
+  CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
+  ABS_LINE_VAL: 'abLine'
 };

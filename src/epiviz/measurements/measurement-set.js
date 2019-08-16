@@ -305,6 +305,20 @@ epiviz.measurements.MeasurementSet.prototype.raw = function() {
 };
 
 /**
+ * @returns {Array.<{id: string, name: string, type: epiviz.measurements.Measurement.Type, datasourceId: string, datasourceGroup: string, dataprovider: string, formula: null, defaultChartType: ?string, annotation: ?Object.<string, string>, minValue: ?number, maxValue: ?number, metadata: ?Array.<string>}>}
+ */
+epiviz.measurements.MeasurementSet.prototype.remoteRaw = function() {
+  var result = new Array();
+  this.foreach(function(m, i) {
+    if(m.dataprovider().indexOf("websocket") == -1){
+        result[i] = m.raw();
+    }
+  });
+
+  return result;
+};
+
+/**
  * @param {function(epiviz.measurements.Measurement): number|string} criterion
  * @returns {Object.<string, epiviz.measurements.MeasurementSet>}
  */

@@ -11,6 +11,8 @@ goog.provide('epiviz.localstorage.LocalStorageManager');
  */
 epiviz.localstorage.LocalStorageManager = function(type) {
   this._workspace = type;
+
+  this._availStorage = (typeof(Storage) === "undefined" || localStorage == null) ? false: true;
 };
 
 /**
@@ -36,11 +38,12 @@ epiviz.localstorage.LocalStorageManager.prototype.initialize = function() {};
  * @returns {epiviz.workspaces.Workspace}
  */
 epiviz.localstorage.LocalStorageManager.prototype.getWorkspace = function(chartFactory, config) {
-  if(typeof(Storage) === "undefined") { return null; } // No support for Storage in this browser
-  var rawStr = localStorage.getItem(this._workspace);
-  if (!rawStr) { return null; }
+  if(this._availStorage) {
+    var rawStr = localStorage.getItem(this._workspace);
+    if (!rawStr) { return null; }
 
-  return epiviz.workspaces.Workspace.fromRawObject(JSON.parse(rawStr), chartFactory, config);
+    return epiviz.workspaces.Workspace.fromRawObject(JSON.parse(rawStr), chartFactory, config);
+  }
 };
 
 /**
@@ -48,24 +51,27 @@ epiviz.localstorage.LocalStorageManager.prototype.getWorkspace = function(chartF
  * @param {epiviz.Config} config
  */
 epiviz.localstorage.LocalStorageManager.prototype.saveWorkspace = function(workspace, config) {
-  if(typeof(Storage) === "undefined") { return; } // No support for Storage in this browser
-  var raw = workspace.raw(config);
-  localStorage.setItem(this._workspace, JSON.stringify(raw));
+  if(this._availStorage) {
+    var raw = workspace.raw(config);
+    localStorage.setItem(this._workspace, JSON.stringify(raw));
+  }
 };
 
 /**
  * clear the workspace for the current instance of localmanager
  */
 epiviz.localstorage.LocalStorageManager.prototype.clearWorkspace = function() {
-  if(typeof(Storage) === "undefined") { return; } // No support for Storage in this browser
-  localStorage.removeItem(this._workspace);
+  if(this._availStorage) {
+    localStorage.removeItem(this._workspace);
+  }
 };
 
 /**
  * clears all data in localstorage
  */
 epiviz.localstorage.LocalStorageManager.prototype.clearAll = function() {
-  if(typeof(Storage) === "undefined") { return; } // No support for Storage in this browser
-  localStorage.clear();
+  if(this._availStorage) {
+    localStorage.clear();
+  }
 };
 // TODO: Idea - create a workspace history, for undo/redo functionality!

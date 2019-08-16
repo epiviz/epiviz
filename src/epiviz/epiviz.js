@@ -111,11 +111,14 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerChartRequestHierarchy();
   this._registerChartPropagateHierarchySelection();
 
+  this._registerChartPropogateIcicleLocationChange();
+
   this._registerUiSettingsChanged();
 
   // Register for Data events
 
   this._registerDataAddMeasurements();
+  this._registerDataLoadMeasurements();
   this._registerDataRemoveMeasurements();
   this._registerDataAddChart();
   this._registerDataRemoveChart();
@@ -125,9 +128,11 @@ epiviz.EpiViz = function(config, locationManager, measurementsManager, controlMa
   this._registerDataRedraw();
   this._registerDataGetCurrentLocation();
   this._registerPrintWorkspace();
+  this._registerLoadWorkspace();
   this._registerDataSetChartSettings();
   this._registerDataGetChartSettings();
   this._registerDataGetAvailableCharts();
+  this._registerDataUiStatus();
 
   // Register for Workspace events
 
@@ -189,12 +194,31 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
   chartId = this._chartManager.addChart(type, visConfigSelection, chartId, chartProperties);
   var self = this;
   // TODO: Maybe later implement hierarchical display type (see display-type.js for the start of the idea)
-  if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+  if (type.typeName() == 'epiviz.plugins.charts.CustomScatterPlot'){
+    var range = null;
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    this._dataManager.getPCA(range, chartMeasurementsMap,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  }
+  else if (type.typeName() == 'epiviz.plugins.charts.DiversityScatterPlot'){
+    var range = null;
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    this._dataManager.getDiversity(range, chartMeasurementsMap,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  }
+  else if (type.chartDisplayType() == epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
     var chartVisConfigSelectionMap = {};
     chartVisConfigSelectionMap[chartId] = visConfigSelection;
+    var range = this._workspaceManager.activeWorkspace().range();
     this._dataManager.getHierarchy(chartVisConfigSelectionMap,
       function(chartId, hierarchy) {
-        self._chartManager.updateCharts(undefined, hierarchy, [chartId]);
+        self._chartManager.updateCharts(range, hierarchy, [chartId]);
       });
   } else {
     var range = this._workspaceManager.activeWorkspace().range();
@@ -206,6 +230,22 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
         self._chartManager.updateCharts(range, data, [chartId]);
       });
   }
+
+  // if (type.chartDisplayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) {
+  //   var mCount = 0;
+  //   //add measurements as a new datasource
+  //   var chartMs = visConfigSelection.measurements;
+  //   chartMs.foreach(function(m, i) {
+  //     if(m._datasourceGroup.indexOf('_plot-') == -1 ) {
+  //       m._datasourceGroup = m._datasourceGroup + "_" + chartId;
+  //       mCount++;
+  //     }
+  //   });
+
+  //   if (mCount > 0) {
+  //     this._measurementsManager.addMeasurements(chartMs);
+  //   }
+  // }
 
   return chartId;
 };
@@ -278,14 +318,14 @@ epiviz.EpiViz.prototype._registerRequestWorkspaces = function() {
           ws.push(w);
         }
 
-        if (!activeWorkspace && cookieWorkspace) {
-          unchangedActiveWorkspace = self._workspaceManager.get(cookieWorkspace.id());
-          if (!unchangedActiveWorkspace) {
-            cookieWorkspace = cookieWorkspace.copy(cookieWorkspace.name());
-            unchangedActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(self._config.defaultWorkspaceSettings, self._chartFactory, self._config);
-          }
-          activeWorkspace = cookieWorkspace;
-        }
+        // if (!activeWorkspace && cookieWorkspace) {
+        //   unchangedActiveWorkspace = self._workspaceManager.get(cookieWorkspace.id());
+        //   if (!unchangedActiveWorkspace) {
+        //     cookieWorkspace = cookieWorkspace.copy(cookieWorkspace.name());
+        //     unchangedActiveWorkspace = epiviz.workspaces.Workspace.fromRawObject(self._config.defaultWorkspaceSettings, self._chartFactory, self._config);
+        //   }
+        //   activeWorkspace = cookieWorkspace;
+        // }
 
         self._workspaceManager.updateWorkspaces(ws, activeWorkspace, e.activeWorkspaceId, unchangedActiveWorkspace);
         if (!cookieWorkspace) { self._workspaceManager.activeWorkspace().resetChanged(); }
@@ -542,6 +582,25 @@ epiviz.EpiViz.prototype._registerDataRemoveMeasurements = function() {
 /**
  * @private
  */
+epiviz.EpiViz.prototype._registerDataLoadMeasurements = function() {
+  var self = this;
+  this._dataManager.onRequestLoadMeasurements().addListener(new epiviz.events.EventListener(
+    /** @param {{measurements: epiviz.measurements.MeasurementSet, result: epiviz.events.EventResult}} e */
+    function(e) {
+      try {
+        var m = self._measurementsManager.getRemoteMeasurements();
+        e.result.success = true;
+        e.result.measurements = m;
+      } catch (error) {
+        e.result.success = false;
+        e.result.errorMessage = error.toString();
+      }
+    }));
+};
+
+/**
+ * @private
+ */
 epiviz.EpiViz.prototype._registerDataAddChart = function() {
   var self = this;
   this._dataManager.onRequestAddChart().addListener(new epiviz.events.EventListener(
@@ -594,6 +653,27 @@ epiviz.EpiViz.prototype._registerPrintWorkspace = function() {
           pm.print();
           //self._controlManager.printWorkspace(e.chartId, e.fileName, e.fileType);
           e.result.success = true;
+        } catch (error) {
+          e.result.success = false;
+          e.errorMessage = error.toString();
+        }
+      }));
+};
+
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerLoadWorkspace = function() {
+  var self = this;
+  this._dataManager.onRequestLoadWorkspace().addListener(new epiviz.events.EventListener(
+      /**
+       * @param {{id: string, result: epiviz.events.EventResult}} e
+       */
+      function(e) {
+        try {
+          self._workspaceManager._requestWorkspaces.notify({ activeWorkspaceId: e.workspace });
+          
         } catch (error) {
           e.result.success = false;
           e.errorMessage = error.toString();
@@ -874,9 +954,64 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
       /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
       var chartMeasurementsMap = self._chartManager.chartsMeasurements();
 
+      // TODO: update pca plots for Hierarchy Changes
+      // remove PCA & alphadiversity here
+      for ( var mea in chartMeasurementsMap) {
+          if (mea.indexOf('pca_scatter') != -1 || mea.indexOf('diversity_scatter') != -1) {
+            delete chartMeasurementsMap[mea];
+          }
+      } 
+
       self._dataManager.getData(e.newValue, chartMeasurementsMap,
         function(chartId, data) {
           self._chartManager.updateCharts(e.newValue, data, [chartId]);
         });
+
+      if(!self._chartManager.onChartPropogateIcicleLocationChanges().isFiring()) {
+          self._chartManager.onChartIcicleLocationChanges().notify();
+        }
     }));
+};
+
+epiviz.EpiViz.prototype._registerChartPropogateIcicleLocationChange = function() {
+  var self = this;
+
+  self._chartManager.onChartPropogateIcicleLocationChanges().addListener(new epiviz.events.EventListener(
+    function(e) {
+
+      //console.log(e);
+      var currentLocation = self._locationManager.currentLocation();
+      if(currentLocation != null) {
+        self._locationManager.changeCurrentLocation(
+            new epiviz.datatypes.GenomicRange(currentLocation.seqName(), 
+              e.start, 
+              e.width));
+      }
+    }
+  ));
+};
+
+/**
+ * @private
+ */
+epiviz.EpiViz.prototype._registerDataUiStatus = function() {
+  var self = this;
+  this._dataManager.onRequestUiStatus().addListener(new epiviz.events.EventListener(
+      /**
+       * @param {{id: string, settings: Array, result: epiviz.events.EventResult}} e
+       */
+      function(e) {
+
+        if(self._workspaceManager._activeWorkspace == null) {
+            self._workspaceManager.onActiveWorkspaceChanged().addListener(new epiviz.events.EventListener(
+              function(e1) {
+                e.result.success = true;
+            })
+          );
+        }
+        else {
+                e.result.success = true;
+        }
+      })
+  );
 };

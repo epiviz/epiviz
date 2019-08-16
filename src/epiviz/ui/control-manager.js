@@ -13,8 +13,7 @@ goog.require('epiviz.ui.charts.ChartFactory');
 goog.require('epiviz.ui.charts.ChartManager');
 goog.require('epiviz.workspaces.WorkspaceManager');
 goog.require('epiviz.datatypes.GenomicRange');
-goog.require('epiviz.ui.tutorials');
-goog.require('epiviz.ui.PrintManager');
+//goog.require('epiviz.ui.tutorials');
 
 /**
  * @param {epiviz.Config} config
@@ -681,7 +680,8 @@ epiviz.ui.ControlManager.prototype._initializeScreenshotMenu = function() {
     text:false
   })
   .click( function() {
-
+    
+    var name = $('#save-workspace-text').val();
     self._saveWorkspace.notify({name: name, id: name == self._activeWorkspaceInfo.name ? self._activeWorkspaceInfo.id : null});
 
     savePageButton.append(sprintf('<div id="loading" title="printing workspace">' +
