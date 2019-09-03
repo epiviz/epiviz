@@ -7,7 +7,7 @@ epiviz.Config.SETTINGS.dataProviders = [
     // fully qualified class name for the class
     "epiviz.data.WebServerDataProvider",
     "umd",
-    "http://epiviz-dev.cbcb.umd.edu/api/"
+    "http://localhost:8000"
   ]
 ];
 
