@@ -43,6 +43,7 @@ epiviz.Config.SETTINGS = {
   chartTypes: [
     'epiviz.plugins.charts.ScatterPlotType',
     'epiviz.plugins.charts.HeatmapPlotType',
+    'epiviz.plugins.charts.HeatmapTimePlotType',
     'epiviz.plugins.charts.LinePlotType',
     'epiviz.plugins.charts.StackedLinePlotType',
     'epiviz.ui.charts.tree.IcicleType',
@@ -271,15 +272,7 @@ epiviz.Config.SETTINGS = {
     ],
     metrics: [
       'epiviz.ui.charts.transform.clustering.EuclideanMetric',
-      'epiviz.ui.charts.transform.clustering.BrayMetric',
-      'epiviz.ui.charts.transform.clustering.BinomialMetric',
-      'epiviz.ui.charts.transform.clustering.CanberraMetric',
-      'epiviz.ui.charts.transform.clustering.GowerMetric',
-      'epiviz.ui.charts.transform.clustering.JaccardMetric',
-      'epiviz.ui.charts.transform.clustering.KulzynskiMetric',
-      'epiviz.ui.charts.transform.clustering.ManhattanMetric',
-      'epiviz.ui.charts.transform.clustering.MorisitaMetric',
-      'epiviz.ui.charts.transform.clustering.HornMetric'
+      'epiviz.ui.charts.transform.clustering.EuclideanMetricHeatmapTimePlot'
     ],
     linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
   },
