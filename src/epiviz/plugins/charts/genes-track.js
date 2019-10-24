@@ -139,6 +139,7 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(
     .domain([start, end])
     .range([0, width - margins.sumAxis(Axis.X)]);
   var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
+  // console.log("delta, ", delta)
 
   this._clearAxes();
   this._drawAxes(xScale, null, 10, 5);
@@ -228,16 +229,56 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(
       self._drawGene(this, d, xScale);
     });
 
+
+  var dragVal = 0;
+  var newStart = start;
+  var newEnd = end;
+
   // enable drag behavior
-  var drag = d3.behavior.drag().on("drag", function(d) {
-    var movePercent = d3.event.dx;
-    var newStart = Math.round(
-      range.start() + (movePercent / width) * range.start()
-    );
+  var drag = d3.behavior.drag()
+  .on("drag", function(d) {
+    console.log(d3.event.dx);
+    dragVal += d3.event.dx
+    
+    if (d3.event.dx != 0) {
+      var diff = Math.round(Math.abs(xScale.invert(0) - xScale.invert(Math.abs(dragVal))));
+
+      if (dragVal > 0) { 
+        // moved left
+
+        newStart = start - diff;
+        newEnd = end - diff;
+      } 
+      else if(dragVal < 0) {
+        // moved right
+
+        newStart = start + diff;
+        newEnd = end + diff;
+      }
+
+      // console.log("new params");
+      // console.log(diff, newStart, newEnd);
+  
+      var newxScale = d3.scale
+      .linear()
+      .domain([newStart, newEnd])
+      .range([0, width - margins.sumAxis(Axis.X)]);
+
+      selection.each(function(d) {
+        d3.select(this).attr("transform", function(d,i){
+          return "translate(" + [dragVal, 0] + ")"
+        });
+      });
+                
+      self._clearAxes();
+      self._drawAxes(newxScale, null, 10, 5);
+    }
+  })
+  .on("dragend", function(d) {
     var newRange = new epiviz.datatypes.GenomicRange(
       range.seqName(),
       newStart,
-      range.width(),
+      newEnd - newStart,
       range.genome()
     );
     if (newRange) {
