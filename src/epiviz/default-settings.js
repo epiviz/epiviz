@@ -231,19 +231,9 @@ epiviz.Config.SETTINGS = {
         }
       ],
 
-      // The initial charts on the initial workspace
+      // // The initial charts on the initial workspace
       charts: {
         track: [
-          {
-            id: 'track-genes-initial',
-            type: 'epiviz.plugins.charts.GenesTrack',
-            properties: { width: 837, height: 120,
-              margins: { top: 25, left: 20, bottom: 23, right: 10 },
-              measurements: [0],
-              colors: { id: 'genes-default' },
-              customSettings: {}
-            }
-          }
         ],
         plot: []
       }

@@ -264,7 +264,9 @@ epiviz.EpiViz.prototype._registerRequestSeqInfos = function() {
     function() {
       self._dataManager.getSeqInfos(function(seqInfos) {
         self._locationManager.updateSeqInfos(seqInfos);
-      });
+      }, function(jqXHR, textStatus, errorThrown) {
+      console.log("error")
+    });
     }));
 };
 
@@ -279,8 +281,9 @@ epiviz.EpiViz.prototype._registerRequestMeasurements = function() {
         self._measurementsManager.addMeasurements(measurements);
 
         //self._workspaceManager.initialize();
-      });
-    }));
+      }, function(jqXHR, textStatus, errorThrown) {
+      console.log("error")
+    })}));
 };
 
 /**

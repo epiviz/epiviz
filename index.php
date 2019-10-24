@@ -241,6 +241,9 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!-- D3 -->
     <script src="src/lib/d3/d3.v3.js"></script>
 
+    <!-- msgpack-lite -->
+    <script src="src/lib/msgpack-lite/msgpack.min.js"></script>
+
     <!-- String formatting -->
     <script src="src/lib/sprintf-0.6.js"></script>
     <script src="src/lib/jquery/globalize/globalize.js"></script>
@@ -449,6 +452,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
     <script src="src/epiviz/epiviz.js"></script>
     <script src="src/epiviz/main.js"></script>
+
+
 
     <!-- Dynamic initializations -->
 
