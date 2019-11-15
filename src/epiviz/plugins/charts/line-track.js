@@ -217,7 +217,8 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(
   range,
   data,
   slide,
-  zoom
+  zoom,
+  mirror
 ) {
   epiviz.ui.charts.Track.prototype.draw.call(this, range, data, slide, zoom);
 
@@ -290,7 +291,15 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(
     .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);
 
   this._clearAxes();
-  this._drawAxes(xScale, yScale, 10, 5);
+
+  if(mirror) {
+    this._drawAxes(xScale, yScale, 10, 5);
+
+  }
+  else {
+    this._drawAxes(xScale, undefined, 10, 5);
+
+  }
 
   var delta =
     (slide * (this.width() - this.margins().sumAxis(Axis.X))) / range.width();

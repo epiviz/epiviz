@@ -85,5 +85,17 @@ epiviz.ui.charts.markers.MeasurementAggregators = {
   'sum': new epiviz.ui.charts.markers.MeasurementAggregator('sum', function(label, measurements, values) {
     if (!values || values.length == 0) { return null; }
     return { value: values.reduce(function(v1, v2) { return v1 + v2; }) };
+  }),
+
+  'log': new epiviz.ui.charts.markers.MeasurementAggregator('log', function(label, measurements, values) {
+    if (!values || values.length == 0) { return null; }
+    return { value: values.reduce(function(v1, v2) { return Math.log2((v1+1)/(v2+1)); }) };
+  }),
+
+  'negate': new epiviz.ui.charts.markers.MeasurementAggregator('negate', function(label, measurements, values) {
+    if (!values || values.length == 0) { return null; }
+    return { value: values.reduce(function(v1, v2) { return v1 + v2; }) / values.length,
+            errMinus: values.reduce(function(v1, v2) { return v1 }),
+            errPlus: values.reduce(function(v1, v2) { return -1 * v2 }) };
   })
 };
