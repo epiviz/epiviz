@@ -293,12 +293,14 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(
   this._clearAxes();
 
   if(mirror) {
+    yScale = d3.scale
+    .linear()
+    .domain([-1 * maxY, maxY])
+    .range([this.height() - this.margins().sumAxis(Axis.Y), 0]);
     this._drawAxes(xScale, yScale, 10, 5);
-
   }
   else {
-    this._drawAxes(xScale, undefined, 10, 5);
-
+    this._drawAxes(xScale, yScale, 10, 5);
   }
 
   var delta =

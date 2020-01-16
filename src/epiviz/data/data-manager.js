@@ -317,6 +317,14 @@ epiviz.data.DataManager.prototype.getSeqInfos = function(callback, failCallback)
                 }
               }
             }
+            else {
+              for (var i = 0; i < seqs.length; ++i) {
+                if (!(seqs[i][0] in existingSeqNames)) {
+                  result.push(epiviz.datatypes.SeqInfo.fromRawObject(seqs[i]));
+                  // existingSeqNames[seqs[i][0]] = true;
+                }
+              }
+            }
           }
         }
         else {

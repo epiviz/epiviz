@@ -249,6 +249,7 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
 
   var title = "";
   var measurements = this._lastData.measurements();
+
   if (this.chartDrawType == "canvas") {
     var ctx = self.canvas.getContext("2d");
     var textIndent = 0;
@@ -286,23 +287,54 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
     return;
   }
 
+  if (self._id.indexOf("stacked") != -1) {
+    var seriesBlockHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / self.measurements().size();
+
+    var titleEntries = this._svg
+      .selectAll(".chart-title")
+      .data(measurements)
+      .enter()
+      .append("text")
+      .attr("class", "chart-title")
+      .attr("font-weight", "bold")
+      .attr("fill", function(m, i) {
+        if (!self._measurementColorLabels) {
+          return self.colors().get(i);
+        }
+        return self.colors().getByKey(self._measurementColorLabels.get(m));
+      })
+      .attr("x", 0)
+      .attr("y", function (b, i) {
+        return (i * seriesBlockHeight) + 10;
+      })
+      .text(function(m, i) {
+        return m.name();
+      })
+      .attr(
+        "transform",
+        "translate(" + self.margins().left() + ", " + self.margins().top() + ")"
+      );
+
+      return;
+  }
+
   var titleEntries = this._svg
-    .selectAll(".chart-title")
-    .data(measurements)
-    .enter()
-    .append("text")
-    .attr("class", "chart-title")
-    .attr("font-weight", "bold")
-    .attr("fill", function(m, i) {
-      if (!self._measurementColorLabels) {
-        return self.colors().get(i);
-      }
-      return self.colors().getByKey(self._measurementColorLabels.get(m));
-    })
-    .attr("y", self.margins().top() - 5)
-    .text(function(m, i) {
-      return m.name();
-    });
+  .selectAll(".chart-title")
+  .data(measurements)
+  .enter()
+  .append("text")
+  .attr("class", "chart-title")
+  .attr("font-weight", "bold")
+  .attr("fill", function(m, i) {
+    if (!self._measurementColorLabels) {
+      return self.colors().get(i);
+    }
+    return self.colors().getByKey(self._measurementColorLabels.get(m));
+  })
+  .attr("y", self.margins().top() - 5)
+  .text(function(m, i) {
+    return m.name();
+  });
 
   var textLength = 0;
   var titleEntriesStartPosition = [];
