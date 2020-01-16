@@ -68,45 +68,74 @@ epiviz.data.WebServerDataProvider.prototype.getData = function(request, callback
  * @param callback
  */
 epiviz.data.WebServerDataProvider.makeGetRequest = function(query, callback, failCallback) {
-  // var request = $.ajax({
-  //   type: "get",
-  //   url: query,
-  //   async: true,
-  //   cache: false,
-  //   processData: true
-  // });
+  var request = $.ajax({
+    type: "get",
+    url: query,
+    dataType: "json",
+    async: true,
+    cache: false,
+    processData: true
+  });
 
-  var request = new XMLHttpRequest();
-  request.open("GET", query, false)
   // callback handler that will be called on success
-  if (query.includes("getWorkspaces")) {
-    request.onload = function(oEvent){
-      data = request.response
-      callback(JSON.parse(data));
-    };
-  } else {
-    request.overrideMimeType('text\/plain; charset=x-user-defined');
-    request.onload = function (oEvent){
-      var byteArray =  new Uint8Array(request.response.length);
-      if (request.status != 200) return byteArray;
-      for (var i = 0; i < request.response.length; ++i) {
-        // byteArray.push(request.responseText.charCodeAt(i) & 0xff)
-        byteArray[i] = request.response.charCodeAt(i);
-      }
-      // var byte = new Uint8Array(request.response.data);
-      var data = msgpack.decode(byteArray);
-      callback(data);
-    };
-  }
+  request.done(function (jsonData){
+    callback(jsonData);
+  });
 
   // callback handler that will be called on failure
-  request.onerror =function (jqXHR, textStatus, errorThrown){
+  request.fail(function (jqXHR, textStatus, errorThrown){
     //console.error("The following error occured: " + textStatus, errorThrown);
     failCallback(jqXHR, textStatus, errorThrown);
-  };
+  });
 
-  request.send(null);
+  // callback handler that will be called regardless
+  // if the request failed or succeeded
+  request.always(function () {});
 };
+// epiviz.data.WebServerDataProvider.makeGetRequest = function(query, callback, failCallback) {
+//   // var request = $.ajax({
+//   //   type: "get",
+//   //   url: query,
+//   //   async: true,
+//   //   cache: false,
+//   //   processData: true
+//   // });
+
+//   var request = new XMLHttpRequest();
+//   request.open("GET", query, false)
+//   // callback handler that will be called on success
+//   if (query.includes("getWorkspaces")) {
+//     request.onload = function(oEvent){
+//       data = request.response
+//       callback(JSON.parse(data));
+//     };
+//   } else {
+//     request.overrideMimeType('text\/plain; charset=x-user-defined');
+//     request.onload = function (oEvent){
+
+//       data = request.response
+//       callback(JSON.parse(data));
+
+//       // var byteArray =  new Uint8Array(request.response.length);
+//       // if (request.status != 200) return byteArray;
+//       // for (var i = 0; i < request.response.length; ++i) {
+//       //   // byteArray.push(request.responseText.charCodeAt(i) & 0xff)
+//       //   byteArray[i] = request.response.charCodeAt(i);
+//       // }
+//       // // var byte = new Uint8Array(request.response.data);
+//       // var data = msgpack.decode(byteArray);
+//       // callback(data);
+//     };
+//   }
+
+//   // callback handler that will be called on failure
+//   request.onerror =function (jqXHR, textStatus, errorThrown){
+//     //console.error("The following error occured: " + textStatus, errorThrown);
+//     failCallback(jqXHR, textStatus, errorThrown);
+//   };
+
+//   request.send(null);
+// };
 
 /**
  * @param {string} query
