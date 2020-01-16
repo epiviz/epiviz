@@ -231,6 +231,7 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
   var items = this._svg.select(".items");
   var selected = items.select(".selected");
   var clipPath = this._svg.select("#clip-" + this.id());
+  var textheight = 0; //13
 
   if (items.empty()) {
     if (clipPath.empty()) {
@@ -286,14 +287,14 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
       return xScale(b.start) / zoom + delta;
     })
     .attr("y", function (b) {
-      return b.seriesIndex * seriesBlockHeight;
+      return (b.seriesIndex * seriesBlockHeight) + textheight;
     })
     .attr("width", function (b) {
       // We're using b.end + 1 since b.end is the index of the last covered bp
       return zoom * (xScale(b.end + 1) - xScale(b.start));
     })
     .attr("height", function (b) {
-      return seriesBlockHeight;
+      return seriesBlockHeight - textheight;
     })
     .on("mouseout", function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
@@ -319,13 +320,13 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
       return xScale(b.start);
     })
     .attr("y", function (b) {
-      return b.seriesIndex * seriesBlockHeight;
+      return (b.seriesIndex * seriesBlockHeight) + textheight;
     })
     .attr("width", function (b) {
       return xScale(b.end + 1) - xScale(b.start);
     })
     .attr("height", function (b) {
-      return seriesBlockHeight;
+      return seriesBlockHeight - textheight;
     });
 
   selection
@@ -336,13 +337,13 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
       return xScale(b.start);
     })
     .attr("y", function (b) {
-      return b.seriesIndex * seriesBlockHeight;
+      return (b.seriesIndex * seriesBlockHeight) + textheight;
     })
     .attr("width", function (b) {
       return xScale(b.end + 1) - xScale(b.start);
     })
     .attr("height", function (b) {
-      return seriesBlockHeight;
+      return seriesBlockHeight - textheight;
     })
     .remove();
 
@@ -434,6 +435,7 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocksCanvas = function 
   var blocks = [];
 
   var i = 0;
+  var textheight = 7;
 
   data.foreach(function (m, series, seriesIndex) {
     var seriesBlocks = [];

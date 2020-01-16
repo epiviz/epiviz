@@ -78,16 +78,24 @@ epiviz.plugins.charts.MultiStackedLineTrackType.prototype.customSettingsDefs = f
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       50,
       'Step'),
+      
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_POINTS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       false,
       'Show points'),
+
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_LINES,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
       'Show lines'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_FILL,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'fill'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_ERROR_BARS,
@@ -144,7 +152,8 @@ epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings = {
   POINT_RADIUS: 'pointRadius',
   LINE_THICKNESS: 'lineThickness',
   INTERPOLATION: 'interpolation',
-  ABS_LINE_VAL: 'abLine'
+  ABS_LINE_VAL: 'abLine',
+  SHOW_FILL: "showFill"
 };
 
 // goog.inherits(epiviz.plugins.charts.MultiStackedLineTrackType, epiviz.ui.charts.TrackType);

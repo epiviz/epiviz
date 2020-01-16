@@ -43,6 +43,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.StackedBlocksTrackType',
     'epiviz.plugins.charts.LineTrackType',
     'epiviz.plugins.charts.StackedLineTrackType',
+    'epiviz.plugins.charts.MultiStackedLineTrackType',
     'epiviz.plugins.charts.ScatterPlotType',
     'epiviz.plugins.charts.GenesTrackType',
     'epiviz.plugins.charts.HeatmapPlotType',
@@ -116,7 +117,8 @@ epiviz.Config.SETTINGS = {
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
         'epiviz.ui.charts.decoration.ChartColorByMeasurementsCodeButton'
-      ]
+      ],
+      chartMarkers:['epiviz.ui.charts.markers.MeasurementAggregator']
     },
 
     'epiviz.plugins.charts.StackedLineTrack': {

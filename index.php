@@ -388,6 +388,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/line-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-track.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/multistacked-line-track.js"></script>
+    <script src="src/epiviz/plugins/charts/multistacked-line-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/scatter-plot.js"></script>
     <script src="src/epiviz/plugins/charts/scatter-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/genes-track.js"></script>

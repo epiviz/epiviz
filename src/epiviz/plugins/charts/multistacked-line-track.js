@@ -372,6 +372,11 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
   ];
 
   /** @type {boolean} */
+  var showFill = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_FILL
+  ];
+
+  /** @type {boolean} */
   var showErrorBars = this.customSettingsValues()[
     epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_ERROR_BARS
   ];
@@ -471,7 +476,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
     var yScaleSeries = d3.scale
       .linear()
       .domain([sminY, smaxY])
-      .range([(i + 1) * seriesLineHeight, i * seriesLineHeight]);
+      .range([(i+1) * seriesLineHeight, (i) * seriesLineHeight]);
 
     var x = function (j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
@@ -535,7 +540,51 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         .transition()
         .duration(500)
         .attr("transform", "translate(" + 0 + ")");
-    } else {
+    } 
+    else {
+      graph
+        .select(".line-series-index-" + i)
+        .selectAll("path")
+        .remove();
+    }
+    
+    if (showFill) {
+      var area = d3.svg.area()
+      .x(x)
+      .y0((i+1) * seriesLineHeight)
+      .y1(y)
+      .interpolate(interpolation);  
+
+      var lines = graph
+      .select(".line-series-index-" + i)
+      .selectAll("path")
+      .data([indices]);
+
+      lines
+      .enter()
+      .append("path")
+      .attr("d", area)
+      .style("shape-rendering", "auto")
+      .style("stroke-opacity", "0.8")        
+      .on("mouseover", function () {
+        self._captureMouseHover();
+      })
+      .on("mousemove", function () {
+        self._captureMouseHover();
+      })
+      .on("mouseout", function () {
+        self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      });
+
+      lines
+        .attr("d", area)
+        .style("fill", color)
+        .attr("transform", "translate(" + +delta + ")")
+        .transition()
+        .duration(500)
+        .attr("transform", "translate(" + 0 + ")");
+    }
+    else {
       graph
         .select(".line-series-index-" + i)
         .selectAll("path")
@@ -546,10 +595,12 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
       .select(".point-series-index-" + i)
       .selectAll("circle")
       .remove();
+
     graph
       .select(".point-series-index-" + i)
       .selectAll(".error-bar")
       .remove();
+
     if (showPoints) {
       var points = graph
         .select(".point-series-index-" + i)
