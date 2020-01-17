@@ -228,7 +228,8 @@ epiviz.data.Request.getValues = function(measurement, range) {
     seqName: range ? range.seqName() : undefined,
     start: range ? range.start() : undefined,
     end: range ? range.end() : undefined,
-    genome: range ? range.genome() : undefined
+    genome: range ? range.genome() : undefined,
+    bins: window.innerWidth
   });
 };
 
@@ -281,7 +282,8 @@ epiviz.data.Request.getCombined = function(measurementsByDatasource, range) {
     measurements: rawMsByDs[dataSource],
     datasource: dataSource,
     datasourceGroup: dataprovider,
-    genome: range ? range.genome() : undefined
+    genome: range ? range.genome() : undefined,
+    bins: window.innerWidth
   });
 
 };
