@@ -472,10 +472,26 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         smaxY = cell.value;
       }
     }
+    
+    var CustomSetting = epiviz.ui.charts.CustomSetting;
+    var stminY = self.customSettingsValues()[
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN
+    ];
+    var stmaxY = self.customSettingsValues()[
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
+    ];
+  
+    if (stminY == CustomSetting.DEFAULT) {
+      stminY = sminY;
+    }
+  
+    if (stmaxY == CustomSetting.DEFAULT) {
+      stmaxY = smaxY;
+    }
 
     var yScaleSeries = d3.scale
       .linear()
-      .domain([sminY, smaxY])
+      .domain([stminY, stmaxY])
       .range([(i+1) * seriesLineHeight, (i) * seriesLineHeight]);
 
     var x = function (j) {
@@ -550,11 +566,12 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
     
     if (showFill) {
       var area = d3.svg.area()
-      .x(x)
-      .y0((i+1) * seriesLineHeight)
+      .x1(x)
       .y1(y)
-      .interpolate(interpolation);  
-
+      .x0(x)
+      .y0(yScaleSeries(0))
+      .interpolate(interpolation); 
+            
       var lines = graph
       .select(".line-series-index-" + i)
       .selectAll("path")
@@ -583,12 +600,6 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         .transition()
         .duration(500)
         .attr("transform", "translate(" + 0 + ")");
-    }
-    else {
-      graph
-        .select(".line-series-index-" + i)
-        .selectAll("path")
-        .remove();
     }
 
     graph
@@ -701,26 +712,26 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
           .style("opacity", 0)
           .remove();
       }
+
+      // show baseline
+      if (absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
+        graph.selectAll(".abLine").remove();
+
+        graph
+          .append("svg:line")
+          .attr("class", "abLine")
+          .attr("x1", 0)
+          .attr(
+            "x2",
+            self.width() - self.margins().sumAxis(epiviz.ui.charts.Axis.X)
+          )
+          .attr("y1", yScaleSeries(absLine))
+          .attr("y2", yScaleSeries(absLine))
+          .style("stroke", "black")
+          .style("stroke-dasharray", "5, 5");
+      }
     }
   });
-
-  // show baseline
-  if (absLine != epiviz.ui.charts.CustomSetting.DEFAULT) {
-    graph.selectAll(".abLine").remove();
-
-    graph
-      .append("svg:line")
-      .attr("class", "abLine")
-      .attr("x1", 0)
-      .attr(
-        "x2",
-        self.width() - self.margins().sumAxis(epiviz.ui.charts.Axis.X)
-      )
-      .attr("y1", yScaleSeries(absLine))
-      .attr("y2", yScaleSeries(absLine))
-      .style("stroke", "black")
-      .style("stroke-dasharray", "5, 5");
-  }
 
   return items;
 };
