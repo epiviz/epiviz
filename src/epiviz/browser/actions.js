@@ -10,6 +10,7 @@ var selectionAuto = false;
 var selectionDrag = false;
 var selectionDown = false;
 var currentSource = null;
+var original_set = undefined;
 
 function initialize_dropdown(source) {
 
@@ -30,9 +31,21 @@ function initialize_dropdown(source) {
 				$('#sample-size-dropdown').addClass("disabled");
 				$('#rightmenu .checkbox').checkbox('set enabled');
 				$('#rightmenu .checkbox').checkbox('set unchecked');
+				
+				// globalTable.rows().every( function (rowIdx, tableLoop, rowLoop ) {
+				// 	var d = this.data();
+				// 	var node = this.node();
+				// 	var rs = $(d[0]).find("input")
+				// 	$(rs).parent().checkbox('set unchecked');
+				// 	$(rs).parent().removeClass("disabled");
+				// 	$($(node).find("td")[0]).children().replaceWith($(rs).parent().parent()[0])
+				// });
+
+				rightAccordion(current_measurements);
+
 				//fixing click issues
 				$($('#source-' + source).parent().children()[1]).unbind("click");
-		        $($('#source-' + source).children()[0]).click(function() {});
+				$($('#source-' + source).children()[0]).click(function() {});
 			}
 
 			selections = {};
@@ -58,7 +71,7 @@ function initialize_dropdown(source) {
 	});
 	$('#sample-size-dropdown').dropdown({
 		allowTab : false,
-		action: 'select',
+		action: 'nothing',
 		onHide: function() {
 			selectSamples();
 		}
@@ -73,46 +86,115 @@ function initialize_dropdown(source) {
 function selectSamples() {
 	if(selectionAuto && selectionCount > 0) {
 		
-		var checkboxes = $('#rightmenu .content .ui.checkbox input[type="checkbox"]').filter(function() {
-			return $(this).parent().parent().css("display") != "none";
-		}).toArray();
-		var count = Math.round((checkboxes.length*selectionCount)/100);
+		// var checkboxes = $('#rightmenu .content .ui.checkbox input[type="checkbox"]').filter(function() {
+		// 	return $(this).parent().parent().css("display") != "none";
+		// }).toArray();
+		var dt_ids = []
+
+		globalTable.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+			// var d = this.data();
+			//  console.log(d);
+			 dt_ids.push(rowIdx)
+		});
+
+		var count = Math.round((dt_ids.length*selectionCount)/100);
 
 		// clear Selections
 		selections = {};
-		_.each(checkboxes, function(cb) {
-			$(cb).parent().checkbox('set unchecked');
-		});
+		// _.each(checkboxes, function(cb) {
+		// 	$(cb).parent().checkbox('set unchecked');
+		// });
 
 		switch(selectionType) {
 			case 'Random':
-				var randomSamples = _.sampleSize(checkboxes, count);
-				_.each(randomSamples, function(rs) {
-					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
+				var randomSamples = _.sampleSize(dt_ids, count);
+				globalTable.rows().every( function (rowIdx, tableLoop, rowLoop ) {
+					var d = this.data();
+					var node = this.node();
+					
+					if (randomSamples.includes(rowIdx)) {
+						var rs = $(d[0]).find("input")
 						if($(rs).parent().prop('id') != undefined) {
 							var split = $(rs).parent().prop('id').split('-');
 							$(rs).parent().checkbox('set checked');
 							split[3] = _.join(_.slice(split, 3), separator="-");
 							selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
 							// $(rs).click();
+							// d[0] = $(rs).parent().parent()[0];
+							// $(node).find("td").first().remove();
+							$(rs).parent().addClass("disabled");
+							$($(node).find("td")[0]).children().replaceWith($(rs).parent().parent()[0])
 						}
 					}
+					else {
+						var rs = $(d[0]).find("input")
+						$(rs).parent().checkbox('set unchecked');
+						// d[0] = $(rs).parent().parent()[0];
+						// $(node).find("td").first().remove();
+						$(rs).parent().addClass("disabled");
+						$($(node).find("td")[0]).children().replaceWith($(rs).parent().parent()[0])
+					}
+
+					// this.invalidate();
 				});
+				// _.each(randomSamples, function(rs) {
+				// 	if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
+				// 		if($(rs).parent().prop('id') != undefined) {
+				// 			var split = $(rs).parent().prop('id').split('-');
+				// 			$(rs).parent().checkbox('set checked');
+				// 			split[3] = _.join(_.slice(split, 3), separator="-");
+				// 			selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
+				// 			// $(rs).click();
+				// 		}
+				// 	}
+				// });
 				break;
 			case 'Top':
-				_.each(_.slice(checkboxes,0, count), function(rs) {
-					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
+				tcount = 0;
+				globalTable.rows().every( function (rowIdx, tableLoop, rowLoop ) {
+					var d = this.data();
+				
+					if (tcount < count) {
+						var rs = $(d[0]).find("input");
 						if($(rs).parent().prop('id') != undefined) {
 							var split = $(rs).parent().prop('id').split('-');
-							$(rs).parent().checkbox('set checked');
+							$(rs).parent().checkbox('set checked disabled');
 							split[3] = _.join(_.slice(split, 3), separator="-");
 							selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
 							// $(rs).click();
+							// d[0] = $(rs).parent().parent()[0];
+							// $(node).find("td").first().remove();
+							$(rs).parent().addClass("disabled");
+							$($(node).find("td")[0]).children().replaceWith($(rs).parent().parent()[0])
 						}
 					}
+					else {
+						var rs = $(d[0]).find("input");
+						$(rs).parent().checkbox('set unchecked disabled');
+						// d[0] = $(rs).parent().parent()[0];
+						// $(node).find("td").first().remove();
+						$(rs).parent().addClass("disabled");
+						$($(node).find("td")[0]).children().replaceWith($(rs).parent().parent()[0])
+					}
+
+					tcount++;
+					// this.invalidate();
 				});
+				// _.each(_.slice(checkboxes,0, count), function(rs) {
+				// 	if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
+				// 		if($(rs).parent().prop('id') != undefined) {
+				// 			var split = $(rs).parent().prop('id').split('-');
+				// 			$(rs).parent().checkbox('set checked');
+				// 			split[3] = _.join(_.slice(split, 3), separator="-");
+				// 			selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
+				// 			// $(rs).click();
+				// 		}
+				// 	}
+				// });
 				break;
 		}
+
+		// globalTable.draw();
 
 		var countUpdate = $('#count-' + currentSource);
 		countUpdate.attr("data-selected", count);
@@ -135,6 +217,7 @@ function showModal(source, input, cb) {
 	selectionDrag = false;
 	selectionDown = false;
 	currentSource = null;
+	original_set = input;
 
 	$('#newmodal').remove();
 	$('#resultmodal').remove();
@@ -226,6 +309,7 @@ function showModal(source, input, cb) {
 	currentSource = source;
 	measurements[source] = input;
 	measurements[source] = _.sortBy(measurements[source], [function(o) {return o.id}])
+	current_measurements = measurements;
 	$('body').append(modal);
 	initialize_dropdown(source);
 	$('#newmodal').modal({
@@ -393,24 +477,63 @@ function attachActions(measurements) {
 			$(this).parent().toggleClass('checked');
 			$(this).parent().removeClass('hidden');
 			$('#rightmenu').accordion('refresh');
-			_.each(ids, function(value) {
-				var split = value.id.split('-');
-				split[3] = _.join(_.slice(split, 3), separator="-");
-				if (checked) {
-					$(value).checkbox('set unchecked');
-					delete selections[split[1] + '-' + split[2] + '-' + split[3]];
-				} else if ($(value).parent().css('display') !== "none"){
-					$(value).checkbox('set checked');
-					$(value).children().removeClass('hidden');
-					selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
-				}
-			});
-			if (checked) {
-				$count.attr("data-selected", 0)
+			// _.each(ids, function(value) {
+			// 	var split = value.id.split('-');
+			// 	split[3] = _.join(_.slice(split, 3), separator="-");
+			// 	if (checked) {
+			// 		$(value).checkbox('set unchecked');
+			// 		delete selections[split[1] + '-' + split[2] + '-' + split[3]];
+			// 	} else if ($(value).parent().css('display') !== "none"){
+			// 		$(value).checkbox('set checked');
+			// 		$(value).children().removeClass('hidden');
+			// 		selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
+			// 	}
+			// });
+
+			selections = {};
+			if (!checked) {
+
+				globalTable.rows().every( function (rowIdx, tableLoop, rowLoop ) {
+					var d = this.data();
+					var node = this.node();
+					var rs = $(d[0]).find("input")
+					if($(rs).parent().prop('id') != undefined) {
+						var split = $(rs).parent().prop('id').split('-');
+						$(rs).parent().checkbox('set checked');
+						split[3] = _.join(_.slice(split, 3), separator="-");
+						selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
+						// $(rs).click();
+						// d[0] = $(rs).parent().parent()[0];
+						// $(node).find("td").first().remove();
+						// $(rs).parent().addClass("disabled");
+						$($(node).find("td")[0]).children().replaceWith($(rs).parent().parent()[0])
+					}
+				});
+
+				$count.attr("data-selected", total);
 				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 				$("#leftMenuCount span.data-count").text($count.attr('data-total'));
+
 			} else {
-				$count.attr("data-selected", total);
+
+				globalTable.rows().every( function (rowIdx, tableLoop, rowLoop ) {
+					var d = this.data();
+					var node = this.node();
+					var rs = $(d[0]).find("input")
+					if($(rs).parent().prop('id') != undefined) {
+						var split = $(rs).parent().prop('id').split('-');
+						$(rs).parent().checkbox('set unchecked');
+						// split[3] = _.join(_.slice(split, 3), separator="-");
+						// selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
+						// $(rs).click();
+						// d[0] = $(rs).parent().parent()[0];
+						// $(node).find("td").first().remove();
+						// $(rs).parent().addClass("disabled");
+						$($(node).find("td")[0]).children().replaceWith($(rs).parent().parent()[0])
+					}
+				});
+
+				$count.attr("data-selected", 0)
 				$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 				$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 			}
@@ -518,6 +641,7 @@ function filter(value, anno, filter, measurements) {
 				if (recalc) {
 					// loop through all filters and see if the element passes the filters
 					Object.keys(filters).forEach(function(category) {
+						category = category.replace(/[^a-zA-Z0-9_]/g, '');
 						var val = filters[category].values;
 						var type = filters[category].type;
 						if (val.length !== 0) {
@@ -540,7 +664,7 @@ function filter(value, anno, filter, measurements) {
 								hide = true;
 							}
 						} else if (type === "range" && 
-									( data['annotation'][category] && data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
+									(data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
 							// case where no range but toggle hideNa checkbox
 							hide = true;
 						}
@@ -568,7 +692,7 @@ function filter(value, anno, filter, measurements) {
 				$('#table-' + sanitizedId).hide();
 				_.pull(new_list[source], data);
 				var checkbox = $('#' + sanitizedId).children();
-				if (checkbox.attr('class').indexOf('checked') !== -1) {
+				if (checkbox.length > 0 && checkbox.attr('class').indexOf('checked') !== -1) {
 					var split = checkbox.attr('id').split('-');
 					split[3] = _.join(_.slice(split, 3), separator="-");
 					checkbox.checkbox('set unchecked');
@@ -597,6 +721,9 @@ function filter(value, anno, filter, measurements) {
 		}
 	});
 
+	original_set = new_list;
+
+	rightAccordion(new_list);
 	selectSamples();
 }  
 
@@ -721,4 +848,3 @@ function resultTable(name, list, cb) {
 	});
 	$('#resultmodal').modal('show');
 }
-
