@@ -143,6 +143,22 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
     epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY
   ];
 
+  var scaleLabel = this.customSettingsValues()[
+    epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_SCALE_BY
+  ];
+
+  var useScaleBy = this.customSettingsValues()[
+    epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_SCALE_BY
+  ];
+
+  var minY = this.customSettingsValues()[
+    epiviz.ui.charts.Visualization.CustomSettings.Y_MIN
+  ];
+
+  var maxY = this.customSettingsValues()[
+    epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
+  ];
+
   var colorBy = function (row) {
     return useColorBy
       ? colors.getByKey(row.values)
@@ -304,8 +320,25 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
     .attr("class", function (b) {
       return b.cssClasses;
     })
-    .attr("height", height - margins.sumAxis(Axis.Y))
-    .attr("y", 0)
+    .attr("height", function(b) {
+      if (useScaleBy) {
+        var fracVal = (b.valueItems[0][0].rowItem.metadata(scaleLabel) - minY)/(maxY - minY);
+        return fracVal * (height - margins.sumAxis(Axis.Y)) 
+      }
+      else {
+        return height - margins.sumAxis(Axis.Y)
+      }
+    })
+    // .attr("height", height - margins.sumAxis(Axis.Y))
+    .attr("y", function(b) {
+      if (useScaleBy) {
+        var fracVal = (b.valueItems[0][0].rowItem.metadata(scaleLabel) - minY)/(maxY - minY);
+        return (1 - fracVal) * (height - margins.sumAxis(Axis.Y))
+      }
+      else {
+        return 0
+      }
+    })
     .transition()
     .duration(500)
     .attr("x", function (b) {
@@ -368,6 +401,22 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function (
 
   var useColorBy = this.customSettingsValues()[
     epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY
+  ];
+
+  var scaleLabel = this.customSettingsValues()[
+    epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_SCALE_BY
+  ];
+
+  var useScaleBy = this.customSettingsValues()[
+    epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_SCALE_BY
+  ];
+
+  var minY = this.customSettingsValues()[
+    epiviz.ui.charts.Visualization.CustomSettings.Y_MIN
+  ];
+
+  var maxY = this.customSettingsValues()[
+    epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
   ];
 
   var colorBy = function (row) {
@@ -486,14 +535,21 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function (
 
   blocks.forEach(function (b) {
     ctx.beginPath();
+    var fracVal = (b.valueItems[0][0].rowItem.metadata(scaleLabel) - minY)/(maxY - minY);
+    cheight = height - margins.sumAxis(Axis.Y);
+    cypos = 0
+    if (useScaleBy) {
+      cheight = fracVal * (height - margins.sumAxis(Axis.Y)) 
+      cypos = (1 - fracVal) * (height - margins.sumAxis(Axis.Y))
+    }
 
     ctx.fillStyle = colorBy(b);
     ctx.strokeStyle = "black";
     ctx.rect(
       xScale(b.start) / zoom + delta,
-      0,
+      cypos,
       zoom * (xScale(b.end + 1) - xScale(b.start)),
-      height - margins.sumAxis(Axis.Y)
+      cheight
     );
     ctx.fill();
     ctx.stroke();
