@@ -183,8 +183,13 @@ epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, c
       // rawData.rows.values.end = null;
       var rowData = new epiviz.datatypes.GenomicRangeArray(mrange, range, rawData.rows.globalStartIndex, rawData.rows.values, rawData.rows.useOffset);
       this._mergeData(mrange, rowData);
-
-      var valData = new epiviz.datatypes.FeatureValueArray(measurement, range, rawData.values.globalStartIndex, rawData.values.values[measurement.id()]);
+      
+      var valArray = [];
+      if (Object.keys(rawData.values.values).length > 0 && Object.keys(rawData.values.values).includes(measurement.id()) {
+        valArray = rawData.values.values[measurement.id()]
+      }
+      
+      var valData = new epiviz.datatypes.FeatureValueArray(measurement, range, rawData.values.globalStartIndex, valArray);
       this._mergeData(measurement, valData);
     }
 
