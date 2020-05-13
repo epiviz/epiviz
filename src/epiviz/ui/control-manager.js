@@ -953,6 +953,12 @@ epiviz.ui.ControlManager.prototype._initializeManifestUploadMenu = function() {
           reader.onload = function () {
               var data = d3.tsv.parseRows(reader.result);
 
+              mapped_datasource = {
+                "ptb": "momspi_hmp2data",
+                "t2d": "t2d_hmp2data",
+                "ibd": "ibd_biopsy_hmp2data"
+              }
+
               var urls = data.map(function(x) {console.log(x); return x[3];});
               var samples = data.map(function(x) {return x[4];});
               urls = urls.slice(1);
@@ -963,7 +969,7 @@ epiviz.ui.ControlManager.prototype._initializeManifestUploadMenu = function() {
               for(var i = 0; i < urls.length; i++){
                 var url_sub = urls[i].slice(0, urls[i].indexOf(","));
                 var ds = url_sub.split("/");
-                datasources.push(ds[4]);
+                datasources.push(mapped_datasource[ds[4]]);
                 var biom = ds[ds.length - 1];
                 ids.push(biom.slice(0, biom.indexOf(".biom")));
               }
@@ -978,7 +984,13 @@ epiviz.ui.ControlManager.prototype._initializeManifestUploadMenu = function() {
               for(var i=0; i < datasources.length; i++) {
                 var dsi = datasources[i];
                 var idi = ids[i];
-                var mea = data.subset(function(m) { return m.id() == idi});
+                var mea = data.subset(function(m) { 
+                  if (Object.keys(m.annotation()).includes("sample_id")) {
+                    return m.annotation()["sample_id"] == samples[i]
+                  }
+
+                  return false
+                });
                 measurements.push(mea.raw()[0]);
                 mid.push(i);
               }
