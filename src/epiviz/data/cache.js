@@ -185,7 +185,7 @@ epiviz.data.Cache.prototype._handleResponse = function(chartDataReadyCallback, c
       this._mergeData(mrange, rowData);
       
       var valArray = [];
-      if (Object.keys(rawData.values.values).length > 0 && Object.keys(rawData.values.values).includes(measurement.id()) {
+      if (Object.keys(rawData.values.values).length > 0 && Object.keys(rawData.values.values).includes(measurement.id())) {
         valArray = rawData.values.values[measurement.id()]
       }
       
