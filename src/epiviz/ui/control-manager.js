@@ -978,22 +978,28 @@ epiviz.ui.ControlManager.prototype._initializeManifestUploadMenu = function() {
               // var workspace = {};
               var measurements = [];
               var mid = [];
-
+              var mcounter = 0;
               var data = self._measurementsManager.measurements();
 
               for(var i=0; i < datasources.length; i++) {
                 var dsi = datasources[i];
                 var idi = ids[i];
-                var mea = data.subset(function(m) { 
+                var mea = data.subset(function(m) {
                   if (Object.keys(m.annotation()).includes("sample_id")) {
                     return m.annotation()["sample_id"] == samples[i]
                   }
 
                   return false
                 });
-                measurements.push(mea.raw()[0]);
-                mid.push(i);
+                if (mea.size() > 0) {
+
+                   measurements.push(mea.raw()[0]);
+                   mid.push(mcounter);
+                   mcounter++;
+                }
               }
+
+              datasources[0] = measurements[0]["datasourceGroup"];
 
               var workspace = {
                 "range":{"seqName":datasources[0],"start":0,"width":10000},
@@ -1355,7 +1361,8 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
             '</div>'+
           '</div>'+
           '<div class="actions">'+
-            '<div class="ui grey back button" id="cancel">Close</div>'+
+            '<div class="ui primary button disabled" id="enableManifest">Upload Manifest</div>'+
+            '<div class="ui grey back button disabled" id="cancel">Close</div>'+
             '<div class="ui primary button disabled" id="okScreenApp">Start App</div>'+
           '</div>'+
         '</div>';
@@ -1363,7 +1370,7 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
     $("body").append(modal);
 
     $("#startScreenApp").modal({
-      closable: true,
+      closable: false,
       selector:  {
         deny: '.ui.grey.button'
       }
@@ -1375,6 +1382,11 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
         $("#startScreenApp").modal("hide");
         $("#data-source-button").trigger("click");
     });
+
+    $("#enableManifest").click(function(e) {
+      $("#startScreenApp").modal("hide");
+      $('#manifest-upload').trigger("click");
+    })
 };
 
 
@@ -1401,6 +1413,9 @@ epiviz.ui.ControlManager.prototype.updateLoadingScreen = function(e) {
       $("#loaderScreenApp").removeClass("active");
       $("#loaderScreenApp").addClass("disabled");
       $("#okScreenApp").removeClass("disabled");
+      $("#enableManifest").removeClass("disabled");
+      $("#cancel").removeClass("disabled");
+
     }
   }
 };
