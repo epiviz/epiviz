@@ -83,28 +83,13 @@ epiviz.plugins.charts.LinePlot.prototype.draw = function(
     epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL
   ];
 
+  var dataRange = this.getDataMinMax(data);
   if (minY == CustomSetting.DEFAULT) {
-    minY = null;
-    data.measurements().forEach(function(m) {
-      if (m === null) {
-        return;
-      }
-      if (minY === null || m.minValue() < minY) {
-        minY = m.minValue();
-      }
-    });
+    minY = dataRange[0];
   }
 
   if (maxY == CustomSetting.DEFAULT) {
-    maxY = null;
-    data.measurements().forEach(function(m) {
-      if (m === null) {
-        return;
-      }
-      if (maxY === null || m.maxValue() > maxY) {
-        maxY = m.maxValue();
-      }
-    });
+    maxY = dataRange[1];
   }
 
   if (minY === null && maxY === null) {

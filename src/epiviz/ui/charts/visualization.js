@@ -700,6 +700,21 @@ epiviz.ui.charts.Visualization.prototype._drawAxes = function(
   }
 };
 
+epiviz.ui.charts.Visualization.prototype.getDataMinMax = function(data) {
+  var dataMin = 100000, dataMax = -100000;
+  data.foreach(function(m, series) {
+    var featureValues = series._container.values(m);
+    var valData = featureValues._values;
+    var fMin = Math.min.apply(null, valData), fMax = Math.max.apply(null, valData);
+  
+    if (fMin < dataMin) { dataMin = fMin;} 
+    if (fMax > dataMax) { dataMax = fMax;}
+  });
+
+  return [dataMin, dataMax]
+};
+
+
 /**
  * @private
  */
