@@ -107,7 +107,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
   var rows = data.measurements().length;
   var cols = data._map.first().value.size()
 
-  if (rows * cols < 500) {
+  if (rows * cols < 10000) {
     return this.drawSVG(range, data);
   } else {
     return this.drawCanvas(range, data);

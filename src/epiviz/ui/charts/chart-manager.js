@@ -390,6 +390,7 @@ epiviz.ui.charts.ChartManager.prototype.updateDataStructureCharts = function() {
     if (!this._charts.hasOwnProperty(chartIds[i])) { continue; }
     var chart = this._charts[chartIds[i]];
     if (!chart) { continue; }
+    chart._dataWaitEnd.notify(new epiviz.ui.charts.VisEventArgs(chart.id()));
     if (chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE) { continue; }
 
     (function(chart) {
