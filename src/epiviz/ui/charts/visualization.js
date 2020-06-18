@@ -680,9 +680,12 @@ epiviz.ui.charts.Visualization.prototype._drawAxes = function(
           return yLabels[i];
         }
       : function(y) {
-          var format = d3.format("s");
-          var rounded = Math.round(y * 1000) / 1000;
-          return format(rounded);
+          // var format = d3.format("s");
+          // var rounded = Math.round(y * 1000) / 1000;
+          // return format(rounded);
+          var format = d3.formatPrefix(y);
+          var val = format.scale == "m" ? y : format.scale(y) + format.symbol
+          return val
         };
 
     var yAxis = d3.svg
