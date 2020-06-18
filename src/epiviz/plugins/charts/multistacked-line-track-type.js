@@ -137,7 +137,20 @@ epiviz.plugins.charts.MultiStackedLineTrackType.prototype.customSettingsDefs = f
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.ABS_LINE_VAL,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
-      'Draw abline')
+      'Draw abline'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Hide/Show Tracks'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_Y_AXIS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Show y-axis')
+
   ]);
 };
 
@@ -153,7 +166,9 @@ epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings = {
   LINE_THICKNESS: 'lineThickness',
   INTERPOLATION: 'interpolation',
   ABS_LINE_VAL: 'abLine',
-  SHOW_FILL: "showFill"
+  SHOW_FILL: "showFill",
+  SHOW_TRACKS: "showTracks",
+  SHOW_Y_AXIS: "showYAxis"
 };
 
 // goog.inherits(epiviz.plugins.charts.MultiStackedLineTrackType, epiviz.ui.charts.TrackType);
