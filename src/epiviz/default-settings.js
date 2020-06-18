@@ -188,7 +188,17 @@ epiviz.Config.SETTINGS = {
       showPoints: false,
       showLines: true,
       pointRadius: 1,
-      lineThickness: 2
+      lineThickness: 2,
+      interpolation: "basis-open"
+    },
+    'epiviz.plugins.charts.MultiStackedLineTrackType': {
+      step: 1,
+      showPoints: false,
+      showLines: true,
+      pointRadius: 1,
+      lineThickness: 2,
+      interpolation: "basis-open",
+      
     },
     'epiviz.plugins.charts.ScatterPlot': {
       circleRadiusRatio: 0.01
