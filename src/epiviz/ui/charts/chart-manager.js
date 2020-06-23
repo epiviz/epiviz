@@ -328,7 +328,22 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
     (function(chart) {
       chart.transformData(range, data).done(function() {
         // No need to call with arguments, since transformData will set the lastRange and lastData values
-        chart.draw();
+        var result = chart.draw();
+
+        if (result.length == 0) {
+          chart._svg
+              .select(".no-data-text")
+              .remove();
+  
+              chart._svg
+              .append("text")
+              .attr("font-weight", "bold")
+              .attr("font-style", "italic")
+              .attr("fill", "#C0C0C0")
+              .attr("transform", "translate(" + (chart.width() / 2) + "," + (chart.height() / 2) + ")")
+              .attr("class", "no-data-text")
+              .text(function(d) { return "No data in this region"; });
+        }
       });
     })(chart);
   }

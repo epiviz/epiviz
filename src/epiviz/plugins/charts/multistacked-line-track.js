@@ -373,6 +373,14 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
     epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_Y_AXIS
   ];
 
+  var autoScale = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE
+  ];
+
+  var globalMinMax;
+  if(autoScale) {
+    globalMinMax = this.getDataMinMax(data);
+  }
 
   var self = this;
 
@@ -404,7 +412,6 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
 
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
-  var sminY = 1000; smaxY = -1000;
 
   var yTicksSeries = ["0"]
 
@@ -446,6 +453,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
           return !step || step <= 1 || (i - drawBoundaries.index) % step == 0;
         });
 
+      var sminY = 1000; smaxY = -1000;
       for (var k = 0; k < indices.length; ++k) {
         var cell = series.get(indices[k]);
         items.push(
@@ -478,13 +486,19 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
       var stmaxY = self.customSettingsValues()[
         epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
       ];
-    
-      if (stminY == CustomSetting.DEFAULT) {
-        stminY = sminY;
-      }
-    
-      if (stmaxY == CustomSetting.DEFAULT) {
-        stmaxY = smaxY;
+
+      if (autoScale) {
+        if (stminY == CustomSetting.DEFAULT) {
+          stminY = Math.min(0, Math.floor(globalMinMax[0]));
+        }
+      
+        if (stmaxY == CustomSetting.DEFAULT) {
+          stmaxY = Math.ceil(globalMinMax[1]);
+        }
+
+      } else {
+          stminY = Math.min(0, Math.floor(sminY));      
+          stmaxY = Math.ceil(smaxY);
       }
 
       var yScaleSeries = d3.scale

@@ -98,20 +98,6 @@ epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
     // this.chartDrawType = "canvas";
     this._drawLegend();
 
-    if (result.length == 0) {
-        this._svg
-            .select(".no-data-text")
-            .remove();
-
-        this._svg
-            .append("text")
-            .attr("font-weight", "bold")
-            .attr("font-style", "italic")
-            .attr("fill", "#C0C0C0")
-            .attr("transform", "translate(" + (this.width() / 2) + "," + (this.height() / 2) + ")")
-            .attr("class", "no-data-text")
-            .text(function(d) { return "No data in this region"; });
-    }
     return result;
 };
 

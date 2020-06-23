@@ -149,7 +149,13 @@ epiviz.plugins.charts.MultiStackedLineTrackType.prototype.customSettingsDefs = f
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_Y_AXIS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
-      'Show y-axis')
+      'Show y-axis'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Fixed y-axis')
 
   ]);
 };
@@ -168,7 +174,8 @@ epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings = {
   ABS_LINE_VAL: 'abLine',
   SHOW_FILL: "showFill",
   SHOW_TRACKS: "showTracks",
-  SHOW_Y_AXIS: "showYAxis"
+  SHOW_Y_AXIS: "showYAxis",
+  AUTO_SCALE: "autoScale"
 };
 
 // goog.inherits(epiviz.plugins.charts.MultiStackedLineTrackType, epiviz.ui.charts.TrackType);
