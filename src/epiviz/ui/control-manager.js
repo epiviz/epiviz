@@ -170,6 +170,7 @@ epiviz.ui.ControlManager.prototype.initialize = function() {
   /*
    * Toolbar
    */
+  this._initializeGenomeSelector();
   this._initializeChromosomeSelector();
   this._initializeLocationTextbox();
   this._initializeNavigationButtons();
@@ -252,17 +253,42 @@ epiviz.ui.ControlManager.prototype.onSearch = function() { return this._search; 
  */
 epiviz.ui.ControlManager.prototype._updateSeqNames = function(seqInfos) {
   var chromosomeSelector = $('#chromosome-selector');
+  var genomeSelector = $('#genome-selector');
   var optionFormat = '<option value="%s"%s>%s</option>';
   chromosomeSelector.empty();
+  genomeSelector.empty();
+  this.genomesByChromosome = {};
+  var self = this;
   for (var i = 0; i < seqInfos.length; ++i) {
+    if (!Object.keys(this.genomesByChromosome).includes(seqInfos[i].genome)) {
+      this.genomesByChromosome[seqInfos[i].genome] = [];
+    }
+
+    this.genomesByChromosome[seqInfos[i].genome].push(seqInfos[i]);
+  }
+
+  // var current_genome = this._locationManager.currentLocation().genome();
+  Object.keys(this.genomesByChromosome).forEach(function(m) {
     var option = sprintf(
       optionFormat,
-      seqInfos[i].seqName,
-      (this._locationManager.currentLocation() && seqInfos[i].seqName == this._locationManager.currentLocation().seqName()) ?
-        'selected="selected"' : '', seqInfos[i].seqName);
+      m,
+      (self._locationManager.currentLocation() && m == self._locationManager.currentLocation().genome()) ? 'selected="selected"' : '', m);
+    genomeSelector.append(option);
+  });
+
+  var chromosomes = this._locationManager.currentLocation() ? this.genomesByChromosome[this._locationManager.currentLocation().genome()] : this.genomesByChromosome[Object.keys(this.genomesByChromosome)[0]];
+
+  chromosomes.forEach(function(chr) {
+    var option = sprintf(
+      optionFormat,
+      chr.seqName,
+      (self._locationManager.currentLocation() && chr.seqName == self._locationManager.currentLocation().seqName()) ?
+        'selected="selected"' : '', chr.seqName);
     chromosomeSelector.append(option);
-  }
+  });
+
   chromosomeSelector.selectmenu();
+  genomeSelector.selectmenu();
 };
 
 /**
@@ -288,6 +314,10 @@ epiviz.ui.ControlManager.prototype._updateSelectedLocation = function(range) {
   var chromosomeSelector = $('#chromosome-selector');
   chromosomeSelector.val(range.seqName());
   chromosomeSelector.selectmenu();
+
+  var genomeSelector = $('#genome-selector');
+  genomeSelector.val(range.genome());
+  genomeSelector.selectmenu();
 };
 
 /**
@@ -304,6 +334,41 @@ epiviz.ui.ControlManager.prototype.updateSelectedWorkspace = function(workspaceI
     self._activeWorkspaceInfo = oldValue;
   }};
   this._activeWorkspaceChanged.notify(args);
+};
+
+epiviz.ui.ControlManager.prototype._initializeGenomeSelector = function() {
+  var optionFormat = '<option value="%s"%s>%s</option>';
+  var genomeSelector = $('#genome-selector');
+  genomeSelector.selectmenu({
+    style:'popup',
+    width:'90',
+    maxHeight:'100',
+    menuWidth:'90'
+  });
+
+  var self = this;
+  genomeSelector.change(function () {
+    var currentLocation = self._locationManager.lastUnfilledLocationChangeRequest() || self._locationManager.currentLocation();
+    var genome = $(this).val();
+
+
+    var chromosomes = self.genomesByChromosome[genome];
+    var chromosomeSelector = $('#chromosome-selector');
+    chromosomeSelector.empty();
+    chromosomes.forEach(function(chr) {
+      var option = sprintf(
+        optionFormat,
+        chr.seqName,
+        (currentLocation && chr.seqName == currentLocation.seqName()) ? 'selected="selected"' : '', chr.seqName);
+      chromosomeSelector.append(option);
+    });
+
+    self._updateSelectedLocation(new epiviz.datatypes.GenomicRange(
+      currentLocation.seqName(),
+      currentLocation.start(),
+      currentLocation.width(),
+      genome));
+  });
 };
 
 epiviz.ui.ControlManager.prototype._initializeChromosomeSelector = function() {

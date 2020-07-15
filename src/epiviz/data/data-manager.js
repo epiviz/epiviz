@@ -812,12 +812,12 @@ epiviz.data.DataManager.prototype.deleteWorkspace = function(workspace) {
  * @param {function(Array)} callback
  * @param {string} query
  */
-epiviz.data.DataManager.prototype.search = function(callback, query) {
+epiviz.data.DataManager.prototype.search = function(callback, query, range) {
   var self = this;
   var remainingResponses = this._dataProviderFactory.size();
   var results = [];
   this._dataProviderFactory.foreach(function(provider) {
-    provider.getData(epiviz.data.Request.search(query, self._config.maxSearchResults),
+    provider.getData(epiviz.data.Request.search(query, self._config.maxSearchResults, range),
       /**
        * @param {epiviz.data.Response.<Array.<{probe: string, gene: string, seqName: string, start: number, end: number}>>} response
        */

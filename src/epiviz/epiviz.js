@@ -491,14 +491,17 @@ epiviz.EpiViz.prototype._registerUiActiveWorkspaceChanged = function() {
  */
 epiviz.EpiViz.prototype._registerUiSearch = function() {
   var self = this;
+
   this._controlManager.onSearch().addListener(new epiviz.events.EventListener(
     /**
      * @param {{searchTerm: string, callback: (function(Array.<{probe: string, gene: string, seqName: string, start: number, end: number}>))}} e
      */
     function(e) {
+      var range = self._workspaceManager.activeWorkspace().range();
+
       self._dataManager.search(function(results) {
         e.callback(results);
-      }, e.searchTerm);
+      }, e.searchTerm, range);
     }));
 };
 
