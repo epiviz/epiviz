@@ -187,7 +187,9 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype.drawCanvas = function (
     zoom,
     xScale,
     yScale,
-    canvas
+    canvas,
+    minY,
+    maxY
   );
 };
 
@@ -850,7 +852,9 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
   zoom,
   xScale,
   yScale,
-  canvas
+  canvas,
+  minY,
+  maxY
 ) {
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
@@ -870,6 +874,11 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
   /** @type {boolean} */
   var showLines = this.customSettingsValues()[
     epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_LINES
+  ];
+
+  /** @type {boolean} */
+  var showFill = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_FILL
   ];
 
   /** @type {boolean} */
@@ -895,6 +904,19 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
     epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.ABS_LINE_VAL
   ];
 
+  var showYAxis = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_Y_AXIS
+  ];
+
+  var autoScale = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE
+  ];
+
+  var globalMinMax;
+  if(autoScale) {
+    globalMinMax = this.getDataMinMax(data);
+  }
+
   var self = this;
 
   var invXScale = d3.scale
@@ -909,6 +931,18 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
     range.genome()
   );
 
+  var showTracks = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS
+  ];
+
+  var seriesLineHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / data.measurements().length;
+  
+  if (showTracks != "default")  {
+    var tracks = showTracks.split(",");
+    seriesLineHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / tracks.length;
+  }
+  var trackCount = 0;
+
   // var graph = this._svg.select(".lines");
 
   var ctx = canvas.getContext("2d");
@@ -918,9 +952,21 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
   var items = [];
 
   data.foreach(function (m, series, i) {
-    var color = self._measurementColorLabels
+
+    var skip = false;
+
+    if (showTracks != "default") {
+      var tracks = showTracks.split(",");
+      if (!tracks.includes(m.id())) {
+        skip = true;
+      }
+    }
+
+    if(!skip) {
+
+      var color = self._measurementColorLabels
       ? colors.getByKey(self._measurementColorLabels.get(m))
-      : colors.get(i);
+      : colors.get(trackCount);
 
     /** @type {{index: ?number, length: number}} */
     var drawBoundaries = series.binarySearchStarts(extendedRange);
@@ -944,22 +990,59 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
         return !step || step <= 1 || (i - drawBoundaries.index) % step == 0;
       });
 
+    var sminY = 1000; smaxY = -1000;
     for (var k = 0; k < indices.length; ++k) {
       var cell = series.get(indices[k]);
       items.push(
         new epiviz.ui.charts.ChartObject(
-          sprintf("line_%s_%s", i, cell.globalIndex),
+          sprintf("line_%s_%s", trackCount, cell.globalIndex),
           cell.rowItem.start(),
           cell.rowItem.end(),
           [cell.value],
-          i,
+          trackCount,
           [[cell]],
           [m],
-          sprintf("item data-series-%s", i),
+          sprintf("item data-series-%s", trackCount),
           cell.rowItem.seqName()
         )
       );
+
+      if (cell.value < sminY) {
+        sminY = cell.value;
+      }
+
+      if (cell.value > smaxY) {
+        smaxY = cell.value;
+      }
     }
+
+    var CustomSetting = epiviz.ui.charts.CustomSetting;
+    var stminY = self.customSettingsValues()[
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN
+    ];
+    var stmaxY = self.customSettingsValues()[
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
+    ];
+
+    if (autoScale) {
+      if (stminY == CustomSetting.DEFAULT) {
+        stminY = Math.min(0, Math.floor(globalMinMax[0]));
+      }
+    
+      if (stmaxY == CustomSetting.DEFAULT) {
+        stmaxY = Math.ceil(globalMinMax[1]);
+      }
+
+    } else {
+        stminY = Math.min(0, Math.floor(sminY));      
+        stmaxY = Math.ceil(smaxY);
+    }
+
+    var yScaleSeries = d3.scale
+      .linear()
+      .domain([stminY, stmaxY])
+      .range([(trackCount+1) * seriesLineHeight, (trackCount) * seriesLineHeight]);
+
 
     var x = function (j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
@@ -970,22 +1053,76 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
     var y = function (j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      return yScale(cell.value);
+      return yScaleSeries(cell.value);
     };
 
     var errMinus = function (j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       var v = cell.valueAnnotation ? cell.valueAnnotation["errMinus"] : null;
-      return v != undefined ? yScale(v) : null;
+      return v != undefined ? yScaleSeries(v) : null;
     };
 
     var errPlus = function (j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       var v = cell.valueAnnotation ? cell.valueAnnotation["errPlus"] : null;
-      return v != undefined ? yScale(v) : null;
+      return v != undefined ? yScaleSeries(v) : null;
     };
+
+    var color;
+    if (!self._measurementColorLabels) {
+      color = self.colors().get(trackCount);
+    } else {
+      color = self.colors().getByKey(self._measurementColorLabels.get(m));
+    }
+
+    if (showYAxis) {
+      // draw axes
+
+      ctx.beginPath();
+      ctx.strokeStyle = "black";
+      ctx.fillStyle = "black";
+      ctx.globalAlpha = 0.6;
+      ctx.moveTo(xScale(self.margins().left() + range.start()), yScaleSeries(stminY));
+      ctx.lineTo(xScale(self.margins().left() + range.start()), yScaleSeries(stmaxY * 0.8));
+      ctx.strokeStyle = color;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.strokeStyle = "black";
+      ctx.fillStyle = "black";
+      ctx.textAlign = "start";
+      ctx.globalAlpha = 0.6;
+      ctx.fillText(
+        d3.format(".2g")(stmaxY),
+        xScale(range.start()) - 17,
+        yScaleSeries(stmaxY * 0.8)
+      );
+
+      ctx.beginPath();
+      ctx.strokeStyle = "black";
+      ctx.fillStyle = "black";
+      ctx.textAlign = "start";
+      ctx.globalAlpha = 0.6;
+      ctx.fillText(
+        d3.format(".2g")(stminY),
+        xScale(range.start()) - 17,
+        yScaleSeries(stminY)
+      );
+
+    } else {
+
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.textAlign = "start";
+      ctx.fillText(
+        "max: " + d3.format(".2g")(stmaxY),
+        self.margins().left(),
+        (trackCount * seriesLineHeight) + 20
+      );
+    }
 
     if (showLines) {
       var line = d3.svg
@@ -1004,6 +1141,27 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
       ctx.lineWidth = lineThickness;
       ctx.stroke(path);
       // ctx.fill(path);
+      ctx.beginPath();
+    }
+
+    if (showFill) {
+      var area = d3.svg.area()
+      .x1(x)
+      .y1(y)
+      .x0(x)
+      .y0(yScaleSeries(0))
+      .interpolate(interpolation); 
+
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      // ctx.save();
+      // draw items on  canvas
+      // TODO: use renderingQueues for optimizing large draws
+      var path = new Path2D(area(indices));
+      ctx.stroke(path);
+      ctx.fill(path);
       ctx.beginPath();
     }
 
@@ -1050,6 +1208,10 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
         });
       }
     }
+
+    trackCount++
+
+    }
   });
 
   // show baseline
@@ -1084,21 +1246,41 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
   var title = "";
   var measurements = this._lastData.measurements();
 
-  if (this.chartDrawType == "canvas") {
+  if (self._id.indexOf("stacked") != -1 && this.chartDrawType == "canvas") {
+
+    var seriesLineHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / self.measurements().size();
+    var allMeasurements = measurements;
+    var showTracks = this.customSettingsValues()[
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS
+    ];
+
+    if (showTracks != "default")  {
+      var tracks = showTracks.split(",");
+      seriesLineHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / tracks.length;
+
+      measurements.forEach(function(m) {
+        if(tracks.includes(m.id())) {
+          allMeasurements.push(m);
+        }
+      });
+    }
+
+
     var ctx = self.canvas.getContext("2d");
-    var textIndent = 0;
-    measurements.forEach(function(m, i) {
+    allMeasurements.forEach(function(m, i) {
       var color;
+
       if (!self._measurementColorLabels) {
         color = self.colors().get(i);
       } else {
         color = self.colors().getByKey(self._measurementColorLabels.get(m));
       }
+
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
       ctx.beginPath();
 
-      ctx.arc(self.margins().left() + textIndent - 2, -9, 4, 0, 2 * Math.PI);
+      ctx.arc(2, (i * seriesLineHeight) + 14, 3, 0, 2 * Math.PI);
       ctx.stroke();
       ctx.fill();
       ctx.font = "9px";
@@ -1109,13 +1291,10 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
 
       ctx.fillText(
         m.name(),
-        self.margins().left() + textIndent + circleIndent,
-        -14
+        8,
+        (i * seriesLineHeight) + 10
       );
 
-      var textWidth = ctx.measureText(m.name()).width;
-
-      textIndent = textIndent + circleIndent + textWidth + 10;
     });
 
     return;
