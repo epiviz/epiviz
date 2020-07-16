@@ -214,6 +214,15 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
         self._chartManager.updateCharts(range, data, [chartId]);
       });
   }
+  if (type.typeName() == 'epiviz.plugins.charts.TSNEPlot'){
+    var range = this._workspaceManager.activeWorkspace().range();
+    var chartMeasurementsMap = {};
+    chartMeasurementsMap[chartId] = visConfigSelection.measurements;
+    this._dataManager.getTSNE(range, chartMeasurementsMap,
+      function(chartId, data) {
+        self._chartManager.updateCharts(range, data, [chartId]);
+      });
+  }
   else if (type.typeName() == 'epiviz.plugins.charts.PCoAScatterPlot'){
     var range = this._workspaceManager.activeWorkspace().range();
     var chartMeasurementsMap = {};

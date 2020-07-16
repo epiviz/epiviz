@@ -47,6 +47,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.StackedLinePlotType',
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.PCAScatterPlotType',
+    'epiviz.plugins.charts.TSNEPlotType',
     'epiviz.plugins.charts.PCoAScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
     'epiviz.plugins.charts.FeatureScatterPlotType',

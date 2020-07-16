@@ -38,13 +38,13 @@ epiviz.Config.SETTINGS = {
 
   maxSearchResults: 12,
 
-  chartTypes: [
-    'epiviz.plugins.charts.ScatterPlotType',
-    'epiviz.plugins.charts.HeatmapPlotType',
-    'epiviz.plugins.charts.LinePlotType',
-    'epiviz.plugins.charts.StackedLinePlotType',
-    'epiviz.ui.charts.tree.IcicleType'
-  ],
+  // chartTypes: [
+  //   'epiviz.plugins.charts.ScatterPlotType',
+  //   'epiviz.plugins.charts.HeatmapPlotType',
+  //   'epiviz.plugins.charts.LinePlotType',
+  //   'epiviz.plugins.charts.StackedLinePlotType',
+  //   'epiviz.ui.charts.tree.IcicleType'
+  // ],
 
   // Chart default settings
 
@@ -55,6 +55,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.StackedLinePlotType',
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.PCAScatterPlotType',
+    'epiviz.plugins.charts.TSNEPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType'
   ],
 
