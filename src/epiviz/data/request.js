@@ -399,6 +399,22 @@ epiviz.data.Request.getPCA = function(measurementsByDatasource, range) {
  * @param {epiviz.datatypes.GenomicRange} range
  * @returns {epiviz.data.Request}
  */
+epiviz.data.Request.getTSNE = function(datasource, range) {
+
+  return epiviz.data.Request.createRequest({
+    version: epiviz.EpiViz.VERSION,
+    action: epiviz.data.Request.Action.GET_PCA,
+    measurements: datasource,
+    start: range.start(),
+    end: range.end()
+  });
+};
+
+/**
+ * @param {Object.<string, epiviz.measurements.MeasurementSet>} measurementsByDatasource
+ * @param {epiviz.datatypes.GenomicRange} range
+ * @returns {epiviz.data.Request}
+ */
 epiviz.data.Request.getPCoA = function(measurementsByDatasource, range) {
   var rawMsByDs = {};
   for (var ds in measurementsByDatasource) {

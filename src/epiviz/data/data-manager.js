@@ -608,7 +608,7 @@ epiviz.data.DataManager.prototype.getTSNE = function(range, chartMeasurementsMap
   var allData = {};
   epiviz.utils.forEach(msByDp, function(dpMs, dataprovider) {
     var msByDs = {};
-    var request = epiviz.data.Request.getPCA(msByDs, range);
+    var request = epiviz.data.Request.getTSNE(dataprovider, range);
     var msName = Object.keys(msByDs)[0];
 
     var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
