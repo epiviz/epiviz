@@ -272,6 +272,11 @@ epiviz.plugins.charts.TSNEPlot.prototype._drawCircles = function(data, dimx, dim
                 if(self._globalIndexColorLabels != null && self._globalIndexColorLabels.indexOf(d.valueItems[0][0][colorbylabel]) == -1){
                     self._globalIndexColorLabels.push(d.valueItems[0][0][colorbylabel]);
                 }
+
+                if (d.valueItems[0][0][colorbylabel] == "removed") {
+                    fill = "gray";
+                }
+                
                 circle
                     .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
                     .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))

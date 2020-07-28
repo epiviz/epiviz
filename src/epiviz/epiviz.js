@@ -1183,6 +1183,15 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
 
             delete chartMeasurementsMap[mea];
           }
+          if (mea.indexOf('tsne') != -1) {
+
+            self._dataManager.getTSNE(e.newValue, cMap,
+              function(chartId, data) {
+                self._chartManager.updateCharts(e.newValue, data, [chartId]);
+            });
+
+            delete chartMeasurementsMap[mea];
+          }
           else if (mea.indexOf('pcoa_scatter') != -1) {
 
             self._dataManager.getPCoA(e.newValue, cMap,
