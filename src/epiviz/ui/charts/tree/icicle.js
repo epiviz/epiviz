@@ -364,7 +364,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   var newLabels = newItems.append('text')
     .attr('class', 'unselectable-text node-label')
-    .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
+    // .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
     .style("visibility", function(d) {
       var w = calcNewWidth(d);
       var maxChars = w / self._charWidth;
@@ -399,7 +399,7 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
 
   var newIcons = newItems.append('svg:foreignObject')
     .attr('class', function(d) { return 'icon-container ' + self.id() + '-icon-' + d.id;} )
-    .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
+    // .attr('clip-path', function(d) { return 'url(#' + self.id() + '-clip-' + d.id + ')'; })
     .attr('width', this._iconSize)
     .attr('height', this._iconSize)
     .attr('x', function(d) { return calcOldX(d) + self._nodeMargin; })
