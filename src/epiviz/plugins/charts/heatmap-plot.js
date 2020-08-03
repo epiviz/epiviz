@@ -597,10 +597,10 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
   });
 
   if (this._min == CustomSetting.DEFAULT) {
-    this._min = data.measurements()[0].minValue();
+    this._min = dataMin;
   }
   if (this._max == CustomSetting.DEFAULT) {
-    this._max = data.measurements()[0].maxValue();
+    this._max = dataMax;
   }
   if (this._globalIndexColorLabels) {
     colorLabelsMap = {};
