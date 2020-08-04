@@ -92,6 +92,12 @@ epiviz.plugins.charts.HeatmapPlotType.prototype.customSettingsDefs = function() 
       'Row labels'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.HeatmapPlotType.CustomSettings.HIDE_ROW_LABELS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Hide Row labels ?'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_COLORS_FOR_ROW_LABELS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       false,
@@ -193,7 +199,8 @@ epiviz.plugins.charts.HeatmapPlotType.CustomSettings = {
   //SHOW_DENDROGRAM_LABELS: 'showDendrogramLabels',
   SHOW_DENDROGRAM: 'showDendrogram',
   SHOW_COLORS_FOR_ROW_LABELS: 'showColorsForRowLabels',
-  LOG_TRANSFORM: 'logTransform'
+  LOG_TRANSFORM: 'logTransform',
+  HIDE_ROW_LABELS: 'hideRowLabels'
 };
 
 // goog.inherits(epiviz.plugins.charts.HeatmapPlotType, epiviz.ui.charts.PlotType);

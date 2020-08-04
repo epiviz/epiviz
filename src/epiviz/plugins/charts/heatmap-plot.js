@@ -1452,216 +1452,221 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(
     epiviz.plugins.charts.HeatmapPlotType.CustomSettings
       .SHOW_COLORS_FOR_ROW_LABELS
   ];
+  var hideRowLabels = this.customSettingsValues()[
+    epiviz.plugins.charts.HeatmapPlotType.CustomSettings.HIDE_ROW_LABELS
+  ];
 
-  if (!rowLabelsAsColors) {
-    itemsGroup.selectAll(".row-color-label").remove();
-    var rowSelection = itemsGroup
-      .selectAll(".row-text")
-      .data(rows, function(m) {
-        return m.id();
+  if (!hideRowLabels) {
+    if (!rowLabelsAsColors) {
+      itemsGroup.selectAll(".row-color-label").remove();
+      var rowSelection = itemsGroup
+        .selectAll(".row-text")
+        .data(rows, function(m) {
+          return m.id();
+        });
+  
+      rowSelection
+        .enter()
+        .append("text")
+        .attr("class", "row-text")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("transform", function(d, i) {
+          return "translate(" + -5 + "," + mapRow(i, true) + ")rotate(30)";
+        });
+  
+      rowSelection.text(function(m) {
+        if (rowLabel == "name") {
+          return m.name();
+        }
+        var anno = m.annotation();
+        if (!anno || !(rowLabel in anno)) {
+          return "<NA>";
+        }
+        return anno[rowLabel];
       });
-
-    rowSelection
+  
+      rowSelection
+        .transition()
+        .duration(500)
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("transform", function(d, i) {
+          return "translate(" + -5 + "," + mapRow(i, true) + ")rotate(30)";
+        });
+  
+      rowSelection.exit().remove();
+    }
+  
+    var rowLabelCat;
+    if (rowLabelsAsColors) {
+      itemsGroup.selectAll(".row-text").remove();
+      var rowLabelMap = {};
+      rows.forEach(function(m) {
+        var label = measurementLabel(m);
+        rowLabelMap[label] = label;
+      });
+      rowLabelCat = Object.keys(rowLabelMap);
+  
+      var rowColorLabels = itemsGroup
+        .selectAll(".row-color-label")
+        .data(rows, function(m) {
+          return m.id();
+        });
+  
+      rowColorLabels
+        .enter()
+        .append("rect")
+        .attr("class", "row-color-label")
+        .attr("x", width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
+        .attr("y", -cellHeight * 0.5)
+        .attr("width", 20) // TODO: Use a custom variable
+        .attr("height", cellHeight)
+        .attr("transform", function(d, i) {
+          return "translate(" + 0 + "," + mapRow(i, true) + ")";
+        });
+  
+      rowColorLabels.style("fill", function(m) {
+        var label = measurementLabel(m);
+        return self.colors().getByKey(label);
+      });
+  
+      rowColorLabels
+        .transition()
+        .duration(500)
+        .attr("x", width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
+        .attr("y", -cellHeight * 0.5)
+        .attr("height", cellHeight)
+        .attr("transform", function(d, i) {
+          return "translate(" + 0 + "," + mapRow(i, true) + ")";
+        });
+  
+      rowColorLabels.exit().remove();
+    }
+  
+    // Legend
+    this._svg.selectAll(".chart-title").remove();
+    this._svg.selectAll(".chart-title-color ").remove();
+    var titleEntries = this._svg
+      .selectAll(".chart-title")
+      .data(["Min"].concat(this._colorLabels));
+    titleEntries
       .enter()
       .append("text")
-      .attr("class", "row-text")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("transform", function(d, i) {
-        return "translate(" + -5 + "," + mapRow(i, true) + ")rotate(30)";
-      });
-
-    rowSelection.text(function(m) {
-      if (rowLabel == "name") {
-        return m.name();
-      }
-      var anno = m.annotation();
-      if (!anno || !(rowLabel in anno)) {
-        return "<NA>";
-      }
-      return anno[rowLabel];
-    });
-
-    rowSelection
-      .transition()
-      .duration(500)
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("transform", function(d, i) {
-        return "translate(" + -5 + "," + mapRow(i, true) + ")rotate(30)";
-      });
-
-    rowSelection.exit().remove();
-  }
-
-  var rowLabelCat;
-  if (rowLabelsAsColors) {
-    itemsGroup.selectAll(".row-text").remove();
-    var rowLabelMap = {};
-    rows.forEach(function(m) {
-      var label = measurementLabel(m);
-      rowLabelMap[label] = label;
-    });
-    rowLabelCat = Object.keys(rowLabelMap);
-
-    var rowColorLabels = itemsGroup
-      .selectAll(".row-color-label")
-      .data(rows, function(m) {
-        return m.id();
-      });
-
-    rowColorLabels
-      .enter()
-      .append("rect")
-      .attr("class", "row-color-label")
-      .attr("x", width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
-      .attr("y", -cellHeight * 0.5)
-      .attr("width", 20) // TODO: Use a custom variable
-      .attr("height", cellHeight)
-      .attr("transform", function(d, i) {
-        return "translate(" + 0 + "," + mapRow(i, true) + ")";
-      });
-
-    rowColorLabels.style("fill", function(m) {
-      var label = measurementLabel(m);
-      return self.colors().getByKey(label);
-    });
-
-    rowColorLabels
-      .transition()
-      .duration(500)
-      .attr("x", width - self.margins().sumAxis(epiviz.ui.charts.Axis.X))
-      .attr("y", -cellHeight * 0.5)
-      .attr("height", cellHeight)
-      .attr("transform", function(d, i) {
-        return "translate(" + 0 + "," + mapRow(i, true) + ")";
-      });
-
-    rowColorLabels.exit().remove();
-  }
-
-  // Legend
-  this._svg.selectAll(".chart-title").remove();
-  this._svg.selectAll(".chart-title-color ").remove();
-  var titleEntries = this._svg
-    .selectAll(".chart-title")
-    .data(["Min"].concat(this._colorLabels));
-  titleEntries
-    .enter()
-    .append("text")
-    .attr("class", "chart-title")
-    .attr("font-weight", "bold")
-    .attr("y", self.margins().top() - 5 - maxColSize);
-  titleEntries
-    .attr("fill", function(label, i) {
-      if (i == 0) {
-        return "#000000";
-      }
-      return self.colors().getByKey(label);
-    })
-    .text(function(label) {
-      return label;
-    });
-  var textLength = 0;
-  var titleEntriesStartPosition = [];
-
-  this._container.find(" .chart-title").each(function(i) {
-    titleEntriesStartPosition.push(textLength);
-    textLength += this.getBBox().width + 15;
-  });
-
-  titleEntries.attr("x", function(column, i) {
-    return self.margins().left() + 10 + titleEntriesStartPosition[i];
-  });
-
-  var colorEntries = this._svg
-    .selectAll(".chart-title-color")
-    .data(["Min"].concat(this._colorLabels))
-    .enter()
-    .append("circle")
-    .attr("class", "chart-title-color")
-    .attr("cx", function(column, i) {
-      return self.margins().left() + 4 + titleEntriesStartPosition[i];
-    })
-    .attr("cy", self.margins().top() - 9 - maxColSize)
-    .attr("r", 4)
-    .style("shape-rendering", "auto")
-    .style("stroke-width", "0")
-    .attr("fill", function(label, i) {
-      if (i == 0) {
-        return "#ffffff";
-      }
-      return self.colors().getByKey(label);
-    })
-    .style("stroke-width", function(label, i) {
-      return i ? 0 : 1;
-    })
-    .style("stroke", "#000000");
-
-  // Row labels legend
-
-  this._svg.selectAll(".row-legend").remove();
-  this._svg.selectAll(".row-legend-color").remove();
-  if (rowLabelsAsColors) {
-    // TODO: Make this optional
-    //rowLabelCat.sort();
-    var textEntries = this._svg.selectAll(".row-legend").data(rowLabelCat);
-    textEntries
-      .enter()
-      .append("text")
-      .attr("class", "row-legend")
+      .attr("class", "chart-title")
       .attr("font-weight", "bold")
-      .attr("x", -20);
-    textEntries
-      .attr("fill", function(label) {
+      .attr("y", self.margins().top() - 5 - maxColSize);
+    titleEntries
+      .attr("fill", function(label, i) {
+        if (i == 0) {
+          return "#000000";
+        }
         return self.colors().getByKey(label);
       })
       .text(function(label) {
         return label;
-      })
-      .attr("transform", function(d, i) {
-        return (
-          "translate(" +
-          self.margins().left() +
-          "," +
-          self.margins().top() +
-          ")"
-        );
       });
-
-    textEntries.attr("y", function(label, i) {
-      return 10 + i * 15;
+    var textLength = 0;
+    var titleEntriesStartPosition = [];
+  
+    this._container.find(" .chart-title").each(function(i) {
+      titleEntriesStartPosition.push(textLength);
+      textLength += this.getBBox().width + 15;
     });
-
-    this._svg
-      .selectAll(".row-legend-color")
-      .data(rowLabelCat)
+  
+    titleEntries.attr("x", function(column, i) {
+      return self.margins().left() + 10 + titleEntriesStartPosition[i];
+    });
+  
+    var colorEntries = this._svg
+      .selectAll(".chart-title-color")
+      .data(["Min"].concat(this._colorLabels))
       .enter()
-      .append("rect")
+      .append("circle")
       .attr("class", "chart-title-color")
-      .attr("x", -18)
-      .attr("y", function(label, i) {
-        return 2 + i * 15;
+      .attr("cx", function(column, i) {
+        return self.margins().left() + 4 + titleEntriesStartPosition[i];
       })
-      .attr("width", 10)
-      .attr("height", 10)
+      .attr("cy", self.margins().top() - 9 - maxColSize)
+      .attr("r", 4)
       .style("shape-rendering", "auto")
       .style("stroke-width", "0")
-      .attr("fill", function(label) {
+      .attr("fill", function(label, i) {
+        if (i == 0) {
+          return "#ffffff";
+        }
         return self.colors().getByKey(label);
       })
-      .style("stroke-width", 0)
-      .attr("transform", function(d, i) {
-        return (
-          "translate(" +
-          self.margins().left() +
-          "," +
-          self.margins().top() +
-          ")"
-        );
+      .style("stroke-width", function(label, i) {
+        return i ? 0 : 1;
+      })
+      .style("stroke", "#000000");
+  
+    // Row labels legend
+  
+    this._svg.selectAll(".row-legend").remove();
+    this._svg.selectAll(".row-legend-color").remove();
+    if (rowLabelsAsColors) {
+      // TODO: Make this optional
+      //rowLabelCat.sort();
+      var textEntries = this._svg.selectAll(".row-legend").data(rowLabelCat);
+      textEntries
+        .enter()
+        .append("text")
+        .attr("class", "row-legend")
+        .attr("font-weight", "bold")
+        .attr("x", -20);
+      textEntries
+        .attr("fill", function(label) {
+          return self.colors().getByKey(label);
+        })
+        .text(function(label) {
+          return label;
+        })
+        .attr("transform", function(d, i) {
+          return (
+            "translate(" +
+            self.margins().left() +
+            "," +
+            self.margins().top() +
+            ")"
+          );
+        });
+  
+      textEntries.attr("y", function(label, i) {
+        return 10 + i * 15;
       });
-
-    this._colorLabels = this._colorLabels.concat(rowLabelCat);
+  
+      this._svg
+        .selectAll(".row-legend-color")
+        .data(rowLabelCat)
+        .enter()
+        .append("rect")
+        .attr("class", "chart-title-color")
+        .attr("x", -18)
+        .attr("y", function(label, i) {
+          return 2 + i * 15;
+        })
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("shape-rendering", "auto")
+        .style("stroke-width", "0")
+        .attr("fill", function(label) {
+          return self.colors().getByKey(label);
+        })
+        .style("stroke-width", 0)
+        .attr("transform", function(d, i) {
+          return (
+            "translate(" +
+            self.margins().left() +
+            "," +
+            self.margins().top() +
+            ")"
+          );
+        });
+  
+      this._colorLabels = this._colorLabels.concat(rowLabelCat);
+    }
   }
 };
 
