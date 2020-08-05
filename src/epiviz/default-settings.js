@@ -11,7 +11,7 @@ epiviz.Config.SETTINGS = {
 
   configType: 'default',
 
-  appTitle: location.hostname == "metaviz.cbcb.umd.edu" ? 'UMD Metagenome Browser' : 'Metaviz',
+  appTitle: 'Treeviz',
 
   // Navigation settings
 

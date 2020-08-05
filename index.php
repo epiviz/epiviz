@@ -181,8 +181,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="description" content="Metaviz is a scientific information visualization tool for metagenomic data, used to aid in the exploration of the hierarchical taxonomy and abundance matrix.">
-    <title>Metaviz</title>
+    <meta name="description" content="Treeviz is a scientific information visualization tool for visual exploration and analysis of single cell RNAseq datasets with hierarchical cell clusters.">
+    <title>Treeviz</title>
 
     <base href="<?php echo getenv('base_location');?>">
 
@@ -606,7 +606,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
 
       <div id="toolbar" class="toolbar-header">
         <div style="float: left; margin-top: 7px; margin-left: 7px; margin-right: 7px">
-          <img src="img/metaviz_noversion_logo_medium.png" alt="Epiviz" width="100" height="21" />
+          <img src="img/treeviz_noversion_logo_medium.png" alt="Treeviz" width="100" height="21" />
         </div>
         <div style="float: right; font-size: small; margin-top: 7px; margin-left: 7px; margin-right: 7px">
           <?php

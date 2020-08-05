@@ -1331,7 +1331,7 @@ epiviz.ui.ControlManager.prototype.startApp = function() {
             '<div class="ui grid">'+
               '<div class="row">'+
                 '<div class="four wide column">'+
-                  '<img src="img/metaviz_4_logo_medium.png" alt="Epiviz" width="100" height="21" />'+
+                  '<img src="img/treeviz_noversion_logo_medium.png" alt="Epiviz" width="100" height="21" />'+
                 '</div>'+
                 '<div class="one wide column">'+
                 '</div>'+
