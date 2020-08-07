@@ -98,7 +98,8 @@ epiviz.datatypes.GenomicRange.prototype.isEmpty = function() { return this._widt
  */
 epiviz.datatypes.GenomicRange.prototype.subtract = function(other) {
 
-  if (!other || other.genome() != this._genome || other.seqName() != this._seqname || other.isEmpty()
+  // || other.genome() != this._genome
+  if (!other || other.seqName() != this._seqname || other.isEmpty()
       || other.start() >= this.end() || this._start >= other.end()) {
     return [this];
   }

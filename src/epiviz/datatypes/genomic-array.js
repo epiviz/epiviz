@@ -123,6 +123,11 @@ epiviz.datatypes.GenomicArray.prototype.merge = function(arr) {
   var secondIndex = (first.globalStartIndex() != undefined && second.globalStartIndex() != undefined) ?
     first.globalStartIndex() + first.size() - second.globalStartIndex() : 0;
 
+
+  if (secondIndex < 0) {
+    secondIndex = 0;
+  }
+
   var
     measurement = first.measurement(),
     globalStartIndex = (first.globalStartIndex() != undefined) ? first.globalStartIndex() : second.globalStartIndex(),
