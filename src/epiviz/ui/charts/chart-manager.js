@@ -330,11 +330,11 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
         // No need to call with arguments, since transformData will set the lastRange and lastData values
         var result = chart.draw();
 
+        chart._svg
+        .select(".no-data-text")
+        .remove();
+
         if (result.length == 0) {
-          chart._svg
-              .select(".no-data-text")
-              .remove();
-  
               chart._svg
               .append("text")
               .attr("font-weight", "bold")
