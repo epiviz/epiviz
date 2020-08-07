@@ -704,11 +704,31 @@ epiviz.ui.charts.Visualization.prototype._drawAxes = function(
 };
 
 epiviz.ui.charts.Visualization.prototype.getDataMinMax = function(data) {
+  var self = this;
   var dataMin = 100000, dataMax = -100000;
   data.foreach(function(m, series) {
-    var featureValues = series._container.values(m);
-    var valData = featureValues._values;
-    var fMin = Math.min.apply(null, valData), fMax = Math.max.apply(null, valData);
+    var fMin = dataMin, fMax = dataMax;
+    var drawBoundaries = series.binarySearchStarts(self._lastRange);
+      if (drawBoundaries.length > 0) {
+        var indices = epiviz.utils
+        .range(drawBoundaries.length, drawBoundaries.index);
+
+        for (var k = 0; k < indices.length; ++k) {
+          var cell = series.get(indices[k]);
+
+          if (cell.value < fMin) {
+            fMin = cell.value;
+          }
+
+          if (cell.value > fMax) {
+            fMax = cell.value;
+          }
+        }
+      }
+
+    // var featureValues = series._container.values(m);
+    // var valData = featureValues._values;
+    // var fMin = Math.min.apply(null, valData), fMax = Math.max.apply(null, valData);
   
     if (fMin < dataMin) { dataMin = fMin;} 
     if (fMax > dataMax) { dataMax = fMax;}
