@@ -687,7 +687,7 @@ epiviz.EpiViz.prototype._registerChartPropagateHierarchySelection = function() {
     var map = {};
     map[e.id] = e.args;
     self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
-      self._chartManager.updateCharts(undefined, data, [chartId]);
+      // self._chartManager.updateCharts(undefined, data, [chartId]);
     })
   }));
 };
@@ -737,7 +737,7 @@ epiviz.EpiViz.prototype._registerDataFailed = function() {
     // iciclePlot.firePropagateHierarchyChanges();
 
     self._dataManager.propagateHierarchyChanges(map, function(chartId, data) {
-      self._chartManager.updateCharts(undefined, data, [chartId]);
+      // self._chartManager.updateCharts(undefined, data, [chartId]);
     });
 
     

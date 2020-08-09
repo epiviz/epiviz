@@ -473,9 +473,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         if(rdis != "disabled") {
           var node = self._getNewNode(d);
           node.selectionType = nodeSelectionType;
-          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED']);
           self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
           self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['REMOVED']);
         }
 
         d3.selectAll(".nodeselection-itemcontainer").remove();
@@ -521,9 +521,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         if(adis != "disabled") {
           var node = self._getNewNode(d);
           node.selectionType = nodeSelectionType;
-          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']);
           self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
           self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['AGGREGATED']);
         }
 
         d3.selectAll(".nodeselection-itemcontainer").remove();
@@ -569,9 +569,9 @@ epiviz.ui.charts.tree.Icicle.prototype.draw = function(range, root) {
         if(edis != "disabled") {
           var node = self._getNewNode(d);
           node.selectionType = nodeSelectionType;
-          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']);
           self._customSettingsValues["nodeSel"] = JSON.stringify(self._selectedNodes);
           self._customSettingsChanged.notify(new epiviz.ui.charts.VisEventArgs(self._id, self._customSettingsValues));
+          d.selectionType = node.selectionType = self.selectNode(node, epiviz.ui.charts.tree.HierarchyVisualization.ENUM_SELECTIONS['EXPANDED']);
         }
 
         d3.selectAll(".nodeselection-itemcontainer").remove();

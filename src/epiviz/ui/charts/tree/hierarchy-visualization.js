@@ -204,7 +204,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
 
     if(root) {
 
-      self._selectedNodes = {};
+      // self._selectedNodes = {};
       self._oldUiDataMap = null;
       self._uiDataMap = {};
 
@@ -217,10 +217,10 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.draw = function(range, ro
       }
 
       self._selectedLevels = {};
-      self._selectedLevels[this._lastData.selectionLevel] = 2;
+      self._selectedLevels[self._lastData.selectionLevel] = 2;
     }
 
-      this._lastData = root;
+      self._lastData = root;
   }
 
   if (root) {
@@ -527,7 +527,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
       });
   }
 
-  function setChildrenDisplay(nes, childrenPropagatedTransition, propagateChangeToSelectedLevels) {
+  function setChildrenDisplay(nes, childrenPropagatedTransition, propagateChangeToSelectedLevels, alltransitions) {
 
     var toChildren = false;
     var propertyAlreadySet = nes.selectionType == childrenPropagatedTransition[1] ? true : false;
@@ -554,7 +554,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
     }
     else {
       nes.children.forEach(function(n) {
-        passOnChildPropagatedTransition.forEach(function (p){
+        alltransitions.forEach(function (p){
           setChildrenDisplay(n, p, propagateChangeToSelectedLevels);
         });
       });
@@ -564,7 +564,7 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
   if (toChildren){
     node.children.forEach(function(n) {
       childrenPropagatedTransition.forEach(function (p){
-          setChildrenDisplay(n,p, propagateChangeToSelectedLevels);
+          setChildrenDisplay(n,p, propagateChangeToSelectedLevels, childrenPropagatedTransition);
       });
     });
   }
