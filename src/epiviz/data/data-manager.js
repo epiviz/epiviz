@@ -479,6 +479,16 @@ epiviz.data.DataManager.prototype._getDataNoCache = function(range, chartMeasure
         //   range._width = dsData.rows.end[dsData.rows.end.length-1] - range._start;
         // }
 
+        if (!Array.isArray(dsData.rows.end)) {
+          dsData.rows.end = [dsData.rows.end];
+          dsData.rows.start = [dsData.rows.start];
+          dsData.rows.index = [dsData.rows.index];
+
+          for (key in dsData.cols) {
+            dsData.cols[key] = [dsData.cols[key]];
+          }
+        }
+
         var rowData = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, dsData.rows);
 
         sumExp.addRowData(rowData);
