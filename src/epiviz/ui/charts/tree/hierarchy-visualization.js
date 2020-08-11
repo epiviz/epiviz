@@ -554,9 +554,9 @@ epiviz.ui.charts.tree.HierarchyVisualization.prototype.selectNode = function(nod
     }
     else {
       nes.children.forEach(function(n) {
-        alltransitions.forEach(function (p){
-          setChildrenDisplay(n, p, propagateChangeToSelectedLevels);
-        });
+          alltransitions.forEach(function (p){
+            setChildrenDisplay(n, p, propagateChangeToSelectedLevels, alltransitions);
+          });
       });
     }
   }
