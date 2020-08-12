@@ -299,11 +299,11 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   }
 
 
-  this._chartAdded.notify(new epiviz.ui.charts.VisEventArgs(id, {
-      type: chartType,
-      properties: chartProperties,
-      chartsOrder: this._chartsOrder
-    }));
+  // this._chartAdded.notify(new epiviz.ui.charts.VisEventArgs(id, {
+  //     type: chartType,
+  //     properties: chartProperties,
+  //     chartsOrder: this._chartsOrder
+  //   }));
 
   return id;
 };
