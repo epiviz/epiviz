@@ -49,7 +49,7 @@ epiviz.plugins.charts.DiversityScatterPlotType.prototype.typeName = function() {
  * @returns {string}
  */
 epiviz.plugins.charts.DiversityScatterPlotType.prototype.chartName = function() {
-  return 'Diversity Box Plot';
+  return 'Gene Box Plot';
 };
 
 /**
@@ -116,7 +116,13 @@ epiviz.plugins.charts.DiversityScatterPlotType.prototype.customSettingsDefs = fu
       epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
-      'Max Y')
+      'Max Y'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.DiversityScatterPlotType.CustomSettings.GENE_NAME,
+      epiviz.ui.charts.CustomSetting.Type.STRING,
+      "",
+      'Gene Name'),
   ]);
 };
 
@@ -124,7 +130,8 @@ epiviz.plugins.charts.DiversityScatterPlotType.prototype.customSettingsDefs = fu
  * @enum {string}
  */
 epiviz.plugins.charts.DiversityScatterPlotType.CustomSettings = {
-  CIRCLE_RADIUS_RATIO: 'circleRadiusRatio'
+  CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
+  GENE_NAME: "geneName"
 };
 
 // goog.inherits(epiviz.plugins.charts.DiversityScatterPlotType, epiviz.ui.charts.PlotType);

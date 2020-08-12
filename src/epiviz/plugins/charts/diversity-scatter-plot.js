@@ -88,6 +88,10 @@ epiviz.plugins.charts.DiversityScatterPlot = function(id, container, properties)
      */
     this._colorLabels = [];
 
+    this._searchGeneChart = new epiviz.events.Event();
+    this._registerGeneGetData = new epiviz.events.Event();
+    this._featureType = "DiversityScatterPlot";
+
     this._initialize();
 };
 
@@ -108,6 +112,66 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._initialize = function() {
 
     this._chartContent = this._svg.append('g').attr('class', 'chart-content');
     this._legend = this._svg.append('g').attr('class', 'chart-legend');
+
+    var geneName = this.customSettingsValues()[epiviz.plugins.charts.DiversityScatterPlotType.CustomSettings.GENE_NAME];
+    
+    
+    this.measurements().foreach(function(m) {
+        geneName = m.id();
+    });
+
+    this._drawGeneSearch(geneName);
+};
+
+/**
+ * @private
+ */
+epiviz.plugins.charts.DiversityScatterPlot.prototype._drawGeneSearch = function(geneName) {
+
+    var self = this;
+
+    $('#' + self.id()).prepend('<div style="position:absolute;"><input id="search-box-' + self.id() + '" class="feature-search-box ui-widget-content ui-corner-all" type="text"/></div>');
+
+    var sBox = $('#search-box-' + self.id());
+    sBox.val(geneName);
+    sBox.watermark('Search for a Gene');
+
+    sBox.autocomplete({
+        source: function(request, callback) {
+        self._searchGeneChart.notify({ 
+            searchTerm: request.term, 
+            callback:
+                /**
+                 * @param {Array.<{probe: string, gene: string, seqName: string, start: number, end: number}>} results
+                 */
+                function(results) {
+                    var items = [];
+                    for (var i = 0; i < results.length; ++i) {
+                        items.push({
+                            value: results[i],
+                            label: results[i]
+                        });
+                    }
+                    callback(items);
+                }
+            });
+        },
+        minLength: 1,
+        select: function(event, ui) {
+            var vals = self.customSettingsValues();
+            vals.geneName = ui.item.value;
+            // self.setCustomSettingsValues(vals);
+                self._registerGeneGetData.notify({
+                    chartId: self.id(), 
+                    gene: vals.geneName
+                });
+        },
+    }).data('autocomplete')._renderItem = function(ul, item) {
+        return $('<li></li>')
+        .data( 'item.autocomplete', item )
+        .append(sprintf('<a>%s</a>', item.label))
+        .appendTo(ul);
+    };
 };
 
 /**
@@ -345,14 +409,20 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
 
             d3.event.stopPropagation();
         });
+        this._globalIndexColorLabels = [] 
+        
+        this.measurements().foreach(function(m) {
+            self._globalIndexColorLabels.push(m.id());
+        });
 
     // Draw legend if necessary
     if (this._globalIndexColorLabels) {
-        var colorLabelsMap = {};
-        for (j = firstGlobalIndex; j < lastGlobalIndex; ++j) {
-            colorLabelsMap[this._globalIndexColorLabels[j]] = this._globalIndexColorLabels[j];
-        }
-        this._colorLabels = Object.keys(colorLabelsMap);
+        // var colorLabelsMap = {};
+        // for (j = firstGlobalIndex; j < lastGlobalIndex; ++j) {
+        //     colorLabelsMap[this._globalIndexColorLabels[j]] = this._globalIndexColorLabels[j];
+        // }
+        // this._colorLabels = Object.keys(colorLabelsMap);
+        this._colorLabels = this._globalIndexColorLabels ;
 
         this._svg.selectAll('.chart-title').remove();
         this._svg.selectAll('.chart-title-color ').remove();

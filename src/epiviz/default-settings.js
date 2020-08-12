@@ -40,17 +40,18 @@ epiviz.Config.SETTINGS = {
   maxSearchResults: 12,
 
   // Epiviz will only be able to show any of the charts in this list; if it's not registered here, you will not see it in the UI
+  //   'epiviz.plugins.charts.LinePlotType',
+  //   'epiviz.plugins.charts.StackedLinePlotType',
+  //   'epiviz.plugins.charts.PCoAScatterPlotType',
+  //   'epiviz.plugins.charts.FeatureScatterPlotType',
+  //   'epiviz.plugins.charts.PCAScatterPlotType',
+
   chartTypes: [
     'epiviz.plugins.charts.ScatterPlotType',
     'epiviz.plugins.charts.HeatmapPlotType',
-    'epiviz.plugins.charts.LinePlotType',
-    'epiviz.plugins.charts.StackedLinePlotType',
     'epiviz.ui.charts.tree.IcicleType',
-    'epiviz.plugins.charts.PCAScatterPlotType',
     'epiviz.plugins.charts.TSNEPlotType',
-    'epiviz.plugins.charts.PCoAScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
-    'epiviz.plugins.charts.FeatureScatterPlotType',
     'epiviz.ui.charts.tree.SunburstType'
   ],
 

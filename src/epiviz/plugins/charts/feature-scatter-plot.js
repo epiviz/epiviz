@@ -6,6 +6,16 @@
 
 goog.provide('epiviz.plugins.charts.FeatureScatterPlot');
 
+goog.require('epiviz.ui.charts.Plot');
+goog.require('epiviz.ui.charts.Axis');
+goog.require('epiviz.ui.charts.VisEventArgs');
+goog.require('epiviz.ui.charts.Visualization');
+goog.require('epiviz.utils');
+goog.require('epiviz.measurements.Measurement');
+goog.require('epiviz.ui.charts.CustomSetting');
+goog.require('epiviz.ui.charts.ChartIndexObject');
+goog.require('epiviz.deferred.Deferred');
+
 /**
  * @param {string} id
  * @param {jQuery} container

@@ -157,8 +157,10 @@ epiviz.ui.charts.ChartManager = function(config) {
   this._chartIcicleLocationChanges = new epiviz.events.Event();
 
   this._chartFeatureSearchEvent = new epiviz.events.Event();
+  this._chartGeneSearchEvent = new epiviz.events.Event();
 
   this._chartFeatureGetDataEvent = new epiviz.events.Event();
+  this._chartGeneGetDataEvent = new epiviz.events.Event();
 
   this._heatmapAddFeatureChartEvent = new epiviz.events.Event();
 
@@ -259,7 +261,9 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   this._registerChartIcicleLocationChanges(chart);
   this._registerChartSearchFeature(chart);
   this._registerChartFeatureGetData(chart);
+  this._registerChartGeneGetData(chart);
   this._registerHeatmapAddFeatureChart(chart);
+  this._registerChartSearchGene(chart);
 
   if (chartType.decorations()) {
     /** @type {epiviz.ui.charts.decoration.VisualizationDecoration} */
@@ -776,6 +780,17 @@ epiviz.ui.charts.ChartManager.prototype._registerChartSearchFeature = function(c
   }
 }; 
 
+epiviz.ui.charts.ChartManager.prototype._registerChartSearchGene = function(chart) {
+  var self = this;
+
+  if (chart._featureType == 'DiversityScatterPlot') {
+    chart._searchGeneChart.addListener(new epiviz.events.EventListener(function(e) {
+      self._chartGeneSearchEvent.notify(e);
+    }));
+  }
+}; 
+
+
 epiviz.ui.charts.ChartManager.prototype._registerHeatmapAddFeatureChart = function(chart) {
   var self = this;
 
@@ -792,6 +807,16 @@ epiviz.ui.charts.ChartManager.prototype._registerChartFeatureGetData = function(
   if (chart._featureType == 'featureScatterPlot') {
     chart._registerFeatureGetData.addListener(new epiviz.events.EventListener(function(e) {
       self._chartFeatureGetDataEvent.notify(e);
+    }));
+  }
+}; 
+
+epiviz.ui.charts.ChartManager.prototype._registerChartGeneGetData = function(chart) {
+  var self = this;
+
+  if (chart._featureType == 'DiversityScatterPlot') {
+    chart._registerGeneGetData.addListener(new epiviz.events.EventListener(function(e) {
+      self._chartGeneGetDataEvent.notify(e);
     }));
   }
 }; 
