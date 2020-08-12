@@ -276,21 +276,22 @@ epiviz.data.WebsocketDataProvider.prototype._addMeasurements = function (request
    *   maxValue: ?number,
    *   metadata: ?Array.<string>}>}
    */
-  var rawMeasurements = JSON.parse(request.get('measurements'));
+  var rawMeasurements = request.get('measurements');
+  var datasource = request.get('datasource');
   for (var i = 0; i < rawMeasurements.length; ++i) {
     measurements.add(new epiviz.measurements.Measurement(
-      rawMeasurements[i]['id'],
-      rawMeasurements[i]['name'],
-      rawMeasurements[i]['type'],
-      rawMeasurements[i]['datasourceId'],
-      rawMeasurements[i]['datasourceGroup'],
+      rawMeasurements[i],
+      rawMeasurements[i],
+      "feature",
+      datasource,
+      datasource,
       this.id(),
       null,
-      rawMeasurements[i]['defaultChartType'],
-      rawMeasurements[i]['annotation'],
-      rawMeasurements[i]['minValue'],
-      rawMeasurements[i]['maxValue'],
-      rawMeasurements[i]['metadata']
+      "heatmap",
+      {},
+      0,
+      5,
+      ["colLabel", "ancestors", "lineage", "label"]
     ));
   }
 
@@ -407,20 +408,21 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
      *   metadata: ?Array.<string>}>}
      */
     var rawMeasurements = JSON.parse(request.get('measurements'));
+    var datasource = request.get('datasource');
     for (var i = 0; i < rawMeasurements.length; ++i) {
       measurements.add(new epiviz.measurements.Measurement(
-        rawMeasurements[i]['id'],
-        rawMeasurements[i]['name'],
-        rawMeasurements[i]['type'],
-        rawMeasurements[i]['datasourceId'],
-        rawMeasurements[i]['datasourceGroup'],
+        rawMeasurements[i],
+        rawMeasurements[i],
+        "feature",
+        datasource,
+        datasource,
         this.id(),
         null,
-        rawMeasurements[i]['defaultChartType'],
-        rawMeasurements[i]['annotation'],
-        rawMeasurements[i]['minValue'],
-        rawMeasurements[i]['maxValue'],
-        rawMeasurements[i]['metadata']
+        "heatmap",
+        {},
+        0,
+        5,
+        ["colLabel", "ancestors", "lineage", "label"]
       ));
     }
   }

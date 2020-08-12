@@ -860,8 +860,12 @@ epiviz.EpiViz.prototype._registerDataAddChart = function() {
     /** @param {{type: string, visConfigSelection: epiviz.ui.controls.VisConfigSelection, result: epiviz.events.EventResult}} e */
     function(e) {
       try {
+        var visConfigSelection = e.visConfigSelection;
+        if(!visConfigSelection.measurements) {
+          visConfigSelection.measurements = self._measurementsManager.measurements().subset(function (m) { return m.datasourceGroup() == visConfigSelection.datasourceGroup });
+        }
         var chartType = self._chartFactory.get(e.type);
-        var chartId = self._addChart(chartType, e.visConfigSelection);
+        var chartId = self._addChart(chartType, visConfigSelection);
         e.result.success = true;
         e.result.value = { id: chartId };
       } catch (error) {
