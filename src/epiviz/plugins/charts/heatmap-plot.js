@@ -107,11 +107,13 @@ epiviz.plugins.charts.HeatmapPlot.prototype.draw = function(range, data) {
   var rows = data.measurements().length;
   var cols = data._map.first().value.size();
 
-  // if (rows * cols < 10000) {
+  if (rows * cols < 2500 && this.chartDrawType && this.chartDrawType != "canvas") {
+    // this._container.find("#" + this.id() + "-canvas").remove();
+    // this._container.find("#" + this.id() + "-hoverCanvas").remove();
     return this.drawSVG(range, data);
-  // } else {
-  //   return this.drawCanvas(range, data);
-  // }
+  } else {
+    return this.drawCanvas(range, data);
+  }
 };
 
 /**
@@ -199,13 +201,38 @@ epiviz.plugins.charts.HeatmapPlot.prototype.drawCanvas = function(range, data) {
   hoverCanvas.style =
     "position:absolute;top:0;left:0;width:" + this.width() + ";height:" +  this.height() + ";z-index:1";
 
-  var pair = this._applyClustering(range, data, canvas);
+  var logTransform = this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettings.LOG_TRANSFORM];
 
-  /** @type {epiviz.datatypes.GenomicData} */
-  var orderedData = pair.data;
-  var colOrder = pair.columnOrder;
+  var self = this;
 
-  return this._drawCellsCanvas(range, orderedData, colOrder);
+  if(logTransform) {
+    this._applyLogTransformation(data, function(transformed) {
+        var pair = self._applyClustering(range, transformed);
+
+        /** @type {epiviz.datatypes.GenomicData} */
+        var orderedData = pair.data;
+        var colOrder = pair.columnOrder;
+
+        return self._drawCellsCanvas(range, orderedData, colOrder);
+    });
+  }
+  else {
+    var pair = self._applyClustering(range, data);
+
+    /** @type {epiviz.datatypes.GenomicData} */
+    var orderedData = pair.data;
+    var colOrder = pair.columnOrder;
+
+    return self._drawCellsCanvas(range, orderedData, colOrder);
+  }
+
+  // var pair = this._applyClustering(range, data, canvas);
+
+  // /** @type {epiviz.datatypes.GenomicData} */
+  // var orderedData = pair.data;
+  // var colOrder = pair.columnOrder;
+
+  // return this._drawCellsCanvas(range, orderedData, colOrder);
 };
 
 /**
@@ -933,11 +960,22 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCellsCanvas = function(
     epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
   ];
   var CustomSetting = epiviz.ui.charts.CustomSetting;
+
+  var dataMin = 100000, dataMax = -100000;
+  data.foreach(function(m, series) {
+    var featureValues = series._container.values(m);
+    var valData = featureValues._values;
+    var fMin = Math.min.apply(null, valData), fMax = Math.max.apply(null, valData);
+
+    if (fMin < dataMin) { dataMin = fMin;} 
+    if (fMax > dataMax) { dataMax = fMax;}
+  });
+
   if (this._min == CustomSetting.DEFAULT) {
-    this._min = data.measurements()[0].minValue();
+    this._min = dataMin;
   }
   if (this._max == CustomSetting.DEFAULT) {
-    this._max = data.measurements()[0].maxValue();
+    this._max = dataMax;
   }
   if (this._globalIndexColorLabels) {
     colorLabelsMap = {};
@@ -979,26 +1017,6 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCellsCanvas = function(
   var cellWidth = nCols ? (width - this.margins().sumAxis(Axis.X)) / nCols : 0;
   var cellHeight =
     (height - this.margins().sumAxis(Axis.Y)) / data.measurements().length;
-
-  var itemsGroup = this._chartContent.select(".items");
-
-  if (itemsGroup.empty()) {
-    itemsGroup = this._chartContent.append("g").attr("class", "items");
-    var selectedGroup = itemsGroup.append("g").attr("class", "selected");
-    itemsGroup.append("g").attr("class", "hovered");
-    selectedGroup.append("g").attr("class", "hovered");
-  }
-
-  itemsGroup.attr(
-    "transform",
-    "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
-  );
-
-  var selection = itemsGroup.selectAll("rect").data(items, function(d) {
-    return d.id;
-  });
-
-  this._container.find("svg").remove();
 
   var canvas = this.canvas;
   var hoverCanvas = this.hoverCanvas;
@@ -1046,7 +1064,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCellsCanvas = function(
   this.addCanvasEvents(canvas, hoverCanvas, items, null, cellWidth, colIndex);
 
   this._drawLabelsCanvas(
-    itemsGroup,
+    null,
     colnames,
     globalIndices,
     nCols,
@@ -1724,7 +1742,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabelsCanvas = function(
   var ctx = self.canvas.getContext("2d");
 
   colnames.forEach(function(c, i) {
-    var name = c + columnMap[i];
+    var name = c;
     ctx.save();
     ctx.translate(mapCol(i, true), -5);
     ctx.rotate(-Math.PI / 4);
@@ -1754,121 +1772,126 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabelsCanvas = function(
       .SHOW_COLORS_FOR_ROW_LABELS
   ];
 
-  if (!rowLabelsAsColors) {
-    rows.forEach(function(r, i) {
-      var name = r.id();
-
-      if (rowLabel == "name") {
-        name = r.name();
-      } else {
-        var anno = r.annotation();
-
-        if (!anno || !(rowLabel in anno)) {
-          name = "<NA>";
+  var hideRowLabels = this.customSettingsValues()[
+    epiviz.plugins.charts.HeatmapPlotType.CustomSettings.HIDE_ROW_LABELS
+  ];
+  
+  if (!hideRowLabels) {
+    if (!rowLabelsAsColors) {
+      rows.forEach(function(r, i) {
+        var name = r.id();
+  
+        if (rowLabel == "name") {
+          name = r.name();
         } else {
-          name = anno[rowLabel];
+          var anno = r.annotation();
+  
+          if (!anno || !(rowLabel in anno)) {
+            name = "<NA>";
+          } else {
+            name = anno[rowLabel];
+          }
         }
-      }
-
-      ctx.save();
-      ctx.translate(-8, mapRow(i, true));
-      ctx.rotate(Math.PI / 3);
-      var color = "black";
-
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.font = "9px";
-      ctx.beginPath();
-      ctx.textAlign = "right";
-      ctx.fillText(name, 0, 0);
-      ctx.restore();
-    });
-  }
-
-  var rowLabelCat;
-  if (rowLabelsAsColors) {
-    itemsGroup.selectAll(".row-text").remove();
-    var rowLabelMap = {};
-    rows.forEach(function(m) {
-      var label = measurementLabel(m);
-      rowLabelMap[label] = label;
-    });
-    rowLabelCat = Object.keys(rowLabelMap);
-
-    rows.forEach(function(r, i) {
-      ctx.beginPath();
-      var label = measurementLabel(r);
-      var color = self.colors().getByKey(label);
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.fillRect(
-        width - self.margins().sumAxis(epiviz.ui.charts.Axis.X),
-        mapRow(i, true) - cellHeight * 0.5,
-        20,
-        cellHeight
-      );
-    });
-  }
-
-  // Legend
-  var textIndent = 0;
-
-  ["Min"].concat(this._colorLabels).forEach(function(c, i) {
-    var name = c;
-
-    var color = i == 0 ? "#000000" : self.colors().getByKey(c);
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      textIndent - 2,
-      -self.margins().top() - maxColSize,
-      4,
-      0,
-      2 * Math.PI
-    );
-    ctx.fill();
-    ctx.stroke();
-    ctx.font = "9px";
-    ctx.beginPath();
-    ctx.textAlign = "start";
-    var circleIndent = 8;
-
-    ctx.fillText(
-      name,
-      textIndent + circleIndent,
-      -self.margins().top() - maxColSize + 4
-    );
-
-    var textWidth = ctx.measureText(name).width;
-    textIndent = textIndent + circleIndent + textWidth + 10;
-  });
-
-  // Row labels legend
-
-  if (rowLabelsAsColors) {
-    // TODO: Make this optional
-    //rowLabelCat.sort();
-    ctx.globalAlpha = 1;
-    rowLabelCat.forEach(function(c, i) {
+  
+        ctx.save();
+        ctx.translate(-8, mapRow(i, true));
+        ctx.rotate(Math.PI / 3);
+        var color = "black";
+  
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.font = "9px";
+        ctx.beginPath();
+        ctx.textAlign = "right";
+        ctx.fillText(name, 0, 0);
+        ctx.restore();
+      });
+    }
+  
+    var rowLabelCat;
+    if (rowLabelsAsColors) {
+      var rowLabelMap = {};
+      rows.forEach(function(m) {
+        var label = measurementLabel(m);
+        rowLabelMap[label] = label;
+      });
+      rowLabelCat = Object.keys(rowLabelMap);
+  
+      rows.forEach(function(r, i) {
+        ctx.beginPath();
+        var label = measurementLabel(r);
+        var color = self.colors().getByKey(label);
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.fillRect(
+          width - self.margins().sumAxis(epiviz.ui.charts.Axis.X),
+          mapRow(i, true) - cellHeight * 0.5,
+          20,
+          cellHeight
+        );
+      });
+    }
+  
+    // Legend
+    var textIndent = 0;
+  
+    ["Min"].concat(this._colorLabels).forEach(function(c, i) {
       var name = c;
-      var color = self.colors().getByKey(name);
+  
+      var color = i == 0 ? "#000000" : self.colors().getByKey(c);
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
+  
       ctx.beginPath();
-      ctx.fillRect(-13, 55 - self.margins().top() + (2 + i) * 15, 10, 10);
+  
+      ctx.arc(
+        textIndent - 2,
+        -self.margins().top() - maxColSize,
+        4,
+        0,
+        2 * Math.PI
+      );
+      ctx.fill();
+      ctx.stroke();
       ctx.font = "9px";
       ctx.beginPath();
-      ctx.textAlign = "right";
-
-      ctx.fillText(name, -18, 60 - self.margins().top() + (2 + i) * 15);
-
+      ctx.textAlign = "start";
+      var circleIndent = 8;
+  
+      ctx.fillText(
+        name,
+        textIndent + circleIndent,
+        -self.margins().top() - maxColSize + 4
+      );
+  
       var textWidth = ctx.measureText(name).width;
+      textIndent = textIndent + circleIndent + textWidth + 10;
     });
-
-    this._colorLabels = this._colorLabels.concat(rowLabelCat);
+  
+    // Row labels legend
+  
+    if (rowLabelsAsColors) {
+      // TODO: Make this optional
+      //rowLabelCat.sort();
+      ctx.globalAlpha = 1;
+      rowLabelCat.forEach(function(c, i) {
+        var name = c;
+        var color = self.colors().getByKey(name);
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.fillRect(-13, 55 - self.margins().top() + (2 + i) * 15, 10, 10);
+        ctx.font = "9px";
+        ctx.beginPath();
+        ctx.textAlign = "right";
+  
+        ctx.fillText(name, -18, 60 - self.margins().top() + (2 + i) * 15);
+  
+        var textWidth = ctx.measureText(name).width;
+      });
+  
+      this._colorLabels = this._colorLabels.concat(rowLabelCat);
+    }
   }
 };
 
