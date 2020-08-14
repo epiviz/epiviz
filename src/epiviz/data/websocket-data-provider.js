@@ -70,6 +70,8 @@ epiviz.data.WebsocketDataProvider = function (id, websocketHost) {
    */
   this._requestsStack = [];
 
+  this._measurements = null;
+
   this._initialize();
 };
 
@@ -260,6 +262,7 @@ epiviz.data.WebsocketDataProvider.prototype.getData = function (request, callbac
  * @private
  */
 epiviz.data.WebsocketDataProvider.prototype._addMeasurements = function (request) {
+  var self = this;
   var result = new epiviz.events.EventResult();
   var measurements = new epiviz.measurements.MeasurementSet();
 
@@ -276,7 +279,7 @@ epiviz.data.WebsocketDataProvider.prototype._addMeasurements = function (request
    *   maxValue: ?number,
    *   metadata: ?Array.<string>}>}
    */
-  var rawMeasurements = request.get('measurements');
+  var rawMeasurements = JSON.parse(request.get('measurements'));
   var datasource = request.get('datasource');
   for (var i = 0; i < rawMeasurements.length; ++i) {
     measurements.add(new epiviz.measurements.Measurement(
@@ -293,6 +296,8 @@ epiviz.data.WebsocketDataProvider.prototype._addMeasurements = function (request
       5,
       ["colLabel", "ancestors", "lineage", "label"]
     ));
+
+    self._measurements = measurements;
   }
 
   this._fireEvent(this.onRequestAddMeasurements(), {measurements: measurements, result: result});
@@ -388,10 +393,11 @@ epiviz.data.WebsocketDataProvider.prototype._removeSeqNames = function (request)
 epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
   /** @type {epiviz.events.EventResult.<{id: string}>} */
   var result = new epiviz.events.EventResult();
+  var self = this;
 
   var measurements, datasource, datasourceGroup;
 
-  if (request.get('measurements') != undefined) {
+  if (request.get('measurements') != undefined && request.get('measurements') != '["all"]') {
     measurements = new epiviz.measurements.MeasurementSet();
 
     /**
@@ -425,6 +431,8 @@ epiviz.data.WebsocketDataProvider.prototype._addChart = function (request) {
         ["colLabel", "ancestors", "lineage", "label"]
       ));
     }
+  } else {
+    measurements = self._measurements;
   }
 
   datasource = request.get('datasource');
