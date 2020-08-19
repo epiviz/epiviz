@@ -455,7 +455,7 @@ epiviz.ui.charts.Visualization.prototype._drawAxesCanvas = function(
     ctx.strokeStyle = "black";
     // x-axis
     ctx.moveTo(margins.left(), height - margins.bottom());
-    ctx.lineTo(width - margins.right(), height - margins.bottom());
+    ctx.lineTo(width - margins.right() - margins.left(), height - margins.bottom());
 
     ctx.stroke();
     //x-axis grid and ticks

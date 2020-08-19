@@ -119,19 +119,19 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype.drawCanvas = function (
   this.canvas = canvas;
   canvas.id = this.id() + "-canvas";
   this._container.append(canvas);
-  canvas.width = this.width();
+  canvas.width = this.width() - this.margins().right();
   canvas.height = this.height();
-  canvas.style = "position:absolute;top:0;left:0;width:100%;height:100%";
+  canvas.style = "position:absolute;top:0;left:0;height:100%;width:" + (this.width() - this.margins().right()) + "px";
 
   this._container.find("#" + this.id() + "-hoverCanvas").remove();
   var hoverCanvas = document.createElement("canvas");
   this.hoverCanvas = hoverCanvas;
   hoverCanvas.id = this.id() + "-hoverCanvas";
   this._container.append(hoverCanvas);
-  hoverCanvas.width = this.width();
+  hoverCanvas.width = this.width() - this.margins().right();
   hoverCanvas.height = this.height();
-  hoverCanvas.style =
-    "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
+  hoverCanvas.style = "position:absolute;top:0;left:0;height:100%;z-index:1;width:" + (this.width() - this.margins().right()) + "px";
+    // "position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";
 
   this._drawAxesCanvas(xScale, null, 10, 5, canvas);
 
@@ -415,7 +415,11 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
 
-  var yTicksSeries = ["0"]
+  var yTicksSeries = ["0"];
+
+  self._svg
+  .selectAll(".no-data-text")
+  .remove();
 
   data.foreach(function (m, series, i) {
 
@@ -436,6 +440,23 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
       /** @type {{index: ?number, length: number}} */
       var drawBoundaries = series.binarySearchStarts(extendedRange);
       if (drawBoundaries.length == 0) {
+        if (items.length == 0) {
+          // self._svg
+          // .append("text")
+          // .attr("font-weight", "bold")
+          // .attr("font-style", "italic")
+          // .attr("fill", "#C0C0C0")
+          // .attr("transform", "translate(" + (self.width() / 2) + "," + (self.height() - self.margins().top() - ((trackCount+0.5) * seriesLineHeight)) + ")")
+          // .attr("class", "no-data-text")
+          // .text(function(d) { return "No data in this region"; });
+        }
+
+        self._svg
+        .select(".line-series-index-" + trackCount)
+        .selectAll("path")
+        .remove();
+
+        // trackCount++;
         return;
       }
 
@@ -535,7 +556,6 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         var v = cell.valueAnnotation ? cell.valueAnnotation["errPlus"] : null;
         return v != undefined ? yScaleSeries(v) : null;
       };
-
 
       if (showYAxis) {
         // draw axes
@@ -1127,6 +1147,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
     if (showLines) {
       var line = d3.svg
         .line()
+        // .x(function(d) {return x(d) + delta} )
         .x(x)
         .y(y)
         .interpolate(interpolation);
@@ -1146,9 +1167,9 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
 
     if (showFill) {
       var area = d3.svg.area()
-      .x1(x)
+      .x1(function(d) {return x(d) + delta} )
       .y1(y)
-      .x0(x)
+      .x0(function(d) {return x(d) + delta} )
       .y0(yScaleSeries(0))
       .interpolate(interpolation); 
 
@@ -1167,7 +1188,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
 
     if (showPoints) {
       indices.forEach(function (idx) {
-        var xpoint = x(idx);
+        var xpoint = x(idx) + delta;
         var ypoint = y(idx);
         ctx.beginPath();
         ctx.arc(xpoint, ypoint, pointRadius, 0, 2 * Math.PI);
@@ -1184,21 +1205,21 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
             p = errPlus(idx);
           if (m != null && p != null) {
             ctx.beginPath();
-            ctx.moveTo(x(idx), y(idx));
+            ctx.moveTo(x(idx) + delta, y(idx));
             ctx.lineTo(m, p);
             ctx.strokeStyle = color;
             ctx.stroke();
 
             ctx.beginPath();
             ctx.globalAlpha = 0.7;
-            ctx.moveTo(x(idx) - 2, y(idx) + 2);
+            ctx.moveTo(x(idx) - 2 + delta, y(idx) + 2);
             ctx.lineTo(m, m);
             ctx.strokeStyle = color;
             ctx.stroke();
 
             ctx.beginPath();
             ctx.globalAlpha = 0.7;
-            ctx.moveTo(x(idx) - 2, y(idx) + 2);
+            ctx.moveTo(x(idx) - 2 + delta, y(idx) + 2);
             ctx.lineTo(p, p);
             ctx.strokeStyle = color;
             ctx.stroke();
