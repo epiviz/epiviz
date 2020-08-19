@@ -263,8 +263,12 @@ epiviz.data.Cache.prototype._serveAvailableData = function(range, chartMeasureme
     }(chartData));
 
     if (allDataAvailable) {
-      dataReadyCallback(chartId, new epiviz.datatypes.MapGenomicData(chartData));
       servedChartIds.push(chartId);
+      dataReadyCallback(chartId, new epiviz.datatypes.MapGenomicData(chartData));
+    } else {
+      if(chartData.size() > 0) {
+      dataReadyCallback(chartId, new epiviz.datatypes.MapGenomicData(chartData));
+      }
     }
   }
 
