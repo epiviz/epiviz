@@ -178,6 +178,7 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
 
       var dataProvider = self._dataProviderFactory.get(m.dataprovider()) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
       var jqreq = dataProvider.getData(request, function(response) {
+        delete self._requestMapStack[request.id()];
         requestStack.serveData(response);
       }, function(jqXHR, textStatus, errorThrown) {
         // failCallback(jqXHR, textStatus, errorThrown);
