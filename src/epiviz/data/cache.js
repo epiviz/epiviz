@@ -63,6 +63,10 @@ epiviz.data.Cache = function(config, dataProviderFactory) {
       self._clearUnneededData();
     }, config.cacheUpdateIntervalMilliseconds);
   }
+
+  this._lastFullRange = null;
+  this._resetRange = false;
+  this._requestMapStack = {};
 };
 
 /**
@@ -75,10 +79,37 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
 
   var self = this;
 
+  var cache_factor = 3;
+  var cache_width = Math.ceil(range.width()/cache_factor);
+
+  if (this._lastFullRange == null) {
+    this._lastFullRange = range;
+  } else {
+    if (this._lastFullRange.overlapsWith(range)) {
+      var totalLength = range.width() + this._lastFullRange.width();
+      var overlapLength = (totalLength - (Math.abs(range.start() - this._lastFullRange.start()) + Math.abs(range.end() - this._lastFullRange.end())))/2;
+      var percOverlap = (overlapLength) / totalLength;
+      if (Math.ceil(percOverlap * 100) < 25) {
+        self._resetRange = true;
+        self._lastFullRange = range;
+        self._data = {};
+
+        // ignore all pending requests
+        self._measurementPendingRequestsMap = new epiviz.measurements.MeasurementHashtable();
+        self._measurementRequestStackMap = new epiviz.measurements.MeasurementHashtable();
+        for (var req in self._requestMapStack) {
+          self._requestMapStack[req].abort();
+        }
+        // self._measurementRequestStackMap.clear();
+        self._requestMapStack = {};
+      }
+    }
+  }
+
   this._lastRequest = epiviz.datatypes.GenomicRange.fromStartEnd(
     range.seqName(),
-    range.start() - range.width(),
-    range.end() + range.width(),
+    range.start() - cache_width,
+    range.end() + cache_width,
     range.genome());
 
   if (this._config.cacheUpdateIntervalMilliseconds > 0) {
@@ -93,7 +124,7 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
   this._updateComputedMeasurementsData(computedMs);
   this._serveAvailableData(range, chartMeasurementsMap, dataReadyCallback);
 
-  var range_with_cache = new epiviz.datatypes.GenomicRange(range.seqName(), Math.max(range.start() - range.width(), 0), range.end() + range.width() - Math.max(range.start() - range.width(), 0), range.genome())
+  var range_with_cache = new epiviz.datatypes.GenomicRange(range.seqName(), Math.max(range.start() - cache_width, 0), range.end() + cache_width - Math.max(range.start() - cache_width, 0), range.genome())
 
   var requestRanges = [
     range_with_cache
@@ -146,11 +177,13 @@ epiviz.data.Cache.prototype.getData = function(range, chartMeasurementsMap, data
       pendingRequests[request.id()] = ranges[i];
 
       var dataProvider = self._dataProviderFactory.get(m.dataprovider()) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
-      dataProvider.getData(request, function(response) {
+      var jqreq = dataProvider.getData(request, function(response) {
         requestStack.serveData(response);
       }, function(jqXHR, textStatus, errorThrown) {
-        failCallback(jqXHR, textStatus, errorThrown);
+        // failCallback(jqXHR, textStatus, errorThrown);
       });
+
+      self._requestMapStack[request.id()] = jqreq;
     }
   });
 };
@@ -267,7 +300,7 @@ epiviz.data.Cache.prototype._serveAvailableData = function(range, chartMeasureme
       dataReadyCallback(chartId, new epiviz.datatypes.MapGenomicData(chartData));
     } else {
       if(chartData.size() > 0) {
-      dataReadyCallback(chartId, new epiviz.datatypes.MapGenomicData(chartData));
+        dataReadyCallback(chartId, new epiviz.datatypes.MapGenomicData(chartData));
       }
     }
   }

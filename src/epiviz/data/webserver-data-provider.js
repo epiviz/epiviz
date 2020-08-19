@@ -48,13 +48,13 @@ epiviz.data.WebServerDataProvider.prototype.getData = function(request, callback
   if (request.method() == epiviz.data.Request.Method.GET) {
     var query = sprintf('%s?%s', this._serverEndpoint, request.joinArgs());
 
-    epiviz.data.WebServerDataProvider.makeGetRequest(query, function(jsondata) {
+    return epiviz.data.WebServerDataProvider.makeGetRequest(query, function(jsondata) {
       callback(epiviz.data.Response.fromRawObject(jsondata));
     }, function(jqXHR, textStatus, errorThrown) {
       failCallback(jqXHR, textStatus, errorThrown);
     });
   } else {
-    epiviz.data.WebServerDataProvider.makePostRequest(this._serverEndpoint, request.joinArgs(), function(jsondata) {
+    return epiviz.data.WebServerDataProvider.makePostRequest(this._serverEndpoint, request.joinArgs(), function(jsondata) {
       callback(epiviz.data.Response.fromRawObject(jsondata));
     }, function(jqXHR, textStatus, errorThrown) {
       failCallback(jqXHR, textStatus, errorThrown);
@@ -91,6 +91,8 @@ epiviz.data.WebServerDataProvider.makeGetRequest = function(query, callback, fai
   // callback handler that will be called regardless
   // if the request failed or succeeded
   request.always(function () {});
+
+  return request;
 };
 // epiviz.data.WebServerDataProvider.makeGetRequest = function(query, callback, failCallback) {
 //   // var request = $.ajax({
