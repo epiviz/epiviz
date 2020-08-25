@@ -620,7 +620,7 @@ epiviz.data.DataManager.prototype.getTSNE = function(range, chartMeasurementsMap
     var msByDs = dpMs.split(function(m) { return m.datasource().id(); });
     var msName = Object.keys(msByDs)[0];
 
-    var request = epiviz.data.Request.getTSNE(msName, range);
+    var request = epiviz.data.Request.getTSNE(msByDs, msName, range);
 
     var dataProvider = self._dataProviderFactory.get(dataprovider) || self._dataProviderFactory.get(epiviz.data.EmptyResponseDataProvider.DEFAULT_ID);
     dataProvider.getData(request, function(response) {

@@ -43,7 +43,7 @@ epiviz.Config.SETTINGS = {
   //   'epiviz.plugins.charts.LinePlotType',
   //   'epiviz.plugins.charts.StackedLinePlotType',
   //   'epiviz.plugins.charts.PCoAScatterPlotType',
-  //   'epiviz.plugins.charts.FeatureScatterPlotType',
+  //   
   //   'epiviz.plugins.charts.PCAScatterPlotType',
 
   chartTypes: [
@@ -51,6 +51,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlotType',
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.TSNEPlotType',
+    'epiviz.plugins.charts.FeatureScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
     'epiviz.ui.charts.tree.SunburstType'
   ],
@@ -174,6 +175,12 @@ epiviz.Config.SETTINGS = {
         'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
       ]
      },
+
+    'epiviz.plugins.charts.TSNEPlot': {
+      margins: new epiviz.ui.charts.Margins(25, 45, 45, 25),
+      decorations: []
+     },
+
      'epiviz.plugins.charts.PCoAScatterPlot': {
       margins: new epiviz.ui.charts.Margins(25, 55, 50, 15),
       decorations: [
