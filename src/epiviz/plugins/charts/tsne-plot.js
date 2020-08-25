@@ -385,40 +385,41 @@ epiviz.plugins.charts.TSNEPlot.prototype._drawCircles = function(data, dimx, dim
     this._colorLabels = [];
     var colKeys = [];
     this.measurements().foreach(function(m, i){
-        var tColKey  = m.annotation()[colorbylabel];
-        if(colKeys.indexOf(tColKey) === -1) {
-            colKeys.push(tColKey);
-        }
+        // var tColKey  = m.annotation()[colorbylabel];
+        // if(colKeys.indexOf(tColKey) === -1) {
+        //     colKeys.push(tColKey);
+        // }
+        colKeys.push(m.id());
     });
 
-    // this._svg.selectAll('.chart-title').remove();
+    this._svg.selectAll('.chart-title').remove();
     // this._svg.selectAll('.chart-title-color ').remove();
-    // var titleEntries = this._svg
-    //   .selectAll('.chart-title')
-    //   .data(colKeys);
-    // titleEntries
-    //   .enter()
-    //   .append('text')
-    //   .attr('class', 'chart-title')
-    //   .attr('font-weight', 'bold')
-    //   .attr('y', self.margins().top() - 5);
-    // titleEntries
-    //   .attr('fill', function(label, i) {
-    //     return self.colors().getByKey(label);
-    //   })
-    //   .text(function(label) { return label; });
-    // var textLength = 0;
-    // var titleEntriesStartPosition = [];
+    var titleEntries = this._svg
+      .selectAll('.chart-title')
+      .data(colKeys);
+    titleEntries
+      .enter()
+      .append('text')
+      .attr('class', 'chart-title')
+      .attr('font-weight', 'bold')
+      .attr('y', self.margins().top() - 5);
+    titleEntries
+      .attr('fill', function(label, i) {
+        return self.colors().getByKey(label);
+      })
+      .text(function(label) { return label; });
+    var textLength = 0;
+    var titleEntriesStartPosition = [];
 
-    // $('#' + this.id() + ' .chart-title')
-    //   .each(function(i) {
-    //     titleEntriesStartPosition.push(textLength);
-    //     textLength += this.getBBox().width + 15;
-    //   });
+    $('#' + this.id() + ' .chart-title')
+      .each(function(i) {
+        titleEntriesStartPosition.push(textLength);
+        textLength += this.getBBox().width + 15;
+      });
 
-    // titleEntries.attr('x', function(column, i) {
-    //   return self.margins().left() + 10 + titleEntriesStartPosition[i];
-    // });
+    titleEntries.attr('x', function(column, i) {
+      return self.margins().left() + 10 + titleEntriesStartPosition[i];
+    });
 
     // var colorEntries = this._svg
     //   .selectAll('.chart-title-color')
