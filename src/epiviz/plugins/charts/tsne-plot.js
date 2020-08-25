@@ -116,6 +116,7 @@ epiviz.plugins.charts.TSNEPlot.prototype._initialize = function() {
 epiviz.plugins.charts.TSNEPlot.prototype.draw = function() {
     epiviz.ui.charts.Plot.prototype.draw.call(this, undefined, undefined);
     var self = this;
+
     // self._variance_labels = self._lastData.pca_variance_explained;
     // self._variance_labels = [0.9, 0.1];
     return self.drawScatter(self._lastRange, self._lastData.data, "sample_id", "dim1", "dim2");
@@ -567,5 +568,31 @@ epiviz.plugins.charts.TSNEPlot.prototype.transformData = function(range, data) {
   deferred.resolve();
   return deferred;
 };
+
+epiviz.plugins.charts.TSNEPlot.prototype.doHover = function(selectedObject) {
+    var itemsGroup = this._container.find('.items');
+    var unselectedHoveredGroup = itemsGroup.find('> .hovered');
+    var selectedGroup = itemsGroup.find('> .selected');
+    var selectedHoveredGroup = selectedGroup.find('> .hovered');
+
+    itemsGroup.prepend(unselectedHoveredGroup.children());
+    selectedGroup.prepend(selectedHoveredGroup.children());
+  
+    var filter = function() {
+        if (selectedObject instanceof epiviz.ui.charts.tree.UiNode) {
+            return selectedObject.name == d3.select(this).data()[0].valueItems[0][0].name;
+        } else if (selectedObject instanceof epiviz.ui.charts.ChartObject) {
+            return selectedObject.valueItems[0][0].rowItem.rowMetadata().label == 
+                                d3.select(this).data()[0].valueItems[0][0].name;
+        } else {
+            return selectedObject.overlapsWith(d3.select(this).data()[0]);
+        }
+    };
+    var selectItems = itemsGroup.find('> .item').filter(filter);
+    unselectedHoveredGroup.append(selectItems);
+  
+    selectItems = selectedGroup.find('> .item').filter(filter);
+    selectedHoveredGroup.append(selectItems);
+  };
 
 // goog.inherits(epiviz.plugins.charts.CustomScatterPlot, epiviz.ui.charts.Plot);
