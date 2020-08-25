@@ -297,6 +297,8 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
     var grid = {};
     var items = [];
     var maxGroupItems = 1;
+    var gridYCount = {};
+    var gridYCountFinished = {};
     var seriesIndex = 0; // Assume only 1 pair of datax and datay
     for (var i = 0; i < data.length; ++i) {
 
@@ -315,17 +317,22 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
         var gridY = Math.floor(y / gridSquareSize) * gridSquareSize;
 
         var uiObj = null;
+        // if (grid[gridY] && grid[gridY][gridX]) {
+        //     uiObj = grid[gridY][gridX];
+        //     uiObj.id += '_' + data[i][key];
+        //     uiObj.values[0] = (uiObj.values[0] * uiObj.valueItems[0].length + cellX) / (uiObj.valueItems[0].length + 1);
+        //     uiObj.values[1] = (uiObj.values[1] * uiObj.valueItems[1].length + cellY) / (uiObj.valueItems[1].length + 1);
+        //     uiObj.valueItems[0].push(data[i]);
+        //     uiObj.valueItems[1].push(data[i]);
+        //     if (uiObj.valueItems[0].length > maxGroupItems) {
+        //         maxGroupItems = uiObj.valueItems[0].length;
+        //     }
+        //     continue;
+        // }
+
         if (grid[gridY] && grid[gridY][gridX]) {
-            uiObj = grid[gridY][gridX];
-            uiObj.id += '_' + data[i][key];
-            uiObj.values[0] = (uiObj.values[0] * uiObj.valueItems[0].length + cellX) / (uiObj.valueItems[0].length + 1);
-            uiObj.values[1] = (uiObj.values[1] * uiObj.valueItems[1].length + cellY) / (uiObj.valueItems[1].length + 1);
-            uiObj.valueItems[0].push(data[i]);
-            uiObj.valueItems[1].push(data[i]);
-            if (uiObj.valueItems[0].length > maxGroupItems) {
-                maxGroupItems = uiObj.valueItems[0].length;
-            }
-            continue;
+            gridYCount[gridY][gridX]++;
+            // gridYCountFinished[gridY][gridX]++;
         }
 
         uiObj = new epiviz.ui.charts.ChartIndexObject(
@@ -338,8 +345,21 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
             seriesIndex,
             classes);
 
-        if (!grid[gridY]) { grid[gridY] = {}; }
+        if (!grid[gridY]) { 
+            grid[gridY] = {}; 
+            gridYCount[gridY] = {};
+
+            gridYCountFinished[gridY] = {};
+        } 
+        
+        if(!grid[gridY][gridX]) {
+            gridYCount[gridY][gridX] = 0;
+            gridYCountFinished[gridY][gridX] = 0;
+        }
         grid[gridY][gridX] = uiObj;
+        gridYCount[gridY][gridX]++;
+        // gridYCountFinished[gridY][gridX]++;
+        // gridYCountFinished[gridY][gridX]++;
 
         items.push(uiObj);
     }
@@ -374,10 +394,32 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
             function(d) {
                 var circle = d3.select(this);
 
-                var fill = self.colors().get(d.seriesIndex);
+                var cellX = d.values[0];
+                var cellY = d.values[1];
 
+                var x = xScale(cellX);
+                var y = yScale(cellY);
+        
+                var gridX = Math.floor(x / gridSquareSize) * gridSquareSize;
+                var gridY = Math.floor(y / gridSquareSize) * gridSquareSize
+
+                // var count = gridYCount[gridY][gridX];
+                var finished = gridYCountFinished[gridY][gridX];
+                
+                var cx = (margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX));
+                if (finished % 2 == 0) {
+                    cx += (finished/2) * xScale(0.1);
+                } else {
+                    cx -= Math.ceil(finished/2) * xScale(0.1);
+                }
+
+                gridYCountFinished[gridY][gridX]++;
+
+                var fill = self.colors().get(d.seriesIndex);
+                // console.log((margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX)) + 0.4 - Math.random()) 
+                // (xScale(.4) - (Math.random() * xScale(.8)))
                 circle
-                    .attr('cx', margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX))
+                    .attr('cx', cx )
                     .attr('cy', height - margins.bottom() - ((d.values[1] - minY) * (height - margins.sumAxis(Axis.Y)) / (maxY - minY)))
                     .attr('class', d.cssClasses)
                     .style('fill', fill);

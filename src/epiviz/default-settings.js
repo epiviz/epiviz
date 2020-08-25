@@ -242,7 +242,8 @@ epiviz.Config.SETTINGS = {
     },
     'epiviz.plugins.charts.DiversityScatterPlot': {
       yMin: 'default',
-      yMax: 'default'
+      yMax: 'default',
+      circleRadiusRatio: 0.005
     },
     'epiviz.plugins.charts.FeatureScatterPlot': {
       yMin: 'default',
