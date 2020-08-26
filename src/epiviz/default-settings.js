@@ -51,7 +51,8 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.StackedLinePlotType',
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.CustomScatterPlotType',
-    'epiviz.plugins.charts.DiversityScatterPlotType'
+    'epiviz.plugins.charts.DiversityScatterPlotType',
+    'epiviz.plugins.charts.GwasTrackType'
   ],
 
   // Chart default settings
@@ -113,6 +114,16 @@ epiviz.Config.SETTINGS = {
     },
 
     'epiviz.plugins.charts.LineTrack': {
+      colors: 'epiviz-v2-bright',
+      decorations: [
+        'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
+        'epiviz.ui.charts.decoration.ChartColorByMeasurementsCodeButton'
+      ],
+      chartMarkers:['epiviz.ui.charts.markers.MeasurementAggregator']
+    },
+
+    'epiviz.plugins.charts.GwasTrack': {
+      height: 250,
       colors: 'epiviz-v2-bright',
       decorations: [
         'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
@@ -227,20 +238,6 @@ epiviz.Config.SETTINGS = {
 
       // The initial measurements loaded in the workspace
       measurements: [
-        {
-          id: 'genes',
-          name: 'Genes',
-          type: 'range',
-          datasourceId: 'genes',
-          datasourceGroup: 'genes',
-          dataprovider: epiviz.Config.DEFAULT_DATA_PROVIDER_ID,
-          formula: null,
-          defaultChartType: 'Genes Track',
-          annotation: null,
-          minValue: null,
-          maxValue: null,
-          metadata: ['gene', 'entrez', 'exon_starts', 'exon_ends']
-        }
       ],
 
       // // The initial charts on the initial workspace

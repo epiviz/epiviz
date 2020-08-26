@@ -20,6 +20,7 @@ goog.require('epiviz.plugins.charts.StackedLinePlotType');
 goog.require('epiviz.ui.charts.tree.IcicleType');
 goog.require('epiviz.plugins.charts.DiversityScatterPlotType');
 goog.require('epiviz.plugins.charts.CustomScatterPlotType');
+goog.require('epiviz.plugins.charts.GwasTrackType');
 
 
 /**

@@ -386,6 +386,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/stacked-blocks-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-track.js"></script>
     <script src="src/epiviz/plugins/charts/line-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/gwas-track.js"></script>
+    <script src="src/epiviz/plugins/charts/gwas-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-track.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/multistacked-line-track.js"></script>
@@ -598,6 +600,7 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
         </div>
 
         <div id="intro-navigation" class="intro-container">
+          <select id="genome-selector"></select>
           <select id="chromosome-selector"></select>
           <input id="text-location" class="ui-widget-content ui-corner-all" type="text"/>
           <button id="moveleft">Slide left</button>
