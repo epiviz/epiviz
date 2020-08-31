@@ -119,6 +119,22 @@ epiviz.plugins.charts.TSNEPlot.prototype.draw = function() {
 
     // self._variance_labels = self._lastData.pca_variance_explained;
     // self._variance_labels = [0.9, 0.1];
+
+    var colColors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", 
+    "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+
+    var labels = self._lastData.cluster_order;
+
+    self.cluster_colors = {};
+    // cluster_names.sort();
+
+    labels.forEach(function(cname, i) {
+        self.cluster_colors[cname] = colColors[i];
+    });
+
+    console.log(labels);
+    console.log(self.cluster_colors)
+
     return self.drawScatter(self._lastRange, self._lastData.data, "sample_id", "dim1", "dim2");
 };
 
@@ -253,6 +269,13 @@ epiviz.plugins.charts.TSNEPlot.prototype._drawCircles = function(data, dimx, dim
     });
 
     selection
+        .exit()
+        .transition()
+        .duration(100)
+        .style("opacity", 0)
+        .remove();
+
+    selection
         .enter()
         .insert('circle', ':first-child')
         .attr('id', function(d) {
@@ -261,6 +284,7 @@ epiviz.plugins.charts.TSNEPlot.prototype._drawCircles = function(data, dimx, dim
         .style('opacity', 0)
         .style('fill-opacity', 0)
         .attr('r', 0);
+
     selection
         .each(
             /**
@@ -269,10 +293,12 @@ epiviz.plugins.charts.TSNEPlot.prototype._drawCircles = function(data, dimx, dim
             function(d) {
                 var circle = d3.select(this);
 
-                var fill = self.colors().getByKey(d.valueItems[0][0][colorbylabel]);
-                if(self._globalIndexColorLabels != null && self._globalIndexColorLabels.indexOf(d.valueItems[0][0][colorbylabel]) == -1){
-                    self._globalIndexColorLabels.push(d.valueItems[0][0][colorbylabel]);
-                }
+                // var fill = self.colors().getByKey(d.valueItems[0][0][colorbylabel]);
+                // if(self._globalIndexColorLabels != null && self._globalIndexColorLabels.indexOf(d.valueItems[0][0][colorbylabel]) == -1){
+                //     self._globalIndexColorLabels.push(d.valueItems[0][0][colorbylabel]);
+                // }
+
+                var fill = self.cluster_colors[d.valueItems[0][0][colorbylabel]];
 
                 if (d.valueItems[0][0][colorbylabel] == "removed") {
                     fill = "gray";

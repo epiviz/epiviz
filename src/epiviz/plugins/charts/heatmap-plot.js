@@ -1371,6 +1371,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(
     return i * cellHeight + (centered ? cellHeight * 0.5 : 0);
   };
 
+  var colColors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", 
+  "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+
   var measurementLabel = function(m) {
     var label;
     if (rowLabel == "name") {
@@ -1409,6 +1412,9 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(
       .style("opacity", "0")
       .attr("x", 0)
       .attr("y", 0)
+      .style("fill", function(d, i) {
+        return colColors[i];
+      })
       .attr("transform", function(d, i) {
         return "translate(" + mapCol(i, true) + "," + -5 + ")rotate(-60)";
       })
@@ -1741,12 +1747,16 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabelsCanvas = function(
   var maxColSize = 0;
   var ctx = self.canvas.getContext("2d");
 
+  var colColors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", 
+              "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
+
   colnames.forEach(function(c, i) {
     var name = c;
     ctx.save();
     ctx.translate(mapCol(i, true), -5);
     ctx.rotate(-Math.PI / 4);
-    var color = "#000000";
+    // var color = "#000000";
+    var color = colColors[i];
     if (self._globalIndexColorLabels) {
       var globalIndex = i + firstGlobalIndex;
 
