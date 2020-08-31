@@ -386,6 +386,7 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
         .style('opacity', 0)
         .style('fill-opacity', 0)
         .attr('r', 0);
+
     selection
         .each(
             /**
@@ -408,9 +409,9 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles = function(dat
                 
                 var cx = (margins.left() + (d.values[0] - minX) * (width - margins.sumAxis(Axis.X)) / (maxX - minX));
                 if (finished % 2 == 0) {
-                    cx += (finished/2) * xScale(0.1);
+                    cx += (finished/2) * xScale(0.02);
                 } else {
-                    cx -= Math.ceil(finished/2) * xScale(0.1);
+                    cx -= Math.ceil(finished/2) * xScale(0.02);
                 }
 
                 gridYCountFinished[gridY][gridX]++;
