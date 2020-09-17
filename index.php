@@ -382,6 +382,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/ui/charts/tree/hierarchy-visualization-type.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/blocks-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/interaction-blocks-track.js"></script>
+    <script src="src/epiviz/plugins/charts/interaction-blocks-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-blocks-track.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-blocks-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-track.js"></script>

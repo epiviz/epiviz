@@ -81,7 +81,25 @@ text {
 .blocks-track {}
 .blocks-track .items { shape-rendering: crispEdges; fill-opacity: 0.6; stroke: #555555; stroke-opacity: 0.5; stroke-width: 1; }
 .blocks-track .selected { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }
-.blocks-track .hovered { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }
+.blocks-track .hovered { 
+    stroke: #ffc600 !important; 
+    stroke-width: 5 !important; 
+    stroke-opacity: 0.7 !important; 
+    fill-opacity: 1 !important; 
+}
+.blocks-track .hovered .arcs { 
+    stroke: #ffc600 !important; 
+    stroke-width: 5 !important; 
+    stroke-opacity: 0.7 !important; 
+    fill-opacity: 1 !important; 
+}
+.blocks-track .items .arcs {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: auto;
+    stroke-opacity: 0.4;
+}
 
 /* Heatmap */
 
@@ -193,4 +211,3 @@ text {
    font-size: 14px;
    font-weight: bold;
 }
-
