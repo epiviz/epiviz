@@ -285,6 +285,12 @@ epiviz.plugins.charts.LineTrack.prototype.draw = function(
         "transform",
         "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
       );
+  } else {
+    linesGroup      
+      .attr(
+        "transform",
+        "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
+      );
   }
 
   data.measurements().forEach(function(m, i) {

@@ -160,6 +160,12 @@ epiviz.plugins.charts.GwasTrack.prototype.draw = function(
         "transform",
         "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
       );
+  } else {
+    linesGroup      
+      .attr(
+        "transform",
+        "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
+      );
   }
 
   data.measurements().forEach(function(m, i) {
@@ -336,7 +342,7 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
     var y = function(j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      return yScale(cell.rowItem.rowMetadata()[yAxisField]);
+      return yScale(parseInt(cell.rowItem.rowMetadata()[yAxisField]));
     };
 
     var errMinus = function(j) {

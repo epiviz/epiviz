@@ -6,7 +6,7 @@
 
 goog.provide('epiviz.plugins.charts.InteractionBlocksTrackType');
 
-goog.require('epiviz.plugins.charts.BlocksTrack');
+goog.require('epiviz.plugins.charts.InteractionBlocksTrack');
 goog.require('epiviz.ui.charts.TrackType');
 goog.require('epiviz.measurements.Measurement.Type');
 goog.require('epiviz.ui.charts.CustomSetting');
@@ -31,7 +31,7 @@ epiviz.plugins.charts.InteractionBlocksTrackType.constructor = epiviz.plugins.ch
  * @param {string} id
  * @param {jQuery} container The div where the chart will be drawn
  * @param {epiviz.ui.charts.VisualizationProperties} properties
- * @returns {epiviz.plugins.charts.BlocksTrack}
+ * @returns {epiviz.plugins.charts.InteractionBlocksTrack}
  */
 epiviz.plugins.charts.InteractionBlocksTrackType.prototype.createNew = function (id, container, properties) {
   return new epiviz.plugins.charts.InteractionBlocksTrack(id, container, properties);

@@ -266,6 +266,12 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(
         "transform",
         "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
       );
+  } else {
+    graph      
+      .attr(
+        "transform",
+        "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
+      );
   }
 
   var stack = d3.layout.stack().offset(offset);

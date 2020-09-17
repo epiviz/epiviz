@@ -153,6 +153,13 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype.drawCanvas = function (
         "transform",
         "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
       );
+  } 
+  else {
+    linesGroup      
+      .attr(
+        "transform",
+        "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
+      );
   }
 
   data.measurements().forEach(function (m, i) {
@@ -272,6 +279,13 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype.draw = function (
     linesGroup = this._svg
       .append("g")
       .attr("class", "lines")
+      .attr(
+        "transform",
+        "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
+      );
+  }
+  else {
+    linesGroup      
       .attr(
         "transform",
         "translate(" + this.margins().left() + ", " + this.margins().top() + ")"
