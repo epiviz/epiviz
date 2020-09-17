@@ -303,7 +303,15 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
       });
 
     for (var k = 0; k < indices.length; ++k) {
+      
       var cell = series.get(indices[k]);
+      if (
+        cell.rowItem.start() > range.end() ||
+        cell.rowItem.end() < range.start()
+      ) {
+        continue;
+      }
+
       items.push(
         new epiviz.ui.charts.ChartObject(
           sprintf("line_%s_%s", i, cell.globalIndex),

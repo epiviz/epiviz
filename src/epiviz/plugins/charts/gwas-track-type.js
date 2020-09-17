@@ -6,7 +6,7 @@
 
 goog.provide('epiviz.plugins.charts.GwasTrackType');
 
-goog.require('epiviz.plugins.charts.LineTrack');
+goog.require('epiviz.plugins.charts.GwasTrack');
 goog.require('epiviz.plugins.charts.LineTrackType');
 goog.require('epiviz.measurements.Measurement.Type');
 goog.require('epiviz.ui.charts.CustomSetting');
