@@ -449,7 +449,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
     if (!skip) {
       var color = self._measurementColorLabels
       ? colors.getByKey(self._measurementColorLabels.get(m))
-      : colors.get(trackCount);
+      : colors.getByKey(m.id());
 
       /** @type {{index: ?number, length: number}} */
       var drawBoundaries = series.binarySearchStarts(extendedRange);
@@ -1106,7 +1106,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas = functio
 
     var color;
     if (!self._measurementColorLabels) {
-      color = self.colors().get(trackCount);
+      color = self.colors().getByKey(m.id()) //get(trackCount);
     } else {
       color = self.colors().getByKey(self._measurementColorLabels.get(m));
     }
@@ -1364,7 +1364,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
       .attr("font-weight", "bold")
       .attr("fill", function(m, i) {
         if (!self._measurementColorLabels) {
-          return self.colors().get(i);
+          return self.colors().getByKey(m.id()); //self.colors().get(i);
         }
         return self.colors().getByKey(self._measurementColorLabels.get(m));
       })
@@ -1392,7 +1392,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
   .attr("font-weight", "bold")
   .attr("fill", function(m, i) {
     if (!self._measurementColorLabels) {
-      return self.colors().get(i);
+      return self.colors().getByKey(m.id()); //self.colors().get(i);
     }
     return self.colors().getByKey(self._measurementColorLabels.get(m));
   })
@@ -1428,7 +1428,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
     .style("stroke-width", "0")
     .style("fill", function(m, i) {
       if (!self._measurementColorLabels) {
-        return self.colors().get(i);
+        return self.colors().getByKey(m.id()); //self.colors().get(i);
       }
       return self.colors().getByKey(self._measurementColorLabels.get(m));
     });
