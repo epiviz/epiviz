@@ -93,12 +93,28 @@ text {
     stroke-opacity: 0.7 !important; 
     fill-opacity: 1 !important; 
 }
-.blocks-track .items .arcs {
+.blocks-track .items .arcs-group .arcs {
     fill: none;
     stroke: grey;
-    stroke-width: 1;
+    stroke-width: 2px;
     shape-rendering: auto;
     stroke-opacity: 0.4;
+}
+
+/* .blocks-track .items .arcs-group {
+    fill: none;
+    stroke: grey;
+    stroke-width: 8;
+    shape-rendering: auto;
+    stroke-opacity: 0;
+} */
+
+.blocks-track .items .arcs-group .arcs-padding {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 20px;
+    shape-rendering: auto;
+    stroke-opacity: 0;
 }
 
 /* Heatmap */

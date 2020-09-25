@@ -1,6 +1,6 @@
 /**
- * Created by Florin Chelaru ( florinc [at] umd [dot] edu )
- * Date: 10/16/13
+ * Created by Jayaram Kancherla ( jkanche [at] umd [dot] edu )
+ * Date: 9/10/20
  * Time: 9:35 AM
  */
 
@@ -151,14 +151,6 @@ epiviz.plugins.charts.InteractionBlocksTrack.prototype._drawBlocks = function (
         {
           "start": parseInt(cell.rowItem.rowMetadata()["region1start"]),
           "end": parseInt(cell.rowItem.rowMetadata()["region1end"])
-          // "id": sprintf(
-          //   "b-%s-%s-%s",
-          //   i,
-          //   parseInt(cell.rowItem.rowMetadata()["region1start"]),
-          //   parseInt(cell.rowItem.rowMetadata()["region1end"])
-          // ),
-          // "cssClasses" : classes,
-          // "chr": cell.rowItem.seqName()
         }
       )
 
@@ -166,14 +158,6 @@ epiviz.plugins.charts.InteractionBlocksTrack.prototype._drawBlocks = function (
         {
           "start": parseInt(cell.rowItem.rowMetadata()["region2start"]),
           "end": parseInt(cell.rowItem.rowMetadata()["region2end"])
-          // "id": sprintf(
-          //         "b-%s-%s-%s",
-          //         i,
-          //         parseInt(cell.rowItem.rowMetadata()["region2start"]),
-          //         parseInt(cell.rowItem.rowMetadata()["region2end"])
-          //       ),
-          // "cssClasses" : classes,
-          // "chr": cell.rowItem.seqName()
         }
       )
 
@@ -355,42 +339,114 @@ epiviz.plugins.charts.InteractionBlocksTrack.prototype._drawBlocks = function (
     })
     .remove();
 
-  items.selectAll(".arcs").remove();
+  items.selectAll(".arcs-group").remove();
 
   var links = items
-          .selectAll('.arcs')
+          .selectAll('.arcs-group')
           .data(all_series_links);
 
+  // group and add padding to arcs
   links
     .enter()
-    .append('path')
-    .attr("class", "arcs")
-    .attr('d', function (d) {
-      var r1s = parseInt(d.region1start), r1e = parseInt(d.region1end), 
-          r2s = parseInt(d.region2start), r2e = parseInt(d.region2end);
+    .append("g")
+    .attr("class", "arcs-group")
+    .each(function(g) {
 
-      var start = xScale(Math.round((r1s + r1e) / 2));  
-      var end = xScale(Math.round((r2s + r2e) / 2));      
-
-      //Creating an Arc path
-      // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-      // large-arc-flag, sweep-flag, end-x, end-y
-
-      return ['M', start, Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),    
-        'A',                            
-        (end - start)/2, ',',
-        Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9), 0, 0, ',',
-        start < end ? 1 : 0, end, ',', Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9)] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-        .join(' ');
-    })
-    .on("mouseout", function () {
-      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-    })
-    .on("mouseover", function (b) {
-      // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
       var node = this;
-      self._arcHover(b, range, node);
-    });
+      d3.select(this)
+        .append("path")
+        .attr("class", "arcs")
+        .attr("d", function(d) {
+          var r1s = parseInt(d.region1start), r1e = parseInt(d.region1end), 
+            r2s = parseInt(d.region2start), r2e = parseInt(d.region2end);
+
+          var start = xScale(Math.round((r1s + r1e) / 2));  
+          var end = xScale(Math.round((r2s + r2e) / 2));      
+
+          //Creating an Arc path
+          // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
+          // large-arc-flag, sweep-flag, end-x, end-y
+
+          return ['M', start, Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),    
+            'A',                            
+            (end - start)/2, ',',
+            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9), 0, 0, ',',
+            start < end ? 1 : 0, end, ',', Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9)] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+            .join(' ');
+        });
+
+        d3.select(this)
+        .append("path")
+        .attr("class", "arcs-padding")
+        .attr("d", function(d) {
+          var r1s = parseInt(d.region1start), r1e = parseInt(d.region1end), 
+            r2s = parseInt(d.region2start), r2e = parseInt(d.region2end);
+
+          var start = xScale(Math.round((r1s + r1e) / 2));  
+          var end = xScale(Math.round((r2s + r2e) / 2));      
+
+          //Creating an Arc path
+          // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
+          // large-arc-flag, sweep-flag, end-x, end-y
+
+          return ['M', start, Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),    
+            'A',                            
+            (end - start)/2, ',',
+            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9), 0, 0, ',',
+            start < end ? 1 : 0, end, ',', Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9)] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+            .join(' ');
+        })
+        .on("mouseout", function () {
+          self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+        })
+        .on("mouseover", function (b) {
+          // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
+          // var node = this;
+          self._arcHover(b, range, node);
+        });
+    })
+    // .on("mouseout", function () {
+    //   self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+    // })
+    // .on("mouseover", function (b) {
+    //   // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
+    //   var node = this;
+    //   self._arcHover(b, range, node);
+    // });
+  
+
+  // using path to create arcs
+  // links
+  //   .enter()
+  //   .append('path')
+  //   .attr("class", "arcs")
+  //   .attr('d', function (d) {
+  //     var r1s = parseInt(d.region1start), r1e = parseInt(d.region1end), 
+  //         r2s = parseInt(d.region2start), r2e = parseInt(d.region2end);
+
+  //     var start = xScale(Math.round((r1s + r1e) / 2));  
+  //     var end = xScale(Math.round((r2s + r2e) / 2));      
+
+  //     //Creating an Arc path
+  //     // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
+  //     // large-arc-flag, sweep-flag, end-x, end-y
+
+  //     return ['M', start, Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),    
+  //       'A',                            
+  //       (end - start)/2, ',',
+  //       Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9), 0, 0, ',',
+  //       start < end ? 1 : 0, end, ',', Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9)] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+  //       .join(' ');
+  //   })
+  //   .on("mouseout", function () {
+  //     self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+  //   })
+  //   .on("mouseover", function (b) {
+  //     // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
+  //     var node = this;
+  //     self._arcHover(b, range, node);
+  //   });
+
     // .style("fill", "none")
     // .style("stroke", "grey")
     // .style("stroke-width", 1)
@@ -565,10 +621,10 @@ epiviz.plugins.charts.InteractionBlocksTrack.prototype.doHover = function(select
       }
     };
   
-    var selectItems = itemsGroup.find("> .arcs").filter(filter);
+    var selectItems = itemsGroup.find("> .arcs-group").filter(filter);
     unselectedHoveredGroup.append(selectItems);
   
-    selectItems = selectedGroup.find("> .arcs").filter(filter);
+    selectItems = selectedGroup.find("> .arcs-group").filter(filter);
     selectedHoveredGroup.append(selectItems);
   }
 };

@@ -1,7 +1,7 @@
 /**
- * Created by Florin Chelaru ( florinc [at] umd [dot] edu )
- * Date: 10/16/13
- * Time: 9:36 AM
+ * Created by Jayaram Kancherla ( jkanche [at] umd [dot] edu )
+ * Date: 9/10/20
+ * Time: 9:35 AM
  */
 
 goog.provide('epiviz.plugins.charts.InteractionBlocksTrackType');
