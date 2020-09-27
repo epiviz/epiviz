@@ -125,13 +125,13 @@ epiviz.plugins.charts.GwasTrackType.prototype.customSettingsDefs = function() {
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.GwasTrackType.CustomSettings.ABS_LINE_VAL,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      500,
+      0.5,
       'Threshold'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.GwasTrackType.CustomSettings.Y_AXIS_SEL,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
-      'name;',
+      'score',
       'Y-axis column')
   ]);
 };

@@ -86,12 +86,12 @@ epiviz.plugins.charts.GwasTrack.prototype.draw = function(
         for (var k = 0; k < indices.length; ++k) {
           var cell = series.get(indices[k]);
 
-          if (parseInt(cell.rowItem.rowMetadata()[yAxisField]) < fMin) {
-            fMin = parseInt(cell.rowItem.rowMetadata()[yAxisField]);
+          if (parseFloat(cell.rowItem.rowMetadata()[yAxisField]) < fMin) {
+            fMin = parseFloat(cell.rowItem.rowMetadata()[yAxisField]);
           }
 
-          if (parseInt(cell.rowItem.rowMetadata()[yAxisField]) > fMax) {
-            fMax = parseInt(cell.rowItem.rowMetadata()[yAxisField]);
+          if (parseFloat(cell.rowItem.rowMetadata()[yAxisField]) > fMax) {
+            fMax = parseFloat(cell.rowItem.rowMetadata()[yAxisField]);
           }
         }
       }
@@ -130,6 +130,7 @@ epiviz.plugins.charts.GwasTrack.prototype.draw = function(
     .linear()
     .domain([range.start(), range.end()])
     .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
+    
   var yScale = d3.scale
     .linear()
     .domain([minY, absLine, maxY])
@@ -342,7 +343,7 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
     var y = function(j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      return yScale(parseInt(cell.rowItem.rowMetadata()[yAxisField]));
+      return yScale(parseFloat(cell.rowItem.rowMetadata()[yAxisField]));
     };
 
     var errMinus = function(j) {
@@ -452,7 +453,7 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
       points       
         .each(function(d) {
           var cell = series.get(d);
-          if (absLine >= parseInt(cell.rowItem.rowMetadata()[yAxisField])) {
+          if (absLine >= parseFloat(cell.rowItem.rowMetadata()[yAxisField])) {
             d3.select(this)
               .transition()
               .duration(1000)
