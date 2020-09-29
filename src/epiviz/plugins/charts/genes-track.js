@@ -148,6 +148,29 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGenes = function(
   /** @type {epiviz.datatypes.MeasurementGenomicData} */
   var series = data.firstSeries();
 
+  var numGenes = Math.floor(width/100);
+  self.genesToShow = [];
+
+  self.ShowGeneNames = false;
+  if(series.size() <= numGenes) {
+    self.ShowGeneNames = true;
+  } else {
+    // var partition = range.width()/numGenes;
+    var partition = Math.round(100 * range.width() / (width - margins.sumAxis(Axis.X)));
+
+    for (var i=0; i < numGenes; i++) {
+      var tempRange = epiviz.datatypes.GenomicRange.fromStartEnd(
+        range.seqName(),
+        range.start() + ((i) * partition),
+        range.start + ((i+1) * partition),
+        range.genome());
+
+        var drawBoundaries = series.binarySearchStarts(tempRange);
+        var first_gene = series.get(drawBoundaries.index);
+        self.genesToShow.push(first_gene.rowItem.metadata("gene"));
+    }
+  }
+
   var indices = epiviz.utils.range(series.size());
 
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
@@ -565,14 +588,38 @@ epiviz.plugins.charts.GenesTrack.prototype._drawGene = function(
 
   gene
     .append("text")
-    .attr("class", "gene-name")
-    .attr("x", geneStart + 2)
+    .attr("class", function(d) {
+
+      if (self.ShowGeneNames){
+        return "gene-name-show";
+      }
+
+      if (self.genesToShow.indexOf(d.id) != -1) {
+        return "gene-name-show";
+      }
+
+      return "gene-name";
+    })
+    .attr("x", function(d) {
+      if (d.valueItems[0][0].rowItem.strand() == "+") {
+        return geneStart + 2;
+      }
+
+      return geneEnd - 2;
+    })
     .attr(
       "y",
       (self.height() - self.margins().sumAxis(Axis.Y)) * 0.5 +
         offset -
         or * (geneHeight + 2)
     )
+    .attr("text-anchor", function(d) {
+      if (d.valueItems[0][0].rowItem.strand() == "+") {
+        return "start";
+      }
+
+      return "end";
+    })
     .style("dominant-baseline", "central")
     .text(d.id); //Gene
 };

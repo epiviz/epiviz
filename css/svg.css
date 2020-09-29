@@ -69,6 +69,8 @@ text {
 .genes-track .items { shape-rendering: auto; stroke: #555555; fill-opacity: 0.6; }
 .genes-track .exons { stroke: none; }
 .genes-track .gene-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }
+.genes-track .gene-name-show { font-weight: bold; font-size: 12; fill: #000000; stroke: none; }
+
 .genes-track .selected { fill-opacity: 1; stroke: #555555; }
 .genes-track .selected .gene-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
 .genes-track .hovered { fill-opacity: 1; stroke: #555555; }
