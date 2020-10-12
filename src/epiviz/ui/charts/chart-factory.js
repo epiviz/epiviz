@@ -15,6 +15,7 @@ goog.require('epiviz.plugins.charts.StackedLineTrackType');
 goog.require('epiviz.plugins.charts.MultiStackedLineTrackType');
 goog.require('epiviz.plugins.charts.ScatterPlotType');
 goog.require('epiviz.plugins.charts.GenesTrackType');
+goog.require('epiviz.plugins.charts.TranscriptTrackType');
 goog.require('epiviz.plugins.charts.HeatmapPlotType');
 goog.require('epiviz.plugins.charts.LinePlotType');
 goog.require('epiviz.plugins.charts.StackedLinePlotType');

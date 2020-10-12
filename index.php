@@ -398,6 +398,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/scatter-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/genes-track.js"></script>
     <script src="src/epiviz/plugins/charts/genes-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/transcript-track.js"></script>
+    <script src="src/epiviz/plugins/charts/transcript-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-plot.js"></script>

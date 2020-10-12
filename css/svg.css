@@ -78,6 +78,21 @@ text {
 .genes-track .hovered .gene-name { fill-opacity: 1; }
 .genes-track .selected .gene-name { fill-opacity: 1; }
 
+
+/* Transcript Track */
+
+.transcript-track {}
+.transcript-track .items { shape-rendering: auto; stroke: #555555; fill-opacity: 0.6; stroke-width: 0.1; }
+.transcript-track .transcript-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }
+.transcript-track .transcript-name-show { font-weight: bold; font-size: 12; fill: #000000; stroke: none; }
+
+.transcript-track .selected { fill-opacity: 1; stroke: #555555; }
+.transcript-track .selected .transcript-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.transcript-track .hovered { fill-opacity: 1; stroke: #555555; }
+.transcript-track .hovered .transcript-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.transcript-track .hovered .transcript-name { fill-opacity: 1; }
+.transcript-track .selected .transcript-name { fill-opacity: 1; }
+
 /* Blocks Track */
 
 .blocks-track {}

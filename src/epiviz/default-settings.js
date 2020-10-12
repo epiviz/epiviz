@@ -47,6 +47,7 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.MultiStackedLineTrackType',
     'epiviz.plugins.charts.ScatterPlotType',
     'epiviz.plugins.charts.GenesTrackType',
+    'epiviz.plugins.charts.TranscriptTrackType',
     'epiviz.plugins.charts.HeatmapPlotType',
     'epiviz.plugins.charts.LinePlotType',
     'epiviz.plugins.charts.StackedLinePlotType',
@@ -113,6 +114,12 @@ epiviz.Config.SETTINGS = {
       height: 120,
       colors: 'genes-default'
     },
+
+    'epiviz.plugins.charts.TranscriptTrackType': {
+      height: 200,
+      colors: 'genes-default'
+    },
+
 
     'epiviz.plugins.charts.LineTrack': {
       colors: 'epiviz-v2-bright',
