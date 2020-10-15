@@ -165,6 +165,8 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscripts = function(
   var indices = epiviz.utils.range(series.size());
   // self._overlaps = {};
   self._genesMap = {};
+  self._genesMapStrand = {};
+  self._genesExonsMap = {};
 
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var dataItems = indices.map(function(i) {
@@ -179,9 +181,34 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscripts = function(
       // self._overlaps[classes] = [i, tdrawBoundaries];
       if(!(item.metadata("gene") in self._genesMap)) {
         self._genesMap[item.metadata("gene")] = [];
+        self._genesMapStrand[item.metadata("gene")] = item.strand();
+        self._genesExonsMap[item.metadata("gene")] = {};
       }
       
       self._genesMap[item.metadata("gene")].push(classes);
+      var exonsStarts = item
+        .metadata("exon_starts")
+        .split(",")
+        .map(function(s) {
+          return parseInt(s);
+        });
+
+      var exonsEnds = item
+        .metadata("exon_ends")
+        .split(",")
+        .map(function(s) {
+          return parseInt(s);
+        });
+
+        exonsStarts.forEach(function(es, esj) {
+        var eti = es, etj = exonsEnds[esj], key = eti + "-" + etj;
+
+        if(!(key in self._genesExonsMap[item.metadata("gene")])) {
+          self._genesExonsMap[item.metadata("gene")][key] = 0;
+        }
+
+        self._genesExonsMap[item.metadata("gene")][key]++;
+      })
       
       return new epiviz.ui.charts.ChartObject(
         item.metadata("transcript_id"),
@@ -196,6 +223,29 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscripts = function(
       );
     }
   });
+
+  self.fStrand = 0;
+  self.rStrand = 0;
+
+  for(var g in self._genesMapStrand) {
+    if (self._genesMapStrand[g] == "+" && self.fStrand < self._genesMap[g].length) {
+      self.fStrand = self._genesMap[g].length;
+    } 
+    else if (self._genesMapStrand[g] == "-" && self.rStrand < self._genesMap[g].length) {
+      self.rStrand = self._genesMap[g].length;
+    }
+  }
+
+  var cheight = height - margins.sumAxis(Axis.Y) - 10;
+  self.tHeight = 3;
+  self.tPadding = 3;
+  self.heightPerTranscript = self.tHeight + self.tPadding;
+  if (self.heightPerTranscript * (self.fStrand + self.rStrand) < cheight) {
+    self.tHeight = Math.floor((cheight - (self.tPadding * (self.fStrand + self.rStrand)))/(self.fStrand + self.rStrand))
+  }
+
+  self.heightPerTranscript = self.tHeight + self.tPadding;
+  self.tCenter = 5 + (self.fStrand) * (self.tHeight + (1 * self.tPadding));
 
   dataItems = dataItems.filter(function(d) { return d != undefined;})
 
@@ -220,20 +270,6 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscripts = function(
       .attr("y", 0)
       .attr("width", width - margins.sumAxis(Axis.X))
       .attr("height", height - margins.sumAxis(Axis.Y));
-
-    // defs.append("marker")
-    //   .attr({
-    //     "id":"arrow",
-    //     "viewBox":"0 -5 10 10",
-    //     "refX":5,
-    //     "refY":0,
-    //     "markerWidth":4,
-    //     "markerHeight":4,
-    //     "orient":"auto-start-reverse"
-    //   })
-    //   .append("path")
-    //     .attr("d", "M0,-5L10,0L0,5")
-    //     .attr("class","arrowHead");
 
     items = this._svg
       .append("g")
@@ -339,7 +375,7 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
   var transcriptStart = xScale(d.start);
   var transcriptEnd = xScale(d.end);
   var or = rowItem.strand() == "+" ? 1 : -1;
-  var offset = -or * (this.height() - this.margins().sumAxis(Axis.Y)) * 0.001;
+  var offset = -or * 4;
 
   var exonStarts = rowItem
     .metadata("exon_starts")
@@ -358,10 +394,8 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
   var exonCount = exonStarts.length;
   var exonIndices = d3.range(0, exonCount);
 
-  // var transcriptHeight = this.height() * 0.08;
-  var transcriptHeight = 3;
-  var tssHeight = this.height() * 0.16;
-  var h = transcriptHeight * Math.sqrt(3) * 0.5;
+  var transcriptHeight = self.tHeight;
+  var h = self.tHeight * Math.sqrt(3) * 0.5;
 
   var transcript = d3.select(elem);
   transcript.attr("class", d.cssClasses);
@@ -374,18 +408,18 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
       var xs = null,
         ys;
 
-      var y = (self.height() - self.margins().sumAxis(Axis.Y)) * 0.5 + offset;
-      // return y + (-or * (2 * (self._overlaps[d.cssClasses][0] - self._overlaps[d.cssClasses][1].index)));
+      var y = self.tCenter + offset;
       var istack = self._genesMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]].indexOf(d.cssClasses);
-      var y0 = y + (-or * ((istack * 10) + 5));
-      // var y0 =
-      //   (self.height() - self.margins().sumAxis(Axis.Y) - transcriptHeight) * 0.5 +
-      //   offset;
-      ys = [y0, y0, y0 + transcriptHeight * 0.5, y0 + transcriptHeight, y0 + transcriptHeight];
+      var y0 = y + (-or * (istack) * (self.tHeight + self.tPadding));
+
       if (rowItem.strand() == "+") {
         xs = [transcriptStart, transcriptEnd, transcriptEnd + h, transcriptEnd, transcriptStart];
+        ys = [y0, y0, y0 + (-or * transcriptHeight) * 0.5, 
+                y0 + (-or * transcriptHeight), y0 + (-or * transcriptHeight)];
       } else {
         xs = [transcriptEnd, transcriptStart, transcriptStart - h, transcriptStart, transcriptEnd];
+        ys = [y0 + transcriptHeight, y0 + transcriptHeight, 
+              y0 + transcriptHeight * 0.5, y0, y0];      
       }
 
       return sprintf(
@@ -417,8 +451,11 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
     })
     .attr(
       "y",
-      (self.height() - self.margins().sumAxis(Axis.Y)) * 0.5 +
-        offset + (-or * ((self._genesMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]].indexOf(d.cssClasses) * 10) + 5))
+      (self.tCenter + offset
+        + (-or * self._genesMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]].indexOf(d.cssClasses) 
+        * (self.tHeight + self.tPadding))
+        + (-or * self.tHeight/2)
+        )
     )
     .attr("text-anchor", function(d) {
       if (d.valueItems[0][0].rowItem.strand() == "+") {
@@ -432,8 +469,7 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
 
   var exons = transcript
     .append("g")
-    .attr("class", "exons")
-    .style("fill", this.colors().get(1));
+    .attr("class", "exons");
 
   exons
     .selectAll("rect")
@@ -443,16 +479,30 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
     .attr("x", function(j) {
       return xScale(exonStarts[j]);
     })
-    .attr(
-      "y",
-      (self.height() - self.margins().sumAxis(Axis.Y)) * 0.5 +
-      offset + (-or * (
-        (self._genesMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]].indexOf(d.cssClasses) * 10) + 5)) - 1
-    )
+    .attr("y", function(j) {
+
+      var y0 = (self.tCenter + offset
+        + (-or * self._genesMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]].indexOf(d.cssClasses) 
+        * (self.tHeight + self.tPadding)) -1)
+
+      return rowItem.strand() == "+" ? y0 + (-or * transcriptHeight) : y0;
+    })
     .attr("width", function(j) {
       return xScale(exonEnds[j]) - xScale(exonStarts[j]);
     })
-    .attr("height", transcriptHeight + 2);
+    .attr("height", transcriptHeight + 2)
+    .style("fill", function(j) {
+      var key = exonStarts[j] + "-" + exonEnds[j];
+
+      return self._genesExonsMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]][key] == self._genesMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]].length 
+        ? "gray" : self.colors().get(1);
+    })
+    .attr("fill-opacity", function(j) {
+      var key = exonStarts[j] + "-" + exonEnds[j];
+
+      return self._genesExonsMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]][key] == self._genesMap[d.valueItems[0][0].rowItem.rowMetadata()["gene"]].length 
+        ? 0.5 : 0.8
+     });
 };
 
 /**
