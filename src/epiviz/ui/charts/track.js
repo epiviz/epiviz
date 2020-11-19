@@ -212,7 +212,7 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
     this._unhover.notify(new epiviz.ui.charts.VisEventArgs(this.id()));
     var inverseXScale = d3.scale
         .linear()
-        .domain([0, this.width()])
+        .domain([this.margins().left(), this.width()- this.margins().right()])
         .range([this._lastRange.start(), this._lastRange.end()]);
     var start =
         inverseXScale(d3.mouse(this._background[0][0])[0]) - this._binSize / 2;
