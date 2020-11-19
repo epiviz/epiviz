@@ -54,7 +54,8 @@ epiviz.Config.SETTINGS = {
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.CustomScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
-    'epiviz.plugins.charts.GwasTrackType'
+    'epiviz.plugins.charts.GwasTrackType',
+    'epiviz.plugins.charts.GwasPIPTrackType'
   ],
 
   // Chart default settings
@@ -86,11 +87,12 @@ epiviz.Config.SETTINGS = {
         'epiviz.ui.charts.decoration.ChartFilterCodeButton'
       ]
     },
+    // margins: new epiviz.ui.charts.Margins(25, 20, 23, 10),
 
     track: {
       width: '100%',
       height: 90,
-      margins: new epiviz.ui.charts.Margins(25, 20, 23, 10),
+      margins: new epiviz.ui.charts.Margins(25, 50, 20, 15),
       decorations: [
         'epiviz.ui.charts.decoration.ToggleTooltipButton',
 
@@ -133,11 +135,11 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.GwasTrack': {
       height: 250,
       colors: 'epiviz-v2-bright',
-      decorations: [
-        'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
-        'epiviz.ui.charts.decoration.ChartColorByMeasurementsCodeButton'
-      ],
-      chartMarkers:['epiviz.ui.charts.markers.MeasurementAggregator']
+    },
+
+    'epiviz.plugins.charts.GwasPIPTrack': {
+      height: 250,
+      colors: 'epiviz-v2-bright',
     },
 
     'epiviz.plugins.charts.StackedLineTrack': {

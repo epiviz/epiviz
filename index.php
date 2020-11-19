@@ -390,6 +390,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/line-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/gwas-track.js"></script>
     <script src="src/epiviz/plugins/charts/gwas-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/gwas-pip-track.js"></script>
+    <script src="src/epiviz/plugins/charts/gwas-pip-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-track.js"></script>
     <script src="src/epiviz/plugins/charts/stacked-line-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/multistacked-line-track.js"></script>

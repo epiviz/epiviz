@@ -1,13 +1,13 @@
 /**
  * @author Jayaram Kancherla
  * @email jayaram dot kancherla at gmail dot com
- * @create date 2020-11-19 09:04:33
- * @modify date 2020-11-19 09:04:33
+ * @create date 2020-11-19 09:04:09
+ * @modify date 2020-11-19 09:04:09
  */
 
-goog.provide('epiviz.plugins.charts.GwasTrackType');
+goog.provide('epiviz.plugins.charts.GwasPIPTrackType');
 
-goog.require('epiviz.plugins.charts.GwasTrack');
+goog.require('epiviz.plugins.charts.GwasPIPTrack');
 goog.require('epiviz.plugins.charts.LineTrackType');
 goog.require('epiviz.measurements.Measurement.Type');
 goog.require('epiviz.ui.charts.CustomSetting');
@@ -18,7 +18,7 @@ goog.require('epiviz.ui.charts.Visualization');
  * @extends {epiviz.ui.charts.TrackType}
  * @constructor
  */
-epiviz.plugins.charts.GwasTrackType = function(config) {
+epiviz.plugins.charts.GwasPIPTrackType = function(config) {
   // Call superclass constructor
   epiviz.plugins.charts.LineTrackType.call(this, config);
 };
@@ -26,8 +26,8 @@ epiviz.plugins.charts.GwasTrackType = function(config) {
 /*
  * Copy methods from upper class
  */
-epiviz.plugins.charts.GwasTrackType.prototype = epiviz.utils.mapCopy(epiviz.plugins.charts.LineTrackType.prototype);
-epiviz.plugins.charts.GwasTrackType.constructor = epiviz.plugins.charts.GwasTrackType;
+epiviz.plugins.charts.GwasPIPTrackType.prototype = epiviz.utils.mapCopy(epiviz.plugins.charts.LineTrackType.prototype);
+epiviz.plugins.charts.GwasPIPTrackType.constructor = epiviz.plugins.charts.GwasPIPTrackType;
 
 /**
  * @param {string} id
@@ -35,71 +35,79 @@ epiviz.plugins.charts.GwasTrackType.constructor = epiviz.plugins.charts.GwasTrac
  * @param {epiviz.ui.charts.VisualizationProperties} properties
  * @returns {epiviz.plugins.charts.LineTrack}
  */
-epiviz.plugins.charts.GwasTrackType.prototype.createNew = function(id, container, properties) {
-  return new epiviz.plugins.charts.GwasTrack(id, container, properties);
+epiviz.plugins.charts.GwasPIPTrackType.prototype.createNew = function(id, container, properties) {
+  return new epiviz.plugins.charts.GwasPIPTrack(id, container, properties);
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.GwasTrackType.prototype.typeName = function() {
-  return 'epiviz.plugins.charts.GwasTrack';
+epiviz.plugins.charts.GwasPIPTrackType.prototype.typeName = function() {
+  return 'epiviz.plugins.charts.GwasPIPTrack';
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.GwasTrackType.prototype.chartName = function() {
-  return 'GWAS P-value Track';
+epiviz.plugins.charts.GwasPIPTrackType.prototype.chartName = function() {
+  return 'GWAS PIP Track';
 };
 
 /**
  * @returns {string}
  */
-epiviz.plugins.charts.GwasTrackType.prototype.chartHtmlAttributeName = function() {
-  return 'gwas';
+epiviz.plugins.charts.GwasPIPTrackType.prototype.chartHtmlAttributeName = function() {
+  return 'gwaspip';
 };
 
 /**
  * @returns {function(epiviz.measurements.Measurement): boolean}
  */
-epiviz.plugins.charts.GwasTrackType.prototype.measurementsFilter = function() { return function(m) { return m; }; };
+epiviz.plugins.charts.GwasPIPTrackType.prototype.measurementsFilter = function() { return function(m) { return m; }; };
 
 /**
  * @returns {Array.<epiviz.ui.charts.CustomSetting>}
  */
-epiviz.plugins.charts.GwasTrackType.prototype.customSettingsDefs = function() {
+epiviz.plugins.charts.GwasPIPTrackType.prototype.customSettingsDefs = function() {
   return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.STEP,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.STEP,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       1,
       'Step'),
+
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.SHOW_POINTS,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.SHOW_POINTS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Show points'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.SHOW_BARS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
-      'Show points'),
+      'Show bars'),
+
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.SHOW_LINES,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.SHOW_LINES,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       false,
       'Show lines'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.SHOW_ERROR_BARS,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.SHOW_ERROR_BARS,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       false,
       'Show error bars'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.POINT_RADIUS,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.POINT_RADIUS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       2,
       'Point radius'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.LINE_THICKNESS,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.LINE_THICKNESS,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       1,
       'Line thickness'),
@@ -117,46 +125,40 @@ epiviz.plugins.charts.GwasTrackType.prototype.customSettingsDefs = function() {
       'Max Y'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.INTERPOLATION,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.INTERPOLATION,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       'linear',
       'Interpolation',
       ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone']),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.ABS_LINE_VAL,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.ABS_LINE_VAL,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      7.301,
-      'Threshold (defaults to -log10(5E-8))'),
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Threshold'),
 
     new epiviz.ui.charts.CustomSetting(
-      epiviz.plugins.charts.GwasTrackType.CustomSettings.Y_AXIS_SEL,
+      epiviz.plugins.charts.GwasPIPTrackType.CustomSettings.Y_AXIS_SEL,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
       'score',
-      'Y-axis column'),
-
-      new epiviz.ui.charts.CustomSetting(
-        epiviz.plugins.charts.GwasTrackType.CustomSettings.HOVER_SEL,
-        epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
-        'rs_id',
-        'hover column (defaults to rs_id)')
+      'Y-axis column')
   ]);
 };
 
 /**
  * @enum {string}
  */
-epiviz.plugins.charts.GwasTrackType.CustomSettings = {
+epiviz.plugins.charts.GwasPIPTrackType.CustomSettings = {
   STEP: 'step',
   SHOW_POINTS: 'showPoints',
+  SHOW_BARS: 'showBars',
   SHOW_ERROR_BARS: 'showErrorBars',
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',
   LINE_THICKNESS: 'lineThickness',
   INTERPOLATION: 'interpolation',
   ABS_LINE_VAL: 'abLine',
-  Y_AXIS_SEL: 'yAxisField',
-  HOVER_SEL: 'hoverField'
+  Y_AXIS_SEL: 'yAxisField'
 };
 
-// goog.inherits(epiviz.plugins.charts.GwasTrackType, epiviz.ui.charts.TrackType);
+// goog.inherits(epiviz.plugins.charts.GwasPIPTrackType, epiviz.ui.charts.TrackType);
