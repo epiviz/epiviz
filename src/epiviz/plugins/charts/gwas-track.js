@@ -102,6 +102,14 @@ epiviz.plugins.charts.GwasTrack.prototype.draw = function(
     if (fMax > dataMax) { dataMax = fMax;}
   });
 
+  if(dataMin == 100000) {
+    dataMin = 0;
+  }
+
+  if(dataMax == -100000) {
+    dataMax = 20;
+  }
+
   var dataRange = [dataMin, dataMax];
   
   if (minY == CustomSetting.DEFAULT) {
@@ -113,14 +121,14 @@ epiviz.plugins.charts.GwasTrack.prototype.draw = function(
   }
 
   if (minY === null && maxY === null) {
-    minY = -1;
-    maxY = 1;
+    minY = 0;
+    maxY = 20;
   }
   if (minY === null) {
-    minY = maxY - 1;
+    minY = Math.min(0, maxY - 1);
   }
   if (maxY === null) {
-    maxY = minY + 1;
+    maxY = Math.max(minY, 20);
   }
 
   var absLine = this.customSettingsValues()[
@@ -128,7 +136,7 @@ epiviz.plugins.charts.GwasTrack.prototype.draw = function(
   ];
 
   if (maxY < absLine) { 
-    maxY += 1;
+    maxY = Math.max(maxY , 20);
   }
 
   var Axis = epiviz.ui.charts.Axis;
