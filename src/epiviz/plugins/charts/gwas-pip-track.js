@@ -178,27 +178,33 @@ epiviz.plugins.charts.GwasPIPTrack.prototype.draw = function(
 
     if (lineSeries.empty()) {
       linesGroup.append("g").attr("class", "line-series-index-" + i);
+    } else {
+      lineSeries.selectAll("path").remove();
     }
     if (pointSeries.empty()) {
       linesGroup.append("g").attr("class", "point-series-index-" + i);
+    } else {
+      pointSeries.selectAll("circle").remove();
     }
 
     if (barsSeries.empty()) {
       linesGroup.append("g").attr("class", "bars-series-index-" + i);
+    } else {
+      barsSeries.selectAll("rect").remove();
     }
   });
 
-  for (var i = data.measurements().length; ; ++i) {
-    var lineSeries = linesGroup.selectAll(".line-series-index-" + i);
-    var pointSeries = linesGroup.selectAll(".point-series-index-" + i);
-    var barsSeries = linesGroup.selectAll(".bars-series-index-" + i);
-    if (lineSeries.empty()) {
-      break;
-    }
-    lineSeries.remove();
-    pointSeries.remove();
-    barsSeries.remove();
-  }
+  // for (var i = data.measurements().length; ; ++i) {
+  //   var lineSeries = linesGroup.selectAll(".line-series-index-" + i);
+  //   var pointSeries = linesGroup.selectAll(".point-series-index-" + i);
+  //   var barsSeries = linesGroup.selectAll(".bars-series-index-" + i);
+  //   if (lineSeries.empty()) {
+  //     break;
+  //   }
+  //   lineSeries.remove();
+  //   pointSeries.remove();
+  //   barsSeries.remove();
+  // }
 
   return this._drawLines(range, data, delta, zoom, xScale, yScale, minY, maxY);
 };

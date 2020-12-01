@@ -189,21 +189,26 @@ epiviz.plugins.charts.GwasTrack.prototype.draw = function(
 
     if (lineSeries.empty()) {
       linesGroup.append("g").attr("class", "line-series-index-" + i);
+    } else {
+      lineSeries.selectAll("path").remove();
     }
+
     if (pointSeries.empty()) {
       linesGroup.append("g").attr("class", "point-series-index-" + i);
+    } else {
+      pointSeries.selectAll("circle").remove();
     }
   });
 
-  for (var i = data.measurements().length; ; ++i) {
-    var lineSeries = linesGroup.selectAll(".line-series-index-" + i);
-    var pointSeries = linesGroup.selectAll(".point-series-index-" + i);
-    if (lineSeries.empty()) {
-      break;
-    }
-    lineSeries.remove();
-    pointSeries.remove();
-  }
+  // for (var i = data.measurements().length; ; ++i) {
+  //   var lineSeries = linesGroup.selectAll(".line-series-index-" + i);
+  //   var pointSeries = linesGroup.selectAll(".point-series-index-" + i);
+  //   if (lineSeries.empty()) {
+  //     break;
+  //   }
+  //   lineSeries.remove();
+  //   pointSeries.remove();
+  // }
 
   return this._drawLines(range, data, delta, zoom, xScale, yScale);
 };
@@ -431,6 +436,7 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
       .select(".point-series-index-" + i)
       .selectAll("circle")
       .remove();
+
     graph
       .select(".point-series-index-" + i)
       .selectAll(".error-bar")
