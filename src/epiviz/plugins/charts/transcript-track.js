@@ -294,10 +294,10 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscripts = function(
     .enter()
     .insert("g", ":first-child")
     .on("mouseout", function() {
-      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      // self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
     })
     .on("mouseover", function(d) {
-      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      // self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
     })
     .on("click", function(d) {
       self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
@@ -440,7 +440,7 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
   transcript
     .append("text")
     .attr("class", function(d) {
-      return "transcript-name";
+      return "transcript-name-show";
     })
     .attr("x", function(d) {
       if (d.valueItems[0][0].rowItem.strand() == "+") {
@@ -510,4 +510,90 @@ epiviz.plugins.charts.TranscriptTrack.prototype._drawTranscript = function(
  */
 epiviz.plugins.charts.TranscriptTrack.prototype.colorLabels = function() {
   return ["Transcript", "Exons"];
+};
+
+/**
+* @param {epiviz.ui.charts.ChartObject} selectedObject
+*/
+epiviz.plugins.charts.TranscriptTrack.prototype.doHover = function(selectedObject) {
+  //  epiviz.ui.charts.Chart.prototype.doHover.call(this, selectedObject);
+
+   var self = this;
+
+   if (selectedObject.start == undefined || selectedObject.end == undefined) {
+       return;
+   }
+
+   if (!this._lastRange) {
+       return;
+   }
+
+   this._highlightGroup.selectAll("rect").remove();
+   this._highlightGroup.attr(
+       "transform",
+       "translate(" + this.margins().left() + ", " + 0 + ")"
+   );
+
+   var Axis = epiviz.ui.charts.Axis;
+   var xScale = d3.scale
+       .linear()
+       .domain([this._lastRange.start(), this._lastRange.end()])
+       .range([0, this.width() - this.margins().sumAxis(Axis.X)]);
+
+   var items = [];
+   if (!selectedObject.measurements || !selectedObject.measurements.length) {
+       items.push({ start: selectedObject.start, end: selectedObject.end });
+   } else {
+       for (var i = 0; i < selectedObject.valueItems[0].length; ++i) {
+           var rowItem = selectedObject.valueItems[0][i].rowItem;
+           items.push({ start: rowItem.start(), end: rowItem.end() });
+       }
+   }
+
+   var minHighlightSize = 5;
+
+   if (self.chartDrawType == "canvas") {
+       // Show highlight on tracks
+       var ctx = self.hoverCanvas.getContext("2d");
+       ctx.clearRect(0, 0, self.hoverCanvas.width, self.hoverCanvas.height);
+
+       items.forEach(function(d) {
+           ctx.beginPath();
+
+           ctx.fillStyle = self.colors().get(0);
+           ctx.globalAlpha = 0.1;
+           var defaultWidth = xScale(d.end + 1) - xScale(d.start);
+           var width = Math.max(minHighlightSize, defaultWidth);
+           var x = xScale(d.start) + defaultWidth * 0.5 - width * 0.5;
+
+           ctx.fillRect(
+               x,
+               0,
+               Math.max(minHighlightSize, xScale(d.end + 1) - xScale(d.start)),
+               self.height()
+           );
+       });
+
+       return;
+   }
+
+   this._highlightGroup
+       .selectAll("rect")
+       .data(items, function(d) {
+           return sprintf("%s-%s", d.start, d.end);
+       })
+       .enter()
+       .append("rect")
+       .style("fill", this.colors().get(0))
+       .style("fill-opacity", "0.1")
+       .attr("x", function(d) {
+           var defaultWidth = xScale(d.end + 1) - xScale(d.start);
+           var width = Math.max(minHighlightSize, defaultWidth);
+           return xScale(d.start) + defaultWidth * 0.5 - width * 0.5;
+       })
+       .attr("width", function(d) {
+           return Math.max(minHighlightSize, xScale(d.end + 1) - xScale(d.start));
+       })
+       .attr("y", 0)
+       .attr("height", this.height());
 };
