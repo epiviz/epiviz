@@ -1089,7 +1089,9 @@ epiviz.EpiViz.prototype._registerDataRedraw = function() {
          * @returns {boolean}
          */
         function(chart) {
-          return chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chart.type != "Sunburst";
+          // return chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chart.type != "Sunburst";
+          // return  chart.type != "Sunburst";
+          return true;
         });
 
       try {
@@ -1216,7 +1218,8 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
          * @returns {boolean}
          */
         function(chart) {
-          return (chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chart.type != "Sunburst");
+          // return (chart.displayType() != epiviz.ui.charts.VisualizationType.DisplayType.DATA_STRUCTURE && chart.type != "Sunburst");
+          return true;
         });
 
       /** @type {Object.<string, epiviz.measurements.MeasurementSet>} */
