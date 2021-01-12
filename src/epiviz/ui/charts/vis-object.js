@@ -146,7 +146,18 @@ epiviz.ui.charts.VisObject.prototype.overlapsWith = function(other) {
                     var otherM = other.getMetadata(0, j, commonMetadata[k]);
 
                     if (thisM == otherM) {
-                        continue; }
+                        continue; 
+                    }
+
+                    if (commonMetadata[k] == "gene") {
+                        // check if symbol exists
+                        var otherM = other.getMetadata(0, j, "symbol");
+
+                        if (thisM == otherM) {
+                            continue;
+                        }
+                    }
+
                     if (!useLooseCompare) { metadataMatches = false;
                         break; }
 
