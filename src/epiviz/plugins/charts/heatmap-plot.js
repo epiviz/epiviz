@@ -428,6 +428,11 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
     this.customSettingsValues()[
       epiviz.plugins.charts.HeatmapPlotType.CustomSettings.SHOW_DENDROGRAM
     ] * this._dendrogramRatio;
+
+  var rowLabel = this.customSettingsValues()[
+    epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL
+  ];
+  
   var rowLabelsAsColors = this.customSettingsValues()[
     epiviz.plugins.charts.HeatmapPlotType.CustomSettings
       .SHOW_COLORS_FOR_ROW_LABELS
@@ -573,15 +578,30 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
       );
     });
   } else {
-    this._colorLabels = [
-      sprintf(
-        "Max",
-        data
-          .firstSeries()
-          .measurement()
-          .maxValue()
-      )
-    ];
+    if (this._colorLabels && this._colorLabels.length <= 1) {
+      this._colorLabels = [
+        sprintf(
+          "Max",
+          data
+            .firstSeries()
+            .measurement()
+            .maxValue()
+        )
+      ];
+
+      if (rowLabelsAsColors) {
+        var trowLabels = [];
+        this.measurements().foreach((m)=> {
+          if (m.annotation() && rowLabel in m.annotation()){
+            if (this._colorLabels.indexOf(m.annotation()[rowLabel]) == -1) {
+              trowLabels.push(m.annotation()[rowLabel]);
+            }
+          }
+        });
+
+        this._colorLabels.concat(trowLabels.sort());
+      }
+    }
     this._colorScale = epiviz.utils.colorizeBinary(
       this._min,
       this._max,
@@ -1480,11 +1500,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(
   }
 
   // Legend
+  // var legend = this._colorLabels.slice(2);
   this._svg.selectAll(".chart-title").remove();
   this._svg.selectAll(".chart-title-color ").remove();
   var titleEntries = this._svg
     .selectAll(".chart-title")
-    .data(["Min"].concat(this._colorLabels));
+    .data(["Min"].concat(this._colorLabels[0]));
   titleEntries
     .enter()
     .append("text")
@@ -1515,7 +1536,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawLabels = function(
 
   var colorEntries = this._svg
     .selectAll(".chart-title-color")
-    .data(["Min"].concat(this._colorLabels))
+    .data(["Min"].concat(this._colorLabels[0]))
     .enter()
     .append("circle")
     .attr("class", "chart-title-color")
