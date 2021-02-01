@@ -432,7 +432,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
   var rowLabel = this.customSettingsValues()[
     epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL
   ];
-  
+
   var rowLabelsAsColors = this.customSettingsValues()[
     epiviz.plugins.charts.HeatmapPlotType.CustomSettings
       .SHOW_COLORS_FOR_ROW_LABELS
@@ -578,7 +578,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
       );
     });
   } else {
-    if (this._colorLabels && this._colorLabels.length <= 1) {
+    // if (this._colorLabels && this._colorLabels.length <= 1) {
       this._colorLabels = [
         sprintf(
           "Max",
@@ -589,25 +589,31 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
         )
       ];
 
+      this._colorScale = epiviz.utils.colorizeBinary(
+        this._min,
+        this._max,
+        "#ffffff",
+        this.colors().getByKey("Max")
+      );
+
       if (rowLabelsAsColors) {
         var trowLabels = [];
         this.measurements().foreach((m)=> {
           if (m.annotation() && rowLabel in m.annotation()){
-            if (this._colorLabels.indexOf(m.annotation()[rowLabel]) == -1) {
+            if (trowLabels.indexOf(m.annotation()[rowLabel]) == -1) {
               trowLabels.push(m.annotation()[rowLabel]);
             }
           }
         });
 
-        this._colorLabels.concat(trowLabels.sort());
+        trowLabels.sort().forEach((m) => {
+          this.colors().getByKey(m)
+        });
+
+        // this._colorLabels.concat(trowLabels.sort());
       }
-    }
-    this._colorScale = epiviz.utils.colorizeBinary(
-      this._min,
-      this._max,
-      "#ffffff",
-      this.colors().getByKey("Max")
-    );
+
+    // }
   }
 
   var nCols = Math.min(colnames.length, maxColumns);
