@@ -458,7 +458,7 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
       points
         .enter()
         .append("circle")
-        .attr("class", "circle point-series-index-" + i)
+        .attr("class", "circle item point-series-index-" + i)
         .attr("r", pointRadius)
         .attr("cx", xItem)
         .attr("cy", yItem)
