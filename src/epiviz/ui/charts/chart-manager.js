@@ -782,7 +782,7 @@ epiviz.ui.charts.ChartManager.prototype._registerChartSearchFeature = function(c
 epiviz.ui.charts.ChartManager.prototype._registerChartSearchGene = function(chart) {
   var self = this;
 
-  if (chart._featureType == 'DiversityScatterPlot') {
+  if (['DiversityScatterPlot', 'TSNEScatterPlot'].includes(chart._featureType)) {
     chart._searchGeneChart.addListener(new epiviz.events.EventListener(function(e) {
       self._chartGeneSearchEvent.notify(e);
     }));
@@ -813,7 +813,7 @@ epiviz.ui.charts.ChartManager.prototype._registerChartFeatureGetData = function(
 epiviz.ui.charts.ChartManager.prototype._registerChartGeneGetData = function(chart) {
   var self = this;
 
-  if (chart._featureType == 'DiversityScatterPlot') {
+  if (['DiversityScatterPlot', 'TSNEScatterPlot'].includes(chart._featureType)) {
     chart._registerGeneGetData.addListener(new epiviz.events.EventListener(function(e) {
       self._chartGeneGetDataEvent.notify(e);
     }));

@@ -122,7 +122,13 @@ epiviz.plugins.charts.TSNEPlotType.prototype.customSettingsDefs = function() {
       epiviz.plugins.charts.TSNEPlotType.CustomSettings.AB_LINE,
       epiviz.ui.charts.CustomSetting.Type.STRING,
       epiviz.ui.charts.CustomSetting.DEFAULT,
-      'Draw Abline')
+      'Draw Abline'),
+
+      new epiviz.ui.charts.CustomSetting(
+        epiviz.plugins.charts.TSNEPlotType.CustomSettings.GENE_NAME,
+        epiviz.ui.charts.CustomSetting.Type.STRING,
+        "",
+        'Gene Name')
   ]);
 };
 
@@ -132,7 +138,8 @@ epiviz.plugins.charts.TSNEPlotType.prototype.customSettingsDefs = function() {
 epiviz.plugins.charts.TSNEPlotType.CustomSettings = {
   CIRCLE_RADIUS_RATIO: 'circleRadiusRatio',
   COLOR_BY: 'colorBy',
-  AB_LINE: 'abLine'
+  AB_LINE: 'abLine',
+  GENE_NAME: "geneName"
 };
 
 // goog.inherits(epiviz.plugins.charts.CustomScatterPlotType, epiviz.ui.charts.PlotType);

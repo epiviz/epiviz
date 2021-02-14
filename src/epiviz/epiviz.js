@@ -178,9 +178,9 @@ epiviz.EpiViz.prototype.start = function() {
   var requestWorkspaceId = epiviz.ui.WebArgsManager.WEB_ARGS['ws'] || epiviz.ui.WebArgsManager.WEB_ARGS['workspace'] || null;
   var metavizr = epiviz.ui.WebArgsManager.WEB_ARGS['websocket-host'] || null;
   
-  if (requestWorkspaceId == null && metavizr == null) {
-    this._controlManager.startApp();
-  }
+  // if (requestWorkspaceId == null && metavizr == null) {
+  //   this._controlManager.startApp();
+  // }
 };
 
 /**
@@ -218,7 +218,7 @@ epiviz.EpiViz.prototype._addChart = function(type, visConfigSelection, chartId, 
     var range = this._workspaceManager.activeWorkspace().range();
     var chartMeasurementsMap = {};
     chartMeasurementsMap[chartId] = visConfigSelection.measurements;
-    this._dataManager.getTSNE(range, chartMeasurementsMap,
+    this._dataManager.getTSNE(range, chartMeasurementsMap, {},
       function(chartId, data) {
         self._chartManager.updateCharts(range, data, [chartId]);
       });
@@ -659,17 +659,30 @@ epiviz.EpiViz.prototype._registerChartRequestFeature = function() {
 epiviz.EpiViz.prototype._registerChartRequestGene = function() {
   var self = this;
   self._chartManager._chartGeneGetDataEvent.addListener(new epiviz.events.EventListener(function(e) {
+
+    self._chartManager.dataWaitStart(e.chartId);
+
     var chart = self._chartManager._charts[e.chartId];
     var chartMeasurementsMap = {};
-    chart._properties.visConfigSelection.measurements.foreach(function(m) {
-      m._id = chart.customSettingsValues()["geneName"];
-      m._name = chart.customSettingsValues()["geneName"];
-    });
-    chartMeasurementsMap[e.chartId] = chart._properties.visConfigSelection.measurements;
-    self._dataManager.getDiversity(null, chartMeasurementsMap,
-      function(chartId, data) {
-        self._chartManager.updateCharts(null, data, [chartId]);
+    if (chart._featureType == "DiversityScatterPlot") {
+      chart._properties.visConfigSelection.measurements.foreach(function(m) {
+        m._id = chart.customSettingsValues()["geneName"];
+        m._name = chart.customSettingsValues()["geneName"];
       });
+      chartMeasurementsMap[e.chartId] = chart._properties.visConfigSelection.measurements;
+      self._dataManager.getDiversity(null, chartMeasurementsMap,
+        function(chartId, data) {
+          self._chartManager.updateCharts(null, data, [chartId]);
+        });
+    }
+
+    if (chart._featureType == "TSNEScatterPlot") {
+      chartMeasurementsMap[e.chartId] = chart._properties.visConfigSelection.measurements;
+      self._dataManager.getTSNE(null, chartMeasurementsMap, chart.customSettingsValues(),
+        function(chartId, data) {
+          self._chartManager.updateCharts(null, data, [chartId]);
+        });
+    }
   }));
 };
 
@@ -1243,12 +1256,12 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
           }
           if (mea.indexOf('tsne') != -1) {
 
-            self._dataManager.getTSNE(e.newValue, cMap,
-              function(chartId, data) {
-                self._chartManager.updateCharts(e.newValue, data, [chartId]);
-            });
+            // self._dataManager.getTSNE(e.newValue, cMap, chart.customSettingsValues(),
+            //   function(chartId, data) {
+            //     self._chartManager.updateCharts(e.newValue, data, [chartId]);
+            // });
 
-            delete chartMeasurementsMap[mea];
+            // delete chartMeasurementsMap[mea];
           }
           else if (mea.indexOf('pcoa_scatter') != -1) {
 

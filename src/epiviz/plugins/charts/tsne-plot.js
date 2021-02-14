@@ -85,6 +85,10 @@ epiviz.plugins.charts.TSNEPlot = function(id, container, properties) {
      */
     this._colorLabels = [];
 
+    this._searchGeneChart = new epiviz.events.Event();
+    this._registerGeneGetData = new epiviz.events.Event();
+    this._featureType = "TSNEScatterPlot";
+
     this._initialize();
 };
 
@@ -105,6 +109,8 @@ epiviz.plugins.charts.TSNEPlot.prototype._initialize = function() {
 
     this._chartContent = this._svg.append('g').attr('class', 'chart-content');
     this._legend = this._svg.append('g').attr('class', 'chart-legend');
+
+    this._drawGeneSearch();
 };
 
 /**
@@ -136,6 +142,57 @@ epiviz.plugins.charts.TSNEPlot.prototype.draw = function() {
     console.log(self.cluster_colors)
 
     return self.drawScatter(self._lastRange, self._lastData.data, "sample_id", "dim1", "dim2");
+};
+
+/**
+ * @private
+ */
+epiviz.plugins.charts.TSNEPlot.prototype._drawGeneSearch = function() {
+
+    var self = this;
+
+    $('#' + self.id()).prepend('<div style="position:absolute;"><input id="search-box-' + self.id() + '" class="feature-search-box ui-widget-content ui-corner-all" type="text"/></div>');
+
+    var sBox = $('#search-box-' + self.id());
+    // sBox.val(geneName);
+    sBox.watermark('Search for a Gene');
+
+    sBox.autocomplete({
+        source: function(request, callback) {
+        self._searchGeneChart.notify({ 
+            searchTerm: request.term, 
+            callback:
+                /**
+                 * @param {Array.<{probe: string, gene: string, seqName: string, start: number, end: number}>} results
+                 */
+                function(results) {
+                    var items = [];
+                    for (var i = 0; i < results.length; ++i) {
+                        items.push({
+                            value: results[i],
+                            label: results[i]
+                        });
+                    }
+                    callback(items);
+                }
+            });
+        },
+        minLength: 1,
+        select: function(event, ui) {
+            var vals = self.customSettingsValues();
+            vals.geneName = ui.item.value;
+            // self.setCustomSettingsValues(vals);
+                self._registerGeneGetData.notify({
+                    chartId: self.id(), 
+                    gene: vals.geneName
+                });
+        },
+    }).data('autocomplete')._renderItem = function(ul, item) {
+        return $('<li></li>')
+        .data( 'item.autocomplete', item )
+        .append(sprintf('<a>%s</a>', item.label))
+        .appendTo(ul);
+    };
 };
 
 epiviz.plugins.charts.TSNEPlot.prototype.drawScatter = function(range, data, key, dimx, dimy) {
