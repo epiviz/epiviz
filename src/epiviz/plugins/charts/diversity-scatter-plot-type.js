@@ -122,7 +122,7 @@ epiviz.plugins.charts.DiversityScatterPlotType.prototype.customSettingsDefs = fu
       epiviz.plugins.charts.DiversityScatterPlotType.CustomSettings.GENE_NAME,
       epiviz.ui.charts.CustomSetting.Type.STRING,
       "",
-      'Gene Name'),
+      'Gene Name')
   ]);
 };
 

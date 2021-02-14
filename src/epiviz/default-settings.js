@@ -51,9 +51,9 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.HeatmapPlotType',
     'epiviz.ui.charts.tree.IcicleType',
     'epiviz.plugins.charts.TSNEPlotType',
-    'epiviz.plugins.charts.FeatureScatterPlotType',
-    'epiviz.plugins.charts.DiversityScatterPlotType',
-    'epiviz.ui.charts.tree.SunburstType'
+    'epiviz.plugins.charts.FeatureScatterPlotType'
+    // 'epiviz.plugins.charts.DiversityScatterPlotType',
+    // 'epiviz.ui.charts.tree.SunburstType'
   ],
 
   // Chart default settings
@@ -244,6 +244,11 @@ epiviz.Config.SETTINGS = {
       yMin: 'default',
       yMax: 'default',
       circleRadiusRatio: 0.005
+    },
+    'epiviz.plugins.charts.TSNEPlot': {
+      yMin: 'default',
+      yMax: 'default',
+      circleRadiusRatio: 0.010
     },
     'epiviz.plugins.charts.FeatureScatterPlot': {
       yMin: 'default',

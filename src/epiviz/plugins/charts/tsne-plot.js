@@ -125,6 +125,7 @@ epiviz.plugins.charts.TSNEPlot.prototype.draw = function() {
 
     // self._variance_labels = self._lastData.pca_variance_explained;
     // self._variance_labels = [0.9, 0.1];
+    self._gene_min_max = self._lastData.gene_min_max;
 
     var colColors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", 
     "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"];
@@ -373,6 +374,13 @@ epiviz.plugins.charts.TSNEPlot.prototype._drawCircles = function(data, dimx, dim
         .transition()
         .duration(1000)
         .style('fill-opacity', function(d) {
+            if(self._gene_min_max[0] != self._gene_min_max[1]) {
+                var sum = 0;
+                d.valueItems[0].forEach(function(m) {
+                    sum += m["gene"] ? m["gene"] : 0;
+                });
+                return Math.max(0.1, ((sum / d.valueItems[0].length))/self._gene_min_max[1]);
+            } 
             return Math.max(0.6, d.valueItems[0].length / maxGroupItems);
         })
         .style('opacity', null)
