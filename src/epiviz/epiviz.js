@@ -1256,12 +1256,13 @@ epiviz.EpiViz.prototype._registerLocationChanged = function() {
           }
           if (mea.indexOf('tsne') != -1) {
 
-            // self._dataManager.getTSNE(e.newValue, cMap, chart.customSettingsValues(),
-            //   function(chartId, data) {
-            //     self._chartManager.updateCharts(e.newValue, data, [chartId]);
-            // });
+            self._dataManager.getTSNE(e.newValue, cMap, 
+              self._chartManager._charts[mea].customSettingsValues(),
+              function(chartId, data) {
+                self._chartManager.updateCharts(e.newValue, data, [chartId]);
+            });
 
-            // delete chartMeasurementsMap[mea];
+            delete chartMeasurementsMap[mea];
           }
           else if (mea.indexOf('pcoa_scatter') != -1) {
 
