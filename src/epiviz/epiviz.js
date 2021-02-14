@@ -598,9 +598,9 @@ epiviz.EpiViz.prototype._registerUiSearch = function() {
         // }, e.searchTerm, iciclePlot);
 
         var measurements  = self._measurementsManager.measurements().subset(function(m) {
-          return m.datasourceGroup() == iciclePlot.datasourceGroup();
+          return m.datasourceGroup() == iciclePlot.datasourceGroup() && m.id().includes(e.searchTerm);
         });
-        measurements = measurements.subset(function(m) { return m.id().includes(e.searchTerm)});
+        // measurements = measurements.subset(function(m) { return m.id().includes(e.searchTerm)});
         var res = [];
 
         measurements.foreach(function(m) {
