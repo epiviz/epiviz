@@ -24,6 +24,7 @@ goog.require('epiviz.plugins.charts.DiversityScatterPlotType');
 goog.require('epiviz.plugins.charts.CustomScatterPlotType');
 goog.require('epiviz.plugins.charts.GwasTrackType');
 goog.require('epiviz.plugins.charts.GwasPIPTrackType');
+goog.require('epiviz.plugins.charts.RepeatTrackType');
 
 
 /**
