@@ -93,6 +93,20 @@ text {
 .transcript-track .hovered .transcript-name { fill-opacity: 1; }
 .transcript-track .selected .transcript-name { fill-opacity: 1; }
 
+/* Repeat Track */
+
+.repeat-track {}
+.repeat-track .items { shape-rendering: auto; stroke: #555555; fill-opacity: 0.6; stroke-width: 0.1; }
+.repeat-track .repeat-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }
+.repeat-track .repeat-name-show { font-weight: bold; font-size: 12; fill: #000000; stroke: none; }
+
+.repeat-track .selected { fill-opacity: 1; stroke: #555555; }
+.repeat-track .selected .repeat-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.repeat-track .hovered { fill-opacity: 1; stroke: #555555; }
+.repeat-track .hovered .repeat-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.repeat-track .hovered .repeat-name { fill-opacity: 1; }
+.repeat-track .selected .repeat-name { fill-opacity: 1; }
+
 /* Blocks Track */
 
 .blocks-track {}
