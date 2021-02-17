@@ -55,7 +55,8 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.CustomScatterPlotType',
     'epiviz.plugins.charts.DiversityScatterPlotType',
     'epiviz.plugins.charts.GwasTrackType',
-    'epiviz.plugins.charts.GwasPIPTrackType'
+    'epiviz.plugins.charts.GwasPIPTrackType',
+    'epiviz.plugins.charts.RepeatTrackType'
   ],
 
   // Chart default settings
@@ -117,7 +118,12 @@ epiviz.Config.SETTINGS = {
       colors: 'genes-default'
     },
 
-    'epiviz.plugins.charts.TranscriptTrackType': {
+    'epiviz.plugins.charts.TranscriptTrack': {
+      height: 200,
+      colors: 'genes-default'
+    },
+
+    'epiviz.plugins.charts.RepeatTrack': {
       height: 200,
       colors: 'genes-default'
     },
@@ -202,7 +208,6 @@ epiviz.Config.SETTINGS = {
       blockColorBy: 'label'
     },
     'epiviz.plugins.charts.GenesTrack': {
-
     },
     'epiviz.plugins.charts.LineTrack': {
       step: 1,
@@ -225,7 +230,7 @@ epiviz.Config.SETTINGS = {
       circleRadiusRatio: 0.01
     },
     'epiviz.plugins.charts.HeatmapPlot': {
-      colLabel: 'label',
+      colLabel: 'symbol',
       maxColumns: 120,
       clusteringAlg: 'agglomerative'
     },
@@ -298,7 +303,7 @@ epiviz.Config.SETTINGS = {
       ['#f9a65a', '#599ad3', '#79c36a', '#f1595f', '#727272', '#cd7058', '#d77fb3'],
       'Genes Default', 'genes-default'),
     new epiviz.ui.charts.ColorPalette(
-      ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
+      ['#1859a9', '#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
       'Heatmap Default', 'heatmap-default'),
     new epiviz.ui.charts.ColorPalette(
       ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"],
