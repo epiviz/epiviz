@@ -282,6 +282,8 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
 
   var colors = this.colors();
 
+  var gridSquareSize = 1;
+
   var self = this;
 
   var invXScale = d3.scale
@@ -300,6 +302,8 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
 
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
+  var grid = {};
+  var maxGroupItems = 1;
 
   data.foreach(function(m, series, i) {
     var color = self._measurementColorLabels
@@ -338,19 +342,48 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
         continue;
       }
 
-      items.push(
-        new epiviz.ui.charts.ChartObject(
+      var x = xScale(cell.rowItem.start());
+      var y = cell.value = yScale(parseFloat(cell.rowItem.rowMetadata()[yAxisField]));
+      var gridX = Math.floor(x / gridSquareSize) * gridSquareSize;
+      var gridY = Math.floor(y / gridSquareSize) * gridSquareSize;
+
+      var uiObj = null;
+      if (grid[gridY] && grid[gridY][gridX]) {
+        uiObj = grid[gridY][gridX];
+        uiObj.id += "_" + cell.globalIndex;
+        uiObj.start = Math.min(uiObj.start, cell.rowItem.start());
+        uiObj.end = Math.max(uiObj.end, cell.rowItem.end());
+        uiObj.values[0] =
+          (uiObj.values[0] * uiObj.valueItems[0].length + y) /
+          (uiObj.valueItems[0].length + 1);
+        uiObj.valueItems[0].push(cell);
+  
+        if (uiObj.valueItems[0].length > maxGroupItems) {
+          maxGroupItems = uiObj.valueItems[0].length;
+        }
+  
+        continue;
+      }
+
+      uiObj = new epiviz.ui.charts.ChartObject(
           sprintf("line_%s_%s", i, cell.globalIndex),
           cell.rowItem.start(),
           cell.rowItem.end(),
-          [cell.rowItem.rowMetadata()[yAxisField]],
+          [parseFloat(cell.rowItem.rowMetadata()[yAxisField])],
           i,
           [[cell]],
           [m],
           sprintf("item data-series-%s", i),
           cell.rowItem.seqName()
-        )
-      );
+        );
+
+        if (!grid[gridY]) {
+          grid[gridY] = {};
+        }
+        grid[gridY][gridX] = uiObj;
+    
+        items.push(uiObj);  
+
     }
 
     var x = function(j) {
@@ -387,6 +420,10 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
     var yItem = function(j) {
       var cell = j.valueItems[0][0];
       return yScale(parseFloat(cell.rowItem.rowMetadata()[yAxisField]));
+    };
+
+    var yItem2 = function(j) {
+      return yScale(parseFloat(j.values[0]));
     };
 
     if (showLines) {
@@ -454,31 +491,48 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
         .duration(500)
         .style("opacity", 0)
         .remove();
-        
+
       points
         .enter()
         .append("circle")
         .attr("class", "circle item point-series-index-" + i)
         .attr("r", pointRadius)
         .attr("cx", xItem)
-        .attr("cy", yItem)
-        .attr("fill", color)
-        .attr("stroke", color)
-        .attr("transform", "translate(" + +delta + ")")
-        .transition()
-        .duration(500)
-        .attr("transform", "translate(" + 0 + ")");
+        .attr("cy", yItem2)
+        .style("fill-opacity", 0.6);
 
-      points
+      function rPoints(d) {
+        // var cell = d.__data__.valueItems[0][0];;//series.get(d);
+        d3.select(d)
+        .append("circle")
+        .attr("class", "circle item point-series-index-" + i)
         .attr("r", pointRadius)
         .attr("cx", xItem)
-        .attr("cy", yItem)
+        .attr("cy", yItem2)
         .attr("fill", color)
+        .style("fill-opacity", 0.6)
         .attr("stroke", color)
         .attr("transform", "translate(" + +delta + ")")
         .transition()
         .duration(500)
         .attr("transform", "translate(" + 0 + ")");
+      }
+
+      self.rPointsQueue = renderQueue(rPoints);
+  
+      self.rPointsQueue(points[0]);
+
+      // points
+      //   .attr("r", pointRadius)
+      //   .attr("cx", xItem)
+      //   .attr("cy", yItem2)
+      //   .attr("fill", color)
+      //   .attr("stroke", color)
+      //   .attr("transform", "translate(" + +delta + ")")
+      //   .transition()
+      //   .duration(500)
+      //   .attr("transform", "translate(" + 0 + ")");
+
 
       points       
         .each(function(d) {
