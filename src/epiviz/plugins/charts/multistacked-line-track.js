@@ -421,7 +421,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
     epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS
   ];
 
-  var seriesLineHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / data.measurements().length;
+  var seriesLineHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / self.measurements().size();
 
   if (showTracks != "default")  {
     var tracks = showTracks.split(",");
@@ -452,6 +452,13 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
     }
 
     if (!skip) {
+
+      self.measurements().foreach(function(mm,im) {
+        if (mm.id() == m.id()) {
+          trackCount = im;
+        }
+      });
+
       var color = self._measurementColorLabels
       ? colors.getByKey(self._measurementColorLabels.get(m))
       : colors.getByKey(m.id());
@@ -459,7 +466,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
       /** @type {{index: ?number, length: number}} */
       var drawBoundaries = series.binarySearchStarts(extendedRange);
       if (drawBoundaries.length == 0) {
-        if (items.length == 0) {
+        // if (items.length == 0) {
           // self._svg
           // .append("text")
           // .attr("font-weight", "bold")
@@ -468,14 +475,14 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
           // .attr("transform", "translate(" + (self.width() / 2) + "," + (self.height() - self.margins().top() - ((trackCount+0.5) * seriesLineHeight)) + ")")
           // .attr("class", "no-data-text")
           // .text(function(d) { return "No data in this region"; });
-        }
+        // }
 
         self._svg
         .select(".line-series-index-" + trackCount)
         .selectAll("path")
         .remove();
 
-        // trackCount++;
+        trackCount++;
         return;
       }
 
@@ -535,12 +542,12 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         }
       
         if (stmaxY == CustomSetting.DEFAULT) {
-          stmaxY = Math.ceil(globalMinMax[1]);
+          stmaxY = Math.ceil(globalMinMax[1]*10000)/10000;
         }
 
       } else {
           stminY = Math.min(0, Math.floor(sminY));      
-          stmaxY = Math.ceil(smaxY);
+          stmaxY = Math.ceil(smaxY*10000)/10000;
       }
 
       var yScaleSeries = d3.scale
@@ -651,7 +658,6 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
           // );
       }
       
-
       if (showLines) {
         var line = d3.svg
           .line()
@@ -871,7 +877,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
   // self._drawAxes(xScale, yScale, 10, trackCount + 1, null, null, null, null, null, null, null, yTicksSeries);
 
   // if hidden remove the other tracks
-  for (;trackCount < data.measurements().length; trackCount++) {
+  for (;trackCount < self.measurements().size(); trackCount++) {
     graph
     .select(".line-series-index-" + trackCount)
     .remove();
