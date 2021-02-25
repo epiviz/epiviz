@@ -448,16 +448,18 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
       var tracks = showTracks.split(",");
       if (!tracks.includes(m.id())) {
         skip = true;
+      } else {
+        trackCount = tracks.indexOf(m.id());
       }
-    }
-
-    if (!skip) {
-
+    } else {
       self.measurements().foreach(function(mm,im) {
         if (mm.id() == m.id()) {
           trackCount = im;
         }
       });
+    }
+
+    if (!skip) {
 
       var color = self._measurementColorLabels
       ? colors.getByKey(self._measurementColorLabels.get(m))
