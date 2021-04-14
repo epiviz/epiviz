@@ -226,6 +226,7 @@ epiviz.ui.charts.ChartManager.prototype.addChart = function(chartType, visConfig
   );
 
   var chart = chartType.createNew(id, container, chartProperties);
+  chart._createdChartType = chartType;
   this._charts[id] = chart;
 
   this._registerChartHover(chart);
@@ -328,6 +329,80 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
     (function(chart) {
       chart.transformData(range, data).done(function() {
         // No need to call with arguments, since transformData will set the lastRange and lastData values
+
+        //  only do this for bigwigs, bigbeds
+        if (["gwas_pip", "gwas", "blocks", "stacked-blocks"].includes(chart._createdChartType.chartHtmlAttributeName())) {
+          data.foreach(function(m, series, i) {
+            if (series.getRow(0)) {
+              var metadataFromData = Object.keys(series.getRow(0).rowMetadata());
+              var ms = chart._properties.visConfigSelection.measurements.get(i)
+              ms._metadata = metadataFromData;
+            }
+          });
+  
+          chart._properties.customSettingsDefs = chart._createdChartType.customSettingsDefs();
+          chart._customSettingsValues = {};
+          for (var i = 0; i < chart._properties.customSettingsDefs.length; ++i) {
+            var setting = chart._properties.customSettingsDefs[i];
+            var val = chart._properties.customSettingsValues[setting.id];
+            switch (setting.type) {
+              case epiviz.ui.charts.CustomSetting.Type.BOOLEAN:
+                chart._customSettingsValues[setting.id] =
+                  val === false || val ? val : setting.defaultValue;
+                break;
+              case epiviz.ui.charts.CustomSetting.Type.NUMBER:
+                chart._customSettingsValues[setting.id] =
+                  val === 0 || val ? val : setting.defaultValue;
+                break;
+              case epiviz.ui.charts.CustomSetting.Type.STRING:
+                chart._customSettingsValues[setting.id] =
+                  val === "" || val ? val : setting.defaultValue;
+                break;
+              case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA:
+                var possibleValues = {};
+                chart._properties.visConfigSelection.measurements.foreach(function(m) {
+                  m.metadata().forEach(function(metadataCol) {
+                    possibleValues[metadataCol] = metadataCol;
+                  });
+                });
+                setting.possibleValues = Object.keys(possibleValues);
+                setting.possibleValues.sort();
+                val = val || setting.defaultValue;
+                chart._customSettingsValues[setting.id] =
+                  val in possibleValues
+                    ? val
+                    : setting.possibleValues.length
+                      ? setting.possibleValues[0]
+                      : "";
+                break;
+              case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION:
+                var possibleValues = { name: "name" };
+                chart._properties.visConfigSelection.measurements.foreach(function(m) {
+                  var anno = m.annotation();
+                  if (!anno) {
+                    return;
+                  }
+                  Object.keys(anno).forEach(function(key) {
+                    possibleValues[key] = key;
+                  });
+                });
+                setting.possibleValues = Object.keys(possibleValues);
+                setting.possibleValues.sort();
+                val = val || setting.defaultValue;
+                chart._customSettingsValues[setting.id] =
+                  val in possibleValues
+                    ? val
+                    : setting.possibleValues.length
+                      ? setting.possibleValues[0]
+                      : "";
+                break;
+              default:
+                chart._customSettingsValues[setting.id] = val || setting.defaultValue;
+                break;
+            }
+          }
+        }
+
         var result = chart.draw();
 
         chart._svg
