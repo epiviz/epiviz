@@ -568,7 +568,8 @@ epiviz.plugins.charts.GwasPIPTrack.prototype._drawLines = function(
       bars       
         .each(function(d) {
           var cell = series.get(d);
-          if (absLine >= parseFloat(cell.rowItem.rowMetadata()[yAxisField])) {
+          if (absLine != epiviz.ui.charts.CustomSetting.DEFAULT 
+            && absLine >= parseFloat(cell.rowItem.rowMetadata()[yAxisField])) {
             d3.select(this)
               .transition()
               .duration(1000)
@@ -576,7 +577,7 @@ epiviz.plugins.charts.GwasPIPTrack.prototype._drawLines = function(
               .attr("stroke", "grey")
               .attr("opacity", 0.5)
           } else {
-              d3.select(this)
+            d3.select(this)
               .transition()
               .duration(1000)
               .attr("fill", color)

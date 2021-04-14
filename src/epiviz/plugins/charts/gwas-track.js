@@ -354,7 +354,7 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
         uiObj.start = Math.min(uiObj.start, cell.rowItem.start());
         uiObj.end = Math.max(uiObj.end, cell.rowItem.end());
         uiObj.values[0] =
-          (uiObj.values[0] * uiObj.valueItems[0].length + y) /
+          (uiObj.values[0] * uiObj.valueItems[0].length + parseFloat(cell.rowItem.rowMetadata()[yAxisField])) /
           (uiObj.valueItems[0].length + 1);
         uiObj.valueItems[0].push(cell);
   
