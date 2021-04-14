@@ -175,6 +175,56 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
     .range([0, width - margins.sumAxis(Axis.X)]);
   var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
+  var CustomSetting = epiviz.ui.charts.CustomSetting;
+
+  var dataMin = 100000, dataMax = -100000;
+  data.foreach(function(m, series) {
+    var fMin = dataMin, fMax = dataMax;
+    var drawBoundaries = series.binarySearchStarts(range);
+      if (drawBoundaries.length > 0) {
+        var indices = epiviz.utils
+        .range(drawBoundaries.length, drawBoundaries.index);
+
+        for (var k = 0; k < indices.length; ++k) {
+          var cell = series.get(indices[k]);
+
+          if (parseFloat(cell.rowItem.rowMetadata()[scaleLabel]) < fMin) {
+            fMin = parseFloat(cell.rowItem.rowMetadata()[scaleLabel]);
+          }
+
+          if (parseFloat(cell.rowItem.rowMetadata()[scaleLabel]) > fMax) {
+            fMax = parseFloat(cell.rowItem.rowMetadata()[scaleLabel]);
+          }
+        }
+      }
+
+    if (fMin < dataMin) { dataMin = fMin;} 
+    if (fMax > dataMax) { dataMax = fMax;}
+  });
+
+  var dataRange = [dataMin, dataMax];
+  
+  if (minY == CustomSetting.DEFAULT) {
+    minY = dataRange[0];
+  }
+
+  if (maxY == CustomSetting.DEFAULT) {
+    maxY = dataRange[1];
+  }
+
+  if (minY === null && maxY === null) {
+    minY = -1;
+    maxY = 1;
+  }
+  if (minY === null) {
+    minY = maxY - 1;
+  }
+  if (maxY === null) {
+    maxY = minY + 1;
+  }
+
+
+
   this._clearAxes();
   this._drawAxes(xScale, null, 10, 5);
 
@@ -322,7 +372,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
     })
     .attr("height", function(b) {
       if (useScaleBy) {
-        var fracVal = (b.valueItems[0][0].rowItem.metadata(scaleLabel) - minY)/(maxY - minY);
+        var fracVal = (parseFloat(b.valueItems[0][0].rowItem.metadata(scaleLabel)) - minY)/(maxY - minY);
         return fracVal * (height - margins.sumAxis(Axis.Y)) 
       }
       else {
@@ -332,7 +382,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
     // .attr("height", height - margins.sumAxis(Axis.Y))
     .attr("y", function(b) {
       if (useScaleBy) {
-        var fracVal = (b.valueItems[0][0].rowItem.metadata(scaleLabel) - minY)/(maxY - minY);
+        var fracVal = (parseFloat(b.valueItems[0][0].rowItem.metadata(scaleLabel)) - minY)/(maxY - minY);
         return (1 - fracVal) * (height - margins.sumAxis(Axis.Y))
       }
       else {
@@ -535,7 +585,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function (
 
   blocks.forEach(function (b) {
     ctx.beginPath();
-    var fracVal = (b.valueItems[0][0].rowItem.metadata(scaleLabel) - minY)/(maxY - minY);
+    var fracVal = (parseFloat(b.valueItems[0][0].rowItem.metadata(scaleLabel)) - minY)/(maxY - minY);
     cheight = height - margins.sumAxis(Axis.Y);
     cypos = 0
     if (useScaleBy) {
