@@ -115,13 +115,13 @@ epiviz.plugins.charts.GwasPIPTrackType.prototype.customSettingsDefs = function()
     new epiviz.ui.charts.CustomSetting(
       epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      epiviz.ui.charts.CustomSetting.DEFAULT,
+      0,
       'Min Y'),
 
     new epiviz.ui.charts.CustomSetting(
       epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-      epiviz.ui.charts.CustomSetting.DEFAULT,
+      1,
       'Max Y'),
 
     new epiviz.ui.charts.CustomSetting(

@@ -373,6 +373,9 @@ epiviz.plugins.charts.GwasPIPTrack.prototype._drawLines = function(
     var rwidth = function(j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
+      if (cell.rowItem.end() == cell.rowItem.start()) {
+        return 0.1;
+      }
       return xScale(cell.rowItem.end()) - xScale(cell.rowItem.start());
     };
 
