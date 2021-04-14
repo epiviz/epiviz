@@ -358,12 +358,6 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
                   setting.possibleValues = Object.keys(possibleValues);
                   setting.possibleValues.sort();
                   val = val || setting.defaultValue;
-                  chart._customSettingsValues[setting.id] =
-                    val in possibleValues
-                      ? val
-                      : setting.possibleValues.length
-                        ? setting.possibleValues[0]
-                        : "";
                   break;
                 case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION:
                   var possibleValues = { name: "name" };
@@ -379,15 +373,8 @@ epiviz.ui.charts.ChartManager.prototype.updateCharts = function(range, data, cha
                   setting.possibleValues = Object.keys(possibleValues);
                   setting.possibleValues.sort();
                   val = val || setting.defaultValue;
-                  chart._customSettingsValues[setting.id] =
-                    val in possibleValues
-                      ? val
-                      : setting.possibleValues.length
-                        ? setting.possibleValues[0]
-                        : "";
                   break;
                 default:
-                  chart._customSettingsValues[setting.id] = val || setting.defaultValue;
                   break;
               }
             }
