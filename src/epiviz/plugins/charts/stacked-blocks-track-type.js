@@ -97,7 +97,37 @@ epiviz.plugins.charts.StackedBlocksTrackType.prototype.customSettingsDefs = func
       epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings.BLOCK_COLOR_BY,
       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
       'colLabel',
-      'Block color by')
+      'Block color by'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.BlocksTrackType.CustomSettings.IS_COLOR,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Color by field contain color (itemRGB in bigbeds) ?'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings.USE_SCALE_BY,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Use Block scale by'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings.BLOCK_SCALE_BY,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
+      'colLabel',
+      'Block scale by'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Min Y'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      epiviz.ui.charts.CustomSetting.DEFAULT,
+      'Max Y')
   ]);
 };
 
@@ -107,5 +137,8 @@ epiviz.plugins.charts.StackedBlocksTrackType.prototype.customSettingsDefs = func
 epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings = {
   MIN_BLOCK_DISTANCE: 'minBlockDistance',
   BLOCK_COLOR_BY: 'blockColorBy',
-  USE_COLOR_BY: 'useColorBy'
+  USE_COLOR_BY: 'useColorBy',
+  BLOCK_SCALE_BY: 'blockScaleBy',
+  USE_SCALE_BY: 'useScaleBy',
+  IS_COLOR: "isColor"
 };

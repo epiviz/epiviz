@@ -144,14 +144,34 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
     epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings.USE_COLOR_BY
   ];
 
-  var colorBy = function (row) {
-    return useColorBy
-      ? colors.getByKey(row.values)
-      : colors.get(row.seriesIndex);
+  var isColor = this.customSettingsValues()[
+    epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings.IS_COLOR
+  ];
 
-    // if (data.measurements().length > 1) {
-    //   return colors.get(row.seriesIndex);
-    // }
+  var scaleLabel = this.customSettingsValues()[
+    epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings.BLOCK_SCALE_BY
+  ];
+
+  var useScaleBy = this.customSettingsValues()[
+    epiviz.plugins.charts.StackedBlocksTrackType.CustomSettings.USE_SCALE_BY
+  ];
+
+  var minY = this.customSettingsValues()[
+    epiviz.ui.charts.Visualization.CustomSettings.Y_MIN
+  ];
+
+  var maxY = this.customSettingsValues()[
+    epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
+  ];
+
+  var colorBy = function (row) {
+    if(useColorBy) {
+      if(isColor) {
+        return "rgb(" + row.values +")";
+      }
+      return colors.getByKey(row.values)
+    }
+    return colors.get(row.seriesIndex);
   };
 
   var xScale = d3.scale
@@ -159,6 +179,54 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
     .domain([start, end])
     .range([0, width - margins.sumAxis(Axis.X)]);
   var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
+
+  var CustomSetting = epiviz.ui.charts.CustomSetting;
+
+  var dataMin = 100000, dataMax = -100000;
+  data.foreach(function(m, series) {
+    var fMin = dataMin, fMax = dataMax;
+    var drawBoundaries = series.binarySearchStarts(range);
+      if (drawBoundaries.length > 0) {
+        var indices = epiviz.utils
+        .range(drawBoundaries.length, drawBoundaries.index);
+
+        for (var k = 0; k < indices.length; ++k) {
+          var cell = series.get(indices[k]);
+
+          if (parseFloat(cell.rowItem.rowMetadata()[scaleLabel]) < fMin) {
+            fMin = parseFloat(cell.rowItem.rowMetadata()[scaleLabel]);
+          }
+
+          if (parseFloat(cell.rowItem.rowMetadata()[scaleLabel]) > fMax) {
+            fMax = parseFloat(cell.rowItem.rowMetadata()[scaleLabel]);
+          }
+        }
+      }
+
+    if (fMin < dataMin) { dataMin = fMin;} 
+    if (fMax > dataMax) { dataMax = fMax;}
+  });
+
+  var dataRange = [dataMin, dataMax];
+  
+  if (minY == CustomSetting.DEFAULT) {
+    minY = dataRange[0];
+  }
+
+  if (maxY == CustomSetting.DEFAULT) {
+    maxY = dataRange[1];
+  }
+
+  if (minY === null && maxY === null) {
+    minY = -1;
+    maxY = 1;
+  }
+  if (minY === null) {
+    minY = maxY - 1;
+  }
+  if (maxY === null) {
+    maxY = minY + 1;
+  }
 
   this._clearAxes();
   this._drawAxes(xScale, null, 10, 5);
@@ -287,6 +355,13 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
       return xScale(b.start) / zoom + delta;
     })
     .attr("y", function (b) {
+
+      if (useScaleBy) {
+        var fracVal = (parseFloat(b.valueItems[0][0].rowItem.metadata(scaleLabel)) - minY)/(maxY - minY);
+        return (((b.seriesIndex + 1) * seriesBlockHeight) + textheight) 
+          - (fracVal * (seriesBlockHeight - textheight)); 
+      }
+
       return (b.seriesIndex * seriesBlockHeight) + textheight;
     })
     .attr("width", function (b) {
@@ -294,6 +369,10 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
       return zoom * (xScale(b.end + 1) - xScale(b.start));
     })
     .attr("height", function (b) {
+      if (useScaleBy) {
+        var fracVal = (parseFloat(b.valueItems[0][0].rowItem.metadata(scaleLabel)) - minY)/(maxY - minY);
+        return fracVal * (seriesBlockHeight - textheight) 
+      }
       return seriesBlockHeight - textheight;
     })
     .on("mouseout", function () {
@@ -315,36 +394,12 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
     // .attr('height', height - margins.sumAxis(Axis.Y))
     // .attr('y', 0)
     .transition()
-    .duration(500)
-    .attr("x", function (b) {
-      return xScale(b.start);
-    })
-    .attr("y", function (b) {
-      return (b.seriesIndex * seriesBlockHeight) + textheight;
-    })
-    .attr("width", function (b) {
-      return xScale(b.end + 1) - xScale(b.start);
-    })
-    .attr("height", function (b) {
-      return seriesBlockHeight - textheight;
-    });
+    .duration(500);
 
   selection
     .exit()
     .transition()
     .duration(500)
-    .attr("x", function (b) {
-      return xScale(b.start);
-    })
-    .attr("y", function (b) {
-      return (b.seriesIndex * seriesBlockHeight) + textheight;
-    })
-    .attr("width", function (b) {
-      return xScale(b.end + 1) - xScale(b.start);
-    })
-    .attr("height", function (b) {
-      return seriesBlockHeight - textheight;
-    })
     .remove();
 
   return blocks;
