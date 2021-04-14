@@ -99,6 +99,12 @@ epiviz.plugins.charts.BlocksTrackType.prototype.customSettingsDefs = function ()
       'Block color by'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.BlocksTrackType.CustomSettings.IS_COLOR,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Color by field contain color (itemRGB in bigbeds) ?'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_SCALE_BY,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       false,
@@ -133,6 +139,7 @@ epiviz.plugins.charts.BlocksTrackType.CustomSettings = {
   USE_COLOR_BY: 'useColorBy',
   BLOCK_SCALE_BY: 'blockScaleBy',
   USE_SCALE_BY: 'useScaleBy',
+  IS_COLOR: "isColor"
 };
 
 // goog.inherits(epiviz.plugins.charts.BlocksTrackType, epiviz.ui.charts.TrackType);

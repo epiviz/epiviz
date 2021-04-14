@@ -143,6 +143,10 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
     epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY
   ];
 
+  var isColor = this.customSettingsValues()[
+    epiviz.plugins.charts.BlocksTrackType.CustomSettings.IS_COLOR
+  ];
+
   var scaleLabel = this.customSettingsValues()[
     epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_SCALE_BY
   ];
@@ -160,13 +164,13 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
   ];
 
   var colorBy = function (row) {
-    return useColorBy
-      ? colors.getByKey(row.values)
-      : colors.get(row.seriesIndex);
-
-    // if (data.measurements().length > 1) {
-    //   return colors.get(row.seriesIndex);
-    // }
+    if(useColorBy) {
+      if(isColor) {
+        return "rgb(" + row.values +")";
+      }
+      return colors.getByKey(row.values)
+    }
+    return colors.get(row.seriesIndex);
   };
 
   var xScale = d3.scale
@@ -222,8 +226,6 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function (
   if (maxY === null) {
     maxY = minY + 1;
   }
-
-
 
   this._clearAxes();
   this._drawAxes(xScale, null, 10, 5);
@@ -470,13 +472,13 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocksCanvas = function (
   ];
 
   var colorBy = function (row) {
-    // if (data.measurements().length > 1) {
-    //   return colors.get(row.seriesIndex);
-    // }
-
-    return useColorBy
-      ? colors.getByKey(row.values)
-      : colors.get(row.seriesIndex);
+    if(useColorBy) {
+      if(isColor) {
+        return "rgb(" + row.values +")";
+      }
+      return colors.getByKey(row.values)
+    }
+    return colors.get(row.seriesIndex);
   };
 
   var xScale = d3.scale
