@@ -86,6 +86,12 @@ epiviz.plugins.charts.MultiStackedLineTrackType.prototype.customSettingsDefs = f
       'Show points'),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_BARS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      false,
+      'Show bars'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_LINES,
       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
       true,
@@ -166,6 +172,7 @@ epiviz.plugins.charts.MultiStackedLineTrackType.prototype.customSettingsDefs = f
 epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings = {
   STEP: 'step',
   SHOW_POINTS: 'showPoints',
+  SHOW_BARS: 'showBars',
   SHOW_ERROR_BARS: 'showErrorBars',
   SHOW_LINES: 'showLines',
   POINT_RADIUS: 'pointRadius',

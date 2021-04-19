@@ -295,6 +295,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype.draw = function (
   data.measurements().forEach(function (m, i) {
     var lineSeries = linesGroup.selectAll(".line-series-index-" + i);
     var pointSeries = linesGroup.selectAll(".point-series-index-" + i);
+    var barSeries = linesGroup.selectAll(".bar-series-index-" + i);
 
     if (lineSeries.empty()) {
       linesGroup.append("g").attr("class", "line-series-index-" + i);
@@ -306,6 +307,12 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype.draw = function (
       linesGroup.append("g").attr("class", "point-series-index-" + i);
     } else {
       pointSeries.selectAll("circle").remove();
+    }
+
+    if (barSeries.empty()) {
+      linesGroup.append("g").attr("class", "bar-series-index-" + i);
+    } else {
+      barSeries.selectAll("rect").remove();
     }
   });
 
@@ -355,6 +362,11 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
   /** @type {boolean} */
   var showPoints = this.customSettingsValues()[
     epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_POINTS
+  ];
+
+  /** @type {boolean} */
+  var showBars = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_BARS
   ];
 
   /** @type {boolean} */
@@ -571,6 +583,12 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         return yScaleSeries(cell.value);
       };
 
+      var rWidth = function (j) {
+        /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+        var cell = series.get(j);
+        return xScale(cell.rowItem.end()-1) - xScale(cell.rowItem.start()+1);
+      };
+
       var errMinus = function (j) {
         /** @type {epiviz.datatypes.GenomicData.ValueItem} */
         var cell = series.get(j);
@@ -751,6 +769,53 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         .select(".point-series-index-" + trackCount)
         .selectAll(".error-bar")
         .remove();
+
+      graph
+        .select(".bar-series-index-" + trackCount)
+        .selectAll(".bar")
+        .remove();
+
+      if(showBars) {
+        var bars = graph
+          .select(".bar-series-index-" + trackCount)
+          .selectAll(".bar")
+          .data(indices);
+
+        bars
+          .enter()
+          .append("rect")
+          .attr("class", "bar")
+          .attr("x", x)
+          .attr("y", y)
+          .attr("height", function(d) {
+            return Math.abs(y(d) - ((trackCount+1) * seriesLineHeight));
+          })
+          .attr("width", rWidth)
+          .attr("fill", color)
+          .attr("stroke", color)
+          .attr("transform", "translate(" + +delta + ")")
+          .transition()
+          .duration(500)
+          .attr("transform", "translate(" + 0 + ")");
+
+          bars
+          .on("mouseover", function () {
+            self._captureMouseHover();
+          })
+          .on("mousemove", function () {
+            self._captureMouseHover();
+          })
+          .on("mouseout", function () {
+            self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+          });
+
+        bars
+          .exit()
+          .transition()
+          .duration(500)
+          .style("opacity", 0)
+          .remove();
+      }
 
       if (showPoints) {
         var points = graph
