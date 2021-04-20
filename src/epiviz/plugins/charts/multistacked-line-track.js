@@ -592,7 +592,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
       var rWidth = function (j) {
         /** @type {epiviz.datatypes.GenomicData.ValueItem} */
         var cell = series.get(j);
-        return xScale(cell.rowItem.end()-1) - xScale(cell.rowItem.start()+1);
+        return xScale(cell.rowItem.end()) - xScale(cell.rowItem.start());
       };
 
       var errMinus = function (j) {
