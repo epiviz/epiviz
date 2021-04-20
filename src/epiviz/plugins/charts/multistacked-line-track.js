@@ -577,6 +577,12 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
         return xScale(cell.rowItem.start());
       };
 
+      var cx = function (j) {
+        /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+        var cell = series.get(j);
+        return (xScale(cell.rowItem.start()) + xScale(cell.rowItem.end()))/2;
+      };
+
       var y = function (j) {
         /** @type {epiviz.datatypes.GenomicData.ValueItem} */
         var cell = series.get(j);
@@ -827,7 +833,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
           .append("circle")
           .attr("class", "point-series-index-" + trackCount)
           .attr("r", pointRadius)
-          .attr("cx", x)
+          .attr("cx", cx)
           .attr("cy", y)
           .attr("fill", color)
           .attr("stroke", color)
