@@ -235,6 +235,10 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <!--<script src="//caja.appspot.com/caja.js"></script>-->
     <script src="src/lib/renderingQueue/render-queue.js"></script>
 
+    <!-- <script src="src/lib/itree/itree.umd.js"></script> -->
+    <script src='https://unpkg.com/@flatten-js/interval-tree'></script>
+    <!-- <script src="src/epiviz/datatypes/itree.js"></script> -->
+
     <!-- Google Analytics -->
     <script src="src/lib/google-analytics/google-analytics.js"></script>
 
@@ -404,6 +408,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/transcript-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/repeat-track.js"></script>
     <script src="src/epiviz/plugins/charts/repeat-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/guide-track.js"></script>
+    <script src="src/epiviz/plugins/charts/guide-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-plot.js"></script>

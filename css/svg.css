@@ -93,6 +93,20 @@ text {
 .transcript-track .hovered .transcript-name { fill-opacity: 1; }
 .transcript-track .selected .transcript-name { fill-opacity: 1; }
 
+/* Guide Track */
+
+.guide-track {}
+.guide-track .items { shape-rendering: auto; stroke: #555555; fill-opacity: 0.6; stroke-width: 0.1; }
+.guide-track .guide-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }
+.guide-track .guide-name-show { font-weight: bold; font-size: 12; fill: #000000; stroke: none; }
+
+.guide-track .selected { fill-opacity: 1; stroke: #555555; }
+.guide-track .selected .guide-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.guide-track .hovered { fill-opacity: 1; stroke: #555555; }
+.guide-track .hovered .guide-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
+.guide-track .hovered .guide-name { fill-opacity: 1; }
+.guide-track .selected .guide-name { fill-opacity: 1; }
+
 /* Repeat Track */
 
 .repeat-track {}

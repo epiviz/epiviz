@@ -56,7 +56,8 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.DiversityScatterPlotType',
     'epiviz.plugins.charts.GwasTrackType',
     'epiviz.plugins.charts.GwasPIPTrackType',
-    'epiviz.plugins.charts.RepeatTrackType'
+    'epiviz.plugins.charts.RepeatTrackType',
+    'epiviz.plugins.charts.GuideTrackType'
   ],
 
   // Chart default settings
@@ -119,6 +120,11 @@ epiviz.Config.SETTINGS = {
     },
 
     'epiviz.plugins.charts.TranscriptTrack': {
+      height: 200,
+      colors: 'genes-default'
+    },
+
+    'epiviz.plugins.charts.GuideTrack': {
       height: 200,
       colors: 'genes-default'
     },
