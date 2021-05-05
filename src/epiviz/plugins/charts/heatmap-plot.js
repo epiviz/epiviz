@@ -485,6 +485,8 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
     }
   }
 
+  self._globalIndices = globalIndices;
+
   /** @type {Array.<epiviz.ui.charts.ChartObject>} */
   var items = [];
   var colIndex = {};
@@ -621,6 +623,10 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
   var cellHeight =
     (height - this.margins().sumAxis(Axis.Y)) / data.measurements().length;
 
+  self.svgCellWidth = cellWidth;
+  self.svgCellHeight = cellHeight;
+  self._colIndex = colIndex;
+
   var itemsGroup = this._chartContent.select(".items");
 
   if (itemsGroup.empty()) {
@@ -656,12 +662,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
     .style("opacity", 0)
     .style("fill-opacity", 0)
     .attr("x", function(d) {
-      return cellWidth * colIndex[d.valueItems[0][0].globalIndex];
+      return cellWidth * colIndex[d.valueItems[0][0].globalIndex] + 1;
     })
     .attr("y", function(d) {
       return cellHeight * d.seriesIndex;
     })
-    .attr("width", cellWidth)
+    .attr("width", cellWidth - 1)
     .attr("height", cellHeight)
     .style("fill", function(d, i) {
       if (!self._globalIndexColorLabels) {
@@ -678,12 +684,12 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(
     .style("fill-opacity", null)
     .style("opacity", null)
     .attr("x", function(d) {
-      return cellWidth * colIndex[d.valueItems[0][0].globalIndex];
+      return cellWidth * colIndex[d.valueItems[0][0].globalIndex] + 2;
     })
     .attr("y", function(d) {
       return cellHeight * d.seriesIndex;
     })
-    .attr("width", cellWidth)
+    .attr("width", cellWidth - 2)
     .attr("height", cellHeight)
     .style("fill", function(d) {
       if (!self._globalIndexColorLabels) {
@@ -1896,7 +1902,7 @@ epiviz.plugins.charts.HeatmapPlot.prototype.addCanvasEvents = function(
  * @param {epiviz.ui.charts.VisObject} selectedObject
  */
 epiviz.plugins.charts.HeatmapPlot.prototype.doHover = function(selectedObject) {
-  epiviz.ui.charts.Plot.prototype.doHover.call(this, selectedObject);
+  // epiviz.ui.charts.Plot.prototype.doHover.call(this, selectedObject);
 
   var self = this;
   if (this.chartDrawType == "canvas") {
@@ -1921,30 +1927,46 @@ epiviz.plugins.charts.HeatmapPlot.prototype.doHover = function(selectedObject) {
     });
     return;
   }
+
   var itemsGroup = this._container.find(".items");
   var unselectedHoveredGroup = itemsGroup.find("> .hovered");
   var selectedGroup = itemsGroup.find("> .selected");
   var selectedHoveredGroup = selectedGroup.find("> .hovered");
 
-  var filter = function() {
-    if (Array.isArray(selectedObject)) {
-      var match = false;
+  this._svg.select(".items > .hovered").append("rect")
+  .attr("class", "item-tb item hovered")
+  .attr("x", self.svgCellWidth * self._colIndex[selectedObject.valueItems[0][0].globalIndex] + 1)
+  .attr("y", -1)
+  .attr("height", 1 + (self.measurements().size() * self.svgCellHeight))
+  .attr("width", self.svgCellWidth)
+  .attr("stroke-width", 3)
+  .attr("fill", "none")
 
-      for (var sIndex = 0; sIndex < selectedObject.length; sIndex++) {
-        var sel = selectedObject[sIndex];
-        if (sel.overlapsWith(d3.select(this).data()[0])) {
-          match = true;
-        }
-      }
+  // var filter = function() {
+  //   if (Array.isArray(selectedObject)) {
+  //     var match = false;
 
-      return match;
-    } else {
-      return selectedObject.overlapsWith(d3.select(this).data()[0]);
-    }
-  };
-  var selectItems = itemsGroup.find("> .item").filter(filter);
-  unselectedHoveredGroup.append(selectItems);
+  //     for (var sIndex = 0; sIndex < selectedObject.length; sIndex++) {
+  //       var sel = selectedObject[sIndex];
+  //       if (sel.overlapsWith(d3.select(this).data()[0])) {
+  //         match = true;
+  //       }
+  //     }
 
-  selectItems = selectedGroup.find("> .item").filter(filter);
-  selectedHoveredGroup.append(selectItems);
+  //     return match;
+  //   } else {
+  //     return selectedObject.overlapsWith(d3.select(this).data()[0]);
+  //   }
+  // };
+  // var selectItems = itemsGroup.find("> .item").filter(filter);
+  // unselectedHoveredGroup.append(selectItems);
+
+  // selectItems = selectedGroup.find("> .item").filter(filter);
+  // selectedHoveredGroup.append(selectItems);
 };
+
+epiviz.plugins.charts.HeatmapPlot.prototype.doUnhover = function(selectedObject) {
+  // epiviz.ui.charts.Plot.prototype.doUnhover.call(this, selectedObject);
+  
+  this._svg.select(".items > .hovered").selectAll("rect").remove();
+}
