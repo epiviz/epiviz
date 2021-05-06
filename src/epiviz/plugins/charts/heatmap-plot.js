@@ -1933,36 +1933,48 @@ epiviz.plugins.charts.HeatmapPlot.prototype.doHover = function(selectedObject) {
   var selectedGroup = itemsGroup.find("> .selected");
   var selectedHoveredGroup = selectedGroup.find("> .hovered");
 
-  this._svg.select(".items > .hovered").append("rect")
-  .attr("class", "item-tb item hovered")
-  .attr("x", self.svgCellWidth * self._colIndex[selectedObject.valueItems[0][0].globalIndex] + 1)
-  .attr("y", -1)
-  .attr("height", 1 + (self.measurements().size() * self.svgCellHeight))
-  .attr("width", self.svgCellWidth)
-  .attr("stroke-width", 3)
-  .attr("fill", "none")
+  if (selectedObject.valueItems) {
+    this._svg.select(".items > .hovered").append("rect")
+    .attr("class", "item-tb item hovered")
+    .attr("x", self.svgCellWidth * self._colIndex[selectedObject.valueItems[0][0].globalIndex] + 1)
+    .attr("y", -1)
+    .attr("height", 1 + (self.measurements().size() * self.svgCellHeight))
+    .attr("width", self.svgCellWidth)
+    .attr("stroke-width", 3)
+    .attr("fill", "none")
+  } else {
+    var filter = function() {
+      if (Array.isArray(selectedObject)) {
+        var match = false;
 
-  // var filter = function() {
-  //   if (Array.isArray(selectedObject)) {
-  //     var match = false;
+        for (var sIndex = 0; sIndex < selectedObject.length; sIndex++) {
+          var sel = selectedObject[sIndex];
+          if (sel.overlapsWith(d3.select(this).data()[0])) {
+            match = true;
+          }
+        }
 
-  //     for (var sIndex = 0; sIndex < selectedObject.length; sIndex++) {
-  //       var sel = selectedObject[sIndex];
-  //       if (sel.overlapsWith(d3.select(this).data()[0])) {
-  //         match = true;
-  //       }
-  //     }
+        return match;
+      } else {
+        return selectedObject.overlapsWith(d3.select(this).data()[0]);
+      }
+    };
+    var selectItems = itemsGroup.find("> .item").filter(filter);
+    selectItems.each(function(idx, m) {
+      self._svg.select(".items > .hovered").append("rect")
+      .attr("class", "item-tb item hovered")
+      .attr("x", self.svgCellWidth * self._colIndex[d3.select(m).data()[0].valueItems[0][0].globalIndex] + 1)
+      .attr("y", -1)
+      .attr("height", 1 + (self.measurements().size() * self.svgCellHeight))
+      .attr("width", self.svgCellWidth)
+      .attr("stroke-width", 3)
+      .attr("fill", "none")
+    })
+    // unselectedHoveredGroup.append(selectItems);
 
-  //     return match;
-  //   } else {
-  //     return selectedObject.overlapsWith(d3.select(this).data()[0]);
-  //   }
-  // };
-  // var selectItems = itemsGroup.find("> .item").filter(filter);
-  // unselectedHoveredGroup.append(selectItems);
-
-  // selectItems = selectedGroup.find("> .item").filter(filter);
-  // selectedHoveredGroup.append(selectItems);
+    // selectItems = selectedGroup.find("> .item").filter(filter);
+    // selectedHoveredGroup.append(selectItems);
+  }
 };
 
 epiviz.plugins.charts.HeatmapPlot.prototype.doUnhover = function(selectedObject) {
