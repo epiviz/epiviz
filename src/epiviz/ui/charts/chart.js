@@ -152,6 +152,34 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
     this._binSize = Math.ceil((range.end() - range.start()) / this._nBins);
   }
 
+  var msOrderLabel = this.customSettingsValues()[
+    epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENTS_ORDER
+  ];
+
+  var self = this;
+
+  if (msOrderLabel) {
+    var map = new epiviz.measurements.MeasurementHashtable();
+    var mts = self._lastData.measurements();
+    mts.sort(function(m1, m2) {
+      if (msOrderLabel == 'name') {
+        var v1 = m1.name().toLowerCase();
+        var v2 = m2.name().toLowerCase();
+      } else {
+        var v1 = m1.annotation()[msOrderLabel].toLowerCase();
+        var v2 = m2.annotation()[msOrderLabel].toLowerCase();
+      }
+      return (v1 == v2) ? 0 : (v1 < v2 ? -1 : 1);
+    });
+
+    mts.forEach(function(m) {
+      map.put(m, self._lastData.getSeries(m));
+    });
+
+    self._lastData._map = null;
+    self._lastData._setMap(map);
+  }
+
   return [];
 };
 

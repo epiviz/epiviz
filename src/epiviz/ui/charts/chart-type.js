@@ -45,7 +45,13 @@ epiviz.ui.charts.ChartType.prototype.customSettingsDefs = function() {
       epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENT_GROUPS_AGGREGATOR,
       epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
       aggregators[0],
-      'Aggregator for measurement groups', aggregators)
+      'Aggregator for measurement groups', aggregators),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.ui.charts.ChartType.CustomSettings.MEASUREMENTS_ORDER,
+      epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,
+      'name',
+      'Order Measurements by')
   ]);
 };
 
@@ -53,5 +59,6 @@ epiviz.ui.charts.ChartType.prototype.customSettingsDefs = function() {
  * @enum {string}
  */
 epiviz.ui.charts.ChartType.CustomSettings = {
-  MEASUREMENT_GROUPS_AGGREGATOR: 'measurementGroupsAggregator'
+  MEASUREMENT_GROUPS_AGGREGATOR: 'measurementGroupsAggregator',
+  MEASUREMENTS_ORDER: 'measurementsOrder'
 };
