@@ -343,9 +343,10 @@ epiviz.plugins.charts.GwasTrack.prototype._drawLines = function(
       }
 
       var x = xScale(cell.rowItem.start());
-      var y = cell.value = yScale(parseFloat(cell.rowItem.rowMetadata()[yAxisField]));
+      var y = yScale(parseFloat(cell.rowItem.rowMetadata()[yAxisField]));
       var gridX = Math.floor(x / gridSquareSize) * gridSquareSize;
       var gridY = Math.floor(y / gridSquareSize) * gridSquareSize;
+      cell.value = cell.rowItem.rowMetadata()[yAxisField]
 
       var uiObj = null;
       if (grid[gridY] && grid[gridY][gridX]) {
