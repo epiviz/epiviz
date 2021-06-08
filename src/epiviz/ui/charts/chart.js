@@ -158,7 +158,7 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
 
   var self = this;
 
-  if (msOrderLabel) {
+  if (msOrderLabel && self._lastData) {
     var map = new epiviz.measurements.MeasurementHashtable();
     var mts = self._lastData.measurements();
     mts.sort(function(m1, m2) {
@@ -166,8 +166,8 @@ epiviz.ui.charts.Chart.prototype.draw = function(range, data) {
         var v1 = m1.name().toLowerCase();
         var v2 = m2.name().toLowerCase();
       } else {
-        var v1 = m1.annotation()[msOrderLabel].toLowerCase();
-        var v2 = m2.annotation()[msOrderLabel].toLowerCase();
+        var v1 = m1.annotation()[msOrderLabel] ? m1.annotation()[msOrderLabel].toLowerCase() : "";
+        var v2 = m2.annotation()[msOrderLabel] ? m2.annotation()[msOrderLabel].toLowerCase() : "";
       }
       return (v1 == v2) ? 0 : (v1 < v2 ? -1 : 1);
     });
