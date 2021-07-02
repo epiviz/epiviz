@@ -953,15 +953,15 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
   // self._drawAxes(xScale, yScale, 10, trackCount + 1, null, null, null, null, null, null, null, yTicksSeries);
 
   // if hidden remove the other tracks
-  for (;trackCount < self.measurements().size(); trackCount++) {
-    graph
-    .select(".line-series-index-" + trackCount)
-    .remove();
+  // for (;trackCount < self.measurements().size(); trackCount++) {
+  //   graph
+  //   .select(".line-series-index-" + trackCount)
+  //   .remove();
 
-    graph
-    .select(".point-series-index-" + trackCount)
-    .remove();
-  }
+  //   graph
+  //   .select(".point-series-index-" + trackCount)
+  //   .remove();
+  // }
 
   return items;
 };
@@ -1366,7 +1366,7 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
   }
 
   var title = "";
-  var measurements = this._lastData.measurements();
+  var measurements = self.measurements().toArray();
 
   if (self._id.indexOf("stacked") != -1 && this.chartDrawType == "canvas") {
 
@@ -1430,8 +1430,9 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS
     ];
 
+    var tracks = [];
     if (showTracks != "default")  {
-      var tracks = showTracks.split(",");
+      tracks = showTracks.split(",");
       seriesLineHeight = (self.height() - self.margins().sumAxis(epiviz.ui.charts.Axis.Y)) / tracks.length;
       allMeasurements = [] //measurements.subset(function (m) { return tracks.includes(m.id()) });
 
@@ -1440,6 +1441,11 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
           allMeasurements.push(m);
         }
       })
+    } else {
+      allMeasurements.forEach(function(m) {
+        tracks.push(m.id());
+        // allMeasurements.push(m)
+      });
     }
 
     var titleEntries = this._svg
@@ -1457,7 +1463,8 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend = function() {
       })
       .attr("x", 0)
       .attr("y", function (b, i) {
-        return (i * seriesLineHeight) + 10;
+        var lindex = tracks.indexOf(b.id());
+        return (lindex * seriesLineHeight) + 10;
       })
       .text(function(m, i) {
         return m.name();
