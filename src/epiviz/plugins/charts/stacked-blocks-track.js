@@ -52,7 +52,7 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._initialize = function () {
  * @param {number} [zoom]
  * @returns {Array.<epiviz.ui.charts.ChartObject>} The objects drawn
  */
-epiviz.plugins.charts.StackedBlocksTrack.prototype.draw = function (
+epiviz.plugins.charts.StackedBlocksTrack.prototype.draw = function(
   range,
   data,
   slide,
@@ -426,7 +426,6 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
     this._svg
         .selectAll(".chart-title-label").remove();
 
-    console.log(self._isColorLabels);
     var titleEntries = this._svg
         .selectAll(".chart-title-label")
         .data(Object.keys(self._isColorLabels))
@@ -435,35 +434,51 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
         .attr("class", "chart-title-label")
         .attr("font-weight", "bold")
         .attr("fill", function(m, i) {
-          return self._isColorLabels[m];
+          // return self._isColorLabels[m];
+          return "black";
         })
-        .attr("y", self.margins().top() - 10)
+        .attr("fill-opacity", 0.7)
+        .attr("y", self.margins().top() - 9)
         .text(function(m, i) {
             return m;
         });
 
     var textLength = 0;
     var titleEntriesStartPosition = [];
+    var textLevel = [];
+    var level = 0;
 
     this._container.find(" .chart-title-label").each(function(i) {
+
+        if(textLength + this.getBBox().width + 15 > (width - margins.sumAxis(Axis.X))) {
+          textLength = 0;
+          level++;
+        }
+
         titleEntriesStartPosition.push(textLength);
         textLength += this.getBBox().width + 15;
+        textLevel.push(level);
     });
 
     titleEntries.attr("x", function(column, i) {
         return self.margins().left() + 10 + titleEntriesStartPosition[i];
+    })
+    .attr("y", function(m, i) {
+      return self.margins().top() - ((textLevel[i] + 1) * 12) + 4
     });
 
     var colorEntries = this._svg
         .selectAll(".chart-title-color")
-        .data(measurements)
+        .data(Object.keys(self._isColorLabels))
         .enter()
         .append("circle")
         .attr("class", "chart-title-color")
         .attr("cx", function(column, i) {
             return self.margins().left() + 4 + titleEntriesStartPosition[i];
         })
-        .attr("cy", self.margins().top() - 9)
+        .attr("cy", function(m, i) {
+          return self.margins().top() - ((textLevel[i] + 1) * 12)
+        })
         .attr("r", 4)
         .style("shape-rendering", "auto")
         .style("stroke-width", "0")
