@@ -108,6 +108,8 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
   slide,
   zoom
 ) {
+
+  var self = this;
   var Axis = epiviz.ui.charts.Axis;
 
   /** @type {number} */
@@ -164,21 +166,38 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
     epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
   ];
 
+  self._isColorLabels = {};
+
   var colorBy = function (row) {
     if(useColorBy) {
       if(isColor) {
-        return "rgb(" + row.values +")";
+        if (row.valueItems[0][0].rowItem.metadata("name")) {
+          self._isColorLabels[row.valueItems[0][0].rowItem.metadata("name")] = "rgb(" + row.values +")";
+
+        } else if (row.valueItems[0][0].rowItem.metadata("mnemonic")) {
+          self._isColorLabels[row.valueItems[0][0].rowItem.metadata("mnemonic")] = "rgb(" + row.values +")";
+        } else {
+          self._isColorLabels["rgb(" + row.values +")"] = "rgb(" + row.values + ")";
+        }
+        return "rgb(" + row.values + ")";
       }
+
+      self._isColorLabels[colors.getByKey(row.values)] = "rgb(" + row.values + ")";
       return colors.getByKey(row.values)
     }
     return colors.get(row.seriesIndex);
   };
 
+  var marginLegend = 0;
+  if (useColorBy) {
+    marginLegend = 50;
+  }
+
   var xScale = d3.scale
     .linear()
     .domain([start, end])
-    .range([0, width - margins.sumAxis(Axis.X)]);
-  var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
+    .range([0, width - margins.sumAxis(Axis.X) - marginLegend]);
+  var delta = (slide * (width - margins.sumAxis(Axis.X) - marginLegend)) / (end - start);
 
   var CustomSetting = epiviz.ui.charts.CustomSetting;
 
@@ -299,7 +318,7 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
   var items = this._svg.select(".items");
   var selected = items.select(".selected");
   var clipPath = this._svg.select("#clip-" + this.id());
-  var textheight = 0; //13
+  var textheight = 5; //13
 
   if (items.empty()) {
     if (clipPath.empty()) {
@@ -401,6 +420,57 @@ epiviz.plugins.charts.StackedBlocksTrack.prototype._drawBlocks = function (
     .transition()
     .duration(500)
     .remove();
+
+  if (useColorBy) {
+
+    this._svg
+        .selectAll(".chart-title-label").remove();
+
+    console.log(self._isColorLabels);
+    var titleEntries = this._svg
+        .selectAll(".chart-title-label")
+        .data(Object.keys(self._isColorLabels))
+        .enter()
+        .append("text")
+        .attr("class", "chart-title-label")
+        .attr("font-weight", "bold")
+        .attr("fill", function(m, i) {
+          return self._isColorLabels[m];
+        })
+        .attr("y", self.margins().top() - 10)
+        .text(function(m, i) {
+            return m;
+        });
+
+    var textLength = 0;
+    var titleEntriesStartPosition = [];
+
+    this._container.find(" .chart-title-label").each(function(i) {
+        titleEntriesStartPosition.push(textLength);
+        textLength += this.getBBox().width + 15;
+    });
+
+    titleEntries.attr("x", function(column, i) {
+        return self.margins().left() + 10 + titleEntriesStartPosition[i];
+    });
+
+    var colorEntries = this._svg
+        .selectAll(".chart-title-color")
+        .data(measurements)
+        .enter()
+        .append("circle")
+        .attr("class", "chart-title-color")
+        .attr("cx", function(column, i) {
+            return self.margins().left() + 4 + titleEntriesStartPosition[i];
+        })
+        .attr("cy", self.margins().top() - 9)
+        .attr("r", 4)
+        .style("shape-rendering", "auto")
+        .style("stroke-width", "0")
+        .style("fill", function(m, i) {
+          return self._isColorLabels[m];
+        });
+  }
 
   return blocks;
 };
