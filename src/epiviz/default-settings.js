@@ -41,6 +41,7 @@ epiviz.Config.SETTINGS = {
   chartTypes: [
     'epiviz.plugins.charts.BlocksTrackType',
     'epiviz.plugins.charts.InteractionBlocksTrackType',
+    'epiviz.plugins.charts.SashimiPlotType',
     'epiviz.plugins.charts.StackedBlocksTrackType',
     'epiviz.plugins.charts.LineTrackType',
     'epiviz.plugins.charts.StackedLineTrackType',
