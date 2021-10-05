@@ -50,34 +50,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   slide,
   zoom
 ) {
-  /* TEST */
-
-  console.log("we have data");
-  console.log("svg");
-  console.log(this._svg);
-  console.log("range");
-  console.log(range);
-  console.log("data");
-  console.log(data);
-  console.log("slide");
-  console.log(slide);
-  console.log("zoom");
-  console.log(zoom);
-
-  let sashimiData = null;
-
-  data.foreach((m, series, seriesIndex) => {
-    for (var j = 0; j < series.size(); ++j) {
-      console.log("-----------------------------------------");
-      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
-      var cell = series.get(j);
-      sashimiData = cell.rowItem.rowMetadata();
-    }
-  });
-
-  console.log("my data is");
-  console.log(sashimiData);
-
   var Axis = epiviz.ui.charts.Axis;
 
   /** @type {number} */
@@ -146,10 +118,29 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // }
   };
 
+  let sashimiData = null;
+
+  data.foreach((m, series, seriesIndex) => {
+    for (var j = 0; j < series.size(); ++j) {
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+      var cell = series.get(j);
+      sashimiData = cell.rowItem.rowMetadata();
+    }
+  });
+
+  console.log("data");
+  console.log(sashimiData);
+
   var xScale = d3.scale
     .linear()
     .domain([start, end])
     .range([0, width - margins.sumAxis(Axis.X)]);
+
+  var yScale = d3.scale
+    .linear()
+    .domain([0, Math.max(...sashimiData.coverage.value)])
+    .range([0, height - margins.sumAxis(Axis.Y)]);
+
   var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
   this._clearAxes();
@@ -157,62 +148,173 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
   /* compute */
 
-  let coverage = sashimiData.coverage,
-    chrStart = coverage.start,
-    chrEnd = coverage.end,
-    chrStartMax = Math.max(...chrStart),
-    chrEndMax = Math.max(...chrEnd),
-    chrStartMin = Math.min(...chrStart),
-    chrEndMin = Math.min(...chrEnd),
-    coverageStart = Math.min(chrStartMin, chrEndMin),
-    coverageEnd = Math.max(chrStartMax, chrEndMax);
-
-  // console.log(chrStartMax, chrEndMax, coverageStart, coverageEnd);
-
   let coverageData = [];
-  for (let i = coverageStart; i <= coverageEnd; i++) {
-    let eachDataObj = {};
-    //eachDataObj['chr'] = '';
-    eachDataObj["data"] = i;
-    eachDataObj["value"] = undefined;
-    coverageData.push(eachDataObj);
-  }
-
-  // console.log(coverageData);
-  let coverageMap = {};
-  for (let i = 0; i < chrStart.length; i++) {
-    for (var j = chrStart[i]; j <= chrEnd[i]; j++) {
-      //console.log(i, j, coverage.value[i]); //debugger;
-      coverageMap[j] = coverage.value[i];
+  for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
+    let _data = null;
+    if (i == 0) {
+      _data = {
+        start: sashimiData.coverage.start[i],
+        end: sashimiData.coverage.end[i],
+        value: sashimiData.coverage.value[i],
+        index: i + 1,
+      };
+    } else {
+      _data = {
+        start: sashimiData.coverage.start[i] + sashimiData.coverage.start[0],
+        end: sashimiData.coverage.end[i] + sashimiData.coverage.end[0],
+        value: sashimiData.coverage.value[i],
+        index: i + 1,
+      };
     }
+    coverageData.push(_data);
   }
 
-  // console.log(coverageMap);
-  // console.log(coverageData);
-
-  for (let i = 0; i < coverageData.length; i++) {
-    let mapKey = (i + 1).toString();
-    // console.log(coverageData[i]);
-    coverageData[i]["value"] = coverageMap[mapKey];
+  let junctionData = [];
+  for (let i = 0; i < sashimiData.junctions.chr.length; i++) {
+    let _data = null;
+    if (i == 0) {
+      _data = {
+        region1_start: sashimiData.junctions.region1_start[i],
+        region2_start: sashimiData.junctions.region2_start[i],
+        region1_end: sashimiData.junctions.region1_end[i],
+        region2_end: sashimiData.junctions.region2_end[i],
+        value: sashimiData.junctions.value[i],
+        index: i + 1,
+      };
+    } else {
+      _data = {
+        region1_start:
+          sashimiData.junctions.region1_start[i] +
+          sashimiData.junctions.region1_start[0],
+        region2_start:
+          sashimiData.junctions.region2_start[i] +
+          sashimiData.junctions.region2_start[0],
+        region1_end:
+          sashimiData.junctions.region1_end[i] +
+          sashimiData.junctions.region1_end[0],
+        region2_end:
+          sashimiData.junctions.region2_end[i] +
+          sashimiData.junctions.region2_end[0],
+        value: sashimiData.junctions.value[i],
+        index: i + 1,
+      };
+    }
+    junctionData.push(_data);
   }
 
-  // console.log(coverageData);
+  // data in better shape
+  console.log(coverageData);
+  console.log(junctionData);
 
-  /* end compute */
+  // TESTING
+  // coverageData = [
+  //   { start: 10265000, end: 10265500, value: 2, index: 1 },
+  //   { start: 10266000, end: 10266500, value: 1, index: 2 },
+  //   { start: 10267000, end: 10267500, value: 2, index: 3 },
+  // ];
 
   /* plotting */
 
   const svg = this._svg;
 
+  // coverage
+
+  var items = this._svg.select(".items");
+
+  items = this._svg.append("g").attr("class", "items");
+
+  items.attr(
+    "transform",
+    "translate(" + margins.left() + ", " + margins.top() + ")"
+  );
+
+  var selection = items.selectAll(".item").data(coverageData, function (b) {
+    return b.index;
+  });
+
+  selection
+    .enter()
+    .append("rect")
+    .attr("class", "item")
+    .attr("x", function (b) {
+      return xScale(b.start);
+    })
+    .attr("y", function (b) {
+      return height - margins._top - margins._bottom - yScale(b.value);
+    })
+    .attr("width", function (b) {
+      return Math.abs(xScale(b.end) - xScale(b.start));
+    })
+    .attr("height", function (b) {
+      return yScale(b.value);
+    });
+
+  selection.exit().remove();
+
+  // junctions
+
+  var links = this._svg.select(".links");
+
+  links = this._svg.append("g").attr("class", "links");
+
+  links.attr(
+    "transform",
+    "translate(" + margins.left() + ", " + margins.top() + ")"
+  );
+
+  var links_selection = links
+    .selectAll(".arcs")
+    .data(junctionData, function (b) {
+      return b.index;
+    });
+
+  links_selection
+    .enter()
+    .append("path")
+    .attr("class", "arcs")
+    .attr("d", function (d) {
+      var r1s = parseInt(d.region1_start),
+        r1e = parseInt(d.region1_end),
+        r2s = parseInt(d.region2_start),
+        r2e = parseInt(d.region2_end);
+
+      var start = xScale(Math.round((r1s + r1e) / 2));
+      var end = xScale(Math.round((r2s + r2e) / 2));
+
+      //Creating an Arc path
+      // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
+      // large-arc-flag, sweep-flag, end-x, end-y
+
+      return [
+        "M",
+        start,
+        Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
+        "A",
+        (end - start) / 2,
+        ",",
+        Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
+        0,
+        0,
+        ",",
+        start < end ? 1 : 0,
+        end,
+        ",",
+        Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
+      ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+        .join(" ");
+    });
+
+  links_selection.exit().remove();
+
+  return;
+
   let x = d3.scale
     .linear()
-    //.domain(d3.extent(data, d => d.date))
     .domain(d3.extent(coverageData, (d) => d.data))
     .range([margins._left, width - margins._right]);
 
   let y = d3.scale
     .linear()
-    //.domain([0, d3.max(data, d => d.value)]).nice()
     .domain([0, d3.max(coverageData, (d) => d.value) * 2])
     .nice()
     .range([height - margins._bottom, margins._top]);
@@ -248,6 +350,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     .y0(y(0))
     .y1((d) => y(d["value"]));
 
+  // intron
+
   svg
     .append("path")
     //.datum(data.filter(d3.area().defined()))
@@ -255,6 +359,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     .attr("fill", "#eee")
     // .attr("d", area(data));
     .attr("d", area(coverageData));
+
+  // exon
 
   svg
     .append("path")
