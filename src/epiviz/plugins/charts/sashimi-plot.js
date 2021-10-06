@@ -131,6 +131,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   console.log("data");
   console.log(sashimiData);
 
+  if (sashimiData == null) return [];
+
   var xScale = d3.scale
     .linear()
     .domain([start, end])
@@ -160,8 +162,12 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       };
     } else {
       _data = {
-        start: sashimiData.coverage.start[i] + sashimiData.coverage.start[0],
-        end: sashimiData.coverage.end[i] + sashimiData.coverage.end[0],
+        start:
+          sashimiData.coverage.start[i] +
+          coverageData[coverageData.length - 1].start,
+        end:
+          sashimiData.coverage.end[i] +
+          coverageData[coverageData.length - 1].end,
         value: sashimiData.coverage.value[i],
         index: i + 1,
       };
@@ -185,16 +191,16 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       _data = {
         region1_start:
           sashimiData.junctions.region1_start[i] +
-          sashimiData.junctions.region1_start[0],
+          junctionData[junctionData.length - 1].region1_start,
         region2_start:
           sashimiData.junctions.region2_start[i] +
-          sashimiData.junctions.region2_start[0],
+          junctionData[junctionData.length - 1].region2_start,
         region1_end:
           sashimiData.junctions.region1_end[i] +
-          sashimiData.junctions.region1_end[0],
+          junctionData[junctionData.length - 1].region1_end,
         region2_end:
           sashimiData.junctions.region2_end[i] +
-          sashimiData.junctions.region2_end[0],
+          junctionData[junctionData.length - 1].region2_end,
         value: sashimiData.junctions.value[i],
         index: i + 1,
       };
@@ -306,7 +312,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
   links_selection.exit().remove();
 
-  return;
+  return coverageData;
 
   let x = d3.scale
     .linear()
