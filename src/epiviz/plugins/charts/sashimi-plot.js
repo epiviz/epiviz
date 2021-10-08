@@ -133,21 +133,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
   if (sashimiData == null) return [];
 
-  var xScale = d3.scale
-    .linear()
-    .domain([start, end])
-    .range([0, width - margins.sumAxis(Axis.X)]);
-
-  var yScale = d3.scale
-    .linear()
-    .domain([0, Math.max(...sashimiData.coverage.value)])
-    .range([0, height - margins.sumAxis(Axis.Y)]);
-
-  var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
-
-  this._clearAxes();
-  this._drawAxes(xScale, null, 10, 5);
-
   /* compute */
 
   let coverageData = [];
@@ -208,18 +193,76 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     junctionData.push(_data);
   }
 
+  // TESTING on fake data
+  coverageData = [
+    { start: 10265000, end: 10265500, value: 2, index: 1 },
+    { start: 10265500, end: 10265750, value: 1.5, index: 2 },
+    { start: 10265750, end: 10266000, value: 4, index: 3 },
+    { start: 10266000, end: 10266250, value: 1, index: 4 },
+    { start: 10267000, end: 10267500, value: 2, index: 5 },
+  ];
+  junctionData = [
+    {
+      region1_start: 10266250,
+      region1_end: 10266250,
+      region2_start: 10267000,
+      region2_end: 10267000,
+      value: 5,
+      index: 1,
+    },
+    {
+      region1_start: 10266000,
+      region1_end: 10266000,
+      region2_start: 10267000,
+      region2_end: 10267000,
+      value: 5,
+      index: 2,
+    },
+    {
+      region1_start: 10266500,
+      region1_end: 10266500,
+      region2_start: 10267000,
+      region2_end: 10267000,
+      value: 5,
+      index: 3,
+    },
+  ];
+  // TESTING on fake data
+
   // data in better shape
   console.log(coverageData);
   console.log(junctionData);
 
-  // TESTING
-  // coverageData = [
-  //   { start: 10265000, end: 10265500, value: 2, index: 1 },
-  //   { start: 10266000, end: 10266500, value: 1, index: 2 },
-  //   { start: 10267000, end: 10267500, value: 2, index: 3 },
-  // ];
+  /* merge regions for area chart */
+
+  const _coverageData_points = _convert_sashimi_coverage(coverageData);
+  console.log(_coverageData_points);
 
   /* plotting */
+
+  var xScale = d3.scale
+    .linear()
+    .domain([start, end])
+    .range([0, width - margins.sumAxis(Axis.X)]);
+
+  var yScale = d3.scale
+    .linear()
+    .domain([0, Math.max(...coverageData.map((d) => d.value))])
+    .range([height - margins.sumAxis(Axis.Y), 0]);
+
+  const _jumps = junctionData.map((junct) => {
+    return junct.region2_start - junct.region1_end;
+  });
+
+  var junctionJumpScale = d3.scale
+    .linear()
+    .domain([0, Math.max(..._jumps)])
+    .range([0, 1]);
+
+  // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
+
+  this._clearAxes();
+  this._drawAxes(xScale, yScale, 10, 5);
 
   const svg = this._svg;
 
@@ -227,7 +270,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
   var items = this._svg.select(".items");
 
-  items = this._svg.append("g").attr("class", "items");
+  if (items.empty()) {
+    items = this._svg.append("g").attr("class", "items");
+  }
 
   items.attr(
     "transform",
@@ -238,30 +283,83 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     return b.index;
   });
 
+  // enter
   selection
     .enter()
     .append("rect")
     .attr("class", "item")
+    .attr("fill", "yellow")
+    .style("opacity", "0.7");
+
+  // update
+  selection
     .attr("x", function (b) {
       return xScale(b.start);
     })
     .attr("y", function (b) {
-      return height - margins._top - margins._bottom - yScale(b.value);
+      return yScale(b.value);
     })
     .attr("width", function (b) {
       return Math.abs(xScale(b.end) - xScale(b.start));
     })
     .attr("height", function (b) {
-      return yScale(b.value);
+      return height - margins.sumAxis(Axis.Y) - yScale(b.value);
     });
 
+  // exit
   selection.exit().remove();
+
+  // alternate coverage
+
+  var area = d3.svg
+    .area()
+    .x(function (d) {
+      return xScale(d.x);
+    })
+    .y0(height - margins.sumAxis(Axis.Y))
+    .y1(function (d) {
+      return yScale(d.y);
+    })
+    .interpolate("monotone");
+
+  var items = this._svg.select(".items2");
+
+  if (items.empty()) {
+    items = this._svg.append("g").attr("class", "items2");
+  }
+
+  items.attr(
+    "transform",
+    "translate(" + margins.left() + ", " + margins.top() + ")"
+  );
+
+  var selection2 = items.selectAll(".areagroup").data(_coverageData_points);
+
+  // enter
+  var areagroup = selection2.enter().append("g").attr("class", "areagroup");
+
+  areagroup
+    .append("path")
+    .style("opacity", "0.7")
+    .style("fill", "blue")
+    .datum((d, i) => d)
+    .attr("class", "area")
+    .style("stroke", "blue")
+    .style("stroke-width", "3px");
+
+  // update
+  selection2.select("path").attr("d", area);
+
+  // exit
+  selection2.exit().remove();
 
   // junctions
 
   var links = this._svg.select(".links");
 
-  links = this._svg.append("g").attr("class", "links");
+  if (links.empty()) {
+    links = this._svg.append("g").attr("class", "links");
+  }
 
   links.attr(
     "transform",
@@ -274,10 +372,22 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       return b.index;
     });
 
-  links_selection
-    .enter()
-    .append("path")
-    .attr("class", "arcs")
+  // enter
+  links_selection.enter().append("g").attr("class", "arcs");
+
+  _path = links_selection.select("path");
+  _rect = links_selection.select("rect");
+  _text = links_selection.select("text");
+  if (_path.empty()) {
+    _path = links_selection.append("path");
+    _rect = links_selection.append("rect");
+    _text = links_selection.append("text");
+  }
+
+  // update
+  _path
+    .style("stroke", "red")
+    .style("stroke-width", "3px")
     .attr("d", function (d) {
       var r1s = parseInt(d.region1_start),
         r1e = parseInt(d.region1_end),
@@ -294,60 +404,63 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       return [
         "M",
         start,
-        Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
+        Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
         "A",
         (end - start) / 2,
         ",",
-        Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
+        Math.ceil(
+          (height - margins.sumAxis(Axis.Y)) * junctionJumpScale(r2s - r1e)
+        ),
         0,
-        0,
+        0, //junctionJumpScale
         ",",
         start < end ? 1 : 0,
         end,
         ",",
-        Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
+        Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
       ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
         .join(" ");
     });
 
+  _rect
+    .attr("fill", "white")
+    .attr("height", "20px")
+    .attr("width", "20px")
+    .attr("x", function (b) {
+      return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
+    })
+    .attr("y", function (d) {
+      return (
+        (height - margins.sumAxis(Axis.Y)) *
+          (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
+        10
+      );
+    });
+
+  _text
+    .text(function (d) {
+      return d.value;
+    })
+    .attr("x", function (b) {
+      return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
+    })
+    .attr("y", function (d) {
+      return (
+        (height - margins.sumAxis(Axis.Y)) *
+          (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
+        2
+      );
+    })
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "34px")
+    .attr("fill", "black")
+    .attr("text-anchor", "middle");
+
+  // exit
   links_selection.exit().remove();
 
   return coverageData;
-
-  let x = d3.scale
-    .linear()
-    .domain(d3.extent(coverageData, (d) => d.data))
-    .range([margins._left, width - margins._right]);
-
-  let y = d3.scale
-    .linear()
-    .domain([0, d3.max(coverageData, (d) => d.value) * 2])
-    .nice()
-    .range([height - margins._bottom, margins._top]);
-
-  let xAxis = (g) =>
-    g.attr("transform", `translate(0,${height - margins._bottom})`).call(
-      d3
-        .axisBottom(x)
-        .ticks(width / 80)
-        .tickSizeOuter(0)
-    );
-
-  let yAxis = (g) =>
-    g
-      .attr("transform", `translate(${margins._left},0)`)
-      .call(d3.axisLeft(y))
-      .call((g) => g.select(".domain"))
-      .call((g) =>
-        g
-          .select(".tick:last-of-type text")
-          .clone()
-          .attr("x", 3)
-          .attr("text-anchor", "start")
-          .attr("font-weight", "bold")
-          //.text(data['y'])
-          .text(coverageData["y"])
-      );
+  // nothing below here
 
   var area = d3.svg
     .area()
@@ -1022,4 +1135,75 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
     selectItems = selectedGroup.find("> .arcs-group").filter(filter);
     selectedHoveredGroup.append(selectItems);
   }
+};
+
+// utils
+// helper functions
+const _convert_sashimi_coverage = (ranges) => {
+  let final_paths = [];
+  let _temp_group = [];
+
+  for (let i = 0; i < ranges.length; i++) {
+    let _current = ranges[i];
+    let _prev = ranges[i];
+    if (i != 0) _prev = ranges[i - 1];
+
+    if (_current.value == 0 && _temp_group.length != 0) {
+      // reset
+      final_paths.push(_temp_group);
+      _temp_group = [];
+    }
+
+    if (_current.value != 0 && _is_neighbour(_prev, _current)) {
+      // add to existing group
+      _temp_group.push(_current);
+    } else if (_current.value != 0 && !_is_neighbour(_prev, _current)) {
+      // reset and new
+      final_paths.push(_temp_group);
+      _temp_group = [];
+      _temp_group.push(_current);
+    }
+
+    if (i == ranges.length - 1) final_paths.push(_temp_group);
+  }
+
+  // get the points
+  final_paths = final_paths.map((array) => {
+    return _get_points(array);
+  });
+
+  return final_paths;
+};
+
+const _is_neighbour = (a, b) => {
+  if (a.end == b.start) return true;
+  if (a.end > b.start) return true;
+
+  return false;
+};
+
+const _get_points = (array) => {
+  result = [];
+
+  // first point
+  result.push({
+    x: array[0].start,
+    y: 0,
+  });
+
+  // mids
+  array.forEach((data) => {
+    result.push({
+      x: (data.end + data.start) / 2,
+      y: data.value,
+    });
+  });
+
+  //last point
+  result.push({
+    x: array[array.length - 1].end,
+    y: 0,
+  });
+
+  return result;
 };
