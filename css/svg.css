@@ -191,6 +191,23 @@ text {
 .stacked-line-plot .selected .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2; stroke-opacity: 1.0; opacity: 1!important; }
 .stacked-line-plot .hovered .item { fill: #1a6d00; stroke: #ffc600; stroke-width: 2px!important; stroke-opacity: 1.0; opacity: 1!important; }
 
+/* sashimi track */
+
+.sashimi-track .hovered .arcs { 
+    stroke: #ffc600 !important; 
+    stroke-width: 5 !important; 
+    stroke-opacity: 0.7 !important; 
+    fill-opacity: 1 !important; 
+}
+.sashimi-track .items .arcs-group .arcs {
+    fill: none;
+    stroke: grey;
+    stroke-width: 2px;
+    shape-rendering: auto;
+    stroke-opacity: 0.4;
+}
+
+
 /* icicle */
 
 .icicle .item rect { stroke: #fff; stroke-width: 0; fill-rule: evenodd; }

@@ -80,47 +80,24 @@
   */
  epiviz.plugins.charts.SashimiPlotType.prototype.customSettingsDefs = function () {
    return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([
-     new epiviz.ui.charts.CustomSetting(
-       epiviz.plugins.charts.SashimiPlotType.CustomSettings.MIN_BLOCK_DISTANCE,
-       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-       0,
-       'Minimum block distance'),
- 
-     new epiviz.ui.charts.CustomSetting(
-       epiviz.plugins.charts.SashimiPlotType.CustomSettings.USE_COLOR_BY,
-       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
-       false,
-       'Use Block Color by'),
- 
-     new epiviz.ui.charts.CustomSetting(
-       epiviz.plugins.charts.SashimiPlotType.CustomSettings.BLOCK_COLOR_BY,
-       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
-       'colLabel',
-       'Block color by'),
- 
-     new epiviz.ui.charts.CustomSetting(
-       epiviz.plugins.charts.SashimiPlotType.CustomSettings.USE_SCALE_BY,
-       epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
-       false,
-       'Use Block scale by'),
- 
-     new epiviz.ui.charts.CustomSetting(
-       epiviz.plugins.charts.SashimiPlotType.CustomSettings.BLOCK_SCALE_BY,
-       epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,
-       'colLabel',
-       'Block scale by'),
- 
-     new epiviz.ui.charts.CustomSetting(
-       epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,
-       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-       epiviz.ui.charts.CustomSetting.DEFAULT,
-       'Min Y'),
- 
-     new epiviz.ui.charts.CustomSetting(
-       epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,
-       epiviz.ui.charts.CustomSetting.Type.NUMBER,
-       epiviz.ui.charts.CustomSetting.DEFAULT,
-       'Max Y')
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_Y_AXIS,
+      epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+      true,
+      'Show y-axis'),
+
+    new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.INTERPOLATION,
+      epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
+      'basis',
+      'Interpolation',
+      ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone']),
+
+      new epiviz.ui.charts.CustomSetting(
+        epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_POINTS,
+        epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+        false,
+        'Show points'),
    ]);
  };
  
@@ -128,11 +105,9 @@
   * @enum {string}
   */
  epiviz.plugins.charts.SashimiPlotType.CustomSettings = {
-   MIN_BLOCK_DISTANCE: 'minBlockDistance',
-   BLOCK_COLOR_BY: 'blockColorBy',
-   USE_COLOR_BY: 'useColorBy',
-   BLOCK_SCALE_BY: 'blockScaleBy',
-   USE_SCALE_BY: 'useScaleBy',
+  INTERPOLATION: 'interpolation',
+  SHOW_Y_AXIS: "showYAxis",
+  SHOW_POINTS: 'showPoints',
  };
  
  // goog.inherits(epiviz.plugins.charts.BlocksTrackType, epiviz.ui.charts.TrackType);

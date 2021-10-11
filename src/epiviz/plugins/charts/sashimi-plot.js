@@ -73,39 +73,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
-  var minBlockDistance =
+  var interpolation =
     this.customSettingsValues()[
-      epiviz.plugins.charts.BlocksTrackType.CustomSettings.MIN_BLOCK_DISTANCE
+    epiviz.plugins.charts.SashimiPlotType.CustomSettings.INTERPOLATION
     ];
 
-  var colorLabel =
+  var showYAxis =
     this.customSettingsValues()[
-      epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_COLOR_BY
-    ];
-
-  var useColorBy =
-    this.customSettingsValues()[
-      epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_COLOR_BY
-    ];
-
-  var scaleLabel =
-    this.customSettingsValues()[
-      epiviz.plugins.charts.BlocksTrackType.CustomSettings.BLOCK_SCALE_BY
-    ];
-
-  var useScaleBy =
-    this.customSettingsValues()[
-      epiviz.plugins.charts.BlocksTrackType.CustomSettings.USE_SCALE_BY
-    ];
-
-  var minY =
-    this.customSettingsValues()[
-      epiviz.ui.charts.Visualization.CustomSettings.Y_MIN
-    ];
-
-  var maxY =
-    this.customSettingsValues()[
-      epiviz.ui.charts.Visualization.CustomSettings.Y_MAX
+    epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_Y_AXIS
     ];
 
   var colorBy = function (row) {
@@ -118,6 +93,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // }
   };
 
+  var blocks = [];
+
   let sashimiData = null;
 
   data.foreach((m, series, seriesIndex) => {
@@ -126,851 +103,338 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       var cell = series.get(j);
       sashimiData = cell.rowItem.rowMetadata();
     }
-  });
 
-  console.log("data");
-  console.log(sashimiData);
 
-  if (sashimiData == null) return [];
+    console.log("data");
+    console.log(sashimiData);
 
-  /* compute */
+    // if (sashimiData == null) return [];
 
-  let coverageData = [];
-  for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
-    let _data = null;
-    if (i == 0) {
-      _data = {
-        start: sashimiData.coverage.start[i],
-        end: sashimiData.coverage.end[i],
-        value: sashimiData.coverage.value[i],
-        index: i + 1,
-      };
-    } else {
-      _data = {
-        start:
-          sashimiData.coverage.start[i] +
-          coverageData[coverageData.length - 1].start,
-        end:
-          sashimiData.coverage.end[i] +
-          coverageData[coverageData.length - 1].end,
-        value: sashimiData.coverage.value[i],
-        index: i + 1,
-      };
-    }
-    coverageData.push(_data);
-  }
+    /* compute */
 
-  let junctionData = [];
-  for (let i = 0; i < sashimiData.junctions.chr.length; i++) {
-    let _data = null;
-    if (i == 0) {
-      _data = {
-        region1_start: sashimiData.junctions.region1_start[i],
-        region2_start: sashimiData.junctions.region2_start[i],
-        region1_end: sashimiData.junctions.region1_end[i],
-        region2_end: sashimiData.junctions.region2_end[i],
-        value: sashimiData.junctions.value[i],
-        index: i + 1,
-      };
-    } else {
-      _data = {
-        region1_start:
-          sashimiData.junctions.region1_start[i] +
-          junctionData[junctionData.length - 1].region1_start,
-        region2_start:
-          sashimiData.junctions.region2_start[i] +
-          junctionData[junctionData.length - 1].region2_start,
-        region1_end:
-          sashimiData.junctions.region1_end[i] +
-          junctionData[junctionData.length - 1].region1_end,
-        region2_end:
-          sashimiData.junctions.region2_end[i] +
-          junctionData[junctionData.length - 1].region2_end,
-        value: sashimiData.junctions.value[i],
-        index: i + 1,
-      };
-    }
-    junctionData.push(_data);
-  }
+    // let coverageData = [];
+    // for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
+    //   let _data = null;
+    //   if (i == 0) {
+    //     _data = {
+    //       start: sashimiData.coverage.start[i],
+    //       end: sashimiData.coverage.end[i],
+    //       value: sashimiData.coverage.value[i],
+    //       index: i + 1,
+    //     };
+    //   } else {
+    //     _data = {
+    //       start:
+    //         sashimiData.coverage.start[i] +
+    //         coverageData[coverageData.length - 1].start,
+    //       end:
+    //         sashimiData.coverage.end[i] +
+    //         coverageData[coverageData.length - 1].end,
+    //       value: sashimiData.coverage.value[i],
+    //       index: i + 1,
+    //     };
+    //   }
+    //   coverageData.push(_data);
+    // }
 
-  // TESTING on fake data
-  coverageData = [
-    { start: 10265000, end: 10265500, value: 2, index: 1 },
-    { start: 10265500, end: 10265750, value: 1.5, index: 2 },
-    { start: 10265750, end: 10266000, value: 4, index: 3 },
-    { start: 10266000, end: 10266250, value: 1, index: 4 },
-    { start: 10267000, end: 10267500, value: 2, index: 5 },
-  ];
-  junctionData = [
-    {
-      region1_start: 10266250,
-      region1_end: 10266250,
-      region2_start: 10267000,
-      region2_end: 10267000,
-      value: 5,
-      index: 1,
-    },
-    {
-      region1_start: 10266000,
-      region1_end: 10266000,
-      region2_start: 10267000,
-      region2_end: 10267000,
-      value: 5,
-      index: 2,
-    },
-    {
-      region1_start: 10266500,
-      region1_end: 10266500,
-      region2_start: 10267000,
-      region2_end: 10267000,
-      value: 5,
-      index: 3,
-    },
-  ];
-  // TESTING on fake data
+    // let junctionData = [];
+    // for (let i = 0; i < sashimiData.junctions.chr.length; i++) {
+    //   let _data = null;
+    //   if (i == 0) {
+    //     _data = {
+    //       region1_start: sashimiData.junctions.region1_start[i],
+    //       region2_start: sashimiData.junctions.region2_start[i],
+    //       region1_end: sashimiData.junctions.region1_end[i],
+    //       region2_end: sashimiData.junctions.region2_end[i],
+    //       value: sashimiData.junctions.value[i],
+    //       index: i + 1,
+    //     };
+    //   } else {
+    //     _data = {
+    //       region1_start:
+    //         sashimiData.junctions.region1_start[i] +
+    //         junctionData[junctionData.length - 1].region1_start,
+    //       region2_start:
+    //         sashimiData.junctions.region2_start[i] +
+    //         junctionData[junctionData.length - 1].region2_start,
+    //       region1_end:
+    //         sashimiData.junctions.region1_end[i] +
+    //         junctionData[junctionData.length - 1].region1_end,
+    //       region2_end:
+    //         sashimiData.junctions.region2_end[i] +
+    //         junctionData[junctionData.length - 1].region2_end,
+    //       value: sashimiData.junctions.value[i],
+    //       index: i + 1,
+    //     };
+    //   }
+    //   junctionData.push(_data);
+    // }
 
-  // data in better shape
-  console.log(coverageData);
-  console.log(junctionData);
+    // TESTING on fake data
+    coverageData = [
+      { start: 10265000, end: 10265500, value: 2, index: 1 },
+      { start: 10265500, end: 10265750, value: 1.5, index: 2 },
+      { start: 10265750, end: 10266000, value: 4, index: 3 },
+      { start: 10266000, end: 10266250, value: 1, index: 4 },
+      { start: 10267000, end: 10267500, value: 2, index: 5 },
+    ];
+    junctionData = [
+      {
+        region1_start: 10266250,
+        region1_end: 10266250,
+        region2_start: 10267000,
+        region2_end: 10267000,
+        value: 5,
+        index: 1,
+      },
+      {
+        region1_start: 10266000,
+        region1_end: 10266000,
+        region2_start: 10267000,
+        region2_end: 10267000,
+        value: 5,
+        index: 2,
+      },
+      {
+        region1_start: 10266500,
+        region1_end: 10266500,
+        region2_start: 10267000,
+        region2_end: 10267000,
+        value: 5,
+        index: 3,
+      },
+    ];
+    // TESTING on fake data
 
-  /* merge regions for area chart */
+    // data in better shape
+    console.log(coverageData);
+    console.log(junctionData);
 
-  const _coverageData_points = _convert_sashimi_coverage(coverageData);
-  console.log(_coverageData_points);
+    /* merge regions for area chart */
 
-  /* plotting */
+    const _coverageData_points = _convert_sashimi_coverage(coverageData);
+    console.log(_coverageData_points);
 
-  var xScale = d3.scale
-    .linear()
-    .domain([start, end])
-    .range([0, width - margins.sumAxis(Axis.X)]);
+    /* plotting */
 
-  var yScale = d3.scale
-    .linear()
-    .domain([0, Math.max(...coverageData.map((d) => d.value))])
-    .range([height - margins.sumAxis(Axis.Y), 0]);
+    var xScale = d3.scale
+      .linear()
+      .domain([start, end])
+      .range([0, width - margins.sumAxis(Axis.X)]);
 
-  const _jumps = junctionData.map((junct) => {
-    return junct.region2_start - junct.region1_end;
-  });
+    var yScale = d3.scale
+      .linear()
+      .domain([0, Math.max(...coverageData.map((d) => d.value))])
+      .range([height - margins.sumAxis(Axis.Y), 0]);
 
-  var junctionJumpScale = d3.scale
-    .linear()
-    .domain([0, Math.max(..._jumps)])
-    .range([0, 1]);
-
-  // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
-
-  this._clearAxes();
-  this._drawAxes(xScale, yScale, 10, 5);
-
-  const svg = this._svg;
-
-  // coverage
-
-  var items = this._svg.select(".items");
-
-  if (items.empty()) {
-    items = this._svg.append("g").attr("class", "items");
-  }
-
-  items.attr(
-    "transform",
-    "translate(" + margins.left() + ", " + margins.top() + ")"
-  );
-
-  var selection = items.selectAll(".item").data(coverageData, function (b) {
-    return b.index;
-  });
-
-  // enter
-  selection
-    .enter()
-    .append("rect")
-    .attr("class", "item")
-    .attr("fill", "yellow")
-    .style("opacity", "0.7");
-
-  // update
-  selection
-    .attr("x", function (b) {
-      return xScale(b.start);
-    })
-    .attr("y", function (b) {
-      return yScale(b.value);
-    })
-    .attr("width", function (b) {
-      return Math.abs(xScale(b.end) - xScale(b.start));
-    })
-    .attr("height", function (b) {
-      return height - margins.sumAxis(Axis.Y) - yScale(b.value);
+    const _jumps = junctionData.map((junct) => {
+      return junct.region2_start - junct.region1_end;
     });
 
-  // exit
-  selection.exit().remove();
+    var junctionJumpScale = d3.scale
+      .linear()
+      .domain([0, Math.max(..._jumps)])
+      .range([0, 1]);
 
-  // alternate coverage
+    // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
-  var area = d3.svg
-    .area()
-    .x(function (d) {
-      return xScale(d.x);
-    })
-    .y0(height - margins.sumAxis(Axis.Y))
-    .y1(function (d) {
-      return yScale(d.y);
-    })
-    .interpolate("monotone");
+    this._clearAxes();
+    this._drawAxes(xScale, yScale, 10, 5);
 
-  var items = this._svg.select(".items2");
+    const svg = this._svg;
 
-  if (items.empty()) {
-    items = this._svg.append("g").attr("class", "items2");
-  }
+    // coverage
 
-  items.attr(
-    "transform",
-    "translate(" + margins.left() + ", " + margins.top() + ")"
-  );
+    var items = this._svg.select(".items");
 
-  var selection2 = items.selectAll(".areagroup").data(_coverageData_points);
+    if (items.empty()) {
+      items = this._svg.append("g").attr("class", "items");
+    }
 
-  // enter
-  var areagroup = selection2.enter().append("g").attr("class", "areagroup");
+    items.attr(
+      "transform",
+      "translate(" + margins.left() + ", " + margins.top() + ")"
+    );
 
-  areagroup
-    .append("path")
-    .style("opacity", "0.7")
-    .style("fill", "blue")
-    .datum((d, i) => d)
-    .attr("class", "area")
-    .style("stroke", "blue")
-    .style("stroke-width", "3px");
-
-  // update
-  selection2.select("path").attr("d", area);
-
-  // exit
-  selection2.exit().remove();
-
-  // junctions
-
-  var links = this._svg.select(".links");
-
-  if (links.empty()) {
-    links = this._svg.append("g").attr("class", "links");
-  }
-
-  links.attr(
-    "transform",
-    "translate(" + margins.left() + ", " + margins.top() + ")"
-  );
-
-  var links_selection = links
-    .selectAll(".arcs")
-    .data(junctionData, function (b) {
+    var selection = items.selectAll(".item").data(coverageData, function (b) {
       return b.index;
     });
 
-  // enter
-  links_selection.enter().append("g").attr("class", "arcs");
+    // // enter
+    // selection
+    //   .enter()
+    //   .append("rect")
+    //   .attr("class", "item")
+    //   .attr("fill", "yellow")
+    //   .style("opacity", "0.7");
 
-  _path = links_selection.select("path");
-  _rect = links_selection.select("rect");
-  _text = links_selection.select("text");
-  if (_path.empty()) {
-    _path = links_selection.append("path");
-    _rect = links_selection.append("rect");
-    _text = links_selection.append("text");
-  }
+    // // update
+    // selection
+    //   .attr("x", function (b) {
+    //     return xScale(b.start);
+    //   })
+    //   .attr("y", function (b) {
+    //     return yScale(b.value);
+    //   })
+    //   .attr("width", function (b) {
+    //     return Math.abs(xScale(b.end) - xScale(b.start));
+    //   })
+    //   .attr("height", function (b) {
+    //     return height - margins.sumAxis(Axis.Y) - yScale(b.value);
+    //   });
 
-  // update
-  _path
-    .style("stroke", "red")
-    .style("stroke-width", "3px")
-    .attr("d", function (d) {
-      var r1s = parseInt(d.region1_start),
-        r1e = parseInt(d.region1_end),
-        r2s = parseInt(d.region2_start),
-        r2e = parseInt(d.region2_end);
+    // // exit
+    // selection.exit().remove();
 
-      var start = xScale(Math.round((r1s + r1e) / 2));
-      var end = xScale(Math.round((r2s + r2e) / 2));
+    // alternate coverage
 
-      //Creating an Arc path
-      // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-      // large-arc-flag, sweep-flag, end-x, end-y
+    var area = d3.svg
+      .area()
+      .x(function (d) {
+        return xScale(d.x);
+      })
+      .y0(height - margins.sumAxis(Axis.Y))
+      .y1(function (d) {
+        return yScale(d.y);
+      })
+      .interpolate(interpolation);
 
-      return [
-        "M",
-        start,
-        Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
-        "A",
-        (end - start) / 2,
-        ",",
-        Math.ceil(
-          (height - margins.sumAxis(Axis.Y)) * junctionJumpScale(r2s - r1e)
-        ),
-        0,
-        0, //junctionJumpScale
-        ",",
-        start < end ? 1 : 0,
-        end,
-        ",",
-        Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
-      ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-        .join(" ");
-    });
+    var items = this._svg.select(".items");
 
-  _rect
-    .attr("fill", "white")
-    .attr("height", "20px")
-    .attr("width", "20px")
-    .attr("x", function (b) {
-      return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
-    })
-    .attr("y", function (d) {
-      return (
-        (height - margins.sumAxis(Axis.Y)) *
+    if (items.empty()) {
+      items = this._svg.append("g").attr("class", "items");
+    }
+
+    items.attr(
+      "transform",
+      "translate(" + margins.left() + ", " + margins.top() + ")"
+    );
+
+    var selection = items.selectAll(".areagroup").data(_coverageData_points);
+
+    // enter
+    var areagroup = selection.enter().append("g").attr("class", "areagroup");
+
+    areagroup
+      .append("path")
+      .style("fill", colors.getByKey(m.id()))
+      .datum((d, i) => d)
+      .attr("class", "area")
+      .style("stroke-width", "0")
+      .style("shape-rendering", "auto")
+      .style("stroke-opacity", "0.8");
+
+    // update
+    selection.select("path").attr("d", area);
+
+    // exit
+    selection.exit().remove();
+
+    // junctions
+
+    var links = items.select(".arcs-group");
+
+    if (links.empty()) {
+      links = items.append("g").attr("class", "arcs-group");
+    }
+
+    var links_selection = links
+      .selectAll(".arcs-g")
+      .data(junctionData, function (b) {
+        return b.index;
+      });
+
+    // enter
+    links_selection.enter().append("g").attr("class", "arcs-g");
+
+    _path = links_selection.select("path");
+    _rect = links_selection.select("rect");
+    _text = links_selection.select("text");
+    if (_path.empty()) {
+      _path = links_selection.append("path");
+      _rect = links_selection.append("rect");
+      _text = links_selection.append("text");
+    }
+
+    // update
+    _path
+      // .style("stroke", colors.get("arcs-g"))
+      // .style("stroke-width", "3px")
+      .attr("class", "arcs")
+      .attr("d", function (d) {
+        var r1s = parseInt(d.region1_start),
+          r1e = parseInt(d.region1_end),
+          r2s = parseInt(d.region2_start),
+          r2e = parseInt(d.region2_end);
+
+        var start = xScale(Math.round((r1s + r1e) / 2));
+        var end = xScale(Math.round((r2s + r2e) / 2));
+
+        //Creating an Arc path
+        // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
+        // large-arc-flag, sweep-flag, end-x, end-y
+
+        return [
+          "M",
+          start,
+          Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
+          "A",
+          (end - start) / 2,
+          ",",
+          Math.ceil(
+            (height - margins.sumAxis(Axis.Y)) * junctionJumpScale(r2s - r1e)
+          ),
+          0,
+          0, //junctionJumpScale
+          ",",
+          start < end ? 1 : 0,
+          end,
+          ",",
+          Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
+        ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+          .join(" ");
+      });
+
+    _rect
+      .attr("fill", "white")
+      .attr("height", "20px")
+      .attr("width", "20px")
+      .attr("x", function (b) {
+        return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
+      })
+      .attr("y", function (d) {
+        return (
+          (height - margins.sumAxis(Axis.Y)) *
           (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
-        10
-      );
-    });
+          10
+        );
+      });
 
-  _text
-    .text(function (d) {
-      return d.value;
-    })
-    .attr("x", function (b) {
-      return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
-    })
-    .attr("y", function (d) {
-      return (
-        (height - margins.sumAxis(Axis.Y)) *
+    _text
+      .text(function (d) {
+        return d.value;
+      })
+      .attr("x", function (b) {
+        return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
+      })
+      .attr("y", function (d) {
+        return (
+          (height - margins.sumAxis(Axis.Y)) *
           (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
-        2
-      );
-    })
-    .attr("font-family", "sans-serif")
-    .attr("font-size", "34px")
-    .attr("fill", "black")
-    .attr("text-anchor", "middle");
+          2
+        );
+      })
+      .attr("font-family", "sans-serif")
+      .attr("font-size", "34px")
+      .attr("fill", "black")
+      .attr("text-anchor", "middle");
 
-  // exit
-  links_selection.exit().remove();
+    // exit
+    links_selection.exit().remove();
+  });
+
 
   return coverageData;
-  // nothing below here
-
-  var area = d3.svg
-    .area()
-    .defined((d) => !isNaN(d["value"]))
-    .x((d) => x(d["data"]))
-    .y0(y(0))
-    .y1((d) => y(d["value"]));
-
-  // intron
-
-  svg
-    .append("path")
-    //.datum(data.filter(d3.area().defined()))
-    .datum(coverageData.filter(d3.svg.area().defined()))
-    .attr("fill", "#eee")
-    // .attr("d", area(data));
-    .attr("d", area(coverageData));
-
-  // exon
-
-  svg
-    .append("path")
-    //.datum(testData)
-    .datum(coverageData)
-    .attr("fill", "steelblue")
-    // .attr("d", area(testData));
-    .attr("d", area(coverageData));
-
-  svg.append("g").call(xAxis);
-
-  svg.append("g").call(yAxis);
-
-  console.log(sashimiData.junctions);
-  let region1EndArray = [],
-    region2StartArray = [],
-    linkValuesArray = [];
-  let junctionsData = sashimiData.junctions;
-  region1EndArray = junctionsData.region1End;
-  region2StartArray = junctionsData.region2Start;
-  linkValuesArray = junctionsData.value;
-  let linksArray = [];
-  for (let i = 0; i < region1EndArray.length; i++) {
-    if (region2StartArray[i] <= chrEndMax) {
-      console.log(region2StartArray[i]);
-      var eachLinkObj = {};
-      eachLinkObj["source"] = region1EndArray[i];
-      eachLinkObj["target"] = region2StartArray[i];
-      eachLinkObj["value"] = linkValuesArray[i];
-      linksArray.push(eachLinkObj);
-    }
-  }
-
-  console.log(linksArray);
-  //(4.34*4.34 - 6.5*6.5) / 4.34 * (sin(0.588712327))^3
-
-  svg
-    .selectAll("myLinks")
-    .data(linksArray)
-    .enter()
-    .append("path")
-    .attr("d", function (d) {
-      let start = x(d.source); // X position of start node on the X axis
-      let end = x(d.target); // X position of end node
-      return [
-        "M",
-        start,
-        height - margins._bottom, // the arc starts at the coordinate x=start, y=height-30 (where the starting node is)
-        "A", // This means we're gonna build an elliptical arc
-        (start - end) / 2,
-        ",", // Next 2 lines are the coordinates of the inflexion point. Height of this point is proportional with start - end distance
-        (start - end) / 3,
-        0,
-        0,
-        ",",
-        start < end ? 1 : 0,
-        end,
-        ",",
-        height - margins._bottom,
-      ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-        .join(" ");
-    })
-    .style("fill", "none")
-    .attr("stroke", "#666666");
-
-  svg
-    .selectAll("texts")
-    .data(linksArray)
-    .enter()
-    .append("text")
-    .text(function (d) {
-      //debugger;
-      console.log(
-        "values x and y",
-        x((d.source + d.target) / 2),
-        y((d.target - d.source) / 2)
-      );
-      return d.value;
-    })
-    .attr("id", "Name")
-    .attr("transform", function (d, i) {
-      let xDist = (d.source + d.target) / 2;
-      let yDist = (d.target - d.source) / 2;
-      let xPoint = x(xDist);
-      let yPoint = y(yDist);
-      let xCorrection = (5 / 100) * x((d.source + d.target) / 2);
-      let yCorrection =
-        (d.target - d.source) / 2 - (d.target - d.source) / 2 / 10;
-
-      console.log(yDist, yCorrection, yPoint, y(yCorrection));
-      return (
-        "translate(" + (xPoint - xCorrection) + ", " + y(yCorrection) + ")"
-      );
-    })
-    .attr("font-size", 14)
-    .style("fill", "#000000");
-
-  /* end plotting */
-
-  return;
-
-  var self = this;
-  /** @type {Array.<epiviz.ui.charts.ChartObject>} */
-  var blocks = [];
-
-  var i = 0;
-
-  // var all_series_blocks = {};
-  var all_series_links = [];
-  var all_series_intervals = [];
-  data.foreach(function (m, series, seriesIndex) {
-    var seriesBlocks = [];
-
-    for (var j = 0; j < series.size(); ++j) {
-      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
-      var cell = series.get(j);
-
-      if (
-        cell.rowItem.start() > range.end() ||
-        cell.rowItem.end() < range.start()
-      ) {
-        continue;
-      }
-
-      var metadata = cell.rowItem.rowMetadata();
-
-      all_series_links.push(metadata);
-
-      all_series_intervals.push({
-        start: parseInt(cell.rowItem.rowMetadata()["region1start"]),
-        end: parseInt(cell.rowItem.rowMetadata()["region1end"]),
-      });
-
-      all_series_intervals.push({
-        start: parseInt(cell.rowItem.rowMetadata()["region2start"]),
-        end: parseInt(cell.rowItem.rowMetadata()["region2end"]),
-      });
-
-      var classes = sprintf("item data-series-%s", i);
-
-      if (minBlockDistance !== null && seriesBlocks.length > 0) {
-        var lastBlock = seriesBlocks[seriesBlocks.length - 1];
-        var start = xScale(cell.rowItem.start());
-        var lastEnd = xScale(lastBlock.end);
-
-        if (start - lastEnd < minBlockDistance) {
-          if (useColorBy) {
-            if (lastBlock.values == cell.rowItem.metadata(colorLabel)) {
-              lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
-            }
-          } else {
-            lastBlock.end = Math.max(lastBlock.end, cell.rowItem.end());
-          }
-
-          lastBlock.valueItems[0].push(cell);
-          lastBlock.id = sprintf(
-            "b-%s-%s-%s",
-            i,
-            lastBlock.start,
-            lastBlock.end
-          );
-          continue;
-        }
-      }
-
-      seriesBlocks.push(
-        new epiviz.ui.charts.ChartObject(
-          sprintf("b-%s-%s-%s", i, cell.rowItem.start(), cell.rowItem.end()),
-          cell.rowItem.start(),
-          cell.rowItem.end(),
-          cell.rowItem.metadata(colorLabel),
-          i, // seriesIndex
-          [[cell]], // valueItems
-          [m], // measurements
-          classes,
-          cell.rowItem.seqName()
-        )
-      );
-    }
-
-    blocks = blocks.concat(seriesBlocks);
-    ++i;
-  });
-
-  // var merge_intervals = self._mergeIntervals(all_series_intervals);
-  var merge_intervals = all_series_intervals.sort((a, b) => a.start - b.start);
-  var merge_intervals_blocks = [];
-
-  merge_intervals.forEach(function (it) {
-    merge_intervals_blocks.push(
-      new epiviz.ui.charts.ChartObject(
-        sprintf("b-%s-%s-%s", 0, it.start, it.end),
-        it.start,
-        it.end,
-        null,
-        0, // seriesIndex
-        [
-          [
-            new epiviz.datatypes.GenomicData.ValueItem(
-              0,
-              new epiviz.datatypes.RowItemImpl(
-                null,
-                range.seqName(),
-                it.start,
-                it.end,
-                0,
-                "*",
-                {}
-              ),
-              null,
-              measurements,
-              null
-            ),
-          ],
-        ], // valueItems
-        [measurements], // measurements
-        sprintf("item data-series-%s", 0),
-        range.seqName()
-      )
-    );
-  });
-
-  //console.log(measurements);
-
-  return;
-  /* TEST */
-
-  var items = this._svg.select(".items");
-  var selected = items.select(".selected");
-  var clipPath = this._svg.select("#clip-" + this.id());
-
-  if (items.empty()) {
-    if (clipPath.empty()) {
-      this._svg
-        .select("defs")
-        .append("clipPath")
-        .attr("id", "clip-" + this.id())
-        .append("rect")
-        .attr("class", "clip-path-rect");
-    }
-
-    items = this._svg
-      .append("g")
-      .attr("class", "items")
-      .attr("id", this.id() + "-gene-content")
-      .attr("clip-path", "url(#clip-" + this.id() + ")");
-
-    selected = items.append("g").attr("class", "selected");
-    items.append("g").attr("class", "hovered");
-    selected.append("g").attr("class", "hovered");
-  }
-
-  items.attr(
-    "transform",
-    "translate(" + margins.left() + ", " + margins.top() + ")"
-  );
-
-  this._svg
-    .select(".clip-path-rect")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", width - margins.sumAxis(Axis.X))
-    .attr("height", height - margins.sumAxis(Axis.Y));
-
-  items.selectAll(".item").remove();
-
-  var selection = items
-    .selectAll(".item")
-    .data(merge_intervals_blocks, function (b) {
-      return b.id;
-    });
-
-  selection
-    .enter()
-    .insert("rect", ":first-child")
-    .attr("class", function (b) {
-      return b.cssClasses;
-    })
-    .style("fill", function (b) {
-      return colorBy(b);
-    })
-    .attr("x", function (b) {
-      return xScale(b.start) / zoom + delta;
-    })
-    .attr("width", function (b) {
-      // We're using b.end + 1 since b.end is the index of the last covered bp
-      return zoom * (xScale(b.end + 1) - xScale(b.start));
-    })
-    .on("mouseout", function () {
-      self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-    })
-    .on("mouseover", function (b) {
-      self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
-    })
-    .on("click", function (b) {
-      self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-      self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
-      d3.event.stopPropagation();
-    });
-
-  selection
-    .attr("class", function (b) {
-      return b.cssClasses;
-    })
-    .attr("height", Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.1))
-    .attr("y", Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9))
-    .transition()
-    .duration(500)
-    .attr("x", function (b) {
-      return xScale(b.start);
-    })
-    .attr("width", function (b) {
-      return xScale(b.end + 1) - xScale(b.start);
-    });
-
-  selection
-    .exit()
-    .transition()
-    .duration(500)
-    .attr("x", function (b) {
-      return xScale(b.start);
-    })
-    .remove();
-
-  items.selectAll(".arcs-group").remove();
-
-  var links = items.selectAll(".arcs-group").data(all_series_links);
-
-  // group and add padding to arcs
-  links
-    .enter()
-    .append("g")
-    .attr("class", "arcs-group")
-    .each(function (g) {
-      var node = this;
-      d3.select(this)
-        .append("path")
-        .attr("class", "arcs")
-        .attr("d", function (d) {
-          var r1s = parseInt(d.region1start),
-            r1e = parseInt(d.region1end),
-            r2s = parseInt(d.region2start),
-            r2e = parseInt(d.region2end);
-
-          var start = xScale(Math.round((r1s + r1e) / 2));
-          var end = xScale(Math.round((r2s + r2e) / 2));
-
-          //Creating an Arc path
-          // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-          // large-arc-flag, sweep-flag, end-x, end-y
-
-          return [
-            "M",
-            start,
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
-            "A",
-            (end - start) / 2,
-            ",",
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
-            0,
-            0,
-            ",",
-            start < end ? 1 : 0,
-            end,
-            ",",
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
-          ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-            .join(" ");
-        });
-
-      d3.select(this)
-        .append("path")
-        .attr("class", "arcs-padding")
-        .attr("d", function (d) {
-          var r1s = parseInt(d.region1start),
-            r1e = parseInt(d.region1end),
-            r2s = parseInt(d.region2start),
-            r2e = parseInt(d.region2end);
-
-          var start = xScale(Math.round((r1s + r1e) / 2));
-          var end = xScale(Math.round((r2s + r2e) / 2));
-
-          //Creating an Arc path
-          // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-          // large-arc-flag, sweep-flag, end-x, end-y
-
-          return [
-            "M",
-            start,
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
-            "A",
-            (end - start) / 2,
-            ",",
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
-            0,
-            0,
-            ",",
-            start < end ? 1 : 0,
-            end,
-            ",",
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
-          ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-            .join(" ");
-        })
-        .on("mouseout", function () {
-          self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-        })
-        .on("mouseover", function (b) {
-          // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
-          // var node = this;
-          self._arcHover(b, range, node);
-        });
-    });
-  // .on("mouseout", function () {
-  //   self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-  // })
-  // .on("mouseover", function (b) {
-  //   // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
-  //   var node = this;
-  //   self._arcHover(b, range, node);
-  // });
-
-  // using path to create arcs
-  // links
-  //   .enter()
-  //   .append('path')
-  //   .attr("class", "arcs")
-  //   .attr('d', function (d) {
-  //     var r1s = parseInt(d.region1start), r1e = parseInt(d.region1end),
-  //         r2s = parseInt(d.region2start), r2e = parseInt(d.region2end);
-
-  //     var start = xScale(Math.round((r1s + r1e) / 2));
-  //     var end = xScale(Math.round((r2s + r2e) / 2));
-
-  //     //Creating an Arc path
-  //     // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-  //     // large-arc-flag, sweep-flag, end-x, end-y
-
-  //     return ['M', start, Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9),
-  //       'A',
-  //       (end - start)/2, ',',
-  //       Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9), 0, 0, ',',
-  //       start < end ? 1 : 0, end, ',', Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9)] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-  //       .join(' ');
-  //   })
-  //   .on("mouseout", function () {
-  //     self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-  //   })
-  //   .on("mouseover", function (b) {
-  //     // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
-  //     var node = this;
-  //     self._arcHover(b, range, node);
-  //   });
-
-  // .style("fill", "none")
-  // .style("stroke", "grey")
-  // .style("stroke-width", 1)
-  // .style("shape-rendering", "auto")
-  // .style("stroke-opacity", 0.4)
-
-  // alternative way using ellipse
-  // links
-  //   .enter()
-  //   .append("ellipse")
-  //   .attr("class", "arcs")
-  //   .attr("cx", function(d) {
-  //     var r1s = parseInt(d.region1start), r1e = parseInt(d.region1end),
-  //         r2s = parseInt(d.region2start), r2e = parseInt(d.region2end);
-  //     var start = xScale(Math.round((r1s + r1e) / 2));
-  //     var end = xScale(Math.round((r2s + r2e) / 2));
-
-  //     return (start + end)/2;
-  //   })
-  //   .attr("cy", Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9))
-  //   .attr("rx", function(d) {
-  //     var r1s = parseInt(d.region1start), r1e = parseInt(d.region1end),
-  //         r2s = parseInt(d.region2start), r2e = parseInt(d.region2end);
-  //     var start = xScale(Math.round((r1s + r1e) / 2));
-  //     var end = xScale(Math.round((r2s + r2e) / 2));
-
-  //     return (end - start)/2;
-  //   })
-  //   .attr("ry", Math.ceil((height - margins.sumAxis(Axis.Y)) * 0.9))
-  //   .attr("fill", "none")
-  //   .attr("stroke", "black");
-
-  links.exit().remove();
-
-  self._drawLegend();
-
-  return blocks;
 };
 
 epiviz.plugins.charts.SashimiPlot.prototype._mergeIntervals = function (
