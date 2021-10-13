@@ -50,6 +50,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   slide,
   zoom
 ) {
+  this._svg.classed("sashimi-track", true);
+
   var Axis = epiviz.ui.charts.Axis;
 
   /** @type {number} */
@@ -75,12 +77,12 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
   var interpolation =
     this.customSettingsValues()[
-    epiviz.plugins.charts.SashimiPlotType.CustomSettings.INTERPOLATION
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.INTERPOLATION
     ];
 
   var showYAxis =
     this.customSettingsValues()[
-    epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_Y_AXIS
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_Y_AXIS
     ];
 
   var colorBy = function (row) {
@@ -104,107 +106,17 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       sashimiData = cell.rowItem.rowMetadata();
     }
 
-
     console.log("data");
     console.log(sashimiData);
+
+    var self = this;
 
     // if (sashimiData == null) return [];
 
     /* compute */
 
-    // let coverageData = [];
-    // for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
-    //   let _data = null;
-    //   if (i == 0) {
-    //     _data = {
-    //       start: sashimiData.coverage.start[i],
-    //       end: sashimiData.coverage.end[i],
-    //       value: sashimiData.coverage.value[i],
-    //       index: i + 1,
-    //     };
-    //   } else {
-    //     _data = {
-    //       start:
-    //         sashimiData.coverage.start[i] +
-    //         coverageData[coverageData.length - 1].start,
-    //       end:
-    //         sashimiData.coverage.end[i] +
-    //         coverageData[coverageData.length - 1].end,
-    //       value: sashimiData.coverage.value[i],
-    //       index: i + 1,
-    //     };
-    //   }
-    //   coverageData.push(_data);
-    // }
-
-    // let junctionData = [];
-    // for (let i = 0; i < sashimiData.junctions.chr.length; i++) {
-    //   let _data = null;
-    //   if (i == 0) {
-    //     _data = {
-    //       region1_start: sashimiData.junctions.region1_start[i],
-    //       region2_start: sashimiData.junctions.region2_start[i],
-    //       region1_end: sashimiData.junctions.region1_end[i],
-    //       region2_end: sashimiData.junctions.region2_end[i],
-    //       value: sashimiData.junctions.value[i],
-    //       index: i + 1,
-    //     };
-    //   } else {
-    //     _data = {
-    //       region1_start:
-    //         sashimiData.junctions.region1_start[i] +
-    //         junctionData[junctionData.length - 1].region1_start,
-    //       region2_start:
-    //         sashimiData.junctions.region2_start[i] +
-    //         junctionData[junctionData.length - 1].region2_start,
-    //       region1_end:
-    //         sashimiData.junctions.region1_end[i] +
-    //         junctionData[junctionData.length - 1].region1_end,
-    //       region2_end:
-    //         sashimiData.junctions.region2_end[i] +
-    //         junctionData[junctionData.length - 1].region2_end,
-    //       value: sashimiData.junctions.value[i],
-    //       index: i + 1,
-    //     };
-    //   }
-    //   junctionData.push(_data);
-    // }
-
-    // TESTING on fake data
-    coverageData = [
-      { start: 10265000, end: 10265500, value: 2, index: 1 },
-      { start: 10265500, end: 10265750, value: 1.5, index: 2 },
-      { start: 10265750, end: 10266000, value: 4, index: 3 },
-      { start: 10266000, end: 10266250, value: 1, index: 4 },
-      { start: 10267000, end: 10267500, value: 2, index: 5 },
-    ];
-    junctionData = [
-      {
-        region1_start: 10266250,
-        region1_end: 10266250,
-        region2_start: 10267000,
-        region2_end: 10267000,
-        value: 5,
-        index: 1,
-      },
-      {
-        region1_start: 10266000,
-        region1_end: 10266000,
-        region2_start: 10267000,
-        region2_end: 10267000,
-        value: 5,
-        index: 2,
-      },
-      {
-        region1_start: 10266500,
-        region1_end: 10266500,
-        region2_start: 10267000,
-        region2_end: 10267000,
-        value: 5,
-        index: 3,
-      },
-    ];
-    // TESTING on fake data
+    //[coverageData, junctionData] = _convert_to_new_format(sashimiData);
+    [coverageData, junctionData] = _get_fake_data();
 
     // data in better shape
     console.log(coverageData);
@@ -234,7 +146,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     var junctionJumpScale = d3.scale
       .linear()
       .domain([0, Math.max(..._jumps)])
-      .range([0, 1]);
+      .range([0, 1 - 11 / (height - margins.sumAxis(Axis.Y))]);
+    // accomodate 10+1 pixels from the top for arcs-rect
 
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
@@ -246,15 +159,41 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // coverage
 
     var items = this._svg.select(".items");
+    var selected = items.select(".selected");
+    var clipPath = this._svg.select("#clip-" + this.id());
 
     if (items.empty()) {
-      items = this._svg.append("g").attr("class", "items");
+      if (clipPath.empty()) {
+        this._svg
+          .select("defs")
+          .append("clipPath")
+          .attr("id", "clip-" + this.id())
+          .append("rect")
+          .attr("class", "clip-path-rect");
+      }
+
+      items = this._svg
+        .append("g")
+        .attr("class", "items")
+        .attr("id", this.id() + "-gene-content")
+        .attr("clip-path", "url(#clip-" + this.id() + ")");
+
+      selected = items.append("g").attr("class", "selected");
+      items.append("g").attr("class", "hovered");
+      selected.append("g").attr("class", "hovered");
     }
 
     items.attr(
       "transform",
       "translate(" + margins.left() + ", " + margins.top() + ")"
     );
+
+    this._svg
+      .select(".clip-path-rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", width - margins.sumAxis(Axis.X))
+      .attr("height", height - margins.sumAxis(Axis.Y));
 
     var selection = items.selectAll(".item").data(coverageData, function (b) {
       return b.index;
@@ -299,12 +238,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       })
       .interpolate(interpolation);
 
-    var items = this._svg.select(".items");
-
-    if (items.empty()) {
-      items = this._svg.append("g").attr("class", "items");
-    }
-
     items.attr(
       "transform",
       "translate(" + margins.left() + ", " + margins.top() + ")"
@@ -332,36 +265,32 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     // junctions
 
-    var links = items.select(".arcs-group");
-
-    if (links.empty()) {
-      links = items.append("g").attr("class", "arcs-group");
-    }
-
-    var links_selection = links
-      .selectAll(".arcs-g")
+    var links_selection = items
+      .selectAll(".arcs-group")
       .data(junctionData, function (b) {
         return b.index;
       });
 
     // enter
-    links_selection.enter().append("g").attr("class", "arcs-g");
-
-    _path = links_selection.select("path");
-    _rect = links_selection.select("rect");
-    _text = links_selection.select("text");
-    if (_path.empty()) {
-      _path = links_selection.append("path");
-      _rect = links_selection.append("rect");
-      _text = links_selection.append("text");
-    }
+    links_selection.enter().append("g").attr("class", "arcs-group");
 
     // update
-    _path
-      // .style("stroke", colors.get("arcs-g"))
-      // .style("stroke-width", "3px")
-      .attr("class", "arcs")
-      .attr("d", function (d) {
+    links_selection.each(function (g) {
+      var node = this;
+      var _select = d3.select(this);
+
+      _path = _select.select("path");
+      _padding = _select.select(".arcs-padding");
+      _rect = _select.select("rect");
+      _text = _select.select("text");
+      if (_path.empty()) {
+        _path = _select.append("path").attr("class", "arcs");
+        _padding = _select.append("path").attr("class", "arcs-padding");
+        _rect = _select.append("rect");
+        _text = _select.append("text");
+      }
+
+      _path.attr("d", function (d) {
         var r1s = parseInt(d.region1_start),
           r1e = parseInt(d.region1_end),
           r2s = parseInt(d.region2_start),
@@ -395,44 +324,89 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
           .join(" ");
       });
 
-    _rect
-      .attr("fill", "white")
-      .attr("height", "20px")
-      .attr("width", "20px")
-      .attr("x", function (b) {
-        return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
-      })
-      .attr("y", function (d) {
-        return (
-          (height - margins.sumAxis(Axis.Y)) *
-          (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
-          10
-        );
-      });
+      _padding
+        .attr("d", function (d) {
+          var r1s = parseInt(d.region1_start),
+            r1e = parseInt(d.region1_end),
+            r2s = parseInt(d.region2_start),
+            r2e = parseInt(d.region2_end);
 
-    _text
-      .text(function (d) {
-        return d.value;
-      })
-      .attr("x", function (b) {
-        return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
-      })
-      .attr("y", function (d) {
-        return (
-          (height - margins.sumAxis(Axis.Y)) *
-          (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
-          2
-        );
-      })
-      .attr("font-family", "sans-serif")
-      .attr("font-size", "34px")
-      .attr("fill", "black")
-      .attr("text-anchor", "middle");
+          var start = xScale(Math.round((r1s + r1e) / 2));
+          var end = xScale(Math.round((r2s + r2e) / 2));
+
+          //Creating an Arc path
+          // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
+          // large-arc-flag, sweep-flag, end-x, end-y
+
+          return [
+            "M",
+            start,
+            Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
+            "A",
+            (end - start) / 2,
+            ",",
+            Math.ceil(
+              (height - margins.sumAxis(Axis.Y)) * junctionJumpScale(r2s - r1e)
+            ),
+            0,
+            0, //junctionJumpScale
+            ",",
+            start < end ? 1 : 0,
+            end,
+            ",",
+            Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
+          ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+            .join(" ");
+        })
+        .on("mouseout", function () {
+          self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+        })
+        .on("mouseover", function (b) {
+          // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
+          // var node = this;
+          self._arcHover(b, range, node);
+        });
+
+      _rect
+        .attr("class", "arcs-rect")
+        .attr("fill", "white")
+        .attr("height", "20px")
+        .attr("width", "20px")
+        .attr("x", function (b) {
+          return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
+        })
+        .attr("y", function (d) {
+          return (
+            (height - margins.sumAxis(Axis.Y)) *
+              (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
+            10
+          );
+        });
+
+      _text
+        .attr("class", "arcs-text")
+        .text(function (d) {
+          return d.value;
+        })
+        .attr("x", function (b) {
+          return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
+        })
+        .attr("y", function (d) {
+          return (
+            (height - margins.sumAxis(Axis.Y)) *
+              (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
+            2
+          );
+        })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "34px")
+        .attr("fill", "black")
+        .attr("text-anchor", "middle");
+    });
 
     // exit
     links_selection.exit().remove();
   });
-
 
   return coverageData;
 };
@@ -459,14 +433,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._arcHover = function (
   var measurements = self.measurements();
 
   var regions = [];
-  var r1s = parseInt(b.region1start),
-    r1e = parseInt(b.region1end),
-    r2s = parseInt(b.region2start),
-    r2e = parseInt(b.region2end);
+  var r1s = parseInt(b.region1_start),
+    r1e = parseInt(b.region1_end),
+    r2s = parseInt(b.region2_start),
+    r2e = parseInt(b.region2_end);
 
   regions.push(
     new epiviz.ui.charts.ChartObject(
-      "track-Interaction-hover",
+      "track-sashimi-hover",
       r1s,
       r2e,
       null,
@@ -544,7 +518,7 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
   );
   var self = this;
 
-  if (selectedObject.id != "track-Interaction-hover") {
+  if (selectedObject.id != "track-sashimi-hover") {
     var itemsGroup = this._container.find(".items");
     var unselectedHoveredGroup = itemsGroup.find("> .hovered");
     var selectedGroup = itemsGroup.find("> .selected");
@@ -560,10 +534,10 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
           //   match = true;
           // }
           var d = d3.select(this).data()[0];
-          var r1s = parseInt(d.region1start),
-            r1e = parseInt(d.region1end),
-            r2s = parseInt(d.region2start),
-            r2e = parseInt(d.region2end);
+          var r1s = parseInt(d.region1_start),
+            r1e = parseInt(d.region1_end),
+            r2s = parseInt(d.region2_start),
+            r2e = parseInt(d.region2_end);
           // var start = xScale(Math.round((r1s + r1e) / 2));
           // var end = xScale(Math.round((r2s + r2e) / 2));
 
@@ -578,10 +552,10 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
         return match;
       } else {
         var d = d3.select(this).data()[0];
-        var r1s = parseInt(d.region1start),
-          r1e = parseInt(d.region1end),
-          r2s = parseInt(d.region2start),
-          r2e = parseInt(d.region2end);
+        var r1s = parseInt(d.region1_start),
+          r1e = parseInt(d.region1_end),
+          r2s = parseInt(d.region2_start),
+          r2e = parseInt(d.region2_end);
 
         return (
           (selectedObject.regionStart() < r1e &&
@@ -601,8 +575,109 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
   }
 };
 
-// utils
+// --- utils ---
 // helper functions
+
+const _convert_to_new_format = (sashimiData) => {
+  let coverageData = [];
+  for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
+    let _data = null;
+    if (i == 0) {
+      _data = {
+        start: sashimiData.coverage.start[i],
+        end: sashimiData.coverage.end[i],
+        value: sashimiData.coverage.value[i],
+        index: i + 1,
+      };
+    } else {
+      _data = {
+        start:
+          sashimiData.coverage.start[i] +
+          coverageData[coverageData.length - 1].start,
+        end:
+          sashimiData.coverage.end[i] +
+          coverageData[coverageData.length - 1].end,
+        value: sashimiData.coverage.value[i],
+        index: i + 1,
+      };
+    }
+    coverageData.push(_data);
+  }
+
+  let junctionData = [];
+  for (let i = 0; i < sashimiData.junctions.chr.length; i++) {
+    let _data = null;
+    if (i == 0) {
+      _data = {
+        region1_start: sashimiData.junctions.region1_start[i],
+        region2_start: sashimiData.junctions.region2_start[i],
+        region1_end: sashimiData.junctions.region1_end[i],
+        region2_end: sashimiData.junctions.region2_end[i],
+        value: sashimiData.junctions.value[i],
+        index: i + 1,
+      };
+    } else {
+      _data = {
+        region1_start:
+          sashimiData.junctions.region1_start[i] +
+          junctionData[junctionData.length - 1].region1_start,
+        region2_start:
+          sashimiData.junctions.region2_start[i] +
+          junctionData[junctionData.length - 1].region2_start,
+        region1_end:
+          sashimiData.junctions.region1_end[i] +
+          junctionData[junctionData.length - 1].region1_end,
+        region2_end:
+          sashimiData.junctions.region2_end[i] +
+          junctionData[junctionData.length - 1].region2_end,
+        value: sashimiData.junctions.value[i],
+        index: i + 1,
+      };
+    }
+    junctionData.push(_data);
+  }
+
+  return [coverageData, junctionData];
+};
+
+const _get_fake_data = () => {
+  coverageData = [
+    { start: 10265000, end: 10265500, value: 2, index: 1 },
+    { start: 10265500, end: 10265750, value: 1.5, index: 2 },
+    { start: 10265750, end: 10266000, value: 4, index: 3 },
+    { start: 10266000, end: 10266250, value: 1, index: 4 },
+    { start: 10267000, end: 10267500, value: 2, index: 5 },
+  ];
+  junctionData = [
+    {
+      region1_start: 10266250,
+      region1_end: 10266250,
+      region2_start: 10267000,
+      region2_end: 10267000,
+      value: 5,
+      index: 1,
+    },
+    {
+      region1_start: 10266000,
+      region1_end: 10266000,
+      region2_start: 10267000,
+      region2_end: 10267000,
+      value: 5,
+      index: 2,
+    },
+    {
+      region1_start: 10266500,
+      region1_end: 10266500,
+      region2_start: 10267000,
+      region2_end: 10267000,
+      value: 5,
+      index: 3,
+    },
+  ];
+
+  return [coverageData, junctionData];
+};
+
 const _convert_sashimi_coverage = (ranges) => {
   let final_paths = [];
   let _temp_group = [];
