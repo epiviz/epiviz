@@ -75,6 +75,19 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   /** @type {epiviz.ui.charts.ColorPalette} */
   var colors = this.colors();
 
+  /** @type {number} */
+  var pointRadius =
+    this.customSettingsValues()[
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings
+        .POINT_RADIUS
+    ];
+
+  /** @type {boolean} */
+  var showPoints =
+    this.customSettingsValues()[
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_POINTS
+    ];
+
   var interpolation =
     this.customSettingsValues()[
       epiviz.plugins.charts.SashimiPlotType.CustomSettings.INTERPOLATION
@@ -127,6 +140,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     const _coverageData_points = _convert_sashimi_coverage(coverageData);
     console.log(_coverageData_points);
 
+    let points = [];
+    if (showPoints) {
+      _coverageData_points.forEach((path) => {
+        points.push(...path);
+      });
+    }
+    //console.log(points);
+
     /* plotting */
 
     var xScale = d3.scale
@@ -136,7 +157,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     var yScale = d3.scale
       .linear()
-      .domain([0, Math.max(...coverageData.map((d) => d.value))])
+      .domain([0, Math.max(...coverageData.map((d) => d.value)) * 1.1])
       .range([height - margins.sumAxis(Axis.Y), 0]);
 
     const _jumps = junctionData.map((junct) => {
@@ -145,18 +166,21 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     var junctionJumpScale = d3.scale
       .linear()
-      .domain([0, Math.max(..._jumps)])
-      .range([0, 1 - 11 / (height - margins.sumAxis(Axis.Y))]);
+      .domain([0, Math.max(..._jumps) * 1.1])
+      .range([0, 1]);
     // accomodate 10+1 pixels from the top for arcs-rect
+    // - 11 / (height - margins.sumAxis(Axis.Y))
 
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
     this._clearAxes();
-    this._drawAxes(xScale, yScale, 10, 5);
+
+    // draw axis
+    this._drawAxes(xScale, showYAxis ? yScale : null, 10, 5);
 
     const svg = this._svg;
 
-    // coverage
+    // ----- coverage -----
 
     var items = this._svg.select(".items");
     var selected = items.select(".selected");
@@ -225,7 +249,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // // exit
     // selection.exit().remove();
 
-    // alternate coverage
+    // ----- alternate coverage -----
 
     var area = d3.svg
       .area()
@@ -263,7 +287,47 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // exit
     selection.exit().remove();
 
-    // junctions
+    // ----- options -----
+
+    if (showPoints) {
+      // enter
+      var points_selection = items.selectAll("circle").data(points);
+      points_selection.enter().append("circle");
+
+      // update
+      points_selection
+        // .attr("class", "point-series-index-" + trackCount)
+        .attr("r", pointRadius)
+        .attr("cx", (d) => xScale(d.x))
+        .attr("cy", (d) => yScale(d.y))
+        .attr("fill", colors.getByKey(m.id()))
+        .attr("stroke", colors.getByKey(m.id()))
+        .attr("fill-opacity", 0.8);
+      // .attr("transform", "translate(" + +delta + ")")
+      // .transition()
+      // .duration(500)
+      // .attr("transform", "translate(" + 0 + ")");
+      // .on("mouseover", function () {
+      //   self._captureMouseHover();
+      // })
+      // .on("mousemove", function () {
+      //   self._captureMouseHover();
+      // })
+      // .on("mouseout", function () {
+      //   self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      // });
+
+      //end
+      points_selection
+        .exit()
+        //.transition().duration(500).style("opacity", 0)
+        .remove();
+    } else {
+      var points_selection = items.selectAll("circle").data(points);
+      points_selection.exit().remove();
+    }
+
+    // ----- junctions -----
 
     var links_selection = items
       .selectAll(".arcs-group")
@@ -395,7 +459,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
           return (
             (height - margins.sumAxis(Axis.Y)) *
               (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
-            2
+            4
           );
         })
         .attr("font-family", "sans-serif")
