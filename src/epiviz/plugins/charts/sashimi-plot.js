@@ -119,26 +119,20 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       sashimiData = cell.rowItem.rowMetadata();
     }
 
-    console.log("data");
-    console.log(sashimiData);
-
     var self = this;
 
     // if (sashimiData == null) return [];
 
     /* compute */
 
-    //[coverageData, junctionData] = _convert_to_new_format(sashimiData);
-    [coverageData, junctionData] = _get_fake_data();
+    [coverageData, junctionData] = _convert_to_new_format(sashimiData);
+    //[coverageData, junctionData] = _get_fake_data();
 
     // data in better shape
-    console.log(coverageData);
-    console.log(junctionData);
 
     /* merge regions for area chart */
 
     const _coverageData_points = _convert_sashimi_coverage(coverageData);
-    console.log(_coverageData_points);
 
     let points = [];
     if (showPoints) {
@@ -146,7 +140,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         points.push(...path);
       });
     }
-    //console.log(points);
 
     /* plotting */
 
