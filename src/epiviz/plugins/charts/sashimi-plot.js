@@ -125,14 +125,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     /* compute */
 
-    [coverageData, junctionData] = _convert_to_new_format(sashimiData);
-    //[coverageData, junctionData] = _get_fake_data();
+    [coverageData, junctionData] = self._convert_to_new_format(sashimiData);
+    //[coverageData, junctionData] = self._get_fake_data();
 
     // data in better shape
 
     /* merge regions for area chart */
 
-    const _coverageData_points = _convert_sashimi_coverage(coverageData);
+    const _coverageData_points = self._convert_sashimi_coverage(coverageData);
 
     let points = [];
     if (showPoints) {
@@ -635,7 +635,9 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
 // --- utils ---
 // helper functions
 
-const _convert_to_new_format = (sashimiData) => {
+epiviz.plugins.charts.SashimiPlot.prototype._convert_to_new_format = (
+  sashimiData
+) => {
   let coverageData = [];
   for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
     let _data = null;
@@ -697,7 +699,7 @@ const _convert_to_new_format = (sashimiData) => {
   return [coverageData, junctionData];
 };
 
-const _get_fake_data = () => {
+epiviz.plugins.charts.SashimiPlot.prototype._get_fake_data = () => {
   coverageData = [
     { start: 10265000, end: 10265500, value: 2, index: 1 },
     { start: 10265500, end: 10265750, value: 1.5, index: 2 },
@@ -735,7 +737,45 @@ const _get_fake_data = () => {
   return [coverageData, junctionData];
 };
 
-const _convert_sashimi_coverage = (ranges) => {
+epiviz.plugins.charts.SashimiPlot.prototype._convert_sashimi_coverage = (
+  ranges
+) => {
+  //
+  const _is_neighbour = (a, b) => {
+    if (a.end == b.start) return true;
+    if (a.end > b.start) return true;
+
+    return false;
+  };
+
+  //
+  const _get_points = (array) => {
+    result = [];
+
+    // first point
+    result.push({
+      x: array[0].start,
+      y: 0,
+    });
+
+    // mids
+    array.forEach((data) => {
+      result.push({
+        x: (data.end + data.start) / 2,
+        y: data.value,
+      });
+    });
+
+    //last point
+    result.push({
+      x: array[array.length - 1].end,
+      y: 0,
+    });
+
+    return result;
+  };
+
+  // compute
   let final_paths = [];
   let _temp_group = [];
 
@@ -769,37 +809,4 @@ const _convert_sashimi_coverage = (ranges) => {
   });
 
   return final_paths;
-};
-
-const _is_neighbour = (a, b) => {
-  if (a.end == b.start) return true;
-  if (a.end > b.start) return true;
-
-  return false;
-};
-
-const _get_points = (array) => {
-  result = [];
-
-  // first point
-  result.push({
-    x: array[0].start,
-    y: 0,
-  });
-
-  // mids
-  array.forEach((data) => {
-    result.push({
-      x: (data.end + data.start) / 2,
-      y: data.value,
-    });
-  });
-
-  //last point
-  result.push({
-    x: array[array.length - 1].end,
-    y: 0,
-  });
-
-  return result;
 };
