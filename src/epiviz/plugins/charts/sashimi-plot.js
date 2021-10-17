@@ -98,16 +98,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_Y_AXIS
     ];
 
-  var colorBy = function (row) {
-    return useColorBy
-      ? colors.getByKey(row.values)
-      : colors.get(row.seriesIndex);
-
-    // if (data.measurements().length > 1) {
-    //   return colors.get(row.seriesIndex);
-    // }
-  };
-
   var blocks = [];
 
   let sashimiData = null;
