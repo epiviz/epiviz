@@ -69,9 +69,6 @@ epiviz.plugins.charts.SashimiPlotType.prototype.chartHtmlAttributeName =
 /**
  * @returns {epiviz.measurements.Measurement.Type}
  */
-/*epiviz.plugins.charts.BlocksTrackType.prototype.chartContentType = function() {
-   return epiviz.measurements.Measurement.Type.RANGE;
- };*/
 
 /**
  * @returns {boolean}
