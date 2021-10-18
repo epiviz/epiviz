@@ -50,6 +50,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   slide,
   zoom
 ) {
+  var self = this;
   this._svg.classed("sashimi-track", true);
 
   var Axis = epiviz.ui.charts.Axis;
@@ -102,6 +103,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
   let sashimiData = null;
 
+  // stacked calculation
+  var seriesLineHeight =
+    (self.height() - margins.sumAxis(Axis.Y)) / data.measurements().length;
+  var trackCount = 0;
+
+  // clear before drawing
+  this._clearAxes();
+
   data.foreach((m, series, seriesIndex) => {
     for (var j = 0; j < series.size(); ++j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
@@ -109,7 +118,11 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       sashimiData = cell.rowItem.rowMetadata();
     }
 
-    var self = this;
+    self.measurements().foreach(function (mm, im) {
+      if (mm.id() == m.id()) {
+        trackCount = im;
+      }
+    });
 
     // if (sashimiData == null) return [];
 
@@ -141,7 +154,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     var yScale = d3.scale
       .linear()
       .domain([0, Math.max(...coverageData.map((d) => d.value)) * 1.1])
-      .range([height - margins.sumAxis(Axis.Y), 0]);
+      .range([seriesLineHeight, 0]);
 
     const _jumps = junctionData.map((junct) => {
       return junct.region2_start - junct.region1_end;
@@ -156,12 +169,69 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
-    this._clearAxes();
-
-    // draw axis
-    this._drawAxes(xScale, showYAxis ? yScale : null, 10, 5);
+    // draw only x axis
+    this._drawAxes(xScale, null, 10, 5);
 
     const svg = this._svg;
+
+    if (showYAxis) {
+      // draw axes
+      var axesGroup = svg.select(".axes"),
+        yAxisGrid = axesGroup.select(".yAxis-grid-" + trackCount),
+        yAxisLine = axesGroup.select(".yAxis-line-" + trackCount);
+
+      if (yAxisGrid.empty()) {
+        yAxisGrid = axesGroup
+          .append("g")
+          .attr("class", "yAxis yAxis-grid-" + trackCount);
+      }
+
+      if (yAxisLine.empty()) {
+        yAxisLine = axesGroup
+          .append("g")
+          .attr("class", "yAxis yAxis-line-" + trackCount);
+      }
+
+      yAxisLine
+        .append("line")
+        .attr("x1", 0)
+        .attr("y1", trackCount * seriesLineHeight)
+        .attr("x2", 0)
+        .attr("y2", (trackCount + 1) * seriesLineHeight)
+        .attr("class", "yAxis-line-series-" + trackCount)
+        .style("shape-rendering", "auto")
+        .style("stroke-opacity", "0.6")
+        .attr(
+          "transform",
+          "translate(" + margins.left() + ", " + margins.top() + ")"
+        );
+
+      yAxisLine
+        .append("text")
+        .attr("class", "yAxis-line-minlabel-series" + trackCount)
+        .attr("x", -17)
+        .attr("y", trackCount * seriesLineHeight + 11)
+        .text(
+          d3.format(".2g")(Math.max(...coverageData.map((d) => d.value)) * 1.1)
+        )
+        .style("opacity", "0.6")
+        .attr(
+          "transform",
+          "translate(" + margins.left() + ", " + margins.top() + ")"
+        );
+
+      yAxisLine
+        .append("text")
+        .attr("class", "yAxis-line-maxlabel-series" + trackCount)
+        .attr("x", -17)
+        .attr("y", (trackCount + 1) * seriesLineHeight)
+        .text(d3.format(".2g")(0))
+        .style("opacity", "0.6")
+        .attr(
+          "transform",
+          "translate(" + margins.left() + ", " + margins.top() + ")"
+        );
+    }
 
     // ----- coverage -----
 
@@ -239,7 +309,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       .x(function (d) {
         return xScale(d.x);
       })
-      .y0(height - margins.sumAxis(Axis.Y))
+      .y0(seriesLineHeight)
       .y1(function (d) {
         return yScale(d.y);
       })
@@ -250,10 +320,21 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       "translate(" + margins.left() + ", " + margins.top() + ")"
     );
 
-    var selection = items.selectAll(".areagroup").data(_coverageData_points);
+    var selection = items
+      .selectAll(".areagroup-" + trackCount)
+      .data(_coverageData_points);
 
     // enter
-    var areagroup = selection.enter().append("g").attr("class", "areagroup");
+    var areagroup = selection
+      .enter()
+      .append("g")
+      .attr("class", "areagroup-" + trackCount);
+
+    // update
+    selection.attr(
+      "transform",
+      "translate(" + 0 + ", " + trackCount * seriesLineHeight + ")"
+    );
 
     areagroup
       .append("path")
@@ -274,11 +355,21 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     if (showPoints) {
       // enter
-      var points_selection = items.selectAll("circle").data(points);
-      points_selection.enter().append("circle");
+      var points_selection = items
+        .selectAll(".showPoints-" + trackCount)
+        .data(points);
+
+      points_selection
+        .enter()
+        .append("circle")
+        .attr("class", "showPoints-" + trackCount);
 
       // update
       points_selection
+        .attr(
+          "transform",
+          "translate(" + 0 + ", " + trackCount * seriesLineHeight + ")"
+        )
         // .attr("class", "point-series-index-" + trackCount)
         .attr("r", pointRadius)
         .attr("cx", (d) => xScale(d.x))
@@ -313,66 +404,39 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // ----- junctions -----
 
     var links_selection = items
-      .selectAll(".arcs-group")
+      .selectAll(".arcs-group-" + trackCount)
       .data(junctionData, function (b) {
         return b.index;
       });
 
     // enter
-    links_selection.enter().append("g").attr("class", "arcs-group");
+    links_selection
+      .enter()
+      .append("g")
+      .attr("class", "arcs-group-" + trackCount);
 
     // update
-    links_selection.each(function (g) {
-      var node = this;
-      var _select = d3.select(this);
+    links_selection
+      .attr(
+        "transform",
+        "translate(" + 0 + ", " + trackCount * seriesLineHeight + ")"
+      )
+      .each(function (g) {
+        var node = this;
+        var _select = d3.select(this);
 
-      _path = _select.select("path");
-      _padding = _select.select(".arcs-padding");
-      _rect = _select.select("rect");
-      _text = _select.select("text");
-      if (_path.empty()) {
-        _path = _select.append("path").attr("class", "arcs");
-        _padding = _select.append("path").attr("class", "arcs-padding");
-        _rect = _select.append("rect");
-        _text = _select.append("text");
-      }
+        _path = _select.select("path");
+        _padding = _select.select(".arcs-padding");
+        _rect = _select.select("rect");
+        _text = _select.select("text");
+        if (_path.empty()) {
+          _path = _select.append("path").attr("class", "arcs");
+          _padding = _select.append("path").attr("class", "arcs-padding");
+          _rect = _select.append("rect");
+          _text = _select.append("text");
+        }
 
-      _path.attr("d", function (d) {
-        var r1s = parseInt(d.region1_start),
-          r1e = parseInt(d.region1_end),
-          r2s = parseInt(d.region2_start),
-          r2e = parseInt(d.region2_end);
-
-        var start = xScale(Math.round((r1s + r1e) / 2));
-        var end = xScale(Math.round((r2s + r2e) / 2));
-
-        //Creating an Arc path
-        // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-        // large-arc-flag, sweep-flag, end-x, end-y
-
-        return [
-          "M",
-          start,
-          Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
-          "A",
-          (end - start) / 2,
-          ",",
-          Math.ceil(
-            (height - margins.sumAxis(Axis.Y)) * junctionJumpScale(r2s - r1e)
-          ),
-          0,
-          0, //junctionJumpScale
-          ",",
-          start < end ? 1 : 0,
-          end,
-          ",",
-          Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
-        ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-          .join(" ");
-      });
-
-      _padding
-        .attr("d", function (d) {
+        _path.attr("d", function (d) {
           var r1s = parseInt(d.region1_start),
             r1e = parseInt(d.region1_end),
             r2s = parseInt(d.region2_start),
@@ -388,68 +452,99 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
           return [
             "M",
             start,
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
+            Math.ceil(seriesLineHeight * 1),
             "A",
             (end - start) / 2,
             ",",
-            Math.ceil(
-              (height - margins.sumAxis(Axis.Y)) * junctionJumpScale(r2s - r1e)
-            ),
+            Math.ceil(seriesLineHeight * junctionJumpScale(r2s - r1e)),
             0,
             0, //junctionJumpScale
             ",",
             start < end ? 1 : 0,
             end,
             ",",
-            Math.ceil((height - margins.sumAxis(Axis.Y)) * 1),
+            Math.ceil(seriesLineHeight * 1),
           ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
             .join(" ");
-        })
-        .on("mouseout", function () {
-          self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-        })
-        .on("mouseover", function (b) {
-          // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
-          // var node = this;
-          self._arcHover(b, range, node);
         });
 
-      _rect
-        .attr("class", "arcs-rect")
-        .attr("fill", "white")
-        .attr("height", "20px")
-        .attr("width", "20px")
-        .attr("x", function (b) {
-          return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
-        })
-        .attr("y", function (d) {
-          return (
-            (height - margins.sumAxis(Axis.Y)) *
-              (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
-            10
-          );
-        });
+        _padding
+          .attr("d", function (d) {
+            var r1s = parseInt(d.region1_start),
+              r1e = parseInt(d.region1_end),
+              r2s = parseInt(d.region2_start),
+              r2e = parseInt(d.region2_end);
 
-      _text
-        .attr("class", "arcs-text")
-        .text(function (d) {
-          return d.value;
-        })
-        .attr("x", function (b) {
-          return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
-        })
-        .attr("y", function (d) {
-          return (
-            (height - margins.sumAxis(Axis.Y)) *
-              (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
-            4
-          );
-        })
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "34px")
-        .attr("fill", "black")
-        .attr("text-anchor", "middle");
-    });
+            var start = xScale(Math.round((r1s + r1e) / 2));
+            var end = xScale(Math.round((r2s + r2e) / 2));
+
+            //Creating an Arc path
+            // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
+            // large-arc-flag, sweep-flag, end-x, end-y
+
+            return [
+              "M",
+              start,
+              Math.ceil(seriesLineHeight * 1),
+              "A",
+              (end - start) / 2,
+              ",",
+              Math.ceil(seriesLineHeight * junctionJumpScale(r2s - r1e)),
+              0,
+              0, //junctionJumpScale
+              ",",
+              start < end ? 1 : 0,
+              end,
+              ",",
+              Math.ceil(seriesLineHeight * 1),
+            ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+              .join(" ");
+          })
+          .on("mouseout", function () {
+            self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+          })
+          .on("mouseover", function (b) {
+            // self._arcHover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
+            // var node = this;
+            self._arcHover(b, range, node);
+          });
+
+        _rect
+          .attr("class", "arcs-rect")
+          .attr("fill", "white")
+          .attr("height", "20px")
+          .attr("width", "20px")
+          .attr("x", function (b) {
+            return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
+          })
+          .attr("y", function (d) {
+            return (
+              seriesLineHeight *
+                (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
+              10
+            );
+          });
+
+        _text
+          .attr("class", "arcs-text")
+          .text(function (d) {
+            return d.value;
+          })
+          .attr("x", function (b) {
+            return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
+          })
+          .attr("y", function (d) {
+            return (
+              seriesLineHeight *
+                (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
+              4
+            );
+          })
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "34px")
+          .attr("fill", "black")
+          .attr("text-anchor", "middle");
+      });
 
     // exit
     links_selection.exit().remove();
