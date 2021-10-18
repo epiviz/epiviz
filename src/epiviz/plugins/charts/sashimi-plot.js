@@ -115,14 +115,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     /* compute */
 
-    [coverageData, junctionData] = self._convert_to_new_format(sashimiData);
-    //[coverageData, junctionData] = self._get_fake_data();
+    [coverageData, junctionData] = self._extractRegions(sashimiData);
+    //[coverageData, junctionData] = self._getMockData();
 
     // data in better shape
 
     /* merge regions for area chart */
 
-    const _coverageData_points = self._convert_sashimi_coverage(coverageData);
+    const _coverageData_points = self._getCoverageAreas(coverageData);
 
     let points = [];
     if (showPoints) {
@@ -625,9 +625,7 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
 // --- utils ---
 // helper functions
 
-epiviz.plugins.charts.SashimiPlot.prototype._convert_to_new_format = (
-  sashimiData
-) => {
+epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
   let coverageData = [];
   for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
     let _data = null;
@@ -689,7 +687,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._convert_to_new_format = (
   return [coverageData, junctionData];
 };
 
-epiviz.plugins.charts.SashimiPlot.prototype._get_fake_data = () => {
+epiviz.plugins.charts.SashimiPlot.prototype._getMockData = () => {
   coverageData = [
     { start: 10265000, end: 10265500, value: 2, index: 1 },
     { start: 10265500, end: 10265750, value: 1.5, index: 2 },
@@ -727,11 +725,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._get_fake_data = () => {
   return [coverageData, junctionData];
 };
 
-epiviz.plugins.charts.SashimiPlot.prototype._convert_sashimi_coverage = (
-  ranges
-) => {
+epiviz.plugins.charts.SashimiPlot.prototype._getCoverageAreas = (ranges) => {
   //
-  const _is_neighbour = (a, b) => {
+  const _isNeighbour = (a, b) => {
     if (a.end == b.start) return true;
     if (a.end > b.start) return true;
 
@@ -739,7 +735,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._convert_sashimi_coverage = (
   };
 
   //
-  const _get_points = (array) => {
+  const _getPoints = (array) => {
     result = [];
 
     // first point
@@ -780,10 +776,10 @@ epiviz.plugins.charts.SashimiPlot.prototype._convert_sashimi_coverage = (
       _temp_group = [];
     }
 
-    if (_current.value != 0 && _is_neighbour(_prev, _current)) {
+    if (_current.value != 0 && _isNeighbour(_prev, _current)) {
       // add to existing group
       _temp_group.push(_current);
-    } else if (_current.value != 0 && !_is_neighbour(_prev, _current)) {
+    } else if (_current.value != 0 && !_isNeighbour(_prev, _current)) {
       // reset and new
       final_paths.push(_temp_group);
       _temp_group = [];
@@ -795,7 +791,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._convert_sashimi_coverage = (
 
   // get the points
   final_paths = final_paths.map((array) => {
-    return _get_points(array);
+    return _getPoints(array);
   });
 
   return final_paths;
