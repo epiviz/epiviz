@@ -550,6 +550,19 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     links_selection.exit().remove();
   });
 
+  // legent text
+  this._svg
+    .selectAll(".chart-title")
+    .attr("x", 60)
+    //.attr("y", 0)
+    .attr("transform", (d, i) => {
+      const _top = margins.top() + seriesLineHeight * i;
+      return "translate(" + 0 + ", " + _top + ")";
+    });
+
+  // legend circles
+  this._svg.selectAll(".chart-title-color").remove();
+
   return coverageData;
 };
 
