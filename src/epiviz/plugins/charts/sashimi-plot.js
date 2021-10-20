@@ -108,8 +108,18 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE
     ];
 
+  const _getMax = (arr) => {
+    let len = arr.length;
+    let max = -Infinity;
+
+    while (len--) {
+      max = arr[len] > max ? arr[len] : max;
+    }
+    return max;
+  };
+
   // autoScale
-  var globalMaxY = self._getGlobalMaxY(data);
+  let [globalMaxY, _track_ids] = self._getGlobalMaxY(data, _getMax);
 
   var blocks = [];
 
@@ -120,8 +130,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   var seriesLineHeight =
     (self.height() - margins.sumAxis(Axis.Y)) / self.measurements().size();
 
+  let tracks = null;
+
   if (showTracks != "default") {
-    var tracks = showTracks.split(",");
+    // verify tracks exist
+    tracks = showTracks
+      .split(",")
+      .filter((track_name) => _track_ids.includes(track_name));
+
     seriesLineHeight =
       (self.height() - margins.sumAxis(Axis.Y)) / tracks.length;
   }
@@ -201,7 +217,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     });
 
     if (showTracks != "default") {
-      var tracks = showTracks.split(",");
       if (!tracks.includes(m.id())) {
         skip = true;
       } else {
@@ -219,10 +234,10 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     /* compute */
 
-    [coverageData, junctionData] = self._extractRegions(sashimiData);
+    let [coverageData, junctionData] = self._extractRegions(sashimiData);
     // mock data and maximum
-    //[coverageData, junctionData] = self._getMockData(trackPosition + 1);
-    //globalMaxY = [4, 8, 12];
+    // let [coverageData, junctionData] = self._getMockData(trackPosition + 1);
+    // globalMaxY = [4, 8, 12];
 
     // data in better shape
 
@@ -246,7 +261,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     // autoscale y
     var ymax = 0;
-    if (autoScale) ymax = Math.max(...globalMaxY);
+    if (autoScale) ymax = _getMax(globalMaxY);
     else ymax = globalMaxY[trackPosition];
 
     var yScale = d3.scale
@@ -260,7 +275,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     var junctionJumpScale = d3.scale
       .linear()
-      .domain([0, Math.max(..._jumps) * 1.2])
+      .domain([0, _getMax(_jumps) * 1.2])
       .range([0, 1]);
     // accomodate 10+1 pixels from the top for arcs-rect
     // - 11 / (height - margins.sumAxis(Axis.Y))
@@ -649,20 +664,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   // legend circles
   this._svg.selectAll(".chart-title-color").remove();
 
-  return coverageData;
-};
-
-epiviz.plugins.charts.SashimiPlot.prototype._mergeIntervals = function (
-  intervals
-) {
-  const mergeInterval = (ac, x) => (
-    !ac.length || ac[ac.length - 1].end < x.start
-      ? ac.push(x)
-      : (ac[ac.length - 1].end = Math.max(ac[ac.length - 1].end, x.end)),
-    ac
-  );
-
-  return intervals.sort((a, b) => a.start - b.start).reduce(mergeInterval, []);
+  return blocks;
 };
 
 epiviz.plugins.charts.SashimiPlot.prototype._arcHover = function (
@@ -993,8 +995,12 @@ epiviz.plugins.charts.SashimiPlot.prototype._getCoverageAreas = (ranges) => {
   return final_paths;
 };
 
-epiviz.plugins.charts.SashimiPlot.prototype._getGlobalMaxY = (data) => {
-  let result = [];
+epiviz.plugins.charts.SashimiPlot.prototype._getGlobalMaxY = (
+  data,
+  _getMax
+) => {
+  let _max_values = [];
+  let _track_ids = [];
 
   data.foreach((m, series, seriesIndex) => {
     for (var j = 0; j < series.size(); ++j) {
@@ -1003,8 +1009,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._getGlobalMaxY = (data) => {
       sashimiData = cell.rowItem.rowMetadata();
     }
 
-    result.push(Math.max(...sashimiData.coverage.value));
+    _max_values.push(_getMax(sashimiData.coverage.value));
+    _track_ids.push(m.id());
   });
 
-  return result;
+  return [_max_values, _track_ids];
 };
