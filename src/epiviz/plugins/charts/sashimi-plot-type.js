@@ -123,7 +123,7 @@ epiviz.plugins.charts.SashimiPlotType.prototype.customSettingsDefs =
         ),
 
         new epiviz.ui.charts.CustomSetting(
-          epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.POINT_RADIUS,
+          epiviz.plugins.charts.SashimiPlotType.CustomSettings.POINT_RADIUS,
           epiviz.ui.charts.CustomSetting.Type.NUMBER,
           1,
           "Point radius"
@@ -134,6 +134,20 @@ epiviz.plugins.charts.SashimiPlotType.prototype.customSettingsDefs =
           epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
           false,
           "Show points"
+        ),
+
+        new epiviz.ui.charts.CustomSetting(
+          epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_TRACKS,
+          epiviz.ui.charts.CustomSetting.Type.STRING,
+          epiviz.ui.charts.CustomSetting.DEFAULT,
+          "Hide/Show Tracks"
+        ),
+
+        new epiviz.ui.charts.CustomSetting(
+          epiviz.plugins.charts.SashimiPlotType.CustomSettings.AUTO_SCALE,
+          epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+          true,
+          "Fixed y-axis"
         ),
       ]);
   };
@@ -146,6 +160,8 @@ epiviz.plugins.charts.SashimiPlotType.CustomSettings = {
   SHOW_Y_AXIS: "showYAxis",
   SHOW_POINTS: "showPoints",
   POINT_RADIUS: "pointRadius",
+  SHOW_TRACKS: "showTracks",
+  AUTO_SCALE: "autoScale",
 };
 
 // goog.inherits(epiviz.plugins.charts.BlocksTrackType, epiviz.ui.charts.TrackType);

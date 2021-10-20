@@ -79,14 +79,13 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   /** @type {number} */
   var pointRadius =
     this.customSettingsValues()[
-      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings
-        .POINT_RADIUS
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.POINT_RADIUS
     ];
 
   /** @type {boolean} */
   var showPoints =
     this.customSettingsValues()[
-      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_POINTS
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_POINTS
     ];
 
   var interpolation =
@@ -99,17 +98,90 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_Y_AXIS
     ];
 
+  var showTracks =
+    this.customSettingsValues()[
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_TRACKS
+    ];
+
+  var autoScale =
+    this.customSettingsValues()[
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE
+    ];
+
+  // autoScale
+  var globalMaxY = self._getGlobalMaxY(data);
+
   var blocks = [];
 
   let sashimiData = null;
 
   // stacked calculation
+
   var seriesLineHeight =
-    (self.height() - margins.sumAxis(Axis.Y)) / data.measurements().length;
+    (self.height() - margins.sumAxis(Axis.Y)) / self.measurements().size();
+
+  if (showTracks != "default") {
+    var tracks = showTracks.split(",");
+    seriesLineHeight =
+      (self.height() - margins.sumAxis(Axis.Y)) / tracks.length;
+  }
   var trackCount = 0;
 
   // clear before drawing
   this._clearAxes();
+  // x Axis for All
+  var xScale = d3.scale
+    .linear()
+    .domain([start, end])
+    .range([0, width - margins.sumAxis(Axis.X)]);
+
+  // common svg
+  var items = this._svg.select(".items");
+  var selected = items.select(".selected");
+  var clipPath = this._svg.select("#clip-" + this.id());
+
+  // draw only x axis
+  this._drawAxes(xScale, null, 10, 5);
+
+  if (items.empty()) {
+    items = this._svg
+      .append("g")
+      .attr("class", "items")
+      .attr("id", this.id() + "-gene-content")
+      .attr("clip-path", "url(#clip-" + this.id() + ")");
+  }
+
+  // selected category last
+  if (clipPath.empty()) {
+    this._svg
+      .select("defs")
+      .append("clipPath")
+      .attr("id", "clip-" + this.id())
+      .append("rect")
+      .attr("class", "clip-path-rect");
+  }
+
+  if (selected.empty()) {
+    selected = items.append("g").attr("class", "selected");
+    items.append("g").attr("class", "hovered");
+    selected.append("g").attr("class", "hovered");
+  }
+
+  items.attr(
+    "transform",
+    "translate(" + margins.left() + ", " + margins.top() + ")"
+  );
+
+  this._svg
+    .select(".clip-path-rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", width - margins.sumAxis(Axis.X))
+    .attr("height", height - margins.sumAxis(Axis.Y));
+
+  // var selection = items.selectAll(".item").data(coverageData, function (b) {
+  //   return b.index;
+  // });
 
   data.foreach((m, series, seriesIndex) => {
     for (var j = 0; j < series.size(); ++j) {
@@ -118,24 +190,50 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       sashimiData = cell.rowItem.rowMetadata();
     }
 
+    var skip = false;
+    var trackPosition = 0;
+    var trackColor = colors.getByKey(m.id());
+
     self.measurements().foreach(function (mm, im) {
       if (mm.id() == m.id()) {
-        trackCount = im;
+        trackPosition = im;
       }
     });
+
+    if (showTracks != "default") {
+      var tracks = showTracks.split(",");
+      if (!tracks.includes(m.id())) {
+        skip = true;
+      } else {
+        trackCount = tracks.indexOf(m.id());
+      }
+    } else {
+      self.measurements().foreach(function (mm, im) {
+        if (mm.id() == m.id()) {
+          trackCount = im;
+        }
+      });
+    }
 
     // if (sashimiData == null) return [];
 
     /* compute */
 
     [coverageData, junctionData] = self._extractRegions(sashimiData);
-    //[coverageData, junctionData] = self._getMockData();
+    // mock data and maximum
+    //[coverageData, junctionData] = self._getMockData(trackPosition + 1);
+    //globalMaxY = [4, 8, 12];
 
     // data in better shape
 
     /* merge regions for area chart */
 
-    const _coverageData_points = self._getCoverageAreas(coverageData);
+    let _coverageData_points = self._getCoverageAreas(coverageData);
+
+    if (skip) {
+      _coverageData_points = [];
+      junctionData = [];
+    }
 
     let points = [];
     if (showPoints) {
@@ -146,14 +244,14 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     /* plotting */
 
-    var xScale = d3.scale
-      .linear()
-      .domain([start, end])
-      .range([0, width - margins.sumAxis(Axis.X)]);
+    // autoscale y
+    var ymax = 0;
+    if (autoScale) ymax = Math.max(...globalMaxY);
+    else ymax = globalMaxY[trackPosition];
 
     var yScale = d3.scale
       .linear()
-      .domain([0, Math.max(...coverageData.map((d) => d.value)) * 1.1])
+      .domain([0, ymax * 1.1])
       .range([seriesLineHeight, 0]);
 
     const _jumps = junctionData.map((junct) => {
@@ -162,15 +260,12 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     var junctionJumpScale = d3.scale
       .linear()
-      .domain([0, Math.max(..._jumps) * 1.1])
+      .domain([0, Math.max(..._jumps) * 1.2])
       .range([0, 1]);
     // accomodate 10+1 pixels from the top for arcs-rect
     // - 11 / (height - margins.sumAxis(Axis.Y))
 
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
-
-    // draw only x axis
-    this._drawAxes(xScale, null, 10, 5);
 
     const svg = this._svg;
 
@@ -192,6 +287,22 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
           .attr("class", "yAxis yAxis-line-" + trackCount);
       }
 
+      // x - axis
+      yAxisLine
+        .append("line")
+        .attr("x1", 0)
+        .attr("y1", (trackCount + 1) * seriesLineHeight)
+        .attr("x2", width - margins.sumAxis(Axis.X))
+        .attr("y2", (trackCount + 1) * seriesLineHeight)
+        .attr("class", "xAxis-line-series-" + trackCount)
+        .style("stroke", "rgb(238, 238, 238)")
+        .style("shape-rendering", "crispedges")
+        .attr(
+          "transform",
+          "translate(" + margins.left() + ", " + margins.top() + ")"
+        );
+
+      // y - axis
       yAxisLine
         .append("line")
         .attr("x1", 0)
@@ -211,9 +322,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         .attr("class", "yAxis-line-minlabel-series" + trackCount)
         .attr("x", -17)
         .attr("y", trackCount * seriesLineHeight + 11)
-        .text(
-          d3.format(".2g")(Math.max(...coverageData.map((d) => d.value)) * 1.1)
-        )
+        .text(d3.format(".2g")(ymax * 1.1))
         .style("opacity", "0.6")
         .attr(
           "transform",
@@ -231,78 +340,43 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
           "transform",
           "translate(" + margins.left() + ", " + margins.top() + ")"
         );
+    } else if (!skip) {
+      // show max
+      // draw axes
+      var axesGroup = svg.select(".axes"),
+        yAxisGrid = axesGroup.select(".yAxis-grid-" + trackCount),
+        yAxisLine = axesGroup.select(".yAxis-line-" + trackCount);
+
+      if (yAxisGrid.empty()) {
+        yAxisGrid = axesGroup
+          .append("g")
+          .attr("class", "yAxis yAxis-grid-" + trackCount);
+      }
+
+      if (yAxisLine.empty()) {
+        yAxisLine = axesGroup
+          .append("g")
+          .attr("class", "yAxis yAxis-line-" + trackCount);
+      }
+
+      yAxisLine
+        .append("text")
+        .attr("class", "yAxis-line-minlabel-series" + trackCount)
+        .attr("x", 10)
+        .attr("y", trackCount * seriesLineHeight + 32)
+        .text(() => {
+          const val = d3.format(".2g")(ymax * 1.1);
+          return "max: " + val;
+        })
+        .style("opacity", "0.8")
+        .style("stroke", trackColor)
+        .attr(
+          "transform",
+          "translate(" + margins.left() + ", " + margins.top() + ")"
+        );
     }
 
     // ----- coverage -----
-
-    var items = this._svg.select(".items");
-    var selected = items.select(".selected");
-    var clipPath = this._svg.select("#clip-" + this.id());
-
-    if (items.empty()) {
-      if (clipPath.empty()) {
-        this._svg
-          .select("defs")
-          .append("clipPath")
-          .attr("id", "clip-" + this.id())
-          .append("rect")
-          .attr("class", "clip-path-rect");
-      }
-
-      items = this._svg
-        .append("g")
-        .attr("class", "items")
-        .attr("id", this.id() + "-gene-content")
-        .attr("clip-path", "url(#clip-" + this.id() + ")");
-
-      selected = items.append("g").attr("class", "selected");
-      items.append("g").attr("class", "hovered");
-      selected.append("g").attr("class", "hovered");
-    }
-
-    items.attr(
-      "transform",
-      "translate(" + margins.left() + ", " + margins.top() + ")"
-    );
-
-    this._svg
-      .select(".clip-path-rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", width - margins.sumAxis(Axis.X))
-      .attr("height", height - margins.sumAxis(Axis.Y));
-
-    var selection = items.selectAll(".item").data(coverageData, function (b) {
-      return b.index;
-    });
-
-    // // enter
-    // selection
-    //   .enter()
-    //   .append("rect")
-    //   .attr("class", "item")
-    //   .attr("fill", "yellow")
-    //   .style("opacity", "0.7");
-
-    // // update
-    // selection
-    //   .attr("x", function (b) {
-    //     return xScale(b.start);
-    //   })
-    //   .attr("y", function (b) {
-    //     return yScale(b.value);
-    //   })
-    //   .attr("width", function (b) {
-    //     return Math.abs(xScale(b.end) - xScale(b.start));
-    //   })
-    //   .attr("height", function (b) {
-    //     return height - margins.sumAxis(Axis.Y) - yScale(b.value);
-    //   });
-
-    // // exit
-    // selection.exit().remove();
-
-    // ----- alternate coverage -----
 
     var area = d3.svg
       .area()
@@ -315,20 +389,15 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       })
       .interpolate(interpolation);
 
-    items.attr(
-      "transform",
-      "translate(" + margins.left() + ", " + margins.top() + ")"
-    );
-
     var selection = items
-      .selectAll(".areagroup-" + trackCount)
+      .selectAll(".areagroup-" + trackPosition)
       .data(_coverageData_points);
 
     // enter
     var areagroup = selection
       .enter()
       .append("g")
-      .attr("class", "areagroup-" + trackCount);
+      .attr("class", "areagroup-" + trackPosition);
 
     // update
     selection.attr(
@@ -338,7 +407,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     areagroup
       .append("path")
-      .style("fill", colors.getByKey(m.id()))
+      .style("fill", trackColor)
       .datum((d, i) => d)
       .attr("class", "area")
       .style("stroke-width", "0")
@@ -356,13 +425,13 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     if (showPoints) {
       // enter
       var points_selection = items
-        .selectAll(".showPoints-" + trackCount)
+        .selectAll(".showPoints-" + trackPosition)
         .data(points);
 
       points_selection
         .enter()
         .append("circle")
-        .attr("class", "showPoints-" + trackCount);
+        .attr("class", "showPoints-" + trackPosition);
 
       // update
       points_selection
@@ -374,8 +443,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         .attr("r", pointRadius)
         .attr("cx", (d) => xScale(d.x))
         .attr("cy", (d) => yScale(d.y))
-        .attr("fill", colors.getByKey(m.id()))
-        .attr("stroke", colors.getByKey(m.id()))
+        .attr("fill", trackColor)
+        .attr("stroke", trackColor)
         .attr("fill-opacity", 0.8);
       // .attr("transform", "translate(" + +delta + ")")
       // .transition()
@@ -404,7 +473,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // ----- junctions -----
 
     var links_selection = items
-      .selectAll(".arcs-group-" + trackCount)
+      .selectAll(".arcs-group-" + trackPosition)
       .data(junctionData, function (b) {
         return b.index;
       });
@@ -413,7 +482,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     links_selection
       .enter()
       .append("g")
-      .attr("class", "arcs-group-" + trackCount);
+      .attr("class", "arcs-group-" + trackPosition);
 
     // update
     links_selection
@@ -430,7 +499,10 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         _rect = _select.select("rect");
         _text = _select.select("text");
         if (_path.empty()) {
-          _path = _select.append("path").attr("class", "arcs");
+          _path = _select
+            .append("path")
+            .attr("class", "arcs")
+            .style("stroke", trackColor);
           _padding = _select.append("path").attr("class", "arcs-padding");
           _rect = _select.append("rect");
           _text = _select.append("text");
@@ -556,8 +628,22 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     .attr("x", 60)
     //.attr("y", 0)
     .attr("transform", (d, i) => {
-      const _top = margins.top() + seriesLineHeight * i;
-      return "translate(" + 0 + ", " + _top + ")";
+      if (showTracks == "default") {
+        const _top = margins.top() + seriesLineHeight * i;
+        return "translate(" + 0 + ", " + _top + ")";
+      } else {
+        const _position = tracks.indexOf(d.id());
+        const _top = margins.top() + seriesLineHeight * _position;
+        return "translate(" + 0 + ", " + _top + ")";
+      }
+    })
+    .style("opacity", (d, i) => {
+      if (showTracks == "default") {
+        return 1;
+      } else {
+        if (tracks.indexOf(d.id()) == -1) return 0;
+        else return 1;
+      }
     });
 
   // legend circles
@@ -795,13 +881,13 @@ epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
   return [coverageData, junctionData];
 };
 
-epiviz.plugins.charts.SashimiPlot.prototype._getMockData = () => {
+epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
   coverageData = [
-    { start: 10265000, end: 10265500, value: 2, index: 1 },
-    { start: 10265500, end: 10265750, value: 1.5, index: 2 },
-    { start: 10265750, end: 10266000, value: 4, index: 3 },
-    { start: 10266000, end: 10266250, value: 1, index: 4 },
-    { start: 10267000, end: 10267500, value: 2, index: 5 },
+    { start: 10265000, end: 10265500, value: 2 * position, index: 1 },
+    { start: 10265500, end: 10265750, value: 1.5 * position, index: 2 },
+    { start: 10265750, end: 10266000, value: 4 * position, index: 3 },
+    { start: 10266000, end: 10266250, value: 1 * position, index: 4 },
+    { start: 10267000, end: 10267500, value: 2 * position, index: 5 },
   ];
   junctionData = [
     {
@@ -845,6 +931,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._getCoverageAreas = (ranges) => {
   //
   const _getPoints = (array) => {
     result = [];
+
+    if (array.length == 0) return result;
 
     // first point
     result.push({
@@ -903,4 +991,20 @@ epiviz.plugins.charts.SashimiPlot.prototype._getCoverageAreas = (ranges) => {
   });
 
   return final_paths;
+};
+
+epiviz.plugins.charts.SashimiPlot.prototype._getGlobalMaxY = (data) => {
+  let result = [];
+
+  data.foreach((m, series, seriesIndex) => {
+    for (var j = 0; j < series.size(); ++j) {
+      /** @type {epiviz.datatypes.GenomicData.ValueItem} */
+      var cell = series.get(j);
+      sashimiData = cell.rowItem.rowMetadata();
+    }
+
+    result.push(Math.max(...sashimiData.coverage.value));
+  });
+
+  return result;
 };

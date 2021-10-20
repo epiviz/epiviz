@@ -210,9 +210,10 @@ text {
 .sashimi-track .arcs-rect{ 
     fill: white;
     stroke: grey;
-    stroke-width: 2px;
+    stroke-width: 0px;
     shape-rendering: auto;
     stroke-opacity: 0.4;
+    fill-opacity: 1;
 }
 
 .sashimi-track .hovered .arcs-rect{ 
