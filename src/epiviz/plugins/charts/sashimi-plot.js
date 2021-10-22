@@ -233,6 +233,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // if (sashimiData == null) return [];
 
     /* compute */
+    //console.log(sashimiData);
+    // this troubleshoots fileServer
 
     let [coverageData, junctionData] = self._extractRegions(sashimiData);
     // mock data and maximum
@@ -822,6 +824,8 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
 // helper functions
 
 epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
+  if (!sashimiData) return [[], []];
+
   let coverageData = [];
   for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
     let _data = null;
@@ -1003,11 +1007,15 @@ epiviz.plugins.charts.SashimiPlot.prototype._getGlobalMaxY = (
   let _track_ids = [];
 
   data.foreach((m, series, seriesIndex) => {
+    var sashimiData = null;
+
     for (var j = 0; j < series.size(); ++j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       sashimiData = cell.rowItem.rowMetadata();
     }
+
+    if (!sashimiData) return;
 
     _max_values.push(_getMax(sashimiData.coverage.value));
     _track_ids.push(m.id());
