@@ -131,8 +131,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   // autoScale
   let [globalMaxY, _track_ids] = self._getGlobalMaxY(data, _getMax);
 
-  var blocks = [];
-
   let sashimiData = null;
 
   // stacked calculation
@@ -676,7 +674,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   // legend circles
   this._svg.selectAll(".chart-title-color").remove();
 
-  return blocks;
+  if(!sashimiData) sashimiData = [];
+  return sashimiData;
 };
 
 epiviz.plugins.charts.SashimiPlot.prototype._arcHover = function (
