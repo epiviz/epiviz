@@ -118,6 +118,16 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     return max;
   };
 
+  const _getMin = (arr) => {
+    let len = arr.length;
+    let min = Infinity;
+
+    while (len--) {
+      min = arr[len] < min ? arr[len] : min;
+    }
+    return min;
+  };
+
   // autoScale
   let [globalMaxY, _track_ids] = self._getGlobalMaxY(data, _getMax);
 
@@ -277,8 +287,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     var junctionJumpScale = d3.scale
       .linear()
-      .domain([0, _getMax(_jumps) * 1.2])
-      .range([0, 1]);
+      .domain([_getMin(_jumps), _getMax(_jumps)])
+      .range([0.5, 0.85]);
     // accomodate 10+1 pixels from the top for arcs-rect
     // - 11 / (height - margins.sumAxis(Axis.Y))
 
