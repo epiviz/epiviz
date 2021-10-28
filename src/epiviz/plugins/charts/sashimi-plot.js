@@ -286,16 +286,15 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       .domain([0, ymax * 1.1])
       .range([seriesLineHeight, 0]);
 
-    const _jumps = junctionData.map((junct) => {
-      return junct.region2_start - junct.region1_end;
+    // determine height of arc
+    const _values = junctionData.map((junct) => {
+      return junct.value;
     });
 
     var junctionJumpScale = d3.scale
       .linear()
-      .domain([_getMin(_jumps), _getMax(_jumps)])
+      .domain([_getMin(_values), _getMax(_values)])
       .range([0.33, 0.85]);
-    // accomodate 10+1 pixels from the top for arcs-rect
-    // - 11 / (height - margins.sumAxis(Axis.Y))
 
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
@@ -558,9 +557,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             "A",
             (end - start) / 2,
             ",",
-            Math.ceil(seriesLineHeight * junctionJumpScale(r2s - r1e)),
+            Math.ceil(seriesLineHeight * junctionJumpScale(d.value)),
             0,
-            0, //junctionJumpScale
+            0,
             ",",
             start < end ? 1 : 0,
             end,
@@ -591,9 +590,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
               "A",
               (end - start) / 2,
               ",",
-              Math.ceil(seriesLineHeight * junctionJumpScale(r2s - r1e)),
+              Math.ceil(seriesLineHeight * junctionJumpScale(d.value)),
               0,
-              0, //junctionJumpScale
+              0,
               ",",
               start < end ? 1 : 0,
               end,
@@ -620,11 +619,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
           })
           .attr("y", function (d) {
-            return (
-              seriesLineHeight *
-                (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
-              10
-            );
+            return seriesLineHeight * (1 - junctionJumpScale(d.value)) - 10;
           });
 
         _text
@@ -636,11 +631,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
           })
           .attr("y", function (d) {
-            return (
-              seriesLineHeight *
-                (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
-              4
-            );
+            return seriesLineHeight * (1 - junctionJumpScale(d.value)) + 4;
           })
           .attr("font-family", "sans-serif")
           .attr("font-size", "34px")
