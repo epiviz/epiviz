@@ -118,10 +118,18 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     return max;
   };
 
+  const _getMin = (arr) => {
+    let len = arr.length;
+    let min = Infinity;
+
+    while (len--) {
+      min = arr[len] < min ? arr[len] : min;
+    }
+    return min;
+  };
+
   // autoScale
   let [globalMaxY, _track_ids] = self._getGlobalMaxY(data, _getMax);
-
-  var blocks = [];
 
   let sashimiData = null;
 
@@ -195,15 +203,29 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     .attr("width", width - margins.sumAxis(Axis.X))
     .attr("height", height - margins.sumAxis(Axis.Y));
 
-  // var selection = items.selectAll(".item").data(coverageData, function (b) {
-  //   return b.index;
-  // });
-
   data.foreach((m, series, seriesIndex) => {
+    let coverageData = [];
+    let junctionData = [];
+    sashimiData = coverageData;
+
     for (var j = 0; j < series.size(); ++j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
-      sashimiData = cell.rowItem.rowMetadata();
+      let _cellData = cell.rowItem.rowMetadata();
+
+      // console.log(_cellData);
+
+      let [_coverageData, _junctionData] = self._extractRegions(_cellData);
+
+      // console.log("_cellData");
+      // console.log(j);
+      // console.log("Range: " + cell.rowItem.start() + "-" + cell.rowItem.end());
+
+      // console.log(_coverageData);
+      // console.log(_junctionData);
+
+      coverageData.push(..._coverageData);
+      junctionData.push(..._junctionData);
     }
 
     var skip = false;
@@ -230,16 +252,11 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       });
     }
 
-    // if (sashimiData == null) return [];
-
     /* compute */
 
-    let [coverageData, junctionData] = self._extractRegions(sashimiData);
     // mock data and maximum
-    // let [coverageData, junctionData] = self._getMockData(trackPosition + 1);
+    // [coverageData, junctionData] = self._getMockData(trackPosition + 1);
     // globalMaxY = [4, 8, 12];
-
-    // data in better shape
 
     /* merge regions for area chart */
 
@@ -269,16 +286,15 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       .domain([0, ymax * 1.1])
       .range([seriesLineHeight, 0]);
 
-    const _jumps = junctionData.map((junct) => {
-      return junct.region2_start - junct.region1_end;
+    // determine height of arc
+    const _values = junctionData.map((junct) => {
+      return junct.value;
     });
 
     var junctionJumpScale = d3.scale
       .linear()
-      .domain([0, _getMax(_jumps) * 1.2])
-      .range([0, 1]);
-    // accomodate 10+1 pixels from the top for arcs-rect
-    // - 11 / (height - margins.sumAxis(Axis.Y))
+      .domain([_getMin(_values), _getMax(_values)])
+      .range([0.33, 0.85]);
 
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
@@ -489,9 +505,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     var links_selection = items
       .selectAll(".arcs-group-" + trackPosition)
-      .data(junctionData, function (b) {
-        return b.index;
-      });
+      .data(junctionData);
 
     // enter
     links_selection
@@ -543,9 +557,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             "A",
             (end - start) / 2,
             ",",
-            Math.ceil(seriesLineHeight * junctionJumpScale(r2s - r1e)),
+            Math.ceil(seriesLineHeight * junctionJumpScale(d.value)),
             0,
-            0, //junctionJumpScale
+            0,
             ",",
             start < end ? 1 : 0,
             end,
@@ -576,9 +590,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
               "A",
               (end - start) / 2,
               ",",
-              Math.ceil(seriesLineHeight * junctionJumpScale(r2s - r1e)),
+              Math.ceil(seriesLineHeight * junctionJumpScale(d.value)),
               0,
-              0, //junctionJumpScale
+              0,
               ",",
               start < end ? 1 : 0,
               end,
@@ -605,11 +619,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
           })
           .attr("y", function (d) {
-            return (
-              seriesLineHeight *
-                (1 - junctionJumpScale(d.region2_start - d.region1_end)) -
-              10
-            );
+            return seriesLineHeight * (1 - junctionJumpScale(d.value)) - 10;
           });
 
         _text
@@ -621,11 +631,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
           })
           .attr("y", function (d) {
-            return (
-              seriesLineHeight *
-                (1 - junctionJumpScale(d.region2_start - d.region1_end)) +
-              4
-            );
+            return seriesLineHeight * (1 - junctionJumpScale(d.value)) + 4;
           })
           .attr("font-family", "sans-serif")
           .attr("font-size", "34px")
@@ -664,7 +670,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   // legend circles
   this._svg.selectAll(".chart-title-color").remove();
 
-  return blocks;
+  if (!sashimiData) sashimiData = [];
+  return sashimiData;
 };
 
 epiviz.plugins.charts.SashimiPlot.prototype._arcHover = function (
@@ -822,6 +829,8 @@ epiviz.plugins.charts.SashimiPlot.prototype.doHover = function (
 // helper functions
 
 epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
+  if (!sashimiData) return [[], []];
+
   let coverageData = [];
   for (let i = 0; i < sashimiData.coverage.chr.length; i++) {
     let _data = null;
@@ -830,7 +839,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
         start: sashimiData.coverage.start[i],
         end: sashimiData.coverage.end[i],
         value: sashimiData.coverage.value[i],
-        index: i + 1,
       };
     } else {
       _data = {
@@ -841,7 +849,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
           sashimiData.coverage.end[i] +
           coverageData[coverageData.length - 1].end,
         value: sashimiData.coverage.value[i],
-        index: i + 1,
       };
     }
     coverageData.push(_data);
@@ -857,7 +864,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
         region1_end: sashimiData.junctions.region1_end[i],
         region2_end: sashimiData.junctions.region2_end[i],
         value: sashimiData.junctions.value[i],
-        index: i + 1,
       };
     } else {
       _data = {
@@ -874,7 +880,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
           sashimiData.junctions.region2_end[i] +
           junctionData[junctionData.length - 1].region2_end,
         value: sashimiData.junctions.value[i],
-        index: i + 1,
       };
     }
     junctionData.push(_data);
@@ -885,11 +890,11 @@ epiviz.plugins.charts.SashimiPlot.prototype._extractRegions = (sashimiData) => {
 
 epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
   coverageData = [
-    { start: 10265000, end: 10265500, value: 2 * position, index: 1 },
-    { start: 10265500, end: 10265750, value: 1.5 * position, index: 2 },
-    { start: 10265750, end: 10266000, value: 4 * position, index: 3 },
-    { start: 10266000, end: 10266250, value: 1 * position, index: 4 },
-    { start: 10267000, end: 10267500, value: 2 * position, index: 5 },
+    { start: 10265000, end: 10265500, value: 2 * position },
+    { start: 10265500, end: 10265750, value: 1.5 * position },
+    { start: 10265750, end: 10266000, value: 4 * position },
+    { start: 10266000, end: 10266250, value: 1 * position },
+    { start: 10267000, end: 10267500, value: 2 * position },
   ];
   junctionData = [
     {
@@ -898,7 +903,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
       region2_start: 10267000,
       region2_end: 10267000,
       value: 5,
-      index: 1,
     },
     {
       region1_start: 10266000,
@@ -906,7 +910,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
       region2_start: 10267000,
       region2_end: 10267000,
       value: 5,
-      index: 2,
     },
     {
       region1_start: 10266500,
@@ -914,7 +917,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
       region2_start: 10267000,
       region2_end: 10267000,
       value: 5,
-      index: 3,
     },
   ];
 
@@ -1003,13 +1005,21 @@ epiviz.plugins.charts.SashimiPlot.prototype._getGlobalMaxY = (
   let _track_ids = [];
 
   data.foreach((m, series, seriesIndex) => {
+    var sashimiData = null;
+
+    let cellMaxValues = [0];
+
     for (var j = 0; j < series.size(); ++j) {
       /** @type {epiviz.datatypes.GenomicData.ValueItem} */
       var cell = series.get(j);
       sashimiData = cell.rowItem.rowMetadata();
+
+      if (sashimiData && sashimiData.coverage.value.length != 0) {
+        cellMaxValues.push(_getMax(sashimiData.coverage.value));
+      }
     }
 
-    _max_values.push(_getMax(sashimiData.coverage.value));
+    _max_values.push(_getMax(cellMaxValues));
     _track_ids.push(m.id());
   });
 
