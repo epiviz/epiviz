@@ -257,6 +257,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     // mock data and maximum
     // [coverageData, junctionData] = self._getMockData(trackPosition + 1);
     // globalMaxY = [4, 8, 12];
+    // globalMaxY = [4, 8];
+    // globalMaxY = [4];
 
     /* merge regions for area chart */
 
@@ -283,8 +285,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     var yScale = d3.scale
       .linear()
-      .domain([0, ymax * 1.1])
-      .range([seriesLineHeight, 0]);
+      .domain([0, ymax])
+      .range([seriesLineHeight, seriesLineHeight * 0.1]);
 
     // determine height of arc
     const _values = junctionData.map((junct) => {
@@ -294,7 +296,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
     var junctionJumpScale = d3.scale
       .linear()
       .domain([_getMin(_values), _getMax(_values)])
-      .range([0.33, 0.85]);
+      .range([0.66 * seriesLineHeight, 0.1 * seriesLineHeight]);
 
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
@@ -503,6 +505,55 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     // ----- junctions -----
 
+    const getJunction = (d, seriesLineHeight) => {
+      var r1s = parseInt(d.region1_start),
+        r1e = parseInt(d.region1_end),
+        r2s = parseInt(d.region2_start),
+        r2e = parseInt(d.region2_end);
+
+      var start = xScale(Math.round((r1s + r1e) / 2));
+      var end = xScale(Math.round((r2s + r2e) / 2));
+
+      const size_rect = 20;
+
+      const mid = (start + end) / 2;
+      const rect_left = end - start > size_rect ? mid - size_rect / 2 : mid;
+      const rect_right = end - start > size_rect ? mid + size_rect / 2 : mid;
+      const mid_left = start + (rect_left - start) * 0.25;
+      const mid_right = rect_right + (end - rect_right) * 0.75;
+
+      const junction_reach = junctionJumpScale(d.value);
+      const junction_control = (seriesLineHeight - junction_reach) * 0.25;
+
+      return [
+        "M",
+        start,
+        ",",
+        seriesLineHeight,
+        "Q", //(cpx, cpy, x, y)
+        mid_left,
+        ",",
+        junction_reach + junction_control,
+        ",",
+        rect_left,
+        ",",
+        junction_reach,
+        "M",
+        rect_right,
+        ",",
+        junction_reach,
+        "Q", //(cpx, cpy, x, y)
+        mid_right,
+        ",",
+        junction_reach + junction_control,
+        ",",
+        end,
+        ",",
+        seriesLineHeight,
+      ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
+        .join("");
+    };
+
     var links_selection = items
       .selectAll(".arcs-group-" + trackPosition)
       .data(junctionData);
@@ -537,70 +588,10 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
           _text = _select.append("text");
         }
 
-        _path.attr("d", function (d) {
-          var r1s = parseInt(d.region1_start),
-            r1e = parseInt(d.region1_end),
-            r2s = parseInt(d.region2_start),
-            r2e = parseInt(d.region2_end);
-
-          var start = xScale(Math.round((r1s + r1e) / 2));
-          var end = xScale(Math.round((r2s + r2e) / 2));
-
-          //Creating an Arc path
-          // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-          // large-arc-flag, sweep-flag, end-x, end-y
-
-          return [
-            "M",
-            start,
-            Math.ceil(seriesLineHeight * 1),
-            "A",
-            (end - start) / 2,
-            ",",
-            Math.ceil(seriesLineHeight * junctionJumpScale(d.value)),
-            0,
-            0,
-            ",",
-            start < end ? 1 : 0,
-            end,
-            ",",
-            Math.ceil(seriesLineHeight * 1),
-          ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-            .join(" ");
-        });
+        _path.attr("d", (d) => getJunction(d, seriesLineHeight));
 
         _padding
-          .attr("d", function (d) {
-            var r1s = parseInt(d.region1_start),
-              r1e = parseInt(d.region1_end),
-              r2s = parseInt(d.region2_start),
-              r2e = parseInt(d.region2_end);
-
-            var start = xScale(Math.round((r1s + r1e) / 2));
-            var end = xScale(Math.round((r2s + r2e) / 2));
-
-            //Creating an Arc path
-            // M start-x, start-y A radius-x, radius-y, x-axis-rotation,
-            // large-arc-flag, sweep-flag, end-x, end-y
-
-            return [
-              "M",
-              start,
-              Math.ceil(seriesLineHeight * 1),
-              "A",
-              (end - start) / 2,
-              ",",
-              Math.ceil(seriesLineHeight * junctionJumpScale(d.value)),
-              0,
-              0,
-              ",",
-              start < end ? 1 : 0,
-              end,
-              ",",
-              Math.ceil(seriesLineHeight * 1),
-            ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-              .join(" ");
-          })
+          .attr("d", (d) => getJunction(d, seriesLineHeight))
           .on("mouseout", function () {
             self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
           })
@@ -619,7 +610,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             return (xScale(b.region1_end) + xScale(b.region2_start)) / 2 - 10;
           })
           .attr("y", function (d) {
-            return seriesLineHeight * (1 - junctionJumpScale(d.value)) - 10;
+            return junctionJumpScale(d.value) - 10;
           });
 
         _text
@@ -631,7 +622,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
           })
           .attr("y", function (d) {
-            return seriesLineHeight * (1 - junctionJumpScale(d.value)) + 4;
+            return junctionJumpScale(d.value) + 4;
           })
           .attr("font-family", "sans-serif")
           .attr("font-size", "34px")
@@ -902,7 +893,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
       region1_end: 10266250,
       region2_start: 10267000,
       region2_end: 10267000,
-      value: 5,
+      value: 4,
     },
     {
       region1_start: 10266000,
@@ -916,7 +907,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
       region1_end: 10266500,
       region2_start: 10267000,
       region2_end: 10267000,
-      value: 5,
+      value: 6,
     },
   ];
 
