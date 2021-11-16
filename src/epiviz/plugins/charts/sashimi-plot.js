@@ -161,6 +161,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
   // common svg
   var items = this._svg.select(".items");
+  var gCoverage = items.select(".gCoverage");
+  var gShowPoints = items.select(".gShowPoints");
   var selected = items.select(".selected");
   var clipPath = this._svg.select("#clip-" + this.id());
 
@@ -186,6 +188,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
   }
 
   if (selected.empty()) {
+    gCoverage = items.append("g").attr("class", "gCoverage");
+    gShowPoints = items.append("g").attr("class", "gShowPoints");
     selected = items.append("g").attr("class", "selected");
     items.append("g").attr("class", "hovered");
     selected.append("g").attr("class", "hovered");
@@ -422,7 +426,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       })
       .interpolate(interpolation);
 
-    var selection = items
+    var selection = gCoverage
       .selectAll(".areagroup-" + trackPosition)
       .data(_coverageData_points);
 
@@ -457,7 +461,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     if (showPoints) {
       // enter
-      var points_selection = items
+      var points_selection = gShowPoints
         .selectAll(".showPoints-" + trackPosition)
         .data(points);
 
@@ -499,7 +503,7 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         //.transition().duration(500).style("opacity", 0)
         .remove();
     } else {
-      var points_selection = items.selectAll("circle").data(points);
+      var points_selection = gShowPoints.selectAll("circle").data(points);
       points_selection.exit().remove();
     }
 
@@ -908,6 +912,13 @@ epiviz.plugins.charts.SashimiPlot.prototype._getMockData = (position = 1) => {
       region2_start: 10267000,
       region2_end: 10267000,
       value: 6,
+    },
+    {
+      region1_start: 10265500,
+      region1_end: 10265500,
+      region2_start: 10266000,
+      region2_end: 10266000,
+      value: 4,
     },
   ];
 
