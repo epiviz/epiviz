@@ -410,6 +410,10 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
     epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE
   ];
 
+  var missingDataRange = this.customSettingsValues()[
+    epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.MISSING_DATA_RANGE
+  ];
+
   var globalMinMax;
   if(autoScale) {
     globalMinMax = this.getDataMinMax(data);
@@ -683,18 +687,73 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
           //   "translate(" + self.margins().left() + ", " + self.margins().top() + ")"
           // );
       }
+
+      var xvals = [], yvals = [], indicesVals = [];
+
+      for (var ik = 0; ik < indices.length; ik++) {
+
+        var point = series.get(indices[ik]);
+        // if first point skip
+        // add 0 before if no value is in 1000 bp before
+        if(ik != 0) {
+          var bRange = epiviz.datatypes.GenomicRange.fromStartEnd(
+            point.rowItem.seqName(),
+            point.rowItem.start() - missingDataRange,
+            point.rowItem.start(),
+            range.genome()
+          );
+
+          var bBoundaries = series.binarySearchStarts(bRange);
+          if (bBoundaries.length < 1) {
+            xvals.push(xScale(point.rowItem.start()+1));
+            yvals.push(null);
+            indicesVals.push(indicesVals.length);
+          }
+        }
+
+        // add the value
+        xvals.push(xScale(point.rowItem.start()));
+        yvals.push(yScaleSeries(point.value));
+        indicesVals.push(indicesVals.length);
+
+        // if last point skip after
+        if(ik != indices.length-1) {
+          var bRange = epiviz.datatypes.GenomicRange.fromStartEnd(
+            point.rowItem.seqName(),
+            point.rowItem.end(),
+            point.rowItem.end() + missingDataRange,
+            range.genome()
+          );
+
+          var bBoundaries = series.binarySearchStarts(bRange);
+          if (bBoundaries.length < 1) {
+            xvals.push(xScale(point.rowItem.start()-1));
+            yvals.push(null);
+            indicesVals.push(indicesVals.length);
+          }
+        }
+      }
+
+      var xvalFunc = function (j) {
+        return xvals[j];
+      };
+
+      var yvalFunc = function (j) {
+        return yvals[j];
+      };
       
       if (showLines) {
         var line = d3.svg
           .line()
-          .x(x)
-          .y(y)
+          .defined(function(d, i) { return yvals[d] != null; })
+          .x(xvalFunc)
+          .y(yvalFunc)
           .interpolate(interpolation);
 
         var lines = graph
           .select(".line-series-index-" + trackCount)
           .selectAll("path")
-          .data([indices]);
+          .data([indicesVals]);
 
         lines
           .enter()
@@ -730,23 +789,24 @@ epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines = function (
       
       if (showFill) {
         var area = d3.svg.area()
-        .x1(x)
-        .y1(y)
-        .x0(x)
+        .defined(function(d, i) { return yvals[d] != null; })
+        .x1(xvalFunc)
+        .y1(yvalFunc)
+        .x0(xvalFunc)
         .y0(yScaleSeries(0))
         .interpolate(interpolation); 
               
         var lines = graph
         .select(".line-series-index-" + trackCount)
         .selectAll("path")
-        .data([indices]);
+        .data([indicesVals]);
 
         lines
         .enter()
         .append("path")
         .attr("d", area)
         .style("shape-rendering", "auto")
-        .style("stroke-opacity", "0.8")        
+        .style("stroke-opacity", "0.8")
         .on("mouseover", function () {
           self._captureMouseHover();
         })

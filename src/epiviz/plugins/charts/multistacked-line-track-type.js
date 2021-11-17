@@ -140,6 +140,12 @@ epiviz.plugins.charts.MultiStackedLineTrackType.prototype.customSettingsDefs = f
       ['linear', 'step-before', 'step-after', 'basis', 'basis-open', 'basis-closed', 'bundle', 'cardinal', 'cardinal-open', 'monotone']),
 
     new epiviz.ui.charts.CustomSetting(
+      epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.MISSING_DATA_RANGE,
+      epiviz.ui.charts.CustomSetting.Type.NUMBER,
+      100,
+      'Range for missing data'),
+
+    new epiviz.ui.charts.CustomSetting(
       epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.ABS_LINE_VAL,
       epiviz.ui.charts.CustomSetting.Type.NUMBER,
       epiviz.ui.charts.CustomSetting.DEFAULT,
@@ -182,7 +188,8 @@ epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings = {
   SHOW_FILL: "showFill",
   SHOW_TRACKS: "showTracks",
   SHOW_Y_AXIS: "showYAxis",
-  AUTO_SCALE: "autoScale"
+  AUTO_SCALE: "autoScale",
+  MISSING_DATA_RANGE: "missingDataRange"
 };
 
 // goog.inherits(epiviz.plugins.charts.MultiStackedLineTrackType, epiviz.ui.charts.TrackType);
