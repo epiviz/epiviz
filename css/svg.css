@@ -193,25 +193,25 @@ text {
 
 /* sashimi track */
 
-.sashimi-track .hovered .arcs { 
+.sashimi-track .items .arcs-sashimi {
+    stroke-width: 2px;
+    shape-rendering: auto;
+    stroke-opacity: 0.4;
+    fill-opacity: 0.4;
+}
+
+.sashimi-track .hovered .arcs-sashimi { 
     stroke: #ffc600 !important; 
     stroke-width: 5 !important; 
     stroke-opacity: 0.7 !important; 
     fill-opacity: 1 !important; 
 }
-.sashimi-track .items .arcs-group .arcs {
-    fill: none;
-    stroke: grey;
-    stroke-width: 2px;
-    shape-rendering: auto;
-    stroke-opacity: 0.4;
-}
 
 .sashimi-track .arcs-rect{ 
+    shape-rendering: optimizeSpeed;
     fill: white;
     stroke: grey;
     stroke-width: 0;
-    shape-rendering: auto;
     stroke-opacity: 0.4;
     fill-opacity: 1;
 }
@@ -224,20 +224,15 @@ text {
 }
 
 .sashimi-track .arcs-text { 
-    /* fill: grey;
-    fill-opacity: 0.4; */
+    shape-rendering: optimizeSpeed;
     stroke: black;
-    stroke-opacity: 0.4;
+    font-size: 20px;
+    font-family: sans-serif;
     stroke-width: 2px;
-    shape-rendering: auto;
+    stroke-opacity: 0.4;
 }
 
-.sashimi-track .hovered .arcs-text { 
-    stroke: #ffc600 !important; 
-    stroke-width: 5 !important; 
-    stroke-opacity: 0.7 !important; 
-    fill-opacity: 1 !important; 
-}
+.sashimi-track .hovered .arcs-text {}
 
 .sashimi-track .arcs-padding {
     fill: none;

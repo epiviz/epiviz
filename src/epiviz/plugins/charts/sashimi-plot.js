@@ -302,6 +302,11 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       .domain([_getMin(_values), _getMax(_values)])
       .range([0.66 * seriesLineHeight, 0.1 * seriesLineHeight]);
 
+    var junctionThicknessScale = d3.scale
+      .linear()
+      .domain([_getMin(_values), _getMax(_values)])
+      .range([0, 10]);
+
     // var delta = (slide * (width - margins.sumAxis(Axis.X))) / (end - start);
 
     const svg = this._svg;
@@ -528,8 +533,10 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
       const junction_reach = junctionJumpScale(d.value);
       const junction_control = (seriesLineHeight - junction_reach) * 0.25;
+      const junction_thickness = junctionThicknessScale(d.value);
 
-      return [
+      // draw
+      const left_side = [
         "M",
         start,
         ",",
@@ -541,11 +548,38 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         ",",
         rect_left,
         ",",
-        junction_reach,
+        junction_reach + junction_thickness,
+        "L",
+        rect_left,
+        ",",
+        junction_reach - junction_thickness,
+        "Q", //(cpx, cpy, x, y)
+        mid_left,
+        ",",
+        junction_reach + junction_control,
+        ",",
+        start,
+        ",",
+        seriesLineHeight,
+      ];
+
+      const right_side = [
         "M",
+        end,
+        ",",
+        seriesLineHeight,
+        "Q", //(cpx, cpy, x, y)
+        mid_right,
+        ",",
+        junction_reach + junction_control,
+        ",",
         rect_right,
         ",",
-        junction_reach,
+        junction_reach + junction_thickness,
+        "L",
+        rect_right,
+        ",",
+        junction_reach - junction_thickness,
         "Q", //(cpx, cpy, x, y)
         mid_right,
         ",",
@@ -554,8 +588,11 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         end,
         ",",
         seriesLineHeight,
-      ] // We always want the arc on top. So if end is before start, putting 0 here turn the arc upside down.
-        .join("");
+      ];
+
+      const junction_array = [];
+      junction_array.push(...left_side, ...right_side);
+      return junction_array.join("");
     };
 
     var links_selection = items
@@ -583,12 +620,13 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         _rect = _select.select("rect");
         _text = _select.select("text");
         if (_path.empty()) {
+          _rect = _select.append("rect");
           _path = _select
             .append("path")
-            .attr("class", "arcs")
-            .style("stroke", trackColor);
+            .attr("class", "arcs-sashimi")
+            .style("stroke", trackColor)
+            .style("fill", trackColor);
           _padding = _select.append("path").attr("class", "arcs-padding");
-          _rect = _select.append("rect");
           _text = _select.append("text");
         }
 
@@ -626,11 +664,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
             return (xScale(b.region1_end) + xScale(b.region2_start)) / 2;
           })
           .attr("y", function (d) {
-            return junctionJumpScale(d.value) + 4;
+            return junctionJumpScale(d.value) + 7;
           })
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "34px")
-          .attr("fill", "black")
           .attr("text-anchor", "middle");
       });
 
