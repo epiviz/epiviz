@@ -217,16 +217,26 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       var cell = series.get(j);
       let _cellData = cell.rowItem.rowMetadata();
 
-      // console.log(_cellData);
-
       let [_coverageData, _junctionData] = self._extractRegions(_cellData);
 
-      // console.log("_cellData");
-      // console.log(j);
-      // console.log("Range: " + cell.rowItem.start() + "-" + cell.rowItem.end());
-
+      // console.log(`[${j}]: ${cell.rowItem.start()} - ${cell.rowItem.end()}`);
       // console.log(_coverageData);
       // console.log(_junctionData);
+
+      // cell stitching
+      if (coverageData.length > 0 && _coverageData.length > 0) {
+        // compare cell edge
+        const left_cell = coverageData[coverageData.length - 1];
+        const right_cell = _coverageData[0];
+        if (
+          left_cell.end == right_cell.start &&
+          left_cell.value == right_cell.value
+        ) {
+          // stitch
+          left_cell.end = right_cell.end;
+          _coverageData.shift();
+        }
+      }
 
       coverageData.push(..._coverageData);
       junctionData.push(..._junctionData);
@@ -488,25 +498,9 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         .attr("fill", trackColor)
         .attr("stroke", trackColor)
         .attr("fill-opacity", 0.8);
-      // .attr("transform", "translate(" + +delta + ")")
-      // .transition()
-      // .duration(500)
-      // .attr("transform", "translate(" + 0 + ")");
-      // .on("mouseover", function () {
-      //   self._captureMouseHover();
-      // })
-      // .on("mousemove", function () {
-      //   self._captureMouseHover();
-      // })
-      // .on("mouseout", function () {
-      //   self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
-      // });
 
       //end
-      points_selection
-        .exit()
-        //.transition().duration(500).style("opacity", 0)
-        .remove();
+      points_selection.exit().remove();
     } else {
       var points_selection = gShowPoints.selectAll("circle").data(points);
       points_selection.exit().remove();
