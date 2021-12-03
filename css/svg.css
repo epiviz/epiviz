@@ -193,6 +193,21 @@ text {
 
 /* sashimi track */
 
+/**/
+
+.sashimi-track .coverage-fill {
+    stroke-width: 0;
+    shape-rendering: auto;
+    stroke-opacity: 1;
+}
+
+.sashimi-track .coverage-line {
+    shape-rendering: auto;
+    stroke-opacity: 0.8;
+}
+
+/**/
+
 .sashimi-track .items .arcs-sashimi {
     stroke-width: 2px;
     shape-rendering: auto;

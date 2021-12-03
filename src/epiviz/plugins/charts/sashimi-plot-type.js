@@ -137,6 +137,27 @@ epiviz.plugins.charts.SashimiPlotType.prototype.customSettingsDefs =
         ),
 
         new epiviz.ui.charts.CustomSetting(
+          epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_LINES,
+          epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+          true,
+          "Show lines"
+        ),
+
+        new epiviz.ui.charts.CustomSetting(
+          epiviz.plugins.charts.SashimiPlotType.CustomSettings.LINE_THICKNESS,
+          epiviz.ui.charts.CustomSetting.Type.NUMBER,
+          1,
+          "Line thickness"
+        ),
+
+        new epiviz.ui.charts.CustomSetting(
+          epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_FILL,
+          epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
+          true,
+          "Fill"
+        ),
+
+        new epiviz.ui.charts.CustomSetting(
           epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_TRACKS,
           epiviz.ui.charts.CustomSetting.Type.STRING,
           epiviz.ui.charts.CustomSetting.DEFAULT,
@@ -159,6 +180,9 @@ epiviz.plugins.charts.SashimiPlotType.CustomSettings = {
   INTERPOLATION: "interpolation",
   SHOW_Y_AXIS: "showYAxis",
   SHOW_POINTS: "showPoints",
+  SHOW_LINES: "showLines",
+  LINE_THICKNESS: "lineThickness",
+  SHOW_FILL: "showFill",
   POINT_RADIUS: "pointRadius",
   SHOW_TRACKS: "showTracks",
   AUTO_SCALE: "autoScale",

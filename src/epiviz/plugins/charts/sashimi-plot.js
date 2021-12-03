@@ -88,6 +88,24 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_POINTS
     ];
 
+  /** @type {boolean} */
+  var showLines =
+    this.customSettingsValues()[
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_LINES
+    ];
+
+  /** @type {number} */
+  var lineThickness =
+    this.customSettingsValues()[
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.LINE_THICKNESS
+    ];
+
+  /** @type {boolean} */
+  var showFill =
+    this.customSettingsValues()[
+      epiviz.plugins.charts.SashimiPlotType.CustomSettings.SHOW_FILL
+    ];
+
   var interpolation =
     this.customSettingsValues()[
       epiviz.plugins.charts.SashimiPlotType.CustomSettings.INTERPOLATION
@@ -430,15 +448,17 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
     // ----- coverage -----
 
-    var area = d3.svg
+    const area = d3.svg
       .area()
-      .x(function (d) {
-        return xScale(d.x);
-      })
+      .x((d) => xScale(d.x))
       .y0(seriesLineHeight)
-      .y1(function (d) {
-        return yScale(d.y);
-      })
+      .y1((d) => yScale(d.y))
+      .interpolate(interpolation);
+
+    const line = d3.svg
+      .line()
+      .x((d) => xScale(d.x))
+      .y((d) => yScale(d.y))
       .interpolate(interpolation);
 
     var selection = gCoverage
@@ -452,22 +472,41 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       .attr("class", "areagroup-" + trackPosition);
 
     // update
-    selection.attr(
-      "transform",
-      "translate(" + 0 + ", " + trackCount * seriesLineHeight + ")"
-    );
+    selection
+      .attr(
+        "transform",
+        "translate(" + 0 + ", " + trackCount * seriesLineHeight + ")"
+      )
+      .each(function (g) {
+        //var node = this;
+        var _select = d3.select(this);
 
-    areagroup
-      .append("path")
-      .style("fill", trackColor)
-      .datum((d, i) => d)
-      .attr("class", "area")
-      .style("stroke-width", "0")
-      .style("shape-rendering", "auto")
-      .style("stroke-opacity", "0.8");
+        _coverage_fill = _select.select(".coverage-fill");
+        _coverage_line = _select.select(".coverage-line");
 
-    // update
-    selection.select("path").attr("d", area);
+        if (showFill) {
+          if (_coverage_fill.empty()) {
+            _coverage_fill = _select
+              .append("path")
+              .attr("class", "coverage-fill")
+              .style("fill", trackColor);
+          }
+
+          _coverage_fill.attr("d", area);
+        } else _coverage_fill.remove();
+
+        if (showLines) {
+          if (_coverage_line.empty()) {
+            _coverage_line = _select
+              .append("path")
+              .attr("class", "coverage-line")
+              .style("stroke", trackColor)
+              .style("stroke-width", lineThickness);
+          }
+
+          _coverage_line.attr("d", line).style("stroke-width", lineThickness);
+        } else _coverage_line.remove();
+      });
 
     // exit
     selection.exit().remove();
@@ -495,9 +534,10 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         .attr("r", pointRadius)
         .attr("cx", (d) => xScale(d.x))
         .attr("cy", (d) => yScale(d.y))
-        .attr("fill", trackColor)
-        .attr("stroke", trackColor)
-        .attr("fill-opacity", 0.8);
+        .style("fill", trackColor)
+        .style("stroke", trackColor)
+        .style("stroke-opacity", "0.8")
+        .style("fill-opacity", "0.8");
 
       //end
       points_selection.exit().remove();
