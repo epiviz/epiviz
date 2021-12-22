@@ -238,8 +238,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       let [_coverageData, _junctionData] = self._extractRegions(_cellData);
 
       // console.log(`[${j}]: ${cell.rowItem.start()} - ${cell.rowItem.end()}`);
-      console.log(_coverageData);
-      console.log(_junctionData);
+      // console.log(_coverageData);
+      // console.log(_junctionData);
 
       // cell stitching
       if (coverageData.length > 0 && _coverageData.length > 0) {
