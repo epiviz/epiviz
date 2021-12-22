@@ -238,8 +238,8 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
       let [_coverageData, _junctionData] = self._extractRegions(_cellData);
 
       // console.log(`[${j}]: ${cell.rowItem.start()} - ${cell.rowItem.end()}`);
-      // console.log(_coverageData);
-      // console.log(_junctionData);
+      console.log(_coverageData);
+      console.log(_junctionData);
 
       // cell stitching
       if (coverageData.length > 0 && _coverageData.length > 0) {
@@ -654,13 +654,13 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
         _rect = _select.select("rect");
         _text = _select.select("text");
         if (_path.empty()) {
-          _rect = _select.append("rect");
           _path = _select
             .append("path")
             .attr("class", "arcs-sashimi")
             .style("stroke", trackColor)
             .style("fill", trackColor);
           _padding = _select.append("path").attr("class", "arcs-padding");
+          _rect = _select.append("rect");
           _text = _select.append("text");
         }
 
@@ -679,7 +679,6 @@ epiviz.plugins.charts.SashimiPlot.prototype._drawBlocks = function (
 
         _rect
           .attr("class", "arcs-rect")
-          .attr("fill", "white")
           .attr("height", "20px")
           .attr("width", "20px")
           .attr("x", function (b) {
