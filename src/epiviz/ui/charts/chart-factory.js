@@ -27,6 +27,7 @@ goog.require('epiviz.plugins.charts.GwasTrackType');
 goog.require('epiviz.plugins.charts.GwasPIPTrackType');
 goog.require('epiviz.plugins.charts.RepeatTrackType');
 goog.require('epiviz.plugins.charts.GuideTrackType');
+goog.require('epiviz.plugins.charts.GuideBBTrackType');
 
 
 /**

@@ -412,6 +412,8 @@ if (array_key_exists('debug', $_GET) && $_GET['debug'] == 'true') {
     <script src="src/epiviz/plugins/charts/repeat-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/guide-track.js"></script>
     <script src="src/epiviz/plugins/charts/guide-track-type.js"></script>
+    <script src="src/epiviz/plugins/charts/guide-bigbed-track.js"></script>
+    <script src="src/epiviz/plugins/charts/guide-bigbed-track-type.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot.js"></script>
     <script src="src/epiviz/plugins/charts/heatmap-plot-type.js"></script>
     <script src="src/epiviz/plugins/charts/line-plot.js"></script>
