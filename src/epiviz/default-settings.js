@@ -58,7 +58,8 @@ epiviz.Config.SETTINGS = {
     'epiviz.plugins.charts.GwasTrackType',
     'epiviz.plugins.charts.GwasPIPTrackType',
     'epiviz.plugins.charts.RepeatTrackType',
-    'epiviz.plugins.charts.GuideTrackType'
+    'epiviz.plugins.charts.GuideTrackType',
+    'epiviz.plugins.charts.GuideBBTrackType'
   ],
 
   // Chart default settings
