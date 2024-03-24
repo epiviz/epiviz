@@ -224,18 +224,18 @@ text {
 
 .sashimi-track .arcs-rect{ 
     shape-rendering: optimizeSpeed;
-    fill: white;
+    /* fill: white; */
     stroke: grey;
     stroke-width: 0;
     stroke-opacity: 0.4;
-    fill-opacity: 1;
+    fill-opacity: 0;
 }
 
 .sashimi-track .hovered .arcs-rect{ 
     stroke: #ffc600 !important; 
     stroke-width: 5 !important; 
     stroke-opacity: 0.7 !important; 
-    fill-opacity: 1 !important; 
+    fill-opacity: 0 !important; 
 }
 
 .sashimi-track .arcs-text { 
